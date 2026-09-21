@@ -135,7 +135,6 @@ SampleBuilds/MorningCard.Uno/
     App.xaml(.cs)               host builder, routes, theme
     appsettings.json            embedded; LocalizationConfiguration cultures
     Presentation/
-      Shell.xaml, ShellModel.cs
       MainPage.xaml             stage: backdrop, card, tuning region
       MainModel.cs              partial record, MVUX
       TuningPanel.xaml          UserControl view, nested default route ("Simulator")
@@ -264,47 +263,35 @@ Known MVUX traps to respect (from `uno-scaffolding.md`): no feed or state named 
 
 ### Navigation model
 
-`Uno.Extensions.Navigation`, region-based, routes registered centrally in `App.xaml.cs`. No code-behind navigation. `Shell` carries no `Region.Attached`. Three routes: Main (default), its nested Tuning region, and Trip.
+`Uno.Extensions.Navigation`, region-based, routes registered centrally in `App.xaml.cs`. No code-behind navigation. Three routes: Main (default), its nested Tuning region, and Trip.
 
-Template convention (UnoBusiness, Chefs): the ViewMap names the model record and the generated mappings bridge it to the bindable ViewModel.
+The scaffold (step 1, done) is shell-less: the generated `App.xaml.cs` calls `MainWindow.InitializeNavigationAsync(() => Task.FromResult(builder.Build()), initialRoute: "Main")` and registers flat routes. Existing project code wins for local conventions, so the app keeps that shape. There is no `Shell.xaml` and no `ShellModel`. The ViewMap names the model record and `ReactiveViewModelMappings.ViewModelMappings` bridges it to the generated ViewModel.
 
 ```csharp
 views.Register(
-    new ViewMap(ViewModel: typeof(ShellModel)),
     new ViewMap<MainPage, MainModel>(),
     new ViewMap<TuningPanel, TuningModel>(),
     new ViewMap<TripPage, TripModel>());
 
-routes.Register(new RouteMap("", View: views.FindByViewModel<ShellModel>(), Nested:
-[
+routes.Register(
     new RouteMap("Main", View: views.FindByViewModel<MainModel>(), IsDefault: true, Nested:
     [
         new RouteMap("Tuning", View: views.FindByViewModel<TuningModel>(), IsDefault: true)
     ]),
-    new RouteMap("Trip", View: views.FindByViewModel<TripModel>())
-]));
+    new RouteMap("Trip", View: views.FindByViewModel<TripModel>()));
 ```
+
+If forward and back navigation between two root routes misbehaves without a shell host (5 minute check in step 14), add the Shell from the DYT convention: `new ViewMap(ViewModel: typeof(ShellModel))`, a root `RouteMap("")` with these routes nested, and `builder.NavigateAsync<Shell>()`. `Shell` carries no `Region.Attached`.
 
 The title button navigates in XAML with `uen:Navigation.Request="Trip"`. `TripPage` has a `utu:NavigationBar` whose back button returns to Main. `TripModel` reads the same `ITripService` and `Now` sources, so the page needs no navigation data. The tires cell and the More button carry no request and no command in this version.
 
 Trip page (capability 2): Mapsui `MapControl` filling the page under the NavigationBar, `OpenStreetMap.CreateTileLayer(userAgent)`, the route as a `MemoryLayer` line in Accent (Red when late), home and school `PointFeature` pins, initial view fitted to the route extent with padding, pan and zoom enabled. A summary strip under the bar repeats leave-by, drive time and arrival from `TripTimeline`. `TripRoute` comes from `ITripService.GetRouteAsync` and is fixed sample data. Without a network the tiles stay blank and the route line still draws; the strip says "Map tiles unavailable offline." in that case.
 
-Host builder chain, configuration first because `LocalizationService` takes `IOptions<LocalizationConfiguration>` and `IWritableOptions<LocalizationSettings>`:
-
-```csharp
-var builder = this.CreateBuilder(args).UseToolkitNavigation().Configure(host => host
-    .UseConfiguration(configure: b => b.EmbeddedSource<App>())
-    .UseLocalization()
-    .UseLogging(...)
-    .ConfigureServices((ctx, services) => ...)
-    .UseThemeSwitching()
-    .UseNavigation(ReactiveViewModelMappings.ViewModelMappings, RegisterRoutes));
-Host = await builder.NavigateAsync<Shell>();
-```
+Host builder chain: keep the generated order (`UseLogging`, `UseConfiguration(...EmbeddedSource<App>().Section<AppConfig>())`, `UseLocalization()`, `ConfigureServices`, `UseNavigation(ReactiveViewModelMappings.ViewModelMappings, RegisterRoutes)`). Configuration must stay ahead of `UseLocalization()`, because `LocalizationService` takes `IOptions<LocalizationConfiguration>` and `IWritableOptions<LocalizationSettings>`. The scaffold was generated with `-theme-service` and emits no `UseThemeSwitching()` call; add it before `UseNavigation` in step 5 and confirm `IThemeService` resolves (the documented registration call, Chefs `ThemeService.md`).
 
 `appsettings.json` (embedded) declares `"LocalizationConfiguration": { "Cultures": [ "en" ] }`; the `Strings/` folder names match those entries exactly. Adding French later means a `Strings/fr` folder plus `"fr"` in that list (`fr` serves fr-CA devices through resource fallback), and a culture change applies on the next app start.
 
-Theme: inject `IThemeService` (`Uno.Extensions.Toolkit`), toggle with `await SetThemeAsync(AppTheme.Dark)`. The service persists the choice, and the window root does not exist before `NavigateAsync` returns, so the `MC_THEME` hook applies after navigation and overrides the saved value. In `TuningModel`: `State.Value(this, () => _theme.Theme).ForEach(async (t, ct) => await _theme.SetThemeAsync(t))`.
+Theme: inject `IThemeService` (`Uno.Extensions.Toolkit`), toggle with `await SetThemeAsync(AppTheme.Dark)`. The service persists the choice, and the window root does not exist before `InitializeNavigationAsync` returns, so the `MC_THEME` hook applies after navigation and overrides the saved value. In `TuningModel`: `State.Value(this, () => _theme.Theme).ForEach(async (t, ct) => await _theme.SetThemeAsync(t))`.
 
 ### Services and data flow
 
@@ -540,7 +527,7 @@ The entrance plays on first live data, on a connection mode change back to live,
 
 Each step ends with a build, the listed check and a conventional commit. Invoke the named skills before writing in their area.
 
-1. **Scaffold** (`uno-platform-agent`): run the scaffold command from the Pinned versions section, reconcile against DYT, pin Uno.Sdk 6.7.30, Android min API 24, copy `.mcp.json`, add Core and Tests projects, gate `UseStudio()`. Build both heads. Launch both heads with the template page. `feat: scaffold MorningCard solution`
+1. **Scaffold: DONE 2026-09-21.** Both heads build with 0 warnings on Uno.Sdk 6.7.30; the desktop head launches to the template page; Android has not been launched yet (no device was attached). The installed templates were 6.8.0-dev.23 and emitted that SDK version, which was pinned back to 6.7.30. Original instruction, for the record: (`uno-platform-agent`) run the scaffold command from the Pinned versions section, reconcile against DYT, pin Uno.Sdk 6.7.30, Android min API 24, copy `.mcp.json`, add Core and Tests projects, gate `UseStudio()`. Build both heads. Launch both heads with the template page. `feat: scaffold MorningCard solution`
 2. **Spikes R1 to R6**, time-boxed, results written back into this spec. `docs: record spike results`
 3. **Core** (`dotnet-csharp`): records, `TripMath`, `RouteLayout`, service contracts, `SimulatedDriveHub`, tests. `feat(core): trip math and simulated hub`
 4. **Theme and fonts** (`uno-material`): tokens, palette override, font resources, text styles, HSL helper. `feat(theme): card tokens and type`
