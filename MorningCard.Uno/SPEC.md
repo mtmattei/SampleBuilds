@@ -1,6 +1,6 @@
 # Morning Drive Card: Uno Platform Spec
 
-Status: draft, 2026-09-21. Blocked on the Unresolved Questions at the bottom.
+Status: ready to build, 2026-09-21. The ten original questions are resolved (see Resolved Decisions). Three small questions remain at the bottom; none blocks steps 1 to 13.
 Verification: checked on 2026-09-21 against the Uno docs MCP, the `uno-platform` skill set (MVUX, Navigation, Extensions, Toolkit, Material and Skia skills), the Uno.Sdk 6.7.30 targets and build schema, and the Uno.Extensions 7.3.6 and Toolkit 9.1.3 assemblies in the local NuGet cache. Doc paths cited inline are Uno docs `sourcePath` values.
 Source of truth for the design: `../MorningCard/morning-card.html` and its README (commit `97ef369`).
 Targets: `net10.0-android` and `net10.0-desktop`.
@@ -18,21 +18,21 @@ The card answers one question at a glance: when do I leave for school drop-off? 
 | # | Capability the design implies | Status | Note |
 |---|---|---|---|
 | 1 | Route time ruler (slack, drive, walk laid along a path) | implemented | `SKCanvasElement` with `SKPathMeasure`. This is the signature device and it is a schematic: minutes become distance along the path. |
-| 2 | Map (ground under the route, school pin) | **substituted, pending Q1** | The prototype ground is a hand-drawn grid, parks and water. It cannot pan and shows no real place. The slack stretch has no geographic meaning (the car is parked during slack), so a real map cannot carry the ruler unchanged. Recommendation in Q1. |
-| 3 | Live trip data (drive time, traffic delay, usual time) | **substituted, pending Q2** | No routing endpoint exists. `ITripService` contract plus a simulated implementation with latency and failure injection. |
-| 4 | Live vehicle telemetry (range, cabin, tires, lock, last seen) | **substituted, pending Q2** | No vehicle API credentials exist. `IVehicleService` contract plus the same simulated hub. |
-| 5 | Remote commands (lock, climate, send destination to car) | **substituted, pending Q2** | Commands go to the simulated hub. The dial panel is titled as a simulator so the surface stays honest. |
+| 2 | Map (ground under the route, school pin) | implemented on the Trip page, **schematic on the card (decided, 1a)** | The card ground stays a drawn schematic because the slack stretch has no geographic meaning (the car is parked during slack). The real, pannable map lives on the Trip page: Mapsui `MapControl`, OSM tiles, route line, home and school pins. |
+| 3 | Live trip data (drive time, traffic delay, usual time) | **substituted (decided)** | No routing endpoint exists. `ITripService` contract plus a simulated implementation with latency and failure injection. |
+| 4 | Live vehicle telemetry (range, cabin, tires, lock, plug, last seen) | **substituted (decided)** | No vehicle API credentials exist. `IVehicleService` contract plus the same simulated hub. |
+| 5 | Remote commands (lock, climate, send destination to car) | **substituted (decided)** | Commands go to the simulated hub. The tuning panel is titled "Simulator" so the surface stays honest. |
 | 6 | Clock-driven recompute (slack shrinks as time passes) | implemented | `TimeProvider` plus a minute-aligned tick feed. The prototype only moved time through a slider. |
 | 7 | Loading, empty, offline states | implemented | `FeedView` templates plus visual states. Built with the `uno-component-states` process: populated card first, then transformed. |
 | 8 | Light and dark theme, runtime toggle | implemented | Material theme, `ThemeService`, token dictionaries with Light and Dark entries. |
 | 9 | Dialable accent hue, corner radius, motion speed | implemented | Debug tuning surface writes brush colors, a radius resource and a motion multiplier. |
 | 10 | Frosted glass card over a blurred backdrop | implemented, technique pending spike R2 | First choice is the platform's Skia-native `AcrylicBrush`, then a `SaveLayer` backdrop filter, with a translucent fill over the pre-blurred bokeh as the floor. |
-| 11 | Navigation from the title chevron and the tires chevron | **omitted in the prototype, pending Q3** | Both buttons are dead in the HTML. A chevron implies a destination. |
-| 12 | "More" action | **omitted in the prototype, pending Q3** | Dead button in the HTML. |
-| 13 | Charging state | **omitted, pending Q4** | Static "Not charging" text in the prototype. |
-| 14 | Localization and units (mi and °F in the mockup; "pedagogical day" is Quebec usage) | implemented for strings, **units pending Q5** | `Localization` UnoFeature, `.resw`, `x:Uid` from day one. |
-| 15 | Reduced motion | implemented on Android, **substituted on desktop** | `UISettings.AnimationsEnabled` is hardcoded `true` on Skia desktop, so a Reduced motion switch in the tuning panel stands in for the OS setting there (Q10). |
-| 16 | Accessibility (pressed state, names, focus, live region) | implemented on desktop, **at risk on Android** | `ToggleButton`, `AutomationProperties`, focus visuals. Upstream marks Android Skia TalkBack as WIP (Q10). |
+| 11 | Navigation from the title chevron and the tires chevron | title implemented (opens the Trip page), **tires omitted (decided, logic later)** | The tires cell keeps its chevron and does nothing. Listed in the README's known gaps. |
+| 12 | "More" action | **omitted (decided, logic later)** | Keeps its look, does nothing. Listed in the README's known gaps. |
+| 13 | Charging state | implemented | `IsPluggedIn` and `ChargePercent` on the snapshot, driven from the Simulator. |
+| 14 | Localization and units | implemented for English, **French and a units switch omitted (decided)** | `Localization` UnoFeature, `.resw`, `x:Uid` from day one, `en` only. Units stay miles, °F and psi. |
+| 15 | Reduced motion | implemented on Android, **substituted on desktop (accepted)** | `UISettings.AnimationsEnabled` is hardcoded `true` on Skia desktop, so a Reduced motion switch in the Simulator stands in for the OS setting there. |
+| 16 | Accessibility (pressed state, names, focus, live region) | implemented on desktop, **at risk on Android (accepted)** | `ToggleButton`, `AutomationProperties`, focus visuals. Upstream marks Android Skia TalkBack as WIP; one device pass, result recorded. |
 
 ## Architecture Brief
 
@@ -138,8 +138,10 @@ SampleBuilds/MorningCard.Uno/
       Shell.xaml, ShellModel.cs
       MainPage.xaml             stage: backdrop, card, tuning region
       MainModel.cs              partial record, MVUX
-      TuningPanel.xaml          UserControl view, nested default route
+      TuningPanel.xaml          UserControl view, nested default route ("Simulator")
       TuningModel.cs            partial record, MVUX, dials
+      TripPage.xaml             NavigationBar, Mapsui MapControl, trip summary strip
+      TripModel.cs              partial record, MVUX
     Controls/
       MorningCardView.xaml      UserControl, the card
       RouteRulerCanvas.cs       SKCanvasElement + DPs
@@ -153,7 +155,7 @@ SampleBuilds/MorningCard.Uno/
       FontOverride.xaml         MaterialLight/Regular/MediumFontFamily -> Instrument Sans
       Fonts.xaml                app FontFamily resources (manifest first, per-weight fallback, R10)
       Styles/                   RoundActionButton, StatCell, TuningChip, LinkButton
-    Strings/en/Resources.resw   (+ Strings/fr pending Q5)
+    Strings/en/Resources.resw   English only in this version
     Assets/Fonts/               Instrument Sans static TTFs 400/500/600/700
   MorningCard.Core/             net10.0, no Uno references
     Models/                     TripPlan, VehicleSnapshot, TripTimeline, RouteFractions, enums
@@ -176,16 +178,16 @@ UserControl for the card: one consumer, fixed composition. A templated control a
 | SkiaSharp | bundled 3.119.x | no v4 feature is needed; do not opt in |
 | xunit / runner / Test.Sdk | 2.9.2 / 2.8.2 / 17.12.0 | DYT tests |
 | Microsoft.Extensions.TimeProvider.Testing | latest stable at scaffold time | `FakeTimeProvider` for the clock tests |
-| Mapsui.Uno.WinUI | 5.1.0, only if Q1 selects a real map | NuGet, compatibility unverified (R1) |
+| Mapsui.Uno.WinUI | 5.1.0 | NuGet. Dependencies align with the SDK on paper; runtime on both heads is spike R1. Added in step 12, so a failed spike cannot block the card. |
 
 UnoFeatures, every name verified against `uno.sdk/6.7.30/Sdk/Sdk.props.buildschema.json`:
 `Material; Toolkit; Extensions; Hosting; Configuration; Localization; Navigation; MVUX; Logging; ThemeService; SkiaRenderer; Skia`.
-`SkiaRenderer` alone brings `Uno.WinUI.Graphics2DSK` (`SKCanvasElement`) on both heads; `Skia` stays for the implicit Toolkit Skia package. `Extensions` already covers Hosting, Configuration and Logging; the explicit names stay because they are harmless and self-documenting. `Http` is added only if Q2 selects a real endpoint.
+`SkiaRenderer` alone brings `Uno.WinUI.Graphics2DSK` (`SKCanvasElement`) on both heads; `Skia` stays for the implicit Toolkit Skia package. `Extensions` already covers Hosting, Configuration and Logging; the explicit names stay because they are harmless and self-documenting. `Http` stays out while the services are simulated; it arrives with the first real endpoint.
 
 Scaffold command (dry run passed, creates Android and desktop only):
 
 ```
-dotnet new unoapp -o MorningCard -preset recommended -platforms android desktop -presentation mvux -theme material -theme-service -renderer skia -tfm net10.0 -http none -dsp false -tests none -cultures fr
+dotnet new unoapp -o MorningCard -preset recommended -platforms android desktop -presentation mvux -theme material -theme-service -renderer skia -tfm net10.0 -http none -dsp false -tests none
 ```
 
 - The installed `Uno.Templates` is 7.0.0-dev.6 and may emit a 7.0-dev `global.json`. Install the templates matching Uno.Sdk 6.7, or diff the generated project against DYT, then pin 6.7.30.
@@ -208,7 +210,11 @@ public record TripPlan(string Title, TimeOnly Bell, int BaseDriveMin, int UsualD
 
 public record VehicleSnapshot(string Name, bool IsLocked, bool ClimateOn, int CabinTemp,
                               int Range, int RangeMax, int TireFrontLeftPsi,
+                              bool IsPluggedIn, int ChargePercent,
                               bool IsStale, TimeOnly LastSeen);
+
+public record GeoPoint(double Longitude, double Latitude);
+public record TripRoute(GeoPoint Home, GeoPoint School, IReadOnlyList<GeoPoint> Line);  // sample data
 
 public record TripTimeline(int DriveMin, TimeOnly LeaveBy, int SlackMin, bool IsLate,
                            TimeOnly Start, TimeOnly Arrive, int TotalMin, CardTone Tone,
@@ -245,8 +251,8 @@ Decision: the tuning panel is its own view (TuningPanel UserControl + TuningMode
           ContentControl region on MainPage through a nested default route.
 Reason: ViewMap<TView, TModel> gives one model per view, and a TuningModel exposed as a plain
         property of MainModel would hand XAML raw IState objects with no bindable proxy. A region
-        keeps construction in DI and keeps simulator state out of the card's model. If Q6 makes
-        the panel DEBUG-only, the route registration is the single switch.
+        keeps construction in DI and keeps simulator state out of the card's model. If the panel
+        ever becomes DEBUG-only, the route registration is the single switch.
 Tradeoff: one more route and a region for a panel that never navigates. Fallback if the region
           misbehaves: DataContext = ActivatorUtilities.CreateInstance<TuningViewModel>(services),
           the DYT convention.
@@ -258,7 +264,7 @@ Known MVUX traps to respect (from `uno-scaffolding.md`): no feed or state named 
 
 ### Navigation model
 
-`Uno.Extensions.Navigation`, region-based, routes registered centrally in `App.xaml.cs`. No code-behind navigation. `Shell` carries no `Region.Attached`. Further routes depend on Q1 and Q3.
+`Uno.Extensions.Navigation`, region-based, routes registered centrally in `App.xaml.cs`. No code-behind navigation. `Shell` carries no `Region.Attached`. Three routes: Main (default), its nested Tuning region, and Trip.
 
 Template convention (UnoBusiness, Chefs): the ViewMap names the model record and the generated mappings bridge it to the bindable ViewModel.
 
@@ -266,16 +272,22 @@ Template convention (UnoBusiness, Chefs): the ViewMap names the model record and
 views.Register(
     new ViewMap(ViewModel: typeof(ShellModel)),
     new ViewMap<MainPage, MainModel>(),
-    new ViewMap<TuningPanel, TuningModel>());
+    new ViewMap<TuningPanel, TuningModel>(),
+    new ViewMap<TripPage, TripModel>());
 
 routes.Register(new RouteMap("", View: views.FindByViewModel<ShellModel>(), Nested:
 [
     new RouteMap("Main", View: views.FindByViewModel<MainModel>(), IsDefault: true, Nested:
     [
         new RouteMap("Tuning", View: views.FindByViewModel<TuningModel>(), IsDefault: true)
-    ])
+    ]),
+    new RouteMap("Trip", View: views.FindByViewModel<TripModel>())
 ]));
 ```
+
+The title button navigates in XAML with `uen:Navigation.Request="Trip"`. `TripPage` has a `utu:NavigationBar` whose back button returns to Main. `TripModel` reads the same `ITripService` and `Now` sources, so the page needs no navigation data. The tires cell and the More button carry no request and no command in this version.
+
+Trip page (capability 2): Mapsui `MapControl` filling the page under the NavigationBar, `OpenStreetMap.CreateTileLayer(userAgent)`, the route as a `MemoryLayer` line in Accent (Red when late), home and school `PointFeature` pins, initial view fitted to the route extent with padding, pan and zoom enabled. A summary strip under the bar repeats leave-by, drive time and arrival from `TripTimeline`. `TripRoute` comes from `ITripService.GetRouteAsync` and is fixed sample data. Without a network the tiles stay blank and the route line still draws; the strip says "Map tiles unavailable offline." in that case.
 
 Host builder chain, configuration first because `LocalizationService` takes `IOptions<LocalizationConfiguration>` and `IWritableOptions<LocalizationSettings>`:
 
@@ -290,7 +302,7 @@ var builder = this.CreateBuilder(args).UseToolkitNavigation().Configure(host => 
 Host = await builder.NavigateAsync<Shell>();
 ```
 
-`appsettings.json` (embedded) declares `"LocalizationConfiguration": { "Cultures": [ "en", "fr" ] }`; the `Strings/` folder names match those entries exactly. `fr` (the template's culture tag) serves fr-CA devices through resource fallback.
+`appsettings.json` (embedded) declares `"LocalizationConfiguration": { "Cultures": [ "en" ] }`; the `Strings/` folder names match those entries exactly. Adding French later means a `Strings/fr` folder plus `"fr"` in that list (`fr` serves fr-CA devices through resource fallback), and a culture change applies on the next app start.
 
 Theme: inject `IThemeService` (`Uno.Extensions.Toolkit`), toggle with `await SetThemeAsync(AppTheme.Dark)`. The service persists the choice, and the window root does not exist before `NavigateAsync` returns, so the `MC_THEME` hook applies after navigation and overrides the saved value. In `TuningModel`: `State.Value(this, () => _theme.Theme).ForEach(async (t, ct) => await _theme.SetThemeAsync(t))`.
 
@@ -304,7 +316,7 @@ TimeProvider ----------> Now feed -----------------+--> MainModel feeds --> Feed
 MorningCardView commands --> MainModel methods --> IVehicleService ---------------+
 ```
 
-- `ITripService`: `IAsyncEnumerable<TripPlan?> Watch(CancellationToken)`, `ValueTask RefreshAsync(CancellationToken)`.
+- `ITripService`: `IAsyncEnumerable<TripPlan?> Watch(CancellationToken)`, `ValueTask<TripRoute> GetRouteAsync(CancellationToken)`, `ValueTask RefreshAsync(CancellationToken)`.
 - `IVehicleService`: `IAsyncEnumerable<VehicleSnapshot> Watch(...)`, `SetLockedAsync`, `SetClimateAsync`, `SendDestinationAsync`, `RefreshAsync`.
 - `SimulatedDriveHub`: singleton registered for both interfaces. Holds the knobs, a connection mode (Live, Loading, Offline, NoTrip), 400 to 800 ms command latency, and a failure switch so one error and one retry can be driven before the second surface is built.
 - `TimeProvider.System` registered as a singleton; tests use `FakeTimeProvider`.
@@ -389,6 +401,7 @@ Title: weight 600, line height 1.15. ETA: weight 700, line height 1.0.
 - Map panel: height 214, corner radius 20, 1 px Line border, Map fill, clipped. Canvas fills the panel and scales the 356 by 214 design space uniformly to fill, centered. ETA block overlays top-left at 16, 14 with max width 54 percent. A left-to-right fade of the Map color from 92 percent to 0 at 55 percent width sits under the ETA block, drawn in the canvas.
 - Route path (design space): `M34 186 L102 180 Q140 178 164 160 L200 130 Q222 112 244 88 L258 74 Q268 62 276 56`. Segment stroke 5, round caps. Slack dots radius 2.1, step 7, from 12 after the start to 10 before the leave node. Car dot radius 6.5 with 3 white stroke, glow radius 14 at 18 percent. Nodes radius 5 (bell node 4, Amber) with 2.5 white stroke. Drive pill 58 by 24, radius 7, centered at the drive midpoint plus (30, 32). Pin with an 18 leader above the bell node. Labels: points above the path, durations below; the Leave label moves below the path when the gap from Now to Leave is 84 or less, and the slack caption hides in that case. Label halo: 3 px stroke in the Map color under the fill.
 - Stats: three columns 1.05*, 1*, 1.05*, Line dividers, cell padding 9 left and 8 right. Icon 20, value 16 weight 600, caption 12.5 Ink2. Range bar spans the first cell: height 6, radius 3, Chip track, 10 above. Tires cell is a button with a 12 chevron.
+  Charging cell: unplugged shows "—" over "Not charging", as in the prototype. Plugged in shows "{n}%" over "Charging", value and icon in GoodInk; at 100 the caption reads "Charged".
   Fix the prototype defect here: at 390 wide "All good" collides with the chevron. Give the chevron its own 12 px column and let the value trim.
 - Actions: four equal columns, gap 6, top padding 4. Circle 56, corner radius 28 (half the height; an oversized radius renders oval on Skia), Chip fill, icon 24 with 1.7 stroke. Label 13, secondary line 12.5 Ink2, 8 under the circle.
 - Subtitle fix: the default sentence wraps to two lines at 390. Accept the wrap, and reserve two lines of height so the map does not jump between states.
@@ -410,8 +423,14 @@ MainPage
         Stats                        Grid, ProgressBar, Button
         Actions                      ToggleButton x2, Button x2
     ContentControl (uen:Region)      hosts TuningPanel
-      TuningPanel                    utu:ChipGroup, Slider x8, ToggleSwitch (reduced motion), Button x2
+      TuningPanel ("Simulator")      utu:ChipGroup, Slider x9, ToggleSwitch x2, Button x2
+TripPage
+  utu:NavigationBar                  back to Main
+  Summary strip                      leave-by, drive, arrival
+  mapsui:MapControl                  OSM tiles, route line, home and school pins
 ```
+
+Simulator controls: state chips (Live, Loading, Offline, No trip); sliders for Clock, Traffic delay, Range, Cabin temperature, Front-left tire, Charge, Route hue, Corner radius, Motion speed; switches for Plugged in and Reduced motion; buttons for Replay entrance and Toggle theme. The Charge slider is enabled only while Plugged in is on.
 
 - Icons are stroked `Path` elements inside a `Viewbox`, with data copied from the SVGs. `SvgImageSource` and Resizetizer output render as images with no stroke recolor, and `PathIcon` is fill-only and clips. All arcs in the source icons are circular, which the Uno path parser requires. `Path.Stroke` does not inherit `Foreground`: inside the button styles bind `Stroke` to the templated parent's `Foreground` so icons follow checked and disabled states.
 - Lock and Climate base on Material's `IconToggleButtonStyle` with `Width` and `Height` 56 and `CornerRadius` 28. Lightweight keys: `IconToggleButtonBackground` (Chip), `IconToggleButtonBackgroundChecked` plus its `CheckedPointerOver`, `CheckedPressed`, `CheckedDisabled` variants (Accent), `IconToggleButtonForegroundChecked` plus variants (OnAccent). `ut:ControlExtensions.AlternateContent` holds the open-shackle icon for the unchecked lock. Verify the template honors `CornerRadius`; retemplate only if it does not.
@@ -434,9 +453,9 @@ Material theme through the `Material` UnoFeature. `ThemeService` drives the runt
 ### User flows
 
 1. Open the app. Read the leave-in sentence, glance at the route.
-2. Lock, Climate, Send to car, More.
-3. Tires cell and title chevron: pending Q3.
-4. Tuning panel: switch connection mode, drag dials, replay the entrance, toggle the theme.
+2. Lock, Climate, Send to car. More is inert in this version.
+3. Tap the title to open the Trip page: pan and zoom the real route, read the summary strip, go back. The tires cell is inert in this version.
+4. Simulator: switch connection mode, drag dials, plug the car in, replay the entrance, toggle the theme.
 
 ### Headline logic
 
@@ -534,15 +553,17 @@ Each step ends with a build, the listed check and a conventional commit. Invoke 
 11. **Tuning panel and responsive layout** (`uno-toolkit`): chips, sliders, two-column breakpoint. `feat: tuning panel`
 12. **Motion** (`xaml-design-polish`): entrance timeline, press feedback, range bar, skeleton pulse, reduced motion. `feat(motion): entrance and feedback`
 13. **Backdrop and glass**: `BokehBackdrop`, shadow, glass technique per R2 and R3. `feat: backdrop and glass`
-14. **Localization** (`winui-xaml`, `uno-extensions-services`): move every string to `.resw`, add `Strings/fr` if Q5 says so. `feat: localization`
-15. **Android pass**: safe area, status bar, touch targets, frame timing with `dumpsys SurfaceFlinger --timestats`. `fix(android): ...`
-16. **Verification run** (`uno-verify`), all steps above, then `handoff`.
+14. **Trip page** (`uno-navigation`, `uno-toolkit`): spike R1 first, then add Mapsui.Uno.WinUI 5.1.0, `TripPage`, `TripModel`, the Trip route, the title `Navigation.Request`, sample `TripRoute`. Verify pan and zoom on both heads. `feat(trip): trip page with map`
+15. **Localization** (`winui-xaml`, `uno-extensions-services`): move every string to `Strings/en/Resources.resw` with `x:Uid`. `feat: localization`
+16. **Android pass**: safe area, status bar, touch targets, TalkBack pass, frame timing with `dumpsys SurfaceFlinger --timestats`. `fix(android): ...`
+17. **README**: what the sample shows, how to run both heads, the Simulator, and a Known gaps list (tires chevron and More are inert, data and commands are simulated, English only, desktop reduced motion comes from the Simulator, Android TalkBack result). `docs: readme`
+18. **Verification run** (`uno-verify`), all steps above, then `handoff`.
 
 ### Risks (time-boxed spikes)
 
 | # | Risk | Box | Fallback |
 |---|---|---|---|
-| R1 | Only if Q1 picks a real map: Mapsui.Uno.WinUI 5.1.0 at runtime on both Skia heads. Dependencies align on paper (SkiaSharp >= 3.119.2, Uno.WinUI >= 6.5.153, Graphics2DSK; net9.0 and net9.0-android35.0 TFMs). Control `Mapsui.UI.WinUI.MapControl`, `OpenStreetMap.CreateTileLayer(userAgent)` (the OSM tile policy requires a user agent), route as a `MemoryLayer` with a `GeometryFeature` line, pin as a `PointFeature`. Uno's own `MapControl` has no desktop support. | 15 min | WebView over a JS map, or defer the map to a later version |
+| R1 | Mapsui.Uno.WinUI 5.1.0 at runtime on both Skia heads (run at step 14). Dependencies align on paper (SkiaSharp >= 3.119.2, Uno.WinUI >= 6.5.153, Graphics2DSK; net9.0 and net9.0-android35.0 TFMs). Control `Mapsui.UI.WinUI.MapControl`, `OpenStreetMap.CreateTileLayer(userAgent)` (the OSM tile policy requires a user agent), route as a `MemoryLayer` with a `GeometryFeature` line, pin as a `PointFeature`. Uno's own `MapControl` has no desktop support. | 15 min | WebView over a JS map, or defer the map to a later version |
 | R2 | Glass blur, in order: (1) the documented Skia-native acrylic on the childless glass Border: `<AcrylicBrush AlwaysUseFallback="False" media:AcrylicBrushExtensions.UseCompositionEffectBrush="False" TintColor=".." TintOpacity=".."/>` (`features/shapes-and-brushes.md`), on 6.7.135 desktop and Android; (2) `SaveLayer` with a blur plus saturate backdrop filter in an `SKCanvasElement` | 15 min | Translucent Glass fill over the already blurred bokeh. The visual difference is small because the backdrop is out of focus by design. |
 | R3 | Closed by decision: the shadow is Skia-drawn (see Decisions). Remaining check: the clip-out follows the radius dial and the theme. | 5 min | none needed |
 | R4 | Material `ProgressBar`: 6 px and colors through lightweight keys, radius 3 only if the template binds `CornerRadius` | 10 min | Two `Border`s in a `Grid`, `ScaleX` animation, `AutomationProperties` range text |
@@ -556,20 +577,25 @@ Each step ends with a build, the listed check and a conventional commit. Invoke 
 
 After two failed fix cycles on one root cause, stop and write a Debug Checkpoint.
 
+## Resolved Decisions (user, 2026-09-21)
+
+| # | Question | Decision |
+|---|---|---|
+| 1 | Map | **1a.** The card keeps the Skia route ruler over the drawn ground as a glance surface. A Trip page carries a real, pannable Mapsui map of the route. |
+| 2 | Data and commands | Simulated hub behind `ITripService` and `IVehicleService`. No `Http` feature. |
+| 3 | Dead buttons | Left as they are in the prototype; logic comes later. The tires cell and More keep their look and do nothing. See Unresolved Question 1 for the title chevron. |
+| 4 | Charging cell | Add plug state: `IsPluggedIn` and `ChargePercent` on `VehicleSnapshot`, plus tuning controls. |
+| 5 | Languages and units | English only for now. Strings still live in `.resw` with `x:Uid`, so French is an added folder later. Units stay miles, °F and psi, as in the mockup (delegated call). |
+| 6 | Tuning panel | Ships in all builds (delegated call). It is the "Dial it in" panel under the card in the prototype: the state chips and sliders that drive the simulated car and trip. In a sample it is the only way a viewer can see the late, warning, offline, loading and empty states, so it is part of the demonstration. It is titled "Simulator". |
+| 7 | Repo layout | Confirmed: `SampleBuilds/MorningCard.Uno/`, prototype untouched. |
+| 8 | Walk-in buffer | Stays a per-school field on `TripPlan`, supplied by the trip service (delegated call). A routing API reports drive time; the walk from the curb to the door belongs to the school record. |
+| 9 | Cold-start loading | Accepted (delegated call): stats values and car status render as skeleton bars, actions disabled, no layout shift. |
+| 10 | Platform gaps | Both accepted as recorded risks (delegated call). Desktop reduced motion comes from the Simulator switch. Android TalkBack gets one device pass and its result is written into the README either way. |
+
+Accepted gap, stated plainly per the capability rule: the tires chevron and the More button look tappable and do nothing in this version. They are listed in the README's known gaps so the omission stays visible.
+
 ## Unresolved Questions
 
-Answer by number. Recommendations are listed first.
-
-1. **Map (capability 2, substituted).** The prototype map is a drawing that cannot pan, and the slack stretch has no geographic meaning.
-   - a. (Recommended) Keep the card's panel as a schematic route ruler drawn in Skia, restyle the ground so it reads as a diagram and not as cartography (keep the grid, drop the parks and water, or keep them at your call), and add a Trip detail page behind the title chevron with a real pannable Mapsui map of the route. The card stays a glance surface; the map capability is real where a user expects to pan.
-   - b. Schematic only, no real map anywhere. Smallest build; the panel still looks like a map, which is the impersonation the capability rule warns about.
-   - c. Real Mapsui map inside the card with the ruler redrawn along the real route polyline. The slack stretch then has to leave the route (for example a separate countdown arc at the car), which changes the signature device.
-2. **Data and commands (capabilities 3, 4, 5, substituted).** Simulated hub behind `ITripService` and `IVehicleService` (recommended), or is there a routing key (OSRM, Google Routes, Azure Maps) or a vehicle API account to wire through `Uno.Extensions.Http`? With simulation only, the `Http` feature stays out and the tuning panel is titled "Simulator".
-3. **Dead buttons (capabilities 11, 12, omitted).** Proposed: title chevron opens the Trip page from 1a; the tires cell opens a flyout with four tire pressures (adds three values to `VehicleSnapshot`); More opens a `MenuFlyout` with Refresh, Theme and Language. Alternative: remove the chevrons and the More button. Which?
-4. **Charging cell (capability 13, omitted).** Add `IsPluggedIn` and `ChargePercent` to the snapshot plus a dial, or keep the static "Not charging" cell and label it as a known gap? The XC60 in the mockup has a fuel pump icon for range, so a plug-in hybrid is implied; confirm.
-5. **Languages and units.** English plus French (recommended, and "pedagogical day" already points there; resources live under `fr`, written in Quebec usage, and serve fr-CA devices through fallback)? Note the switch mechanics: `ILocalizationService.SetCurrentCultureAsync` persists the culture and applies it on the next app start ("This action requires an app restart", `LocalizationOverview.md`). Options: a Language item that saves and shows a restart notice (recommended, it is the documented path), or the core hot-swap guide (`guides/hotswap-app-language.md`) for a live switch at the cost of reloading the page. Units: keep miles, °F and psi from the mockup, or km and °C with psi kept, or a setting?
-6. **Tuning panel.** Ship it in all builds as the way to demonstrate states (recommended for a sample), or DEBUG only with the env hooks as the release path?
-7. **Repo layout.** New sibling folder `SampleBuilds/MorningCard.Uno/` with the HTML prototype left untouched (assumed here). Confirm, or name another location.
-8. **Leave-by buffer** (carried from the README): per-school walk-in minutes stay a field on `TripPlan` supplied by the service. Confirm that a routing API would not own it.
-9. **Loading on cold start.** The spec extends the designed loading state to the stats row and car status (skeleton bars, disabled actions), which the prototype never drew. Accept?
-10. **Two platform gaps to accept as risks.** (a) Desktop has no OS reduced-motion signal in Uno today, so the tuning panel switch is the only source there. (b) Android TalkBack under the Skia renderer is WIP upstream, so screen reader support on Android may ship as a documented gap. Accept both, or does either block the Android target?
+1. **Title chevron.** Decision 1a needs an entry point for the Trip page, and decision 3 leaves dead buttons alone. This spec resolves the overlap by wiring only the title ("School drop-off >") to the Trip page and leaving the tires cell and More inert. If the title should stay inert too, the Trip page needs another entry point; say which.
+2. **Sample route geography.** The Trip page needs real coordinates. The simulated service ships one fixed sample polyline (home to a school, about 14 minutes of driving) and labels it as sample data. Any preferred area, or is a generic Montreal West Island route fine?
+3. **OSM tiles.** The Trip page map loads OpenStreetMap tiles over the network with an app user agent, which is the one real remote dependency in the app. Fine for a sample, or should it use a different tile source?
