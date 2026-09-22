@@ -9,19 +9,25 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!-- 42 / 700: the minutes-to-arrival number, the loudest thing on the card. -->
+  <!--
+    52 / 700: the trip duration, and deliberately the loudest thing on the card.
+
+    Sized off the mockup rather than the prototype: there the digits stand about 18.6% of the map
+    panel's height, where 42px gave 14%. The card's question is answered by the leave-in sentence in
+    the header, so this is the accepted trade-off of the design - duration leads, departure follows.
+  -->
   <Style x:Key="EtaNumber" TargetType="TextBlock" BasedOn="{StaticResource DisplayMedium}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontBold}" />
     <Setter Property="FontWeight" Value="Bold" />
-    <Setter Property="FontSize" Value="42" />
-    <Setter Property="LineHeight" Value="42" />
+    <Setter Property="FontSize" Value="52" />
+    <Setter Property="LineHeight" Value="52" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
-  <!-- 18 / 600: the "min" that follows it. -->
+  <!-- 22 / 600: the "min" that follows it, kept at the mockup's ratio to the digits. -->
   <Style x:Key="EtaUnit" TargetType="TextBlock" BasedOn="{StaticResource TitleMedium}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
-    <Setter Property="FontSize" Value="18" />
+    <Setter Property="FontSize" Value="22" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 

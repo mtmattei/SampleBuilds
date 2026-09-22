@@ -218,7 +218,7 @@
                             VerticalAlignment="Top"
                             Spacing="10">
                   <Border Width="120" Height="14" CornerRadius="6" Background="{ThemeResource ChipBrush}" />
-                  <Border Width="110" Height="44" CornerRadius="10" Background="{ThemeResource ChipBrush}" />
+                  <Border Width="130" Height="54" CornerRadius="10" Background="{ThemeResource ChipBrush}" />
                   <Border Width="90" Height="14" CornerRadius="6" Background="{ThemeResource ChipBrush}" />
                 </StackPanel>
               </DataTemplate>
@@ -460,6 +460,7 @@
     </Grid>
   </Grid>
 </UserControl>
+
 
 
 
