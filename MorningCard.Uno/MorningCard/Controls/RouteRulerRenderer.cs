@@ -68,6 +68,15 @@ internal sealed class RouteRulerRenderer : IDisposable
     private readonly SKFont _pillFont = new() { Size = PillTextSize, Edging = SKFontEdging.SubpixelAntialias };
     private readonly SKPath _scratch = new();
 
+    // Parsed once. These were re-parsed from strings inside RenderOverride on every frame - four
+    // ground paths plus the pin glyph - which is exactly what the class comment says it does not do.
+    private readonly SKPath _parkA = SKPath.ParseSvgPathData("M120 40 q30 -18 62 2 q10 30 -20 44 q-40 6 -50 -14 q-6 -18 8 -32z");
+    private readonly SKPath _parkB = SKPath.ParseSvgPathData("M300 20 q36 -14 52 20 q2 26 -28 30 q-30 -4 -24 -50z");
+    private readonly SKPath _parkC = SKPath.ParseSvgPathData("M186 168 q26 -10 40 8 q6 20 -14 26 q-30 2 -26 -34z");
+    private readonly SKPath _water = SKPath.ParseSvgPathData("M356 120 q-30 12 -50 44 q-14 24 -46 40 q-20 8 -30 30");
+    private readonly SKPath _mortarboard = SKPath.ParseSvgPathData("M12 3 2 8l10 5 8-4v6h2V8L12 3zm-6 9.5V17c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.5l-6 3-6-3z");
+    private readonly SKPath _pinTail = new();
+
     private SKShader? _fade;
     private SKColor _fadeBuiltFor;
 
@@ -87,6 +96,14 @@ internal sealed class RouteRulerRenderer : IDisposable
     public void Render(SKCanvas canvas, SKSize area, RouteRulerSnapshot snapshot)
     {
         var palette = snapshot.Palette;
+
+        // A zero-sized first layout would make the scale below zero, and the visible-bounds
+        // division would then feed NaN geometry to Skia - which is a native crash, not an
+        // exception. Nothing to draw at this size anyway.
+        if (area.Width <= 0f || area.Height <= 0f)
+        {
+            return;
+        }
 
         canvas.Save();
 
@@ -125,15 +142,15 @@ internal sealed class RouteRulerRenderer : IDisposable
         canvas.Clear(palette.Map);
 
         _fill.Color = palette.Park;
-        DrawSvg(canvas, "M120 40 q30 -18 62 2 q10 30 -20 44 q-40 6 -50 -14 q-6 -18 8 -32z", _fill);
-        DrawSvg(canvas, "M300 20 q36 -14 52 20 q2 26 -28 30 q-30 -4 -24 -50z", _fill);
-        DrawSvg(canvas, "M186 168 q26 -10 40 8 q6 20 -14 26 q-30 2 -26 -34z", _fill);
+        canvas.DrawPath(_parkA, _fill);
+        canvas.DrawPath(_parkB, _fill);
+        canvas.DrawPath(_parkC, _fill);
 
         _stroke.Color = palette.Water;
         _stroke.StrokeWidth = 9f;
         _stroke.StrokeCap = SKStrokeCap.Round;
         _stroke.StrokeJoin = SKStrokeJoin.Round;
-        DrawSvg(canvas, "M356 120 q-30 12 -50 44 q-14 24 -46 40 q-20 8 -30 30", _stroke);
+        canvas.DrawPath(_water, _stroke);
 
         // A street grid at a slight angle, so the route reads as running across a neighbourhood
         // rather than along a ruler.
@@ -175,28 +192,21 @@ internal sealed class RouteRulerRenderer : IDisposable
 
     private void DrawGrid(SKCanvas canvas, bool major)
     {
-        var spacing = major ? 40f : 40f;
-        var offset = major ? -20f : 0f;
+        var spacing = major ? 80f : 40f;
+        var offset = major ? -20f : 20f;
 
         for (var y = offset - 200f; y <= 460f; y += spacing)
         {
             canvas.DrawLine(-40f, y, 420f, y, _stroke);
         }
 
-        var xSpacing = major ? 50f : 50f;
-        var xOffset = major ? 0f : 25f;
+        var xSpacing = major ? 100f : 50f;
+        var xOffset = major ? 0f : 50f;
 
         for (var x = xOffset; x <= 400f; x += xSpacing)
         {
             canvas.DrawLine(x, -280f, x, 520f, _stroke);
         }
-    }
-
-    private void DrawSvg(SKCanvas canvas, string data, SKPaint paint)
-    {
-        _scratch.Reset();
-        using var path = SKPath.ParseSvgPathData(data);
-        canvas.DrawPath(path, paint);
     }
 
     // ---- the ruler ---------------------------------------------------------------------------
@@ -364,26 +374,20 @@ internal sealed class RouteRulerRenderer : IDisposable
         _fill.Color = palette.Pin;
         canvas.DrawRoundRect(box, PinCornerRadius, PinCornerRadius, _fill);
 
-        using (var tail = new SKPath())
-        {
-            tail.MoveTo(at.X - 4f, box.Bottom - 1f);
-            tail.LineTo(at.X + 4f, box.Bottom - 1f);
-            tail.LineTo(at.X, box.Bottom + 5f);
-            tail.Close();
-            canvas.DrawPath(tail, _fill);
-        }
+        _pinTail.Reset();
+        _pinTail.MoveTo(at.X - 4f, box.Bottom - 1f);
+        _pinTail.LineTo(at.X + 4f, box.Bottom - 1f);
+        _pinTail.LineTo(at.X, box.Bottom + 5f);
+        _pinTail.Close();
+        canvas.DrawPath(_pinTail, _fill);
 
         // The school mortarboard inside it.
         _fill.Color = palette.Map;
-        using (var glyph = SKPath.ParseSvgPathData(
-            "M12 3 2 8l10 5 8-4v6h2V8L12 3zm-6 9.5V17c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.5l-6 3-6-3z"))
-        {
-            canvas.Save();
-            canvas.Translate(box.MidX - 7.5f, box.MidY - 7.5f);
-            canvas.Scale(0.625f);
-            canvas.DrawPath(glyph, _fill);
-            canvas.Restore();
-        }
+        canvas.Save();
+        canvas.Translate(box.MidX - 7.5f, box.MidY - 7.5f);
+        canvas.Scale(0.625f);
+        canvas.DrawPath(_mortarboard, _fill);
+        canvas.Restore();
 
         canvas.Restore();
     }
@@ -537,7 +541,6 @@ internal sealed class RouteRulerRenderer : IDisposable
         return 1f + (c3 * u * u * u) + (c1 * u * u);
     }
 
-    private static string F(float value) => value.ToString("0.##", CultureInfo.InvariantCulture);
 
     public void Dispose()
     {
@@ -550,8 +553,16 @@ internal sealed class RouteRulerRenderer : IDisposable
         _labelFont.Dispose();
         _pillFont.Dispose();
         _fade?.Dispose();
+        _parkA.Dispose();
+        _parkB.Dispose();
+        _parkC.Dispose();
+        _water.Dispose();
+        _mortarboard.Dispose();
+        _pinTail.Dispose();
     }
 }
+
+
 
 
 

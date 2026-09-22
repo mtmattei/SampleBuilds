@@ -30,7 +30,8 @@
 
       <Color x:Key="InkColor">#1B2430</Color>
       <Color x:Key="Ink2Color">#4C555F</Color>
-      <Color x:Key="Ink3Color">#98A1AB</Color>
+      <!-- 3.05:1 on the glass composite as an informational graphic; #98A1AB was 1.84:1. -->
+      <Color x:Key="Ink3Color">#6E7885</Color>
       <Color x:Key="LineColor">#1A1B2430</Color>
       <Color x:Key="ChipColor">#0F1B2430</Color>
 
@@ -41,7 +42,8 @@
 
       <Color x:Key="GoodColor">#1F8A5B</Color>
       <Color x:Key="GoodInkColor">#1B7A51</Color>
-      <Color x:Key="AmberColor">#E8931C</Color>
+      <!-- The walk leg, on the map ground: 3.16:1. #E8931C was 2.10:1. -->
+      <Color x:Key="AmberColor">#B5700D</Color>
       <!-- 4.65:1 on the 62% glass composite; #B8690A was 2.92:1, under the 4.5 minimum. -->
       <Color x:Key="AmberInkColor">#8A4E06</Color>
       <Color x:Key="DangerColor">#D9453A</Color>
@@ -154,6 +156,7 @@
   <x:Double x:Key="MapPanelHeight">248</x:Double>
 
 </ResourceDictionary>
+
 
 
 

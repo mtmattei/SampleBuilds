@@ -133,13 +133,15 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         var hadRoute = e.OldValue is EtaView { Failed: false };
         var hasRoute = e.NewValue is EtaView { Failed: false };
 
+        // Refresh first, always. PlayEntrance only moves Progress, and since a Progress change no
+        // longer rebuilds the snapshot, returning straight into it left the route undrawn - the ETA
+        // text was present while the map showed bare ground.
+        Refresh();
+
         if (hasRoute && !hadRoute)
         {
             PlayEntrance();
-            return;
         }
-
-        Refresh();
     }
 
     private void PlayEntrance()

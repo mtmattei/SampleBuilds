@@ -37,6 +37,9 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
     private SKColor _near = new(0x14, 0x1C, 0x28, 0x14);
     private float _radius = 34f;
 
+    private readonly SKRoundRect _hole = new();
+    private readonly Dictionary<float, SKMaskFilter> _blurs = new();
+
     public CardShadowCanvas()
     {
         Margin = new Thickness(-Bleed);
@@ -91,10 +94,8 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
 
         // Everything inside the card is the card's business: without this the wide layer tints the
         // glass from underneath.
-        using (var hole = new SKRoundRect(card, radius, radius))
-        {
-            canvas.ClipRoundRect(hole, SKClipOperation.Difference, antialias: true);
-        }
+        _hole.SetRect(card, radius, radius);
+        canvas.ClipRoundRect(_hole, SKClipOperation.Difference, antialias: true);
 
         DrawLayer(canvas, card, radius, far, FarOffsetY, FarBlur, FarSpread);
         DrawLayer(canvas, card, radius, near, NearOffsetY, NearBlur, spread: 0f);
@@ -122,8 +123,16 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
 
         _paint.Color = color;
 
-        // A CSS blur radius is about twice the Gaussian sigma.
-        using var mask = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, blur / 2f);
+        // A CSS blur radius is about twice the Gaussian sigma. Cached per layer: these were two
+        // native allocations every frame.
+        var sigma = blur / 2f;
+
+        if (!_blurs.TryGetValue(sigma, out var mask))
+        {
+            mask = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, sigma);
+            _blurs[sigma] = mask;
+        }
+
         _paint.MaskFilter = mask;
 
         var layerRadius = Math.Max(0f, radius + spread);
@@ -137,4 +146,5 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
             ? new SKColor(color.R, color.G, color.B, color.A)
             : fallback;
 }
+
 

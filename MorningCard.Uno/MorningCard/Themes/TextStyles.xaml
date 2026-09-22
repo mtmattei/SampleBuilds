@@ -3,6 +3,9 @@
   Material where sizes are not overridden. This is the only file that sets a font size: pages and
   controls pick a style.
 
+  LineHeight is deliberately unset everywhere: TextBlock.IsTextScaleFactorEnabled defaults true, so
+  at 200% Android font scale a fixed line box clips the grown glyphs.
+
   CharacterSpacing is a no-op on the Skia text stack, so the prototype's -0.02em and -0.03em
   tracking on the title and the ETA number is not carried over.
 -->
@@ -20,7 +23,6 @@
     <Setter Property="FontFamily" Value="{StaticResource CardFontBold}" />
     <Setter Property="FontWeight" Value="Bold" />
     <Setter Property="FontSize" Value="52" />
-    <Setter Property="LineHeight" Value="52" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
@@ -35,7 +37,6 @@
   <Style x:Key="CardTitle" TargetType="TextBlock" BasedOn="{StaticResource TitleLarge}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
     <Setter Property="FontSize" Value="23" />
-    <Setter Property="LineHeight" Value="26" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
@@ -43,7 +44,6 @@
   <Style x:Key="StatValue" TargetType="TextBlock" BasedOn="{StaticResource TitleMedium}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
     <Setter Property="FontSize" Value="16" />
-    <Setter Property="LineHeight" Value="19" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
@@ -51,7 +51,6 @@
   <Style x:Key="CardBody" TargetType="TextBlock" BasedOn="{StaticResource BodyLarge}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
     <Setter Property="FontSize" Value="15" />
-    <Setter Property="LineHeight" Value="21" />
     <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
   </Style>
 
@@ -59,7 +58,6 @@
   <Style x:Key="CardLabel" TargetType="TextBlock" BasedOn="{StaticResource BodyMedium}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
     <Setter Property="FontSize" Value="14" />
-    <Setter Property="LineHeight" Value="20" />
     <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
   </Style>
 
@@ -72,7 +70,6 @@
   <Style x:Key="ActionLabel" TargetType="TextBlock" BasedOn="{StaticResource LabelLarge}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
     <Setter Property="FontSize" Value="13" />
-    <Setter Property="LineHeight" Value="16" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
@@ -80,7 +77,6 @@
   <Style x:Key="CardCaption" TargetType="TextBlock" BasedOn="{StaticResource BodySmall}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
     <Setter Property="FontSize" Value="12.5" />
-    <Setter Property="LineHeight" Value="16" />
     <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
   </Style>
 
@@ -105,4 +101,5 @@
   </Style>
 
 </ResourceDictionary>
+
 
