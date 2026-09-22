@@ -661,4 +661,65 @@ Fuel, Cabin, At school. Icons are colour-coded (orange fuel, blue thermometer, o
 5. **R-v2-2**: real polyline with pin callouts, or keep the schematic ruler over the map?
 6. **Offline map** (R-v2-3): what does the map panel show with no network?
 
+---
 
+# v3 — Redesign against the three-frame mock (2026-09-22)
+
+Second redesign of the same day. Everything above stands except where contradicted here; where v3
+and v2 disagree, **v3 wins**.
+
+## v3 Resolved Decisions (user, 2026-09-22)
+
+| # | Question | Decision |
+|---|---|---|
+| A3 | The remote commands | **Restored, all three — this reverses v2 decision A.** The mock puts Start warming, a lock button and Start drive on the card, so `SetLockedAsync`, `SetClimateAsync` and `SendDestinationAsync` are back on `IVehicleService` and the hub, latency and offline refusal included. Start drive sends the destination and then hands off to the maps app, which is the honest meaning of it in an app that does not navigate. |
+| B3 | Approach | Build first, spec after. This section is that spec, written at session end. |
+| C3 | State colour | Badge, timeline first column, track and now-marker. The map route keeps its own late-goes-red behaviour. |
+| D3 | Loading state | **Removed entirely.** `ConnectionMode.Loading`, its chip, its hook, the hub's three withholding guards and its test are gone. |
+| E3 | Row chevrons | **Decorative, accepted.** Nothing sits behind them in a sample whose whole product is one card. |
+
+## v3 Capability Inventory (delta only)
+
+| # | Capability | Status | Note |
+|---|---|---|---|
+| 5 | Remote commands | **restored (reversal of v2)** | Lock, climate and send-destination are real again, behind the checklist and the bottom bar. |
+| 17 | Weather | **implemented as seeded data** | `OutsideTemp` and `WeatherSummary` on the snapshot, driven from the Simulator like everything else. No weather service exists and none is implied on the card. |
+| 18 | Parking rules | **implemented as seeded data** | `DestinationLabel`, `ParkingStreet` and `ParkingNote` on `TripPlan` — properties of where the trip ends, not of the car. |
+| 19 | "Open in Maps" | **implemented** | A real `geo:` launch through `Launcher.LaunchUriAsync`, plus the same action in the overflow menu. |
+| 20 | Locate button | **omitted by decision** | There is no location capability, and the card must not impersonate one. |
+| 21 | Checklist disclosure | implemented | Collapses, starting closed. Not an `Expander`: Toolkit has none, and the platform's is implemented on Skia but exposes no overridable brush keys, so this header would have needed a full retemplate. |
+| 22 | Overflow menu | implemented | A real `MenuFlyout` — Refresh, Open in Maps, Replay entrance — every item running a command the model already owns. |
+| 23 | Loading state | **removed by decision D3** | A feed that never yields reaches the view as **None**, not Progress, so neither template caught it. Recorded because it is the reason the state could not be made to render. |
+
+## v3 Design Brief (delta)
+
+**Status strip**: greeting left; weather chip, state badge and overflow right. The lock moved under
+the car. "Now HH:MM" was tried here and removed — the map already carries that label.
+
+**Timeline strip**: three labelled times over a proportional track. The first column drops its "BY"
+once the answer is "Now". Dotted for slack, solid for the drive, amber for the walk, capped at the
+bell. Tone drives the badge, the first column, the track and the now-marker.
+
+**Map**: the ETA block returns, over a gradient scrim that fills the panel and fades left to right.
+The scrim sits **between the tiles and the route**, or it bleaches the route's own labels.
+
+**Body**: "Before you go" — a header carrying the check count and readiness, collapsing to three
+items with status chips. Fuel and parking are informational; the cabin is the one the driver can
+act on, so it is the one that owns an action. Reveal fades and rises 8px over 260ms on the house
+curve; height is not animated.
+
+**Bottom bar**: the car's line, the lock, and the card's single primary.
+
+## v3 Unresolved Questions
+
+1. **The route does not follow the streets.** The ruler is schematic — minutes become distance — and
+   on real tiles it visibly cuts across roads. The decision to keep it schematic (v2 decision, R-v2-2)
+   predates the timeline strip; now that the strip carries slack, drive and walk proportionally, the
+   map no longer has to encode time. Proposed split: **strip owns time, map owns geography** — a
+   fixed polyline of real coordinates as a Mapsui line layer, time labels as callouts, and the slack
+   run off the map entirely, since a parked car has no geographic length. Confirm before building.
+2. Touch targets: overflow 28x24, row chevrons 16x16. Fails WCAG 2.5.8; matters on the phone head.
+3. "Skip" from the mock was dropped rather than shipped inert. It needs a meaning first.
+4. Android has not run v2 or v3.
+5. Dead since v3: `TireFrontLeftPsi` and its Simulator slider, `RouteRulerRenderer.DrawGround`,
+   `CarView.FuelPercent`, and the `CarTile*` tokens.
