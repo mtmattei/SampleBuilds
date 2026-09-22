@@ -1,0 +1,19 @@
+<!--
+  Converter instances, in their own dictionary so they are merged before the styles and pages that
+  reference them rather than declared alongside the app's own resources.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mp="using:MorningCard.Presentation">
+
+  <mp:StatLevelBrushConverter x:Key="StatLevelBrush" />
+  <mp:StatLevelFillConverter x:Key="StatLevelFill" />
+  <mp:TrafficBrushConverter x:Key="TrafficBrush" />
+  <mp:ToneBrushConverter x:Key="ToneBrush" />
+  <mp:LateInkConverter x:Key="LateInk" />
+  <mp:StaleOpacityConverter x:Key="StaleOpacity" />
+  <mp:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+  <mp:NullToVisibilityConverter x:Key="NullToVisibility" />
+  <mp:PercentToStarConverter x:Key="PercentToStar" />
+
+</ResourceDictionary>

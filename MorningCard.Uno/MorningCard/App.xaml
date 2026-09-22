@@ -27,6 +27,8 @@
         <ResourceDictionary Source="ms-appx:///Themes/CardTokens.xaml" />
         <ResourceDictionary Source="ms-appx:///Themes/Fonts.xaml" />
         <ResourceDictionary Source="ms-appx:///Themes/TextStyles.xaml" />
+        <ResourceDictionary Source="ms-appx:///Themes/Converters.xaml" />
+        <ResourceDictionary Source="ms-appx:///Themes/CardStyles.xaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
