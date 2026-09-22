@@ -13,7 +13,8 @@ param(
     [Parameter(Mandatory = $true)][int]$ProcessId,
     [Parameter(Mandatory = $true)][string]$Out,
     [int]$Width = 520,
-    [int]$Height = 1120
+    [int]$Height = 1120,
+    [string]$CaptureScript = (Join-Path $PSScriptRoot '..\..\..\..\SimpleThemeDemo\tools\Capture-Window.ps1')
 )
 
 $ErrorActionPreference = 'Stop'
@@ -45,4 +46,4 @@ Start-Sleep -Milliseconds 900
 [void][Sizer.Win32Size]::SetWindowPos($hwnd, [IntPtr]::Zero, 40, 10, $Width, $Height, $flags)
 Start-Sleep -Milliseconds 1200
 
-& (Join-Path $PSScriptRoot '..\..\..\..\SimpleThemeDemo\tools\Capture-Window.ps1') -ProcessId $ProcessId -Out $Out
+& $CaptureScript -ProcessId $ProcessId -Out $Out

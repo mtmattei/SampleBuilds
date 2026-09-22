@@ -63,7 +63,15 @@ foreach ($state in $states) {
     }
 
     Start-Sleep -Seconds 3
-    & $CaptureScript -ProcessId $process.Id -Out (Join-Path $OutputDirectory "$($state.Name).png") | Out-Null
+
+    # Through Capture-Tall, not Capture-Window directly: the app opens at 1024x640 (the wide
+    # two-column stage) and the card is ~888 epx tall, so a capture at the default size is both
+    # clipped and carries stale pixels from the layout it just collapsed out of. Capture-Tall
+    # sizes twice, which settles both.
+    & (Join-Path $PSScriptRoot 'Capture-Tall.ps1') `
+        -ProcessId $process.Id `
+        -Out (Join-Path $OutputDirectory "$($state.Name).png") `
+        -CaptureScript $CaptureScript | Out-Null
 }
 
 Get-Process MorningCard -ErrorAction SilentlyContinue | Stop-Process -Force -Confirm:$false
