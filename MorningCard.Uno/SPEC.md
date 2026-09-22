@@ -723,3 +723,86 @@ curve; height is not animated.
 4. Android has not run v2 or v3.
 5. Dead since v3: `TireFrontLeftPsi` and its Simulator slider, `RouteRulerRenderer.DrawGround`,
    `CarView.FuelPercent`, and the `CarTile*` tokens.
+
+---
+
+# v4 — Route ruler on real streets (2026-09-22)
+
+Resolves v3 Unresolved Question 1. The map keeps encoding time; what changes is that time is now
+encoded along the real route instead of along a schematic path. **Tick spacing carries speed** —
+ticks bunch where the drive is slow and spread where it is fast — and slack, which has duration but
+no distance, becomes a **dwell ring** at the pin where the waiting happens.
+
+This supersedes the earlier proposal to split time onto the strip and geography onto the map. That
+split gave up time on the map; this keeps both, and the dwell ring answers the objection that
+drove the split in the first place: a parked car has no geographic length, so it goes around a
+clock rather than down a road.
+
+## v4 Resolved Decisions (user, 2026-09-22)
+
+| # | Question | Decision |
+|---|---|---|
+| A4 | Where the ticks, rings and callouts are drawn | **Projected into the existing `SKCanvasElement` overlay**, not built as Mapsui features. `TimeRulerLayout` emits world XY; `RouteRulerRenderer` projects it through `viewport.WorldToScreen` each frame and draws as it does today. |
+| B4 | Map interaction | **Locked.** `PanLock` and `ZoomLock` on, fitted to the route bounds. One tick interval, chosen once. |
+| C4 | "Now" cursor | **In v1.** It sweeps the origin dwell ring before leave, then travels the ruler. |
+| D4 | `RouteLayout` / `RouteFractions` / `SlackCapMin` | **Kept for now**, retired only once the new path is verified on both heads. |
+| E4 | Walk leg | **Not always present.** `TimeRulerLayout` must handle a zero-length walk leg (curbside drop-off). |
+
+### Why the overlay rather than a Mapsui layer
+
+The ruler is an `SKCanvasElement` drawn over `MapControl`, and it owns three things Mapsui's style
+system has no equivalent for: a 1700ms entrance timeline driving ~40 elements off a 30fps
+`DispatcherTimer`, halo labels in the packaged Instrument Sans face, and a palette pinned to Light
+because OSM has no dark style. Rebuilding those as features would mean animating by per-frame style
+mutation plus `map.Refresh()`, re-registering the font through `FontSourceCache`, and drawing one
+card across three rendering systems.
+
+World-anchoring comes free from the projection instead: the transform is re-read from the viewport,
+so pan and zoom move the route because it is recomputed from the viewport, not despite it.
+
+Verified present in the pinned Mapsui 5.1.0: `Mapsui.Extensions.ViewportExtensions.WorldToScreen`
+(returns DIP, respects rotation) and a public `Navigator.ViewportChanged` event — the latter by
+reflection, since the XML docs omit it.
+
+Decision: time lives on the route geometry; the strip stays as a secondary readout.
+Reason: keeps the map honest (real streets) and keeps time on the map (tick spacing).
+Tradeoff: slower legs read denser and busier, and the tick interval is now a design constant rather
+than something the user can zoom out of.
+
+## v4 Core model
+
+- Route = ordered legs: `Drive` (home → parking), `Walk` (parking → school door).
+- Each leg = polyline edges carrying `(lengthMeters, durationSeconds)`.
+- Slack = two dwell points, duration and no length: origin (ready → leave, at home) and
+  destination (arrive → bell, at the door).
+- Tick placement: for tick time `t`, find edge `i` where `cumT[i] ≤ t < cumT[i+1]`, interpolate
+  `f = (t − cumT[i]) / d[i]` along that edge in Spherical Mercator.
+- Duration reconciliation: when the routine's drive/walk minutes differ from the asset's totals,
+  scale each leg's edge durations by `routineMinutes / assetMinutes`. The speed profile survives
+  and the totals match the strip by construction.
+
+## v4 Capability Inventory (delta only)
+
+| # | Capability | Status | Note |
+|---|---|---|---|
+| 24 | Real route geometry | implemented | A GeoJSON asset generated once from OSRM with `annotations=duration,distance`, committed to the repo. |
+| 25 | Live routing | **omitted by decision** | No routing service, no traffic. Durations are free-flow, then scaled to the routine totals. The card never claims live traffic. |
+| 26 | Map pan and zoom | **removed by decision B4** | Was silently available — no lock was set, so a user could drag the tiles out from under a ruler drawn in fixed design coordinates. |
+
+## v4 Implementation Plan
+
+1. Generate the route asset from OSRM (driving home → parking, walking parking → door),
+   `annotations=duration,distance`, committed as GeoJSON.
+2. `RouteGeometry` loader plus cumulative time/length arrays. Unit tests.
+3. `TimeRulerLayout` — ticks, bearings, reconciliation, dwell rings. Pure C#, no Mapsui types. Unit tests.
+4. `RouteRulerRenderer` draws the projected polyline, ticks, rings and the now cursor; the
+   hardcoded SVG path goes.
+5. Lock the map and fit it to the route bounds.
+6. Runtime verification on desktop and Android.
+
+## v4 Unresolved Questions
+
+1. The timeline strip was not confirmed as staying unchanged. Now that the map carries time again,
+   the card may be saying the same thing twice. Left alone until the ruler lands, then reviewed.
+2. Untouched from v3: touch targets (overflow 28x24, chevrons 16x16, WCAG 2.5.8), "Skip" has no
+   meaning yet, and Android has not run since v1.
