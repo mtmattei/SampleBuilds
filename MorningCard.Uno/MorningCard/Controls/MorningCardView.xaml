@@ -307,10 +307,11 @@
               <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                 <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0" />
                 <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0.30" />
-                <GradientStop Color="{ThemeResource EtaScrimStop1Color}" Offset="0.42" />
-                <GradientStop Color="{ThemeResource EtaScrimStop2Color}" Offset="0.55" />
-                <GradientStop Color="{ThemeResource EtaScrimStop3Color}" Offset="0.68" />
-                <GradientStop Color="{ThemeResource EtaScrimStop4Color}" Offset="0.80" />
+                <GradientStop Color="{ThemeResource EtaScrimStop1Color}" Offset="0.40" />
+                <GradientStop Color="{ThemeResource EtaScrimStop2Color}" Offset="0.48" />
+                <GradientStop Color="{ThemeResource EtaScrimStop3Color}" Offset="0.58" />
+                <GradientStop Color="{ThemeResource EtaScrimStop4Color}" Offset="0.70" />
+                <GradientStop Color="{ThemeResource EtaScrimStop5Color}" Offset="0.82" />
                 <GradientStop Color="{ThemeResource EtaScrimFadeColor}" Offset="0.92" />
               </LinearGradientBrush>
             </Border.Background>
