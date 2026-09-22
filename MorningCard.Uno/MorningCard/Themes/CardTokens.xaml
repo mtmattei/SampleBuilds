@@ -42,9 +42,11 @@
       <Color x:Key="GoodColor">#1F8A5B</Color>
       <Color x:Key="GoodInkColor">#1B7A51</Color>
       <Color x:Key="AmberColor">#E8931C</Color>
-      <Color x:Key="AmberInkColor">#B8690A</Color>
+      <!-- 4.65:1 on the 62% glass composite; #B8690A was 2.92:1, under the 4.5 minimum. -->
+      <Color x:Key="AmberInkColor">#8A4E06</Color>
       <Color x:Key="DangerColor">#D9453A</Color>
-      <Color x:Key="DangerInkColor">#B7352C</Color>
+      <!-- 5.02:1 on the same composite; #B7352C was 4.15:1. -->
+      <Color x:Key="DangerInkColor">#A32C24</Color>
 
       <Color x:Key="MapColor">#ECEFEC</Color>
       <Color x:Key="MapRoadColor">#FFFFFF</Color>
@@ -152,6 +154,7 @@
   <x:Double x:Key="MapPanelHeight">248</x:Double>
 
 </ResourceDictionary>
+
 
 
 

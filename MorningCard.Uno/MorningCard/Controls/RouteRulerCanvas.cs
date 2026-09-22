@@ -26,6 +26,7 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
 
     private readonly RouteRulerRenderer _renderer = new();
     private RouteRulerSnapshot _snapshot = new();
+    private RouteRulerPalette? _palette;
 
     /// <summary>
     /// How long the whole entrance runs at speed 1: dots, then the drive drawing along the path,
@@ -70,7 +71,10 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
             nameof(Progress),
             typeof(double),
             typeof(RouteRulerCanvas),
-            new PropertyMetadata(1d, (d, _) => ((RouteRulerCanvas)d).Refresh()));
+            // Progress alone does not rebuild the snapshot. A full Refresh performs 15 resource
+            // lookups, each walking the whole merged dictionary tree, and this fires 30 times a
+            // second through the entrance - about 450 tree walks per second on the UI thread.
+            new PropertyMetadata(1d, (d, _) => ((RouteRulerCanvas)d).AdvanceProgress()));
 
     /// <summary>0 to 1 across the entrance. The motion step drives this; 1 is settled.</summary>
     public double Progress
@@ -99,12 +103,24 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         CardMotion.ReplayRequested -= OnReplayRequested;
         CardChrome.Changed -= OnChromeChanged;
 
-        // A timer left running would keep asking for frames after the card is gone.
+        // A timer left running would keep asking for frames after the card is gone. The renderer
+        // is NOT disposed here: a re-parent fires Unloaded then Loaded, and RenderOverride would
+        // then be drawing with freed native handles.
         _entrance.Stop();
-        _renderer.Dispose();
     }
 
-    private void OnChromeChanged(object? sender, EventArgs e) => Refresh();
+    private void OnChromeChanged(object? sender, EventArgs e)
+    {
+        _palette = null;
+        Refresh();
+    }
+
+    /// <summary>Cheap path for the entrance: one field write and one frame, no resource lookups.</summary>
+    private void AdvanceProgress()
+    {
+        _snapshot = _snapshot with { Progress = Progress };
+        Invalidate();
+    }
 
     private void OnReplayRequested(object? sender, EventArgs e) => PlayEntrance();
 
@@ -180,7 +196,11 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         }
     }
 
-    private void OnActualThemeChanged(FrameworkElement sender, object args) => Refresh();
+    private void OnActualThemeChanged(FrameworkElement sender, object args)
+    {
+        _palette = null;
+        Refresh();
+    }
 
     /// <summary>
     /// Rebuilds the snapshot on the UI thread, where theme resources and DependencyProperties are
@@ -206,7 +226,8 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
             WalkLabel = eta?.WalkLabel ?? string.Empty,
             BellLabel = eta?.BellLabel ?? string.Empty,
             Progress = Progress,
-            Palette = ReadPalette(),
+            // Cached: only a theme or hue change can invalidate it.
+            Palette = _palette ??= ReadPalette(),
         };
 
         AutomationProperties.SetName(this, eta?.RouteDescription ?? string.Empty);
@@ -295,5 +316,6 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         }
     }
 }
+
 
 

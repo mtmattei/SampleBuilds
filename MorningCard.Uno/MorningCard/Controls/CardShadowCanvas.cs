@@ -30,6 +30,13 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
 
     private readonly SKPaint _paint = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
 
+    // Snapshotted on the UI thread. RenderOverride runs on the render thread, where reading
+    // ActualTheme or walking Application.Current.Resources is a cross-thread touch of the XAML
+    // object graph - which is exactly what the sibling ruler canvas avoids and documents.
+    private SKColor _far = new(0x14, 0x1C, 0x28, 0x73);
+    private SKColor _near = new(0x14, 0x1C, 0x28, 0x14);
+    private float _radius = 34f;
+
     public CardShadowCanvas()
     {
         Margin = new Thickness(-Bleed);
@@ -37,27 +44,34 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
 
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
-        ActualThemeChanged += (_, _) => Invalidate();
+        ActualThemeChanged += (_, _) => Snapshot();
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         CardChrome.Changed += OnChromeChanged;
+        Snapshot();
+    }
+
+    private void OnUnloaded(object sender, RoutedEventArgs e) =>
+        // The paint is not disposed here: a re-parent fires Unloaded then Loaded, and RenderOverride
+        // would then be using a freed native handle. It lives as long as the element.
+        CardChrome.Changed -= OnChromeChanged;
+
+    private void OnChromeChanged(object? sender, EventArgs e) => Snapshot();
+
+    private void Snapshot()
+    {
+        _far = ReadColor("CardShadowFarColor", _far);
+        _near = ReadColor("CardShadowNearColor", _near);
+        _radius = (float)CardChrome.CornerRadius;
         Invalidate();
     }
-
-    private void OnUnloaded(object sender, RoutedEventArgs e)
-    {
-        CardChrome.Changed -= OnChromeChanged;
-        _paint.Dispose();
-    }
-
-    private void OnChromeChanged(object? sender, EventArgs e) => Invalidate();
 
     protected override void RenderOverride(SKCanvas canvas, Size area)
     {
         var bleed = (float)Bleed;
-        var radius = (float)CardChrome.CornerRadius;
+        var radius = _radius;
 
         var card = new SKRect(
             bleed,
@@ -70,8 +84,8 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
             return;
         }
 
-        var far = ReadColor("CardShadowFarColor", new SKColor(0x14, 0x1C, 0x28, 0x73));
-        var near = ReadColor("CardShadowNearColor", new SKColor(0x14, 0x1C, 0x28, 0x14));
+        var far = _far;
+        var near = _near;
 
         canvas.Save();
 

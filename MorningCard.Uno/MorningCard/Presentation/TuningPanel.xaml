@@ -37,113 +37,113 @@
 
       <StackPanel Spacing="2">
         <Grid>
-          <TextBlock x:Uid="DialClock" Style="{StaticResource ActionLabel}" />
+          <TextBlock x:Name="LabelClock" x:Uid="DialClock" Style="{StaticResource ActionLabel}" />
           <TextBlock Style="{StaticResource ActionLabel}"
                      HorizontalAlignment="Right"
                      Foreground="{ThemeResource Ink2Brush}"
                      Text="{Binding ClockText}" />
         </Grid>
-        <Slider Minimum="420" Maximum="490" StepFrequency="1" Value="{Binding Clock, Mode=TwoWay}" />
+        <Slider AutomationProperties.LabeledBy="{Binding ElementName=LabelClock}" Minimum="420" Maximum="490" StepFrequency="1" Value="{Binding Clock, Mode=TwoWay}" />
       </StackPanel>
 
       <StackPanel Spacing="2">
         <Grid>
-          <TextBlock x:Uid="DialTraffic" Style="{StaticResource ActionLabel}" />
+          <TextBlock x:Name="LabelTraffic" x:Uid="DialTraffic" Style="{StaticResource ActionLabel}" />
           <TextBlock Style="{StaticResource ActionLabel}"
                      HorizontalAlignment="Right"
                      Foreground="{ThemeResource Ink2Brush}"
                      Text="{Binding TrafficDelay}" />
         </Grid>
-        <Slider Minimum="0" Maximum="25" StepFrequency="1" Value="{Binding TrafficDelay, Mode=TwoWay}" />
+        <Slider AutomationProperties.LabeledBy="{Binding ElementName=LabelTraffic}" Minimum="0" Maximum="25" StepFrequency="1" Value="{Binding TrafficDelay, Mode=TwoWay}" />
       </StackPanel>
 
       <StackPanel Spacing="2">
         <Grid>
-          <TextBlock x:Uid="DialRange" Style="{StaticResource ActionLabel}" />
+          <TextBlock x:Name="LabelRange" x:Uid="DialRange" Style="{StaticResource ActionLabel}" />
           <TextBlock Style="{StaticResource ActionLabel}"
                      HorizontalAlignment="Right"
                      Foreground="{ThemeResource Ink2Brush}"
                      Text="{Binding Range}" />
         </Grid>
-        <Slider Minimum="0" Maximum="400" StepFrequency="2" Value="{Binding Range, Mode=TwoWay}" />
+        <Slider AutomationProperties.LabeledBy="{Binding ElementName=LabelRange}" Minimum="0" Maximum="400" StepFrequency="2" Value="{Binding Range, Mode=TwoWay}" />
       </StackPanel>
 
       <StackPanel Spacing="2">
         <Grid>
-          <TextBlock x:Uid="DialCabin" Style="{StaticResource ActionLabel}" />
+          <TextBlock x:Name="LabelCabin" x:Uid="DialCabin" Style="{StaticResource ActionLabel}" />
           <TextBlock Style="{StaticResource ActionLabel}"
                      HorizontalAlignment="Right"
                      Foreground="{ThemeResource Ink2Brush}"
                      Text="{Binding CabinTemp}" />
         </Grid>
-        <Slider Minimum="10" Maximum="80" StepFrequency="1" Value="{Binding CabinTemp, Mode=TwoWay}" />
+        <Slider AutomationProperties.LabeledBy="{Binding ElementName=LabelCabin}" Minimum="10" Maximum="80" StepFrequency="1" Value="{Binding CabinTemp, Mode=TwoWay}" />
       </StackPanel>
 
       <StackPanel Spacing="2">
         <Grid>
-          <TextBlock x:Uid="DialTire" Style="{StaticResource ActionLabel}" />
+          <TextBlock x:Name="LabelTire" x:Uid="DialTire" Style="{StaticResource ActionLabel}" />
           <TextBlock Style="{StaticResource ActionLabel}"
                      HorizontalAlignment="Right"
                      Foreground="{ThemeResource Ink2Brush}"
                      Text="{Binding TirePressure}" />
         </Grid>
-        <Slider Minimum="20" Maximum="36" StepFrequency="1" Value="{Binding TirePressure, Mode=TwoWay}" />
+        <Slider AutomationProperties.LabeledBy="{Binding ElementName=LabelTire}" Minimum="20" Maximum="36" StepFrequency="1" Value="{Binding TirePressure, Mode=TwoWay}" />
       </StackPanel>
 
       <Grid>
-        <TextBlock x:Uid="DialPlug" Style="{StaticResource ActionLabel}" VerticalAlignment="Center" />
-        <ToggleSwitch HorizontalAlignment="Right" IsOn="{Binding PluggedIn, Mode=TwoWay}" OnContent="" OffContent="" />
+        <TextBlock x:Name="LabelPlug" x:Uid="DialPlug" Style="{StaticResource ActionLabel}" VerticalAlignment="Center" />
+        <ToggleSwitch AutomationProperties.LabeledBy="{Binding ElementName=LabelPlug}" HorizontalAlignment="Right" IsOn="{Binding PluggedIn, Mode=TwoWay}" OnContent="" OffContent="" />
       </Grid>
 
       <!-- Charge only means something while the car is plugged in. -->
       <StackPanel Spacing="2" IsEnabled="{Binding PluggedIn}">
         <Grid>
-          <TextBlock x:Uid="DialCharge" Style="{StaticResource ActionLabel}" />
+          <TextBlock x:Name="LabelCharge" x:Uid="DialCharge" Style="{StaticResource ActionLabel}" />
           <TextBlock Style="{StaticResource ActionLabel}"
                      HorizontalAlignment="Right"
                      Foreground="{ThemeResource Ink2Brush}"
                      Text="{Binding ChargePercent}" />
         </Grid>
-        <Slider Minimum="0" Maximum="100" StepFrequency="1" Value="{Binding ChargePercent, Mode=TwoWay}" />
+        <Slider AutomationProperties.LabeledBy="{Binding ElementName=LabelCharge}" Minimum="0" Maximum="100" StepFrequency="1" Value="{Binding ChargePercent, Mode=TwoWay}" />
       </StackPanel>
 
       <StackPanel Spacing="2">
         <Grid>
-          <TextBlock x:Uid="DialHue" Style="{StaticResource ActionLabel}" />
+          <TextBlock x:Name="LabelHue" x:Uid="DialHue" Style="{StaticResource ActionLabel}" />
           <TextBlock Style="{StaticResource ActionLabel}"
                      HorizontalAlignment="Right"
                      Foreground="{ThemeResource Ink2Brush}"
                      Text="{Binding Hue}" />
         </Grid>
-        <Slider Minimum="0" Maximum="360" StepFrequency="1" Value="{Binding Hue, Mode=TwoWay}" />
+        <Slider AutomationProperties.LabeledBy="{Binding ElementName=LabelHue}" Minimum="0" Maximum="360" StepFrequency="1" Value="{Binding Hue, Mode=TwoWay}" />
       </StackPanel>
 
       <StackPanel Spacing="2">
         <Grid>
-          <TextBlock x:Uid="DialRadius" Style="{StaticResource ActionLabel}" />
+          <TextBlock x:Name="LabelRadius" x:Uid="DialRadius" Style="{StaticResource ActionLabel}" />
           <TextBlock Style="{StaticResource ActionLabel}"
                      HorizontalAlignment="Right"
                      Foreground="{ThemeResource Ink2Brush}"
                      Text="{Binding CornerRadius}" />
         </Grid>
-        <Slider Minimum="12" Maximum="44" StepFrequency="1" Value="{Binding CornerRadius, Mode=TwoWay}" />
+        <Slider AutomationProperties.LabeledBy="{Binding ElementName=LabelRadius}" Minimum="12" Maximum="44" StepFrequency="1" Value="{Binding CornerRadius, Mode=TwoWay}" />
       </StackPanel>
 
       <StackPanel Spacing="2">
         <Grid>
-          <TextBlock x:Uid="DialMotion" Style="{StaticResource ActionLabel}" />
+          <TextBlock x:Name="LabelMotion" x:Uid="DialMotion" Style="{StaticResource ActionLabel}" />
           <TextBlock Style="{StaticResource ActionLabel}"
                      HorizontalAlignment="Right"
                      Foreground="{ThemeResource Ink2Brush}"
                      Text="{Binding MotionSpeed}" />
         </Grid>
-        <Slider Minimum="0.25" Maximum="2" StepFrequency="0.25" Value="{Binding MotionSpeed, Mode=TwoWay}" />
+        <Slider AutomationProperties.LabeledBy="{Binding ElementName=LabelMotion}" Minimum="0.25" Maximum="2" StepFrequency="0.25" Value="{Binding MotionSpeed, Mode=TwoWay}" />
       </StackPanel>
 
       <!-- Desktop has no OS reduced-motion signal in Uno, so this switch is it. -->
       <Grid>
-        <TextBlock x:Uid="DialReducedMotion" Style="{StaticResource ActionLabel}" VerticalAlignment="Center" />
-        <ToggleSwitch HorizontalAlignment="Right" IsOn="{Binding ReducedMotion, Mode=TwoWay}" OnContent="" OffContent="" />
+        <TextBlock x:Name="LabelReduced" x:Uid="DialReducedMotion" Style="{StaticResource ActionLabel}" VerticalAlignment="Center" />
+        <ToggleSwitch AutomationProperties.LabeledBy="{Binding ElementName=LabelReduced}" HorizontalAlignment="Right" IsOn="{Binding ReducedMotion, Mode=TwoWay}" OnContent="" OffContent="" />
       </Grid>
 
       <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
@@ -154,5 +154,6 @@
     </StackPanel>
   </Border>
 </UserControl>
+
 
 
