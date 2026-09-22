@@ -26,6 +26,9 @@ internal sealed class RouteRulerRenderer : IDisposable
     private const float PillWidth = 58f;
     private const float PillHeight = 24f;
 
+    /// <summary>The app's shared small radius, rather than a ninth invented value.</summary>
+    private const float PinCornerRadius = 8f;
+
     /// <summary>
     /// Below this gap between the car and the leave node there is no room for a label above the
     /// path, so it drops underneath and the slack caption is dropped entirely.
@@ -87,21 +90,29 @@ internal sealed class RouteRulerRenderer : IDisposable
 
         canvas.Save();
 
-        // The panel slices the design space rather than letter-boxing it, matching the mockup's
-        // xMidYMid slice: the map runs to the edges and the route keeps its proportions.
-        var scale = Math.Max(area.Width / DesignWidth, area.Height / DesignHeight);
-        canvas.Translate(
-            (area.Width - (DesignWidth * scale)) / 2f,
-            (area.Height - (DesignHeight * scale)) / 2f);
+        // Width-driven, deliberately not a max-slice on both axes.
+        //
+        // A max-slice becomes height-driven as soon as the panel is taller than the design aspect,
+        // and then it crops horizontally: at phone width with a 248 panel that cut 42.5 design
+        // units off each side, taking the car node, its halo and the "Now" label - the anchor the
+        // whole slack reading is measured from. The route is a horizontal object, so the full
+        // design width always has to be on screen. The ground is procedural and simply fills any
+        // extra height.
+        var scale = area.Width / DesignWidth;
+        var top = (area.Height - (DesignHeight * scale)) / 2f;
+        canvas.Translate(0f, top);
         canvas.Scale(scale);
 
-        DrawGround(canvas, palette);
+        // Visible design bounds in y, which the ground has to cover.
+        var visibleTop = -top / scale;
+        var visibleBottom = visibleTop + (area.Height / scale);
+
+        DrawGround(canvas, palette, visibleTop, visibleBottom);
 
         if (snapshot.HasRoute)
         {
-            // The panel slices the design space, so at a narrower card less than the full 356
-            // design units are on screen. Labels clamp against what is visible, not the design box.
-            DrawRoute(canvas, snapshot, palette, visibleWidth: area.Width / scale);
+            // No horizontal crop now, so the full design width is what labels clamp against.
+            DrawRoute(canvas, snapshot, palette, visibleWidth: DesignWidth);
         }
 
         canvas.Restore();
@@ -109,7 +120,7 @@ internal sealed class RouteRulerRenderer : IDisposable
 
     // ---- ground ------------------------------------------------------------------------------
 
-    private void DrawGround(SKCanvas canvas, RouteRulerPalette palette)
+    private void DrawGround(SKCanvas canvas, RouteRulerPalette palette, float visibleTop, float visibleBottom)
     {
         canvas.Clear(palette.Map);
 
@@ -158,7 +169,7 @@ internal sealed class RouteRulerRenderer : IDisposable
 
         _fill.Shader = _fade;
         _fill.Color = SKColors.White;
-        canvas.DrawRect(0, 0, DesignWidth, DesignHeight, _fill);
+        canvas.DrawRect(0, visibleTop, DesignWidth, visibleBottom - visibleTop, _fill);
         _fill.Shader = null;
     }
 
@@ -167,7 +178,7 @@ internal sealed class RouteRulerRenderer : IDisposable
         var spacing = major ? 40f : 40f;
         var offset = major ? -20f : 0f;
 
-        for (var y = offset; y <= 260f; y += spacing)
+        for (var y = offset - 200f; y <= 460f; y += spacing)
         {
             canvas.DrawLine(-40f, y, 420f, y, _stroke);
         }
@@ -177,7 +188,7 @@ internal sealed class RouteRulerRenderer : IDisposable
 
         for (var x = xOffset; x <= 400f; x += xSpacing)
         {
-            canvas.DrawLine(x, -80f, x, 320f, _stroke);
+            canvas.DrawLine(x, -280f, x, 520f, _stroke);
         }
     }
 
@@ -351,7 +362,7 @@ internal sealed class RouteRulerRenderer : IDisposable
         var box = new SKRect(at.X - (size / 2f), top, at.X + (size / 2f), top + size);
 
         _fill.Color = palette.Pin;
-        canvas.DrawRoundRect(box, 9f, 9f, _fill);
+        canvas.DrawRoundRect(box, PinCornerRadius, PinCornerRadius, _fill);
 
         using (var tail = new SKPath())
         {
@@ -541,4 +552,6 @@ internal sealed class RouteRulerRenderer : IDisposable
         _fade?.Dispose();
     }
 }
+
+
 

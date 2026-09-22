@@ -115,6 +115,28 @@ public sealed class InverseBoolConverter : IValueConverter
         value is not true;
 }
 
+/// <summary>
+/// Shows or hides one of two glyphs held in the same cell. Cross-fading opacity is the only way to
+/// swap an icon without a flick: Path.Data and FontIcon.Glyph are strings, not animatable.
+/// </summary>
+public sealed class BoolToOpacityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        var flag = value is true;
+
+        if (string.Equals(parameter as string, "Invert", StringComparison.OrdinalIgnoreCase))
+        {
+            flag = !flag;
+        }
+
+        return flag ? 1d : 0d;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>Stale data dims the whole stats row without hiding it.</summary>
 public sealed class StaleOpacityConverter : IValueConverter
 {

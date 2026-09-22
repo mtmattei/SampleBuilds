@@ -141,13 +141,18 @@
   <x:Double x:Key="CardCornerRadiusValue">34</x:Double>
   <CornerRadius x:Key="CardCornerRadius">34</CornerRadius>
   <CornerRadius x:Key="MapCornerRadius">20</CornerRadius>
+  <!-- Skeleton bars, the map pin and other small rounded shapes share one value. 6, 9 and 10 were
+       three separately invented values within 4px of each other. -->
+  <CornerRadius x:Key="SmallCornerRadius">8</CornerRadius>
   <Thickness x:Key="CardPadding">22</Thickness>
   <!-- 460 is the original 400 plus 15%. The two-column stage is two of these plus the 24 gap and
        the stage's own 16 of side padding each way. -->
   <x:Double x:Key="CardMaxWidth">460</x:Double>
   <x:Double x:Key="StageMaxWidthWide">976</x:Double>
-  <x:Double x:Key="MapPanelHeight">214</x:Double>
+  <x:Double x:Key="MapPanelHeight">248</x:Double>
 
 </ResourceDictionary>
+
+
 
 

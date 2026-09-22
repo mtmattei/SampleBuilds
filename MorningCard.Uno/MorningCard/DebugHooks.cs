@@ -1,4 +1,6 @@
 #if DEBUG
+using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using MorningCard.Core;
 using MorningCard.Core.Models;
@@ -44,6 +46,11 @@ internal static class DebugHooks
         {
             hub.SetTireFrontLeft(psi);
         }
+        if (Read("MC_REDUCEDMOTION") == "1")
+        {
+            Themes.CardChrome.ReducedMotion = true;
+        }
+
         if (Read("MC_MOTION") is { } motion && double.TryParse(motion, CultureInfo.InvariantCulture, out var speed))
         {
             Themes.CardChrome.MotionSpeed = speed;
@@ -76,6 +83,90 @@ internal static class DebugHooks
     };
 
     public static bool ProbeRetry => Read("MC_PROBE_RETRY") == "1";
+
+    public static bool ProbeFocus => Read("MC_PROBE_FOCUS") == "1";
+
+    /// <summary>
+    /// Walks the tab order and traces it.
+    ///
+    /// Synthesised keystrokes are unreliable against an Uno desktop window from a background
+    /// process, so this asks the focus manager the same question the Tab key would:
+    /// FindNextElement in the Next direction, repeatedly, from the first focusable element. It
+    /// reports every stop, and flags anything focusable that cannot be activated.
+    /// </summary>
+    public static async Task ProbeFocusAsync(DependencyObject root)
+    {
+        await Task.Delay(TimeSpan.FromSeconds(3));
+
+        var options = new FindNextElementOptions { SearchRoot = root };
+
+        // FindNextElement only ever returns the two top-level FeedViews here, whatever holds focus,
+        // so it does not walk into templated children on this Uno version and cannot answer the
+        // question. Enumerating the tree's tab stops does: it says directly whether every action is
+        // reachable, and flags any stop that leads nowhere.
+        var stops = new List<string>();
+        CollectTabStops(root, stops);
+        Trace($"PROBE focus: {stops.Count} tab stops -> {string.Join(" | ", stops)}");
+
+        var seen = new List<string>();
+        var current = FocusManager.FindFirstFocusableElement(root) as DependencyObject;
+
+        for (var step = 0; step < 40 && current is not null; step++)
+        {
+            var label = Describe(current);
+
+            if (seen.Contains(label))
+            {
+                Trace($"PROBE focus: order wrapped after {seen.Count} stops");
+                break;
+            }
+
+            seen.Add(label);
+
+            // Focus has to move before asking for the next element: FindNextElement searches from
+            // whatever currently holds focus, so calling it first just returns the same element and
+            // the walk reports a two-stop loop that is not real.
+            if (current is Control control)
+            {
+                control.Focus(FocusState.Keyboard);
+            }
+            else if (current is UIElement element)
+            {
+                element.Focus(FocusState.Keyboard);
+            }
+
+            current = FocusManager.FindNextElement(FocusNavigationDirection.Next, options) as DependencyObject;
+        }
+
+        Trace($"PROBE focus: {seen.Count} stops -> {string.Join(" | ", seen)}");
+    }
+
+    private static void CollectTabStops(DependencyObject element, List<string> stops)
+    {
+        if (element is Control { IsTabStop: true } control)
+        {
+            var reachable = control.IsEnabled ? string.Empty : " DISABLED-so-skipped";
+            stops.Add($"{Describe(control)}{reachable}");
+        }
+
+        var count = VisualTreeHelper.GetChildrenCount(element);
+
+        for (var i = 0; i < count; i++)
+        {
+            CollectTabStops(VisualTreeHelper.GetChild(element, i), stops);
+        }
+    }
+
+    private static string Describe(DependencyObject element)
+    {
+        var name = element is FrameworkElement fe && !string.IsNullOrEmpty(fe.Name) ? fe.Name : string.Empty;
+        var automation = AutomationProperties.GetName(element);
+        var enabled = element is Control { IsEnabled: false } ? " DISABLED" : string.Empty;
+
+        var label = !string.IsNullOrEmpty(automation) ? automation : name;
+
+        return $"{element.GetType().Name}({label}){enabled}";
+    }
 
     public static void Trace(string message)
     {
@@ -167,4 +258,5 @@ internal static class DebugHooks
     }
 }
 #endif
+
 

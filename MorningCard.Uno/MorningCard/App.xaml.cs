@@ -119,6 +119,11 @@ public partial class App : Application
         {
             _ = DebugHooks.ProbeRetryAsync(content, hub);
         }
+
+        if (DebugHooks.ProbeFocus && MainWindow.Content is { } focusRoot)
+        {
+            _ = DebugHooks.ProbeFocusAsync(focusRoot);
+        }
 #endif
     }
 
@@ -139,3 +144,4 @@ public partial class App : Application
         );
     }
 }
+

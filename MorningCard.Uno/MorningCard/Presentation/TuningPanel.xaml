@@ -7,7 +7,7 @@
   <Border Background="{ThemeResource GlassSecondaryBrush}"
           BorderBrush="{ThemeResource GlassEdgeBrush}"
           BorderThickness="1"
-          CornerRadius="22"
+          CornerRadius="{ThemeResource MapCornerRadius}"
           Padding="20,18,20,20">
     <StackPanel Spacing="12">
 
@@ -154,4 +154,5 @@
     </StackPanel>
   </Border>
 </UserControl>
+
 

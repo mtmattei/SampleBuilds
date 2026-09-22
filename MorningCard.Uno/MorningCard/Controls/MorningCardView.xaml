@@ -217,9 +217,9 @@
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
                             Spacing="10">
-                  <Border Width="120" Height="14" CornerRadius="6" Background="{ThemeResource ChipBrush}" />
-                  <Border Width="130" Height="54" CornerRadius="10" Background="{ThemeResource ChipBrush}" />
-                  <Border Width="90" Height="14" CornerRadius="6" Background="{ThemeResource ChipBrush}" />
+                  <Border Width="120" Height="14" CornerRadius="{ThemeResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
+                  <Border Width="130" Height="54" CornerRadius="{ThemeResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
+                  <Border Width="90" Height="14" CornerRadius="{ThemeResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
                 </StackPanel>
               </DataTemplate>
             </mvux:FeedView.ProgressTemplate>
@@ -366,9 +366,9 @@
                 <ColumnDefinition Width="1*" />
                 <ColumnDefinition Width="1.05*" />
               </Grid.ColumnDefinitions>
-              <Border Height="14" VerticalAlignment="Top" CornerRadius="6" Background="{ThemeResource ChipBrush}" />
-              <Border Grid.Column="1" Height="14" VerticalAlignment="Top" CornerRadius="6" Background="{ThemeResource ChipBrush}" />
-              <Border Grid.Column="2" Height="14" VerticalAlignment="Top" CornerRadius="6" Background="{ThemeResource ChipBrush}" />
+              <Border Height="14" VerticalAlignment="Top" CornerRadius="{ThemeResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
+              <Border Grid.Column="1" Height="14" VerticalAlignment="Top" CornerRadius="{ThemeResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
+              <Border Grid.Column="2" Height="14" VerticalAlignment="Top" CornerRadius="{ThemeResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
             </Grid>
           </DataTemplate>
         </mvux:FeedView.ProgressTemplate>
@@ -388,23 +388,44 @@
 
               <!--
                 A plain Button, not a toggle: the mockup draws all four circles neutral while the
-                car is locked, so fill is not how this design reports lock state - the header's
-                "Locked - 68" line and this button's own label carry it. Filling it permanently
-                would read as a pressed control that can never be released.
+                car is locked, so fill is not how this design reports lock state. Filling it
+                permanently would read as a pressed control that can never be released.
+
+                The shackle carries the state instead. Both glyphs stay in the tree and cross-fade
+                on opacity, because Path.Data is a string and swapping it in place flicks. Without
+                this the action row could not answer "is it locked" on its own - the header line was
+                the only place that said so.
               -->
               <Button Style="{StaticResource CardActionButtonStyle}"
                       IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}"
                       Command="{Binding Parent.ToggleLock}"
                       mc:CardAction.Label="{Binding Data.LockLabel}"
                       AutomationProperties.Name="{Binding Data.LockLabel}">
-                <Viewbox Width="24" Height="24">
-                  <Path Stroke="{ThemeResource InkBrush}"
-                        StrokeThickness="1.7"
-                        StrokeLineJoin="Round"
-                        StrokeStartLineCap="Round"
-                        StrokeEndLineCap="Round"
-                        Data="M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM8 11V8a4 4 0 0 1 8 0v3" />
-                </Viewbox>
+                <Grid>
+                  <!-- Locked: the shackle closes onto the body. -->
+                  <Viewbox Width="24"
+                           Height="24"
+                           Opacity="{Binding Data.IsLocked, Converter={StaticResource BoolToOpacity}}">
+                    <Path Stroke="{ThemeResource InkBrush}"
+                          StrokeThickness="1.7"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          Data="M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM8 11V8a4 4 0 0 1 8 0v3" />
+                  </Viewbox>
+
+                  <!-- Unlocked: the shackle stands open, and the body takes the warning ink. -->
+                  <Viewbox Width="24"
+                           Height="24"
+                           Opacity="{Binding Data.IsLocked, Converter={StaticResource BoolToOpacity}, ConverterParameter=Invert}">
+                    <Path Stroke="{ThemeResource AmberInkBrush}"
+                          StrokeThickness="1.7"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          Data="M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM8 11V8a4 4 0 0 1 8 0" />
+                  </Viewbox>
+                </Grid>
               </Button>
 
               <ToggleButton Grid.Column="1"
@@ -460,6 +481,7 @@
     </Grid>
   </Grid>
 </UserControl>
+
 
 
 
