@@ -35,6 +35,15 @@ internal sealed class RouteRulerRenderer : IDisposable
     /// <summary>How far along the slack stretch the grey "now" marker sits.</summary>
     private const float NowMarkerFraction = 0.26f;
 
+    /// <summary>Where the ground wash has finished clearing, in design units.</summary>
+    private const float FadeEnd = DesignWidth * 0.66f;
+
+    /// <summary>
+    /// How much of the wash is held solid before it starts to ramp. Lands at roughly 30% of the
+    /// panel, which is the right edge of the duration digits.
+    /// </summary>
+    private const float FadeHoldStop = 0.46f;
+
     private readonly SKPath _route = SKPath.ParseSvgPathData(RouteData);
     private readonly SKPathMeasure _measure;
     private readonly float _length;
@@ -53,6 +62,9 @@ internal sealed class RouteRulerRenderer : IDisposable
     private readonly SKFont _labelFont = new() { Size = LabelSize, Edging = SKFontEdging.SubpixelAntialias };
     private readonly SKFont _pillFont = new() { Size = PillTextSize, Edging = SKFontEdging.SubpixelAntialias };
     private readonly SKPath _scratch = new();
+
+    private SKShader? _fade;
+    private SKColor _fadeBuiltFor;
 
     public RouteRulerRenderer()
     {
@@ -125,15 +137,24 @@ internal sealed class RouteRulerRenderer : IDisposable
 
         canvas.Restore();
 
-        // The left third fades to the map colour so the ETA block always has a clean ground.
-        using var fade = SKShader.CreateLinearGradient(
-            new SKPoint(0, 0),
-            new SKPoint(DesignWidth * 0.55f, 0),
-            new[] { palette.Map.WithAlpha(235), palette.Map.WithAlpha(0) },
-            new[] { 0f, 1f },
-            SKShaderTileMode.Clamp);
+        // Flat ground under the ETA block, then a soft ramp into the map.
+        //
+        // The hold runs to the big number's right edge so the digits never sit on grid lines, and
+        // the ramp is finished before the route's first node. Cached against the map colour: this
+        // is the render thread, and the entrance asks for 30 frames a second.
+        if (_fade is null || _fadeBuiltFor != palette.Map)
+        {
+            _fade?.Dispose();
+            _fade = SKShader.CreateLinearGradient(
+                new SKPoint(0, 0),
+                new SKPoint(FadeEnd, 0),
+                new[] { palette.Map, palette.Map, palette.Map.WithAlpha(0) },
+                new[] { 0f, FadeHoldStop, 1f },
+                SKShaderTileMode.Clamp);
+            _fadeBuiltFor = palette.Map;
+        }
 
-        _fill.Shader = fade;
+        _fill.Shader = _fade;
         _fill.Color = SKColors.White;
         canvas.DrawRect(0, 0, DesignWidth, DesignHeight, _fill);
         _fill.Shader = null;
@@ -515,6 +536,7 @@ internal sealed class RouteRulerRenderer : IDisposable
         _segment.Dispose();
         _labelFont.Dispose();
         _pillFont.Dispose();
+        _fade?.Dispose();
     }
 }
 
