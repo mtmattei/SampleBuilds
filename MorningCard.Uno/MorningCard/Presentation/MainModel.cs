@@ -185,7 +185,9 @@ public partial record MainModel
 
         return new HeaderView(
             Greeting: Text("Greeting"),
-            Title: plan?.Title ?? Text("Empty_Title"),
+            // Not "No drop-off today": the map panel already says that, and a card should not
+            // deliver the same sentence twice.
+            Title: plan?.Title ?? Text("Header_NoTripTitle"),
             Headline: headline,
             Tone: timeline?.Tone ?? CardTone.Ok,
             HasTrip: plan is not null,

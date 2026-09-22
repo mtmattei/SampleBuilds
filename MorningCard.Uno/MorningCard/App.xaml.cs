@@ -100,10 +100,20 @@ public partial class App : Application
         var hub = Host.Services.GetRequiredService<SimulatedDriveHub>();
         DebugHooks.ApplyTo(hub);
 
-        if (DebugHooks.Theme is { } theme && MainWindow.Content is FrameworkElement root)
+        if (DebugHooks.Theme is { } theme && MainWindow.Content is FrameworkElement themeRoot)
         {
-            root.RequestedTheme = theme;
+            themeRoot.RequestedTheme = theme;
         }
+#endif
+
+        // Converters resolve brushes through this, because they have no element of their own to
+        // ask. Tracked after the theme hook so it starts on the theme actually in use.
+        if (MainWindow.Content is FrameworkElement resourceRoot)
+        {
+            Themes.AccentPalette.Track(resourceRoot);
+        }
+
+#if DEBUG
 
         if (DebugHooks.ProbeRetry && MainWindow.Content is { } content)
         {

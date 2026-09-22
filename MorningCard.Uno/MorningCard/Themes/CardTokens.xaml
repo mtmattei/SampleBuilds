@@ -2,10 +2,13 @@
   The card's palette. Light is the base and dark redefines the same names, matching the prototype's
   CSS custom properties one for one.
 
-  Colours live in theme dictionaries; brushes sit at the root as single instances whose Color is a
-  ThemeResource. That matters for the accent: the hue dial mutates these brush instances in place,
-  which is the only way to hit the design's exact hsl() values (Material's seed derives HCT tones
-  that do not match).
+  Colours and their brushes both live inside the theme dictionaries. Brushes at the root would be a
+  single shared instance resolved against the application's theme, and the theme service switches
+  the root element's theme instead - which left the map panel drawing its light palette on a dark
+  card. Per-theme brushes resolve against the element that uses them.
+
+  The hue dial mutates the accent brushes in place, in both dictionaries. That is the only way to
+  hit the design's exact hsl() values: Material's seed derives HCT tones, which do not match.
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -51,7 +54,26 @@
 
       <Color x:Key="CardShadowNearColor">#14141C28</Color>
       <Color x:Key="CardShadowFarColor">#73141C28</Color>
-    </ResourceDictionary>
+      <SolidColorBrush x:Key="GroundBrush" Color="{StaticResource GroundColor}" />
+      <SolidColorBrush x:Key="GlassBrush" Color="{StaticResource GlassColor}" />
+      <SolidColorBrush x:Key="GlassEdgeBrush" Color="{StaticResource GlassEdgeColor}" />
+      <SolidColorBrush x:Key="GlassSecondaryBrush" Color="{StaticResource GlassSecondaryColor}" />
+      <SolidColorBrush x:Key="InkBrush" Color="{StaticResource InkColor}" />
+      <SolidColorBrush x:Key="Ink2Brush" Color="{StaticResource Ink2Color}" />
+      <SolidColorBrush x:Key="Ink3Brush" Color="{StaticResource Ink3Color}" />
+      <SolidColorBrush x:Key="LineBrush" Color="{StaticResource LineColor}" />
+      <SolidColorBrush x:Key="ChipBrush" Color="{StaticResource ChipColor}" />
+      <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+      <SolidColorBrush x:Key="AccentInkBrush" Color="{StaticResource AccentInkColor}" />
+      <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
+      <SolidColorBrush x:Key="GoodBrush" Color="{StaticResource GoodColor}" />
+      <SolidColorBrush x:Key="GoodInkBrush" Color="{StaticResource GoodInkColor}" />
+      <SolidColorBrush x:Key="AmberBrush" Color="{StaticResource AmberColor}" />
+      <SolidColorBrush x:Key="AmberInkBrush" Color="{StaticResource AmberInkColor}" />
+      <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
+      <SolidColorBrush x:Key="DangerInkBrush" Color="{StaticResource DangerInkColor}" />
+      <SolidColorBrush x:Key="MapBrush" Color="{StaticResource MapColor}" />
+      <SolidColorBrush x:Key="PinBrush" Color="{StaticResource PinColor}" />    </ResourceDictionary>
 
     <ResourceDictionary x:Key="Dark">
       <Color x:Key="GroundColor">#10151C</Color>
@@ -91,34 +113,29 @@
 
       <Color x:Key="CardShadowNearColor">#4D000000</Color>
       <Color x:Key="CardShadowFarColor">#CC000000</Color>
-    </ResourceDictionary>
+      <SolidColorBrush x:Key="GroundBrush" Color="{StaticResource GroundColor}" />
+      <SolidColorBrush x:Key="GlassBrush" Color="{StaticResource GlassColor}" />
+      <SolidColorBrush x:Key="GlassEdgeBrush" Color="{StaticResource GlassEdgeColor}" />
+      <SolidColorBrush x:Key="GlassSecondaryBrush" Color="{StaticResource GlassSecondaryColor}" />
+      <SolidColorBrush x:Key="InkBrush" Color="{StaticResource InkColor}" />
+      <SolidColorBrush x:Key="Ink2Brush" Color="{StaticResource Ink2Color}" />
+      <SolidColorBrush x:Key="Ink3Brush" Color="{StaticResource Ink3Color}" />
+      <SolidColorBrush x:Key="LineBrush" Color="{StaticResource LineColor}" />
+      <SolidColorBrush x:Key="ChipBrush" Color="{StaticResource ChipColor}" />
+      <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+      <SolidColorBrush x:Key="AccentInkBrush" Color="{StaticResource AccentInkColor}" />
+      <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
+      <SolidColorBrush x:Key="GoodBrush" Color="{StaticResource GoodColor}" />
+      <SolidColorBrush x:Key="GoodInkBrush" Color="{StaticResource GoodInkColor}" />
+      <SolidColorBrush x:Key="AmberBrush" Color="{StaticResource AmberColor}" />
+      <SolidColorBrush x:Key="AmberInkBrush" Color="{StaticResource AmberInkColor}" />
+      <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
+      <SolidColorBrush x:Key="DangerInkBrush" Color="{StaticResource DangerInkColor}" />
+      <SolidColorBrush x:Key="MapBrush" Color="{StaticResource MapColor}" />
+      <SolidColorBrush x:Key="PinBrush" Color="{StaticResource PinColor}" />    </ResourceDictionary>
 
   </ResourceDictionary.ThemeDictionaries>
 
-  <SolidColorBrush x:Key="GroundBrush" Color="{ThemeResource GroundColor}" />
-  <SolidColorBrush x:Key="GlassBrush" Color="{ThemeResource GlassColor}" />
-  <SolidColorBrush x:Key="GlassEdgeBrush" Color="{ThemeResource GlassEdgeColor}" />
-  <SolidColorBrush x:Key="GlassSecondaryBrush" Color="{ThemeResource GlassSecondaryColor}" />
-
-  <SolidColorBrush x:Key="InkBrush" Color="{ThemeResource InkColor}" />
-  <SolidColorBrush x:Key="Ink2Brush" Color="{ThemeResource Ink2Color}" />
-  <SolidColorBrush x:Key="Ink3Brush" Color="{ThemeResource Ink3Color}" />
-  <SolidColorBrush x:Key="LineBrush" Color="{ThemeResource LineColor}" />
-  <SolidColorBrush x:Key="ChipBrush" Color="{ThemeResource ChipColor}" />
-
-  <SolidColorBrush x:Key="AccentBrush" Color="{ThemeResource AccentColor}" />
-  <SolidColorBrush x:Key="AccentInkBrush" Color="{ThemeResource AccentInkColor}" />
-  <SolidColorBrush x:Key="OnAccentBrush" Color="{ThemeResource OnAccentColor}" />
-
-  <SolidColorBrush x:Key="GoodBrush" Color="{ThemeResource GoodColor}" />
-  <SolidColorBrush x:Key="GoodInkBrush" Color="{ThemeResource GoodInkColor}" />
-  <SolidColorBrush x:Key="AmberBrush" Color="{ThemeResource AmberColor}" />
-  <SolidColorBrush x:Key="AmberInkBrush" Color="{ThemeResource AmberInkColor}" />
-  <SolidColorBrush x:Key="DangerBrush" Color="{ThemeResource DangerColor}" />
-  <SolidColorBrush x:Key="DangerInkBrush" Color="{ThemeResource DangerInkColor}" />
-
-  <SolidColorBrush x:Key="MapBrush" Color="{ThemeResource MapColor}" />
-  <SolidColorBrush x:Key="PinBrush" Color="{ThemeResource PinColor}" />
 
   <!-- Geometry the card and its canvases share. CardCornerRadius is what the radius dial writes. -->
   <x:Double x:Key="CardCornerRadiusValue">34</x:Double>
@@ -129,3 +146,4 @@
   <x:Double x:Key="MapPanelHeight">214</x:Double>
 
 </ResourceDictionary>
+

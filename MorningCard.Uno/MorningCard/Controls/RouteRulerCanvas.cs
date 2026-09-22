@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml.Automation;
+using MorningCard.Themes;
 using SkiaSharp;
 using Uno.WinUI.Graphics2DSK;
 using Windows.Foundation;
@@ -108,43 +109,45 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         Invalidate();
     }
 
+    /// <summary>
+    /// Reads the tokens for the theme this element is actually drawn in. Application-level lookup
+    /// resolves against the application's theme, which is not the same thing once the theme service
+    /// has switched the root element - that mismatch left the map drawing its light palette on a
+    /// dark card.
+    /// </summary>
     private RouteRulerPalette ReadPalette()
     {
-        var resources = Application.Current?.Resources;
-
-        if (resources is null)
-        {
-            return RouteRulerPalette.Fallback;
-        }
+        var theme = ActualTheme;
+        var fallback = RouteRulerPalette.Fallback;
 
         return new RouteRulerPalette(
-            Map: Read(resources, "MapColor", RouteRulerPalette.Fallback.Map),
-            Road: Read(resources, "MapRoadColor", RouteRulerPalette.Fallback.Road),
-            Park: Read(resources, "MapParkColor", RouteRulerPalette.Fallback.Park),
-            Water: Read(resources, "MapWaterColor", RouteRulerPalette.Fallback.Water),
-            Ink: Read(resources, "InkColor", RouteRulerPalette.Fallback.Ink),
-            Ink2: Read(resources, "Ink2Color", RouteRulerPalette.Fallback.Ink2),
-            Ink3: Read(resources, "Ink3Color", RouteRulerPalette.Fallback.Ink3),
-            // The accent is read from the brush, not the colour: the hue dial writes the brush.
-            Accent: ReadBrush(resources, "AccentBrush", RouteRulerPalette.Fallback.Accent),
-            AccentInk: ReadBrush(resources, "AccentInkBrush", RouteRulerPalette.Fallback.AccentInk),
-            OnAccent: Read(resources, "OnAccentColor", RouteRulerPalette.Fallback.OnAccent),
-            Amber: Read(resources, "AmberColor", RouteRulerPalette.Fallback.Amber),
-            AmberInk: Read(resources, "AmberInkColor", RouteRulerPalette.Fallback.AmberInk),
-            Danger: Read(resources, "DangerColor", RouteRulerPalette.Fallback.Danger),
-            DangerInk: Read(resources, "DangerInkColor", RouteRulerPalette.Fallback.DangerInk),
-            Pin: Read(resources, "PinColor", RouteRulerPalette.Fallback.Pin),
+            Map: Read("MapColor", theme, fallback.Map),
+            Road: Read("MapRoadColor", theme, fallback.Road),
+            Park: Read("MapParkColor", theme, fallback.Park),
+            Water: Read("MapWaterColor", theme, fallback.Water),
+            Ink: Read("InkColor", theme, fallback.Ink),
+            Ink2: Read("Ink2Color", theme, fallback.Ink2),
+            Ink3: Read("Ink3Color", theme, fallback.Ink3),
+            // Read from the brush, not the colour: the hue dial writes the brush.
+            Accent: ReadBrush("AccentBrush", theme, fallback.Accent),
+            AccentInk: ReadBrush("AccentInkBrush", theme, fallback.AccentInk),
+            OnAccent: Read("OnAccentColor", theme, fallback.OnAccent),
+            Amber: Read("AmberColor", theme, fallback.Amber),
+            AmberInk: Read("AmberInkColor", theme, fallback.AmberInk),
+            Danger: Read("DangerColor", theme, fallback.Danger),
+            DangerInk: Read("DangerInkColor", theme, fallback.DangerInk),
+            Pin: Read("PinColor", theme, fallback.Pin),
             // Nodes keep a white ring in both themes: it reads as a cut-out, not as ink.
-            NodeStroke: RouteRulerPalette.Fallback.NodeStroke);
+            NodeStroke: fallback.NodeStroke);
     }
 
-    private static SKColor Read(ResourceDictionary resources, string key, SKColor fallback) =>
-        resources.TryGetValue(key, out var value) && value is Windows.UI.Color color
+    private static SKColor Read(string key, ElementTheme theme, SKColor fallback) =>
+        AccentPalette.Lookup(key, theme) is Windows.UI.Color color
             ? new SKColor(color.R, color.G, color.B, color.A)
             : fallback;
 
-    private static SKColor ReadBrush(ResourceDictionary resources, string key, SKColor fallback) =>
-        resources.TryGetValue(key, out var value) && value is SolidColorBrush brush
+    private static SKColor ReadBrush(string key, ElementTheme theme, SKColor fallback) =>
+        AccentPalette.Lookup(key, theme) is SolidColorBrush brush
             ? new SKColor(brush.Color.R, brush.Color.G, brush.Color.B, brush.Color.A)
             : fallback;
 

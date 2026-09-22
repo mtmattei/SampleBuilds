@@ -1,22 +1,33 @@
 using Microsoft.UI.Xaml.Data;
 using MorningCard.Core.Models;
+using MorningCard.Themes;
 
 namespace MorningCard.Presentation;
+
+/// <summary>
+/// A brush from the theme the card is actually drawn in.
+///
+/// A converter has no element to resolve a ThemeResource against, and reading
+/// Application.Current.Resources answers for the application's theme, not the root element's - so
+/// in dark mode these all returned light ink and the stats row and ETA number disappeared.
+/// </summary>
+internal static class Tokens
+{
+    public static object Of(string key) => AccentPalette.Brush(key)!;
+}
 
 /// <summary>Maps a stat's severity onto the ink it is drawn in.</summary>
 public sealed class StatLevelBrushConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language) => value switch
     {
-        StatLevel.Bad => Brush("DangerInkBrush"),
-        StatLevel.Warn => Brush("AmberInkBrush"),
-        _ => Brush("InkBrush"),
+        StatLevel.Bad => Tokens.Of("DangerInkBrush"),
+        StatLevel.Warn => Tokens.Of("AmberInkBrush"),
+        _ => Tokens.Of("InkBrush"),
     };
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
         throw new NotSupportedException();
-
-    internal static object Brush(string key) => Application.Current.Resources[key];
 }
 
 /// <summary>The range bar's fill follows the same severity as its value.</summary>
@@ -24,9 +35,9 @@ public sealed class StatLevelFillConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language) => value switch
     {
-        StatLevel.Bad => StatLevelBrushConverter.Brush("DangerBrush"),
-        StatLevel.Warn => StatLevelBrushConverter.Brush("AmberBrush"),
-        _ => StatLevelBrushConverter.Brush("GoodBrush"),
+        StatLevel.Bad => Tokens.Of("DangerBrush"),
+        StatLevel.Warn => Tokens.Of("AmberBrush"),
+        _ => Tokens.Of("GoodBrush"),
     };
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
@@ -38,9 +49,9 @@ public sealed class TrafficBrushConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language) => value switch
     {
-        TrafficLevel.Heavy => StatLevelBrushConverter.Brush("DangerInkBrush"),
-        TrafficLevel.Moderate => StatLevelBrushConverter.Brush("AmberInkBrush"),
-        _ => StatLevelBrushConverter.Brush("GoodInkBrush"),
+        TrafficLevel.Heavy => Tokens.Of("DangerInkBrush"),
+        TrafficLevel.Moderate => Tokens.Of("AmberInkBrush"),
+        _ => Tokens.Of("GoodInkBrush"),
     };
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
@@ -52,8 +63,8 @@ public sealed class ToneBrushConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language) =>
         value is CardTone.Late
-            ? StatLevelBrushConverter.Brush("DangerInkBrush")
-            : StatLevelBrushConverter.Brush("Ink2Brush");
+            ? Tokens.Of("DangerInkBrush")
+            : Tokens.Of("Ink2Brush");
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
         throw new NotSupportedException();
@@ -64,11 +75,25 @@ public sealed class LateInkConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language) =>
         value is true
-            ? StatLevelBrushConverter.Brush("DangerInkBrush")
-            : StatLevelBrushConverter.Brush("InkBrush");
+            ? Tokens.Of("DangerInkBrush")
+            : Tokens.Of("InkBrush");
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
         throw new NotSupportedException();
+}
+
+/// <summary>
+/// Negates a flag, for the commands that stay off while the car is unreachable. A visibility
+/// converter cannot stand in here: handing a Visibility to IsEnabled silently leaves the control
+/// enabled, which is how the offline state shipped with four live buttons.
+/// </summary>
+public sealed class InverseBoolConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language) =>
+        value is not true;
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        value is not true;
 }
 
 /// <summary>Stale data dims the whole stats row without hiding it.</summary>
@@ -128,3 +153,5 @@ public sealed class PercentToStarConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
         throw new NotSupportedException();
 }
+
+

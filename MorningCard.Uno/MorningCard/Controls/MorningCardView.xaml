@@ -393,7 +393,7 @@
 
               <ToggleButton Style="{StaticResource CardActionToggleStyle}"
                             IsChecked="{Binding Data.IsLocked, Mode=OneWay}"
-                            IsEnabled="{Binding Data.IsStale, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert, TargetNullValue=True}"
+                            IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}"
                             Command="{Binding Parent.ToggleLock}"
                             mc:CardAction.Label="{Binding Data.LockLabel}"
                             AutomationProperties.Name="{Binding Data.LockLabel}">
@@ -411,6 +411,7 @@
                             Style="{StaticResource CardActionToggleStyle}"
                             IsChecked="{Binding Data.ClimateOn, Mode=OneWay}"
                             Command="{Binding Parent.ToggleClimate}"
+                            IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}"
                             mc:CardAction.Label="Climate"
                             mc:CardAction.SubLabel="{Binding Data.ClimateValue}"
                             AutomationProperties.Name="Climate">
@@ -427,6 +428,7 @@
               <Button Grid.Column="2"
                       Style="{StaticResource CardActionButtonStyle}"
                       Command="{Binding Parent.SendToCar}"
+                      IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}"
                       mc:CardAction.Label="Send to car"
                       AutomationProperties.Name="Send to car">
                 <Viewbox Width="24" Height="24">
@@ -458,3 +460,4 @@
     </Grid>
   </Grid>
 </UserControl>
+

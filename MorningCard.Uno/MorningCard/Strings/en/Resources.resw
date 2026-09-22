@@ -232,4 +232,7 @@
   <data name="ErrorRetry.Content" xml:space="preserve">
     <value>Retry</value>
   </data>
+  <data name="Header_NoTripTitle" xml:space="preserve">
+    <value>This morning</value>
+  </data>
 </root>
