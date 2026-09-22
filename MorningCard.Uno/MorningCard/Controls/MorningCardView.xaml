@@ -439,7 +439,6 @@
             <Border BorderBrush="{ThemeResource LineBrush}"
                     BorderThickness="1"
                     CornerRadius="{StaticResource MapCornerRadius}"
-                    Padding="0,0,0,2"
                     Opacity="{Binding Data.IsStale, Converter={StaticResource StaleOpacity}}">
               <StackPanel>
 
@@ -456,7 +455,7 @@
                      the two were drawn on top of each other. -->
                 <Button x:Name="ChecksHeader"
                         Style="{StaticResource RowButtonStyle}"
-                        CornerRadius="{StaticResource MapCornerRadius}"
+                        CornerRadius="{Binding Data.ChecksExpanded, Converter={StaticResource ChecksHeaderRadius}}"
                         Padding="14,12"
                         Command="{Binding Parent.ToggleChecks}"
                         AutomationProperties.Name="{Binding Data.ChecksReady}">
@@ -667,7 +666,7 @@
       </mvux:FeedView>
 
       <!-- ============================ bottom bar ============================ -->
-      <mvux:FeedView Grid.Row="5" Source="{Binding Header}">
+      <mvux:FeedView Grid.Row="5" Margin="{StaticResource BottomBarMargin}" Source="{Binding Header}">
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
             <Grid Margin="0,6,0,0" ColumnSpacing="10">

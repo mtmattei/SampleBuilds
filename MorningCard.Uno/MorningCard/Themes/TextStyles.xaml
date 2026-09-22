@@ -111,7 +111,7 @@
 
   <!-- 19 / 400: the sentence under the title, which carries the accented duration inline. -->
   <Style x:Key="CardLead" TargetType="TextBlock" BasedOn="{StaticResource CardBody}">
-    <Setter Property="FontSize" Value="17" />
+    <Setter Property="FontSize" Value="13" />
     <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
   </Style>
 

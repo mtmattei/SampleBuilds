@@ -217,10 +217,18 @@
     edge and 4 from the inner card, pinned to the bottom of its own band. The 11 it gives up here
     is handed back as the strip's bottom margin, so the band and the card height are unchanged.
   -->
-  <Thickness x:Key="CardPadding">27,16,27,27</Thickness>
+  <Thickness x:Key="CardPadding">27,16,27,17</Thickness>
 
   <!-- What the top padding gave up, so the row still ends where it did. -->
   <Thickness x:Key="StatusStripMargin">0,0,0,11</Thickness>
+
+  <!--
+    The same problem at the other end, mirrored. The bottom band runs from the inner card's edge to
+    the card's, and the bar sat 2 from the inner card and 27 from the card - pinned to the top of
+    its band this time. The bottom padding gives up 12 and this takes it back, so again the band
+    and the card height are unchanged.
+  -->
+  <Thickness x:Key="BottomBarMargin">0,10,0,0</Thickness>
   <!-- 529: the original 400 plus 15% twice. The two-column stage is two of these plus the 24 gap and
        the stage's own 16 of side padding each way. -->
   <x:Double x:Key="CardMaxWidth">529</x:Double>
