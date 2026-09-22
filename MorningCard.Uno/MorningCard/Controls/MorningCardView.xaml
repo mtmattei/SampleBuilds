@@ -40,7 +40,7 @@
         the bottom bar are what live on the shell - the greeting and the car's state frame the trip
         rather than belonging to it, and putting them on the card flattened that reading away.
       -->
-      <mvux:FeedView Source="{Binding Header}">
+      <mvux:FeedView Margin="{StaticResource StatusStripMargin}" Source="{Binding Header}">
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
             <!-- ======================== status strip ======================== -->

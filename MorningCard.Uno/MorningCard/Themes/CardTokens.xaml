@@ -211,7 +211,16 @@
   <!-- Skeleton bars, the map pin and other small rounded shapes share one value. 6, 9 and 10 were
        three separately invented values within 4px of each other. -->
   <CornerRadius x:Key="SmallCornerRadius">8</CornerRadius>
-  <Thickness x:Key="CardPadding">27</Thickness>
+  <!--
+    Uneven at the top on purpose. The shell's top band runs from the card's edge to the inner
+    card's, and the strip has to sit centred in it - at a flat 27 the strip was 27 from the card
+    edge and 4 from the inner card, pinned to the bottom of its own band. The 11 it gives up here
+    is handed back as the strip's bottom margin, so the band and the card height are unchanged.
+  -->
+  <Thickness x:Key="CardPadding">27,16,27,27</Thickness>
+
+  <!-- What the top padding gave up, so the row still ends where it did. -->
+  <Thickness x:Key="StatusStripMargin">0,0,0,11</Thickness>
   <!-- 529: the original 400 plus 15% twice. The two-column stage is two of these plus the 24 gap and
        the stage's own 16 of side padding each way. -->
   <x:Double x:Key="CardMaxWidth">529</x:Double>
