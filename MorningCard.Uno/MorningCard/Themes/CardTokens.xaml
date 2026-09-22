@@ -63,12 +63,12 @@
       <Color x:Key="CardShadowFarColor">#73141C28</Color>
             <Color x:Key="SunInkColor">#E8912B</Color>  <!-- The sun glyph in the status strip. Warm, and the only orange up there. -->
       <Color x:Key="MapScrimColor">#E8F2F3F5</Color>  <!-- Covers the tiles when the map has no route to show. -->
-      <Color x:Key="MapPillColor">#F2FFFFFF</Color>
+      <Color x:Key="MapPillColor">#D6FFFFFF</Color>
       <Color x:Key="AccentChipColor">#1F2169E9</Color>
       <Color x:Key="AmberChipColor">#242F8A4E</Color>
       <Color x:Key="DangerChipColor">#1FA32C24</Color>
       <Color x:Key="GoodChipColor">#1F1F8A5B</Color>
-      <Color x:Key="EtaScrimColor">#F2FFFFFF</Color>
+      <Color x:Key="EtaScrimColor">#FFFFFFFF</Color>
       <Color x:Key="EtaScrimFadeColor">#00FFFFFF</Color>
       <Color x:Key="GlassInkColor">#FFFFFF</Color>  <!-- Ground for controls sitting on top of map tiles. -->
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
@@ -149,12 +149,12 @@
       <Color x:Key="CardShadowFarColor">#CC000000</Color>
             <Color x:Key="SunInkColor">#F0A64A</Color>
       <Color x:Key="MapScrimColor">#E011161E</Color>
-      <Color x:Key="MapPillColor">#F21C2430</Color>
+      <Color x:Key="MapPillColor">#D61C2430</Color>
       <Color x:Key="AccentChipColor">#2E5A93F6</Color>
       <Color x:Key="AmberChipColor">#2EF0A63A</Color>
       <Color x:Key="DangerChipColor">#2EEF6A5F</Color>
       <Color x:Key="GoodChipColor">#2E3CCF8A</Color>
-      <Color x:Key="EtaScrimColor">#F2181E26</Color>
+      <Color x:Key="EtaScrimColor">#FF181E26</Color>
       <Color x:Key="EtaScrimFadeColor">#00181E26</Color>
       <Color x:Key="GlassInkColor">#10151C</Color>
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
@@ -195,7 +195,9 @@
   <!-- Sits between the map panel inside it and the shell around it, so three nested surfaces
        read as nested rather than as three unrelated rounded boxes. -->
   <CornerRadius x:Key="CardInnerCornerRadius">24</CornerRadius>
-  <CornerRadius x:Key="MapCornerRadius">20</CornerRadius>
+  <!-- The same radius as the card it sits in, by request: the two edges are close enough
+       together that a 20-against-24 difference read as a mistake rather than as nesting. -->
+  <CornerRadius x:Key="MapCornerRadius">24</CornerRadius>
   <!-- Skeleton bars, the map pin and other small rounded shapes share one value. 6, 9 and 10 were
        three separately invented values within 4px of each other. -->
   <CornerRadius x:Key="SmallCornerRadius">8</CornerRadius>
@@ -203,6 +205,16 @@
   <!-- 529: the original 400 plus 15% twice. The two-column stage is two of these plus the 24 gap and
        the stage's own 16 of side padding each way. -->
   <x:Double x:Key="CardMaxWidth">529</x:Double>
+
+  <!--
+    Space held for the card whatever state it is in, so the Simulator below it does not move.
+
+    Measured at 529 wide: 654 epx closed, 855 epx with the checklist open, and about 55 more when
+    the cabin row shows its action. Opening the checklist used to shove the Simulator 200 epx down
+    the screen, which is fine in use and ruinous in a recording - the frame reflows under the take.
+    Reserving the tall case costs empty space in the closed state and buys a fixed stage.
+  -->
+  <x:Double x:Key="CardReservedHeight">940</x:Double>
   <x:Double x:Key="StageMaxWidthWide">1114</x:Double>
   <x:Double x:Key="MapPanelHeight">248</x:Double>
 

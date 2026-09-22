@@ -130,6 +130,19 @@ public sealed class ToneBrushConverter : IValueConverter
         throw new NotSupportedException();
 }
 
+/// <summary>
+/// The cabin's readiness dot. Amber while it still wants doing, green once it is handled - the one
+/// check on the list the driver can actually act on.
+/// </summary>
+public sealed class CheckDotBrushConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language) =>
+        Tokens.Of(value is true ? "AmberBrush" : "GoodBrush");
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>The big arrival number goes red when the arrival is after the bell.</summary>
 public sealed class LateInkConverter : IValueConverter
 {

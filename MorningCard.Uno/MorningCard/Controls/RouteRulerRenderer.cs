@@ -479,9 +479,11 @@ internal sealed class RouteRulerRenderer : IDisposable
 
         // A pin wearing a dwell ring is four times its own radius across, so its label has to clear
         // the ring rather than the pin - otherwise the arc is drawn straight through the text.
+        // Above its pin, like the others. Below put it in the bottom-right corner of the panel,
+        // which is where the Open in Maps pill lives - two things claiming the same 70x24.
         Callout(
             canvas, snapshot.LeaveLabel, projection.Origin, driveColor, palette.OnAccent, alpha,
-            above: false, area, Reach(projection.OriginDwell));
+            above: true, area, Reach(projection.OriginDwell));
 
         // The parking spot and the door are a few hundred metres apart, which at the resolution a
         // whole commute fits into is a few pixels: their two callouts would sit on top of each

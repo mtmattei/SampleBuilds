@@ -82,8 +82,12 @@ public sealed partial class MorningCardView : UserControl
         }
 
         var shift = body.RenderTransform as TranslateTransform;
-        var duration = TimeSpan.FromMilliseconds(260 / Math.Max(CardChrome.MotionSpeed, 0.1));
-        var ease = new KeySpline { ControlPoint1 = new Point(0.22, 1), ControlPoint2 = new Point(0.36, 1) };
+
+        // Both from MotionTokens, not hand-typed here. A curve written out at each call site is how
+        // two surfaces end up a hundredth apart and neither looks wrong on its own.
+        var duration = TimeSpan.FromMilliseconds(
+            CardMotion.Number("DurationSlowMs", 280) / Math.Max(CardChrome.MotionSpeed, 0.1));
+        var ease = CardMotion.Ease("EaseSmooth");
 
         var board = new Storyboard();
         board.Children.Add(Fade(body, duration, ease));

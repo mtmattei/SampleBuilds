@@ -62,8 +62,8 @@
                 <VisualState x:Name="PointerOver" />
                 <VisualState x:Name="Pressed">
                   <VisualState.Setters>
-                    <Setter Target="CircleScale.ScaleX" Value="0.94" />
-                    <Setter Target="CircleScale.ScaleY" Value="0.94" />
+                    <Setter Target="CircleScale.ScaleX" Value="{StaticResource PressScale}" />
+                    <Setter Target="CircleScale.ScaleY" Value="{StaticResource PressScale}" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="Disabled">
@@ -129,8 +129,8 @@
                 <VisualState x:Name="PointerOver" />
                 <VisualState x:Name="Pressed">
                   <VisualState.Setters>
-                    <Setter Target="CircleScale.ScaleX" Value="0.94" />
-                    <Setter Target="CircleScale.ScaleY" Value="0.94" />
+                    <Setter Target="CircleScale.ScaleX" Value="{StaticResource PressScale}" />
+                    <Setter Target="CircleScale.ScaleY" Value="{StaticResource PressScale}" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="Disabled">
@@ -151,8 +151,8 @@
                 <VisualState x:Name="CheckedPressed">
                   <VisualState.Setters>
                     <Setter Target="Circle.Background" Value="{ThemeResource AccentBrush}" />
-                    <Setter Target="CircleScale.ScaleX" Value="0.94" />
-                    <Setter Target="CircleScale.ScaleY" Value="0.94" />
+                    <Setter Target="CircleScale.ScaleX" Value="{StaticResource PressScale}" />
+                    <Setter Target="CircleScale.ScaleY" Value="{StaticResource PressScale}" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="CheckedDisabled">
@@ -224,10 +224,61 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
-          <Border Background="{TemplateBinding Background}"
+          <Border x:Name="Shell"
+                  Background="{TemplateBinding Background}"
                   CornerRadius="{TemplateBinding CornerRadius}"
-                  Padding="{TemplateBinding Padding}">
+                  Padding="{TemplateBinding Padding}"
+                  RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+              <ScaleTransform x:Name="ShellScale" />
+            </Border.RenderTransform>
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <!-- Scoped with To/From: a bare GeneratedDuration here would apply to every
+                     change in the group, disabled included, and would carry the system default
+                     curve that the house easing exists to replace. -->
+                <VisualStateGroup.Transitions>
+                  <VisualTransition To="Pressed">
+                    <Storyboard>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ShellScale" Storyboard.TargetProperty="ScaleX">
+                        <SplineDoubleKeyFrame KeyTime="0:0:0.15" Value="0.98" KeySpline="{StaticResource EaseSmooth}" />
+                      </DoubleAnimationUsingKeyFrames>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ShellScale" Storyboard.TargetProperty="ScaleY">
+                        <SplineDoubleKeyFrame KeyTime="0:0:0.15" Value="0.98" KeySpline="{StaticResource EaseSmooth}" />
+                      </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                  </VisualTransition>
+                  <VisualTransition From="Pressed">
+                    <Storyboard>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ShellScale" Storyboard.TargetProperty="ScaleX">
+                        <SplineDoubleKeyFrame KeyTime="0:0:0.2" Value="1" KeySpline="{StaticResource EaseSmooth}" />
+                      </DoubleAnimationUsingKeyFrames>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ShellScale" Storyboard.TargetProperty="ScaleY">
+                        <SplineDoubleKeyFrame KeyTime="0:0:0.2" Value="1" KeySpline="{StaticResource EaseSmooth}" />
+                      </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                  </VisualTransition>
+                </VisualStateGroup.Transitions>
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Shell.Opacity" Value="0.92" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="ShellScale.ScaleX" Value="{StaticResource PressScale}" />
+                    <Setter Target="ShellScale.ScaleY" Value="{StaticResource PressScale}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="Shell.Opacity" Value="0.4" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
           </Border>
         </ControlTemplate>
       </Setter.Value>
@@ -258,10 +309,36 @@
           <Border x:Name="Shell"
                   Background="{TemplateBinding Background}"
                   CornerRadius="{TemplateBinding CornerRadius}"
-                  Padding="{TemplateBinding Padding}">
+                  Padding="{TemplateBinding Padding}"
+                  RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+              <ScaleTransform x:Name="ShellScale" />
+            </Border.RenderTransform>
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
             <VisualStateManager.VisualStateGroups>
               <VisualStateGroup x:Name="CommonStates">
+                <VisualStateGroup.Transitions>
+                  <VisualTransition To="Pressed">
+                    <Storyboard>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ShellScale" Storyboard.TargetProperty="ScaleX">
+                        <SplineDoubleKeyFrame KeyTime="0:0:0.15" Value="0.98" KeySpline="{StaticResource EaseSmooth}" />
+                      </DoubleAnimationUsingKeyFrames>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ShellScale" Storyboard.TargetProperty="ScaleY">
+                        <SplineDoubleKeyFrame KeyTime="0:0:0.15" Value="0.98" KeySpline="{StaticResource EaseSmooth}" />
+                      </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                  </VisualTransition>
+                  <VisualTransition From="Pressed">
+                    <Storyboard>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ShellScale" Storyboard.TargetProperty="ScaleX">
+                        <SplineDoubleKeyFrame KeyTime="0:0:0.2" Value="1" KeySpline="{StaticResource EaseSmooth}" />
+                      </DoubleAnimationUsingKeyFrames>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ShellScale" Storyboard.TargetProperty="ScaleY">
+                        <SplineDoubleKeyFrame KeyTime="0:0:0.2" Value="1" KeySpline="{StaticResource EaseSmooth}" />
+                      </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                  </VisualTransition>
+                </VisualStateGroup.Transitions>
                 <VisualState x:Name="Normal" />
                 <VisualState x:Name="PointerOver">
                   <VisualState.Setters>
@@ -271,6 +348,8 @@
                 <VisualState x:Name="Pressed">
                   <VisualState.Setters>
                     <Setter Target="Shell.Opacity" Value="0.78" />
+                    <Setter Target="ShellScale.ScaleX" Value="{StaticResource PressScale}" />
+                    <Setter Target="ShellScale.ScaleY" Value="{StaticResource PressScale}" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="Disabled">
@@ -299,10 +378,36 @@
                   BorderBrush="{ThemeResource GlassEdgeBrush}"
                   BorderThickness="1"
                   CornerRadius="{TemplateBinding CornerRadius}"
-                  Padding="{TemplateBinding Padding}">
+                  Padding="{TemplateBinding Padding}"
+                  RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+              <ScaleTransform x:Name="ShellScale" />
+            </Border.RenderTransform>
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
             <VisualStateManager.VisualStateGroups>
               <VisualStateGroup x:Name="CommonStates">
+                <VisualStateGroup.Transitions>
+                  <VisualTransition To="Pressed">
+                    <Storyboard>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ShellScale" Storyboard.TargetProperty="ScaleX">
+                        <SplineDoubleKeyFrame KeyTime="0:0:0.15" Value="0.98" KeySpline="{StaticResource EaseSmooth}" />
+                      </DoubleAnimationUsingKeyFrames>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ShellScale" Storyboard.TargetProperty="ScaleY">
+                        <SplineDoubleKeyFrame KeyTime="0:0:0.15" Value="0.98" KeySpline="{StaticResource EaseSmooth}" />
+                      </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                  </VisualTransition>
+                  <VisualTransition From="Pressed">
+                    <Storyboard>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ShellScale" Storyboard.TargetProperty="ScaleX">
+                        <SplineDoubleKeyFrame KeyTime="0:0:0.2" Value="1" KeySpline="{StaticResource EaseSmooth}" />
+                      </DoubleAnimationUsingKeyFrames>
+                      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ShellScale" Storyboard.TargetProperty="ScaleY">
+                        <SplineDoubleKeyFrame KeyTime="0:0:0.2" Value="1" KeySpline="{StaticResource EaseSmooth}" />
+                      </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                  </VisualTransition>
+                </VisualStateGroup.Transitions>
                 <VisualState x:Name="Normal" />
                 <VisualState x:Name="PointerOver">
                   <VisualState.Setters>
@@ -312,6 +417,8 @@
                 <VisualState x:Name="Pressed">
                   <VisualState.Setters>
                     <Setter Target="Shell.Opacity" Value="0.7" />
+                    <Setter Target="ShellScale.ScaleX" Value="{StaticResource PressScale}" />
+                    <Setter Target="ShellScale.ScaleY" Value="{StaticResource PressScale}" />
                   </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="Disabled">
@@ -343,6 +450,10 @@
   <Style x:Key="RowButtonStyle" TargetType="Button">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <!-- Defaulted here rather than hardcoded in the template, so a row that needs to read as a
+         container can ask for a larger radius without a second template. -->
+    <Setter Property="CornerRadius" Value="{StaticResource SmallCornerRadius}" />
     <Setter Property="Padding" Value="0" />
     <Setter Property="HorizontalAlignment" Value="Stretch" />
     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -356,7 +467,9 @@
         <ControlTemplate TargetType="Button">
           <Border x:Name="Shell"
                   Background="{TemplateBinding Background}"
-                  CornerRadius="{StaticResource SmallCornerRadius}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="{TemplateBinding CornerRadius}"
                   Padding="{TemplateBinding Padding}">
             <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" />
             <VisualStateManager.VisualStateGroups>

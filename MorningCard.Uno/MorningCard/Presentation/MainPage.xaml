@@ -27,15 +27,22 @@
             uen:Region.Attached="True"
             Padding="16,36,16,56"
             HorizontalAlignment="Stretch"
-            MaxWidth="{StaticResource CardMaxWidth}"
+            MaxWidth="{StaticResource StageMaxWidthWide}"
             RowSpacing="24">
         <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
+          <!-- Auto with a floor, not a fixed height: a narrower window makes the card taller than
+               the reserve, and it has to be allowed to grow past it. -->
+          <RowDefinition Height="Auto" MinHeight="{StaticResource CardReservedHeight}" />
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Content-sized, never a column filler: as tall as it has something to say. -->
-        <mc:MorningCardView VerticalAlignment="Top" />
+        <!--
+          Content-sized, never a column filler: as tall as it has something to say. It carries the
+          card width itself now, because the stage is wider than the card - the Simulator row below
+          needs the room, and clamping the stage to the card clipped most of its dials away.
+        -->
+        <mc:MorningCardView VerticalAlignment="Top"
+                            MaxWidth="{StaticResource CardMaxWidth}" />
 
         <!--
           The Simulator is a row under the card at every width, not a second column at 1140. Beside

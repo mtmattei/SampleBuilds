@@ -78,19 +78,14 @@ internal static class RouteGeometryLoader
         // percent was not enough and clipped the origin's callout against the right edge.
         var pad = width * 0.13d;
 
-        // A commute is far wider than it is tall, so the fit is limited by width and there is spare
-        // room above and below. That spare room is the lever: padding the top spends it pushing the
-        // route down into the lower band of the panel, which is the part the ETA block does not
-        // cover, and costs no zoom at all until the padded box grows taller than the panel's own
-        // aspect allows.
-        //
-        // Whichever way the trip runs, one of its two ends is against a side of the panel - the
-        // school is westmost here, home was westmost before - so moving the route sideways only
-        // swaps which callout lands on the headline. Moving it down clears both.
-        var headroom = width * 0.40d;
+        // A little top padding, to keep the route off the attribution line along the bottom. It used
+        // to be four times this, pushing the route into the lower band to dodge the ETA text - but
+        // the scrim is opaque now and the gutter below clears that text horizontally, so the extra
+        // drop only served to park the origin pin underneath the Open in Maps button.
+        var headroom = width * 0.10d;
 
         // A small left gutter as well, since the ETA block reaches furthest on that side.
-        var etaGutter = width * 0.08d;
+        var etaGutter = width * 0.70d;
 
         return new Mapsui.MRect(
             minX - pad - etaGutter,

@@ -10,6 +10,7 @@
   <mp:StatLevelFillConverter x:Key="StatLevelFill" />
   <mp:TrafficBrushConverter x:Key="TrafficBrush" />
   <mp:ToneBrushConverter x:Key="ToneBrush" />
+  <mp:CheckDotBrushConverter x:Key="CheckDotBrush" />
   <mp:AccentToneConverter x:Key="AccentTone" />
   <mp:ToneChipBrushConverter x:Key="ToneChipBrush" />
   <mp:ToneChipInkConverter x:Key="ToneChipInk" />

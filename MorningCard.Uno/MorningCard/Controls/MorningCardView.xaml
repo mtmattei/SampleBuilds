@@ -51,7 +51,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
               </Grid.ColumnDefinitions>
-              <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Left">
+              <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <Viewbox Width="18" Height="18" VerticalAlignment="Center">
                   <Canvas Width="24" Height="24">
                     <Path Stroke="{ThemeResource SunInkBrush}"
@@ -66,9 +66,9 @@
                            VerticalAlignment="Center"
                            Text="{Binding Data.Greeting}" />
               </StackPanel>
-              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <Border Background="{ThemeResource ChipBrush}" CornerRadius="10" Padding="9,3">
-                  <StackPanel Orientation="Horizontal" Spacing="6">
+                  <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                     <TextBlock Style="{StaticResource StatusLineStrong}" VerticalAlignment="Center" Text="{Binding Data.OutsideTemp}" />
                     <TextBlock Style="{StaticResource StatusLine}" VerticalAlignment="Center" Text="{Binding Data.WeatherSummary}" />
                   </StackPanel>
@@ -278,7 +278,7 @@
               Grid.Row="3"
               Height="{StaticResource MapPanelHeight}"
               CornerRadius="{StaticResource MapCornerRadius}"
-              Background="{ThemeResource MapBrush}">
+              Background="{ThemeResource CardSurfaceBrush}">
         <Grid>
           <!--
             Real OSM tiles since v2. The route above it stays schematic - minutes become distance
@@ -295,12 +295,19 @@
             <mapsui:MapControl x:Name="Map" />
           </Border>
 
+          <!-- No CornerRadius of its own: the panel Border already clips to the radius, and a
+               second rounding inside it cut a notch that exposed the panel's ground at the corner. -->
           <Border Visibility="{Binding State.Data.Failed, ElementName=EtaFeed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert, FallbackValue=Collapsed}">
             <Border.Background>
+              <!--
+                Opaque, not a wash. The left of the panel is the ETA block's ground, so the map is
+                fully gone behind it and only reappears past the text - a half-visible street grid
+                under a headline reads as a rendering fault rather than as depth.
+              -->
               <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                 <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0" />
-                <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0.18" />
-                <GradientStop Color="{ThemeResource EtaScrimFadeColor}" Offset="0.62" />
+                <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0.34" />
+                <GradientStop Color="{ThemeResource EtaScrimFadeColor}" Offset="0.64" />
               </LinearGradientBrush>
             </Border.Background>
           </Border>
@@ -315,8 +322,8 @@
                   Style="{StaticResource MapPillStyle}"
                   Visibility="{Binding State.Data.Failed, ElementName=EtaFeed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert, FallbackValue=Collapsed}"
                   HorizontalAlignment="Right"
-                  VerticalAlignment="Top"
-                  Margin="0,12,12,0"
+                  VerticalAlignment="Bottom"
+                  Margin="0,0,12,26"
                   Click="OnOpenInMaps" />
 
           <mvux:FeedView x:Name="EtaFeed" Source="{Binding Eta}">
@@ -349,11 +356,6 @@
                             Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}"><StackPanel.Resources><Style TargetType="TextBlock" BasedOn="{StaticResource CardBody}" /></StackPanel.Resources>
                   <TextBlock Style="{StaticResource EtaNumber}"
                              Foreground="{Binding Data.IsLate, Converter={StaticResource LateInk}}"><Run Text="{Binding Data.TotalMinutes}" /><Run Text=" " /><Run Text="{Binding Parent.EtaUnitLabel}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" FontSize="{StaticResource EtaUnitSize}" /></TextBlock>
-
-                  <TextBlock Style="{StaticResource CardBody}"
-                             Margin="0,1,0,0"
-                             Foreground="{ThemeResource Ink2Brush}"
-                             Text="{Binding Data.ArrivalText}" />
 
                   <StackPanel Margin="0,7,0,0">
                     <StackPanel Orientation="Horizontal" Spacing="6">
@@ -424,194 +426,236 @@
       <mvux:FeedView Grid.Row="4" Source="{Binding Stats}">
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
-            <StackPanel Opacity="{Binding Data.IsStale, Converter={StaticResource StaleOpacity}}">
+            <!--
+              One container for the whole checklist, header and rows together, as the mockup draws
+              it. The header carried the border on its own before, which made the rows beneath it
+              read as loose items on the card rather than as the contents of the thing that just
+              opened. The disclosure and what it discloses belong in the same box.
+            -->
+            <Border BorderBrush="{ThemeResource LineBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource MapCornerRadius}"
+                    Padding="0,0,0,2"
+                    Opacity="{Binding Data.IsStale, Converter={StaticResource StaleOpacity}}">
+              <StackPanel>
 
-              <!--
-                The header is the disclosure control: one target for the whole row rather than a
-                separate chevron button, so the hit area matches what it looks like.
-              -->
-              <Button x:Name="ChecksHeader"
-                      Style="{StaticResource RowButtonStyle}"
-                      Command="{Binding Parent.ToggleChecks}"
-                      AutomationProperties.Name="{Binding Data.ChecksReady}">
+                <!--
+                  The header is the disclosure control: one target for the whole row rather than a
+                  separate chevron button, so the hit area matches what it looks like.
+                -->
+                <!--
+                  In its own container, as the mockup draws it: the checklist is a panel the card
+                  opens, and a bare row of text gave the disclosure nothing to belong to. The border
+                  is what makes the closed state read as a closed thing rather than as a spare line.
+                -->
+                <Button x:Name="ChecksHeader"
+                        Style="{StaticResource RowButtonStyle}"
+                        BorderBrush="{ThemeResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource MapCornerRadius}"
+                        Padding="14,10"
+                        Command="{Binding Parent.ToggleChecks}"
+                        AutomationProperties.Name="{Binding Data.ChecksReady}">
+                  <Grid Style="{StaticResource ListRowStyle}">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="Auto" />
+                      <ColumnDefinition Width="Auto" />
+                      <ColumnDefinition Width="Auto" />
+                      <ColumnDefinition Width="*" />
+                      <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Viewbox Width="20" Height="20" VerticalAlignment="Center">
+                      <Canvas Width="24" Height="24">
+                        <Path Stroke="{ThemeResource Ink2Brush}" StrokeThickness="1.9"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                              Data="M4 7h8M4 12h11M4 17h6M17.5 6.5v5M20 9h-5" />
+                      </Canvas>
+                    </Viewbox>
+
+                    <TextBlock Grid.Column="1" x:Uid="ChecksTitle" Style="{StaticResource RowValueStrong}" VerticalAlignment="Center" Margin="4,0,0,0" />
+
+                    <Border Grid.Column="2" Margin="9,0,0,0" Background="{ThemeResource ChipBrush}" CornerRadius="9" Padding="8,2" VerticalAlignment="Center">
+                      <TextBlock Style="{StaticResource CardCaption}" Text="{Binding Data.ChecksCount}" />
+                    </Border>
+
+                    <!--
+                      Three dots, one per check, in the order the rows appear: fuel, cabin, parking.
+                      They are not decoration - each takes the colour of the check it stands for, so
+                      the row says which one needs attention while it is still closed, where the
+                      count alone only says how many.
+                    -->
+                    <StackPanel Grid.Column="3"
+                                Orientation="Horizontal"
+                                Spacing="4"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                      <Ellipse Width="6" Height="6" VerticalAlignment="Center"
+                               Fill="{Binding Data.FuelLevel, Converter={StaticResource StatLevelBrush}}" />
+                      <Ellipse Width="6" Height="6" VerticalAlignment="Center"
+                               Fill="{Binding Data.CabinNeedsWarming, Converter={StaticResource CheckDotBrush}}" />
+                      <Ellipse Width="6" Height="6" VerticalAlignment="Center"
+                               Fill="{ThemeResource GoodBrush}" />
+                      <TextBlock Style="{StaticResource CardCaption}"
+                                 VerticalAlignment="Center"
+                                 Margin="5,0,0,0"
+                                 Text="{Binding Data.ChecksReady}" />
+                    </StackPanel>
+
+                    <!-- One glyph, rotated, rather than two glyphs swapped. -->
+                    <Viewbox Grid.Column="4" Width="16" Height="16" VerticalAlignment="Center" Margin="10,0,0,0" RenderTransformOrigin="0.5,0.5">
+                      <Viewbox.RenderTransform>
+                        <RotateTransform Angle="{Binding Data.ChecksExpanded, Converter={StaticResource BoolToAngle}}" />
+                      </Viewbox.RenderTransform>
+                      <Canvas Width="24" Height="24">
+                        <Path Stroke="{ThemeResource Ink3Brush}" StrokeThickness="2.2" StrokeLineJoin="Round"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" Data="M6 9l6 6 6-6" />
+                      </Canvas>
+                    </Viewbox>
+                  </Grid>
+                </Button>
+
+                <!--
+                  Everything below the header collapses together. The reveal fades and rises rather
+                  than animating height: measuring a growing panel every frame is the expensive way,
+                  and the job here is continuity, not spectacle.
+                -->
+                <StackPanel x:Name="ChecksBody"
+                            Visibility="{Binding Data.ChecksExpanded, Converter={StaticResource BoolToVisibility}}"
+                            RenderTransformOrigin="0.5,0">
+                  <StackPanel.RenderTransform>
+                    <TranslateTransform x:Name="ChecksBodyShift" />
+                  </StackPanel.RenderTransform>
+                <Rectangle Style="{StaticResource RowRule}" />
+
+                <!-- Fuel: informational, so it carries a status chip and no action. -->
                 <Grid Style="{StaticResource ListRowStyle}">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
+
+                  <Viewbox Width="24" Height="24" VerticalAlignment="Center">
+                    <Canvas Width="24" Height="24">
+                      <Path Stroke="{Binding Data.FuelLevel, Converter={StaticResource StatLevelBrush}}"
+                            StrokeThickness="1.7" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                            Data="M5 21V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v15M3 21h14M7 8h6M15 10h2a2 2 0 0 1 2 2v5.5a1.5 1.5 0 0 0 3 0V11l-3-3" />
+                    </Canvas>
+                  </Viewbox>
+
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource RowValueStrong}"><Run Text="{Binding Data.FuelValue}" /><Run Text=" " /><Run Text="{Binding Data.FuelUnit}" /><Run Text=" " /><Run x:Uid="FuelRangeWord" /></TextBlock>
+                    <TextBlock x:Uid="ChecksFuelTitle" Style="{StaticResource CardCaption}" />
+                  </StackPanel>
+
+                  <Border Grid.Column="2" Background="{ThemeResource AmberChipBrush}" CornerRadius="9" Padding="9,3" VerticalAlignment="Center"
+                          Visibility="{Binding Data.FuelNoteAccent, Converter={StaticResource NullToVisibility}}">
+                    <TextBlock Style="{StaticResource CardCaption}" Foreground="{ThemeResource AmberInkBrush}" Text="{Binding Data.FuelChip}" />
+                  </Border>
+
+                  <!--
+                    Decorative, and accepted as such: nothing sits behind these rows in a sample whose
+                    whole product is one card. Recorded here rather than left for a reviewer to find.
+                  -->
+                  <Viewbox Grid.Column="3" Width="16" Height="16" VerticalAlignment="Center" Margin="10,0,0,0">
+                    <Canvas Width="24" Height="24">
+                      <Path Stroke="{ThemeResource Ink3Brush}" StrokeThickness="2.2" StrokeLineJoin="Round"
+                            StrokeStartLineCap="Round" StrokeEndLineCap="Round" Data="M9 6l6 6-6 6" />
+                    </Canvas>
+                  </Viewbox>
+                </Grid>
+
+                <Rectangle Style="{StaticResource RowRule}" />
+
+                <!-- Cabin: the one check the driver can still act on, so it owns the actions. -->
+                <Grid Style="{StaticResource ListRowStyle}">
+                  <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                   </Grid.ColumnDefinitions>
 
-                  <Viewbox Width="20" Height="20" VerticalAlignment="Center">
+                  <Viewbox Width="24" Height="24" VerticalAlignment="Top" Margin="0,2,0,0">
                     <Canvas Width="24" Height="24">
-                      <Path Stroke="{ThemeResource Ink2Brush}" StrokeThickness="1.9"
+                      <Path Stroke="{ThemeResource AccentBrush}" StrokeThickness="1.7" StrokeLineJoin="Round"
                             StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                            Data="M4 7h8M4 12h11M4 17h6M17.5 6.5v5M20 9h-5" />
+                            Data="M12 3a2.5 2.5 0 0 1 2.5 2.5v8.2a4.5 4.5 0 1 1-5 0V5.5A2.5 2.5 0 0 1 12 3z" />
+                      <Ellipse Canvas.Left="9.5" Canvas.Top="15" Width="5" Height="5" Fill="{ThemeResource AccentBrush}" />
                     </Canvas>
                   </Viewbox>
 
-                  <TextBlock Grid.Column="1" x:Uid="ChecksTitle" Style="{StaticResource RowValueStrong}" VerticalAlignment="Center" Margin="4,0,0,0" />
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="9">
+                    <StackPanel>
+                      <TextBlock x:Uid="ChecksCabinTitle" Style="{StaticResource RowValueStrong}" />
+                      <TextBlock Style="{StaticResource CardCaption}"><Run Text="{Binding Data.CabinLead}" /><Run Text="{Binding Data.CabinAccent}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" Foreground="{ThemeResource AccentInkBrush}" /></TextBlock>
+                    </StackPanel>
 
-                  <Border Grid.Column="2" Margin="9,0,0,0" Background="{ThemeResource ChipBrush}" CornerRadius="9" Padding="8,2" VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource CardCaption}" Text="{Binding Data.ChecksCount}" />
+                    <StackPanel Spacing="9" Visibility="{Binding Data.CabinNeedsWarming, Converter={StaticResource BoolToVisibility}}">
+                      <Border Background="{ThemeResource ChipBrush}" CornerRadius="9" Padding="9,4" HorizontalAlignment="Left">
+                        <TextBlock Style="{StaticResource CardCaption}"><Run Text="{Binding Data.CabinFrom}" /><Run Text="{Binding Data.CabinMid}" /><Run Text="{Binding Data.CabinTo}" /></TextBlock>
+                      </Border>
+
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button x:Uid="StartWarming"
+                                Style="{StaticResource PrimaryPillStyle}"
+                                Command="{Binding Parent.ToggleClimate}"
+                                IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}" />
+                      </StackPanel>
+                    </StackPanel>
+                  </StackPanel>
+
+                  <Border Grid.Column="2" Background="{ThemeResource AccentChipBrush}" CornerRadius="9" Padding="9,3" VerticalAlignment="Top" Margin="0,2,0,0"
+                          Visibility="{Binding Data.CabinNeedsWarming, Converter={StaticResource BoolToVisibility}}">
+                    <TextBlock x:Uid="ChecksCabinSuggested" Style="{StaticResource CardCaption}" Foreground="{ThemeResource AccentInkBrush}" />
+                  </Border>
+                </Grid>
+
+                <Rectangle Style="{StaticResource RowRule}"
+                           Visibility="{Binding Data.HasDestination, Converter={StaticResource BoolToVisibility}}" />
+
+                <!-- Destination. Absent entirely on a no-trip morning rather than drawn empty. -->
+                <Grid Style="{StaticResource ListRowStyle}"
+                      Visibility="{Binding Data.HasDestination, Converter={StaticResource BoolToVisibility}}">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
+
+                  <Viewbox Width="24" Height="24" VerticalAlignment="Center">
+                    <Canvas Width="24" Height="24">
+                      <Ellipse Canvas.Left="2" Canvas.Top="2" Width="20" Height="20" Stroke="{ThemeResource InkBrush}" StrokeThickness="1.7" />
+                      <Path Stroke="{ThemeResource InkBrush}" StrokeThickness="1.7" StrokeLineJoin="Round"
+                            StrokeStartLineCap="Round" Data="M10 17V7h3.2a3 3 0 0 1 0 6H10" />
+                    </Canvas>
+                  </Viewbox>
+
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource RowValueStrong}" TextWrapping="Wrap" Text="{Binding Data.ParkingStreet}" />
+                    <TextBlock Style="{StaticResource CardCaption}" TextWrapping="Wrap" Text="{Binding Data.ParkingNote}" />
+                  </StackPanel>
+
+                  <Border Grid.Column="2" Background="{ThemeResource GoodChipBrush}" CornerRadius="9" Padding="9,3" VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource CardCaption}" Foreground="{ThemeResource GoodInkBrush}" Text="{Binding Data.ParkingChip}" />
                   </Border>
 
-                  <TextBlock Grid.Column="3" Style="{StaticResource CardCaption}" HorizontalAlignment="Right" VerticalAlignment="Center" Text="{Binding Data.ChecksReady}" />
-
-                  <!-- One glyph, rotated, rather than two glyphs swapped. -->
-                  <Viewbox Grid.Column="4" Width="16" Height="16" VerticalAlignment="Center" Margin="10,0,0,0" RenderTransformOrigin="0.5,0.5">
-                    <Viewbox.RenderTransform>
-                      <RotateTransform Angle="{Binding Data.ChecksExpanded, Converter={StaticResource BoolToAngle}}" />
-                    </Viewbox.RenderTransform>
+                  <!--
+                    Decorative, and accepted as such: nothing sits behind these rows in a sample whose
+                    whole product is one card. Recorded here rather than left for a reviewer to find.
+                  -->
+                  <Viewbox Grid.Column="3" Width="16" Height="16" VerticalAlignment="Center" Margin="10,0,0,0">
                     <Canvas Width="24" Height="24">
                       <Path Stroke="{ThemeResource Ink3Brush}" StrokeThickness="2.2" StrokeLineJoin="Round"
-                            StrokeStartLineCap="Round" StrokeEndLineCap="Round" Data="M6 9l6 6 6-6" />
+                            StrokeStartLineCap="Round" StrokeEndLineCap="Round" Data="M9 6l6 6-6 6" />
                     </Canvas>
                   </Viewbox>
                 </Grid>
-              </Button>
-
-              <!--
-                Everything below the header collapses together. The reveal fades and rises rather
-                than animating height: measuring a growing panel every frame is the expensive way,
-                and the job here is continuity, not spectacle.
-              -->
-              <StackPanel x:Name="ChecksBody"
-                          Visibility="{Binding Data.ChecksExpanded, Converter={StaticResource BoolToVisibility}}"
-                          RenderTransformOrigin="0.5,0">
-                <StackPanel.RenderTransform>
-                  <TranslateTransform x:Name="ChecksBodyShift" />
-                </StackPanel.RenderTransform>
-              <Rectangle Style="{StaticResource RowRule}" />
-
-              <!-- Fuel: informational, so it carries a status chip and no action. -->
-              <Grid Style="{StaticResource ListRowStyle}">
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="Auto" />
-                  <ColumnDefinition Width="*" />
-                  <ColumnDefinition Width="Auto" />
-                  <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <Viewbox Width="24" Height="24" VerticalAlignment="Center">
-                  <Canvas Width="24" Height="24">
-                    <Path Stroke="{Binding Data.FuelLevel, Converter={StaticResource StatLevelBrush}}"
-                          StrokeThickness="1.7" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                          Data="M5 21V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v15M3 21h14M7 8h6M15 10h2a2 2 0 0 1 2 2v5.5a1.5 1.5 0 0 0 3 0V11l-3-3" />
-                  </Canvas>
-                </Viewbox>
-
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                  <TextBlock Style="{StaticResource RowValueStrong}"><Run Text="{Binding Data.FuelValue}" /><Run Text=" " /><Run Text="{Binding Data.FuelUnit}" /><Run Text=" " /><Run x:Uid="FuelRangeWord" /></TextBlock>
-                  <TextBlock x:Uid="ChecksFuelTitle" Style="{StaticResource CardCaption}" />
                 </StackPanel>
-
-                <Border Grid.Column="2" Background="{ThemeResource AmberChipBrush}" CornerRadius="9" Padding="9,3" VerticalAlignment="Center"
-                        Visibility="{Binding Data.FuelNoteAccent, Converter={StaticResource NullToVisibility}}">
-                  <TextBlock Style="{StaticResource CardCaption}" Foreground="{ThemeResource AmberInkBrush}" Text="{Binding Data.FuelChip}" />
-                </Border>
-
-                <!--
-                  Decorative, and accepted as such: nothing sits behind these rows in a sample whose
-                  whole product is one card. Recorded here rather than left for a reviewer to find.
-                -->
-                <Viewbox Grid.Column="3" Width="16" Height="16" VerticalAlignment="Center" Margin="10,0,0,0">
-                  <Canvas Width="24" Height="24">
-                    <Path Stroke="{ThemeResource Ink3Brush}" StrokeThickness="2.2" StrokeLineJoin="Round"
-                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" Data="M9 6l6 6-6 6" />
-                  </Canvas>
-                </Viewbox>
-              </Grid>
-
-              <Rectangle Style="{StaticResource RowRule}" />
-
-              <!-- Cabin: the one check the driver can still act on, so it owns the actions. -->
-              <Grid Style="{StaticResource ListRowStyle}">
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="Auto" />
-                  <ColumnDefinition Width="*" />
-                  <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <Viewbox Width="24" Height="24" VerticalAlignment="Top" Margin="0,2,0,0">
-                  <Canvas Width="24" Height="24">
-                    <Path Stroke="{ThemeResource AccentBrush}" StrokeThickness="1.7" StrokeLineJoin="Round"
-                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                          Data="M12 3a2.5 2.5 0 0 1 2.5 2.5v8.2a4.5 4.5 0 1 1-5 0V5.5A2.5 2.5 0 0 1 12 3z" />
-                    <Ellipse Canvas.Left="9.5" Canvas.Top="15" Width="5" Height="5" Fill="{ThemeResource AccentBrush}" />
-                  </Canvas>
-                </Viewbox>
-
-                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="9">
-                  <StackPanel>
-                    <TextBlock x:Uid="ChecksCabinTitle" Style="{StaticResource RowValueStrong}" />
-                    <TextBlock Style="{StaticResource CardCaption}"><Run Text="{Binding Data.CabinLead}" /><Run Text="{Binding Data.CabinAccent}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" Foreground="{ThemeResource AccentInkBrush}" /></TextBlock>
-                  </StackPanel>
-
-                  <StackPanel Spacing="9" Visibility="{Binding Data.CabinNeedsWarming, Converter={StaticResource BoolToVisibility}}">
-                    <Border Background="{ThemeResource ChipBrush}" CornerRadius="9" Padding="9,4" HorizontalAlignment="Left">
-                      <TextBlock Style="{StaticResource CardCaption}"><Run Text="{Binding Data.CabinFrom}" /><Run Text="{Binding Data.CabinMid}" /><Run Text="{Binding Data.CabinTo}" /></TextBlock>
-                    </Border>
-
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                      <Button x:Uid="StartWarming"
-                              Style="{StaticResource PrimaryPillStyle}"
-                              Command="{Binding Parent.ToggleClimate}"
-                              IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}" />
-                    </StackPanel>
-                  </StackPanel>
-                </StackPanel>
-
-                <Border Grid.Column="2" Background="{ThemeResource AccentChipBrush}" CornerRadius="9" Padding="9,3" VerticalAlignment="Top" Margin="0,2,0,0"
-                        Visibility="{Binding Data.CabinNeedsWarming, Converter={StaticResource BoolToVisibility}}">
-                  <TextBlock x:Uid="ChecksCabinSuggested" Style="{StaticResource CardCaption}" Foreground="{ThemeResource AccentInkBrush}" />
-                </Border>
-              </Grid>
-
-              <Rectangle Style="{StaticResource RowRule}"
-                         Visibility="{Binding Data.HasDestination, Converter={StaticResource BoolToVisibility}}" />
-
-              <!-- Destination. Absent entirely on a no-trip morning rather than drawn empty. -->
-              <Grid Style="{StaticResource ListRowStyle}"
-                    Visibility="{Binding Data.HasDestination, Converter={StaticResource BoolToVisibility}}">
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="Auto" />
-                  <ColumnDefinition Width="*" />
-                  <ColumnDefinition Width="Auto" />
-                  <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <Viewbox Width="24" Height="24" VerticalAlignment="Center">
-                  <Canvas Width="24" Height="24">
-                    <Ellipse Canvas.Left="2" Canvas.Top="2" Width="20" Height="20" Stroke="{ThemeResource InkBrush}" StrokeThickness="1.7" />
-                    <Path Stroke="{ThemeResource InkBrush}" StrokeThickness="1.7" StrokeLineJoin="Round"
-                          StrokeStartLineCap="Round" Data="M10 17V7h3.2a3 3 0 0 1 0 6H10" />
-                  </Canvas>
-                </Viewbox>
-
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                  <TextBlock Style="{StaticResource RowValueStrong}" TextWrapping="Wrap" Text="{Binding Data.ParkingStreet}" />
-                  <TextBlock Style="{StaticResource CardCaption}" TextWrapping="Wrap" Text="{Binding Data.ParkingNote}" />
-                </StackPanel>
-
-                <Border Grid.Column="2" Background="{ThemeResource GoodChipBrush}" CornerRadius="9" Padding="9,3" VerticalAlignment="Center">
-                  <TextBlock Style="{StaticResource CardCaption}" Foreground="{ThemeResource GoodInkBrush}" Text="{Binding Data.ParkingChip}" />
-                </Border>
-
-                <!--
-                  Decorative, and accepted as such: nothing sits behind these rows in a sample whose
-                  whole product is one card. Recorded here rather than left for a reviewer to find.
-                -->
-                <Viewbox Grid.Column="3" Width="16" Height="16" VerticalAlignment="Center" Margin="10,0,0,0">
-                  <Canvas Width="24" Height="24">
-                    <Path Stroke="{ThemeResource Ink3Brush}" StrokeThickness="2.2" StrokeLineJoin="Round"
-                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" Data="M9 6l6 6-6 6" />
-                  </Canvas>
-                </Viewbox>
-              </Grid>
               </StackPanel>
-            </StackPanel>
+            </Border>
           </DataTemplate>
         </mvux:FeedView.ValueTemplate>
       </mvux:FeedView>
