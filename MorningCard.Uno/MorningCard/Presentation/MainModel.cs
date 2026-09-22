@@ -55,7 +55,7 @@ public partial record MainModel
     /// The three list rows. Takes the trip as well as the car, because the destination row is a
     /// property of where this trip ends rather than of the vehicle.
     /// </summary>
-    public IFeed<CarView> Stats => Feed.Combine(Car, Slot, ChecksExpanded).Select(BuildCar);
+    public IFeed<CarView> Stats => Feed.Combine(Car, Slot, ChecksExpanded, Now).Select(BuildCar);
 
     public string EtaUnitLabel => Text("Eta_Unit");
 
@@ -345,7 +345,8 @@ public partial record MainModel
             ArriveLabel: Format("Route_Arrive", Clock(timeline.Arrive)),
             WalkLabel: Format("Route_Walk", plan.WalkMin),
             BellLabel: Format("Route_Bell", Clock(plan.Bell)),
-            RouteDescription: description);
+            RouteDescription: description,
+            Ruler: new RulerPlan(timeline, plan.WalkMin, plan.Bell, now));
     }
 
     /// <summary>How today compares with a usual morning, shared by the header and the ETA block.</summary>
@@ -356,10 +357,11 @@ public partial record MainModel
         _ => Text("VsUsual_Same"),
     };
 
-    private CarView BuildCar((VehicleSnapshot Car, TripSlot Slot, bool Expanded) input)
+    private CarView BuildCar((VehicleSnapshot Car, TripSlot Slot, bool Expanded, TimeOnly Now) input)
     {
-        var (car, slot, expanded) = input;
+        var (car, slot, expanded, now) = input;
         var fuelLevel = TripMath.RangeLevel(car.Range);
+        var timeline = slot.Plan is null ? null : TripMath.Derive(slot.Plan, now);
 
         // Two clauses: whether today's driving fits, and whether it needs attention soon. The
         // second half is the one that carries the colour, so it travels separately.
@@ -402,7 +404,15 @@ public partial record MainModel
             // The row leaves entirely on a no-trip morning. Kept, it rendered a wrapped label, an
             // empty value column and a chevron pointing at nothing.
             HasDestination: slot.Plan is not null,
-            IsStale: car.IsStale);
+            IsStale: car.IsStale,
+            // Named, not left to the dot's colour alone - which is also what keeps the three states
+            // of the design apart for someone who cannot tell those colours apart.
+            StatusBadge: car.IsStale
+                ? Text("Badge_Offline")
+                : timeline is null
+                    ? Text("Badge_NoTrip")
+                    : Text($"Badge_{timeline.Tone}"),
+            Tone: timeline?.Tone ?? CardTone.Ok);
     }
 
     /// <summary>A blank view to build a failure on, so every member stays non-null.</summary>

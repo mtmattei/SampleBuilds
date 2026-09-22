@@ -1,500 +1,591 @@
+using MorningCard.Core.Route;
 using SkiaSharp;
 
 namespace MorningCard.Controls;
 
 /// <summary>
-/// Draws the slack ruler along the route: minutes become distance on the path, so the wait before
-/// leaving is as visible as the drive itself.
+/// Draws the time ruler along the real route.
 ///
-/// No XAML types here, and nothing is allocated per frame. Paints, the path and its measure are
-/// built once and reused; the render thread only reads them.
+/// The route line is the ruler: ticks are placed by time, so the gap between two of them is how far
+/// the car gets in that minute. They bunch where the drive is slow and spread where it is fast.
+/// Slack has duration but no distance, so it is drawn as an arc around the pin where the waiting
+/// happens rather than as a length of road.
+///
+/// Everything arrives already projected into screen pixels (see <see cref="RulerProjection"/>). No
+/// XAML types here, no Mapsui, and nothing allocated per frame: paths are rebuilt only when the
+/// projection itself changes, and the paints are built once.
 /// </summary>
 internal sealed class RouteRulerRenderer : IDisposable
 {
-    // The design space the mockup was drawn in. Everything below is in these units.
-    private const float DesignWidth = 356f;
-    private const float DesignHeight = 214f;
+    // ---- measurements, all in device-independent pixels --------------------------------------
 
-    private const string RouteData =
-        "M34 186 L102 180 Q140 178 164 160 L200 130 Q222 112 244 88 L258 74 Q268 62 276 56";
+    /// <summary>The route line itself.</summary>
+    private const float RouteWidth = 5f;
 
-    private const float SegmentWidth = 5f;
-    private const float SlackDotRadius = 2.1f;
-    private const float SlackDotStep = 7f;
-    private const float LabelSize = 11.5f;
-    private const float PillTextSize = 12f;
-    private const float PillWidth = 58f;
-    private const float PillHeight = 24f;
+    /// <summary>A lighter casing under the line, so it reads against a busy street grid.</summary>
+    private const float CasingWidth = 8.5f;
+
+    private const float MinorTickWidth = 1f;
+    private const float MinorTickLength = 6f;
+    private const float MajorTickWidth = 1.5f;
+    private const float MajorTickLength = 10f;
+
+    /// <summary>How far a major tick's label sits beyond the end of its tick.</summary>
+    private const float TickLabelGap = 4f;
+
+    private const float LabelSize = 10.5f;
+    private const float CalloutTextSize = 12f;
+
+    /// <summary>
+    /// Screen-constant, so the ring reads as a clock face rather than as a piece of the map. A
+    /// stationary car goes around the clock, not down the road.
+    /// </summary>
+    private const float RingRadius = 22f;
+
+    private const float RingWidth = 2f;
+
+    /// <summary>A ring is a dotted arc: this is the on/off run of the dash.</summary>
+    private static readonly float[] RingDash = [2f, 4f];
+
+    /// <summary>The walk is drawn hollow, so the change of mode reads without a legend.</summary>
+    private static readonly float[] WalkDash = [1.5f, 5f];
+
+    private const float PinRadius = 5.5f;
+    private const float PinRingWidth = 2.5f;
+    private const float CursorRadius = 5f;
 
     /// <summary>The app's shared small radius, rather than a ninth invented value.</summary>
-    private const float PinCornerRadius = 8f;
+    private const float CalloutCornerRadius = 8f;
 
-    /// <summary>
-    /// Below this gap between the car and the leave node there is no room for a label above the
-    /// path, so it drops underneath and the slack caption is dropped entirely.
-    /// </summary>
-    private const float LeaveLabelGapThreshold = 84f;
+    private const float CalloutPadX = 7f;
+    private const float CalloutPadY = 4f;
 
-    /// <summary>How far along the slack stretch the grey "now" marker sits.</summary>
-    private const float NowMarkerFraction = 0.26f;
+    /// <summary>How close two pins may be before only the more important one is labelled.</summary>
+    private const float CalloutClearance = 46f;
 
-    /// <summary>Where the ground wash has finished clearing, in design units.</summary>
-    private const float FadeEnd = DesignWidth * 0.60f;
+    /// <summary>How near the panel edge a callout may sit before it is pushed back inside.</summary>
+    private const float CalloutMargin = 6f;
 
-    /// <summary>
-    /// How much of the wash is held solid before it starts to ramp. At 0.60 of a 0.60 end, the
-    /// hold runs to 36% of the panel and the ramp finishes by 60% - more solid ground under the
-    /// text than the first version, over a ramp a third shorter, so the map arrives crisply
-    /// instead of drifting in.
-    /// </summary>
-    private const float FadeHoldStop = 0.60f;
-
-    private readonly SKPath _route = SKPath.ParseSvgPathData(RouteData);
-    private readonly SKPathMeasure _measure;
-    private readonly float _length;
+    // ---- reused drawing state ----------------------------------------------------------------
 
     private readonly SKPaint _fill = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
     private readonly SKPaint _stroke = new() { IsAntialias = true, Style = SKPaintStyle.Stroke };
-    private readonly SKPaint _segment = new()
+
+    private readonly SKPaint _line = new()
     {
         IsAntialias = true,
         Style = SKPaintStyle.Stroke,
-        StrokeWidth = SegmentWidth,
         StrokeCap = SKStrokeCap.Round,
         StrokeJoin = SKStrokeJoin.Round,
     };
 
     private readonly SKFont _labelFont = new() { Size = LabelSize, Edging = SKFontEdging.SubpixelAntialias };
-    private readonly SKFont _pillFont = new() { Size = PillTextSize, Edging = SKFontEdging.SubpixelAntialias };
-    private readonly SKPath _scratch = new();
+    private readonly SKFont _calloutFont = new() { Size = CalloutTextSize, Edging = SKFontEdging.SubpixelAntialias };
 
-    // Parsed once. These were re-parsed from strings inside RenderOverride on every frame - four
-    // ground paths plus the pin glyph - which is exactly what the class comment says it does not do.
-    private readonly SKPath _parkA = SKPath.ParseSvgPathData("M120 40 q30 -18 62 2 q10 30 -20 44 q-40 6 -50 -14 q-6 -18 8 -32z");
-    private readonly SKPath _parkB = SKPath.ParseSvgPathData("M300 20 q36 -14 52 20 q2 26 -28 30 q-30 -4 -24 -50z");
-    private readonly SKPath _parkC = SKPath.ParseSvgPathData("M186 168 q26 -10 40 8 q6 20 -14 26 q-30 2 -26 -34z");
-    private readonly SKPath _water = SKPath.ParseSvgPathData("M356 120 q-30 12 -50 44 q-14 24 -46 40 q-20 8 -30 30");
-    private readonly SKPath _mortarboard = SKPath.ParseSvgPathData("M12 3 2 8l10 5 8-4v6h2V8L12 3zm-6 9.5V17c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.5l-6 3-6-3z");
-    private readonly SKPath _pinTail = new();
+    private readonly SKPath _drive = new();
+    private readonly SKPath _walk = new();
 
-    private SKShader? _fade;
-    private SKColor _fadeBuiltFor;
+    private SKPathMeasure? _driveMeasure;
+    private SKPathMeasure? _walkMeasure;
+    private SKPathEffect? _ringDash;
+    private SKPathEffect? _walkDash;
 
-    public RouteRulerRenderer()
-    {
-        _measure = new SKPathMeasure(_route, forceClosed: false);
-        _length = _measure.Length;
-    }
+    /// <summary>
+    /// The projection the cached paths were built from. Compared by reference: a new projection is
+    /// a new object, and building a path per frame during the entrance would be thirty a second.
+    /// </summary>
+    private RulerProjection? _builtFor;
 
-    /// <summary>Applies the packaged typeface once it has loaded; the default face is used until then.</summary>
     public void SetTypeface(SKTypeface typeface)
     {
         _labelFont.Typeface = typeface;
-        _pillFont.Typeface = typeface;
+        _calloutFont.Typeface = typeface;
     }
 
     public void Render(SKCanvas canvas, SKSize area, RouteRulerSnapshot snapshot)
     {
-        var palette = snapshot.Palette;
-
-        // A zero-sized first layout would make the scale below zero, and the visible-bounds
-        // division would then feed NaN geometry to Skia - which is a native crash, not an
-        // exception. Nothing to draw at this size anyway.
-        if (area.Width <= 0f || area.Height <= 0f)
+        // A zero-sized first layout would feed NaN geometry to Skia, which is a native crash rather
+        // than an exception. Nothing to draw at this size anyway.
+        if (area.Width <= 0f || area.Height <= 0f || !snapshot.HasRoute)
         {
             return;
         }
 
-        canvas.Save();
-
-        // Width-driven, deliberately not a max-slice on both axes.
-        //
-        // A max-slice becomes height-driven as soon as the panel is taller than the design aspect,
-        // and then it crops horizontally: at phone width with a 248 panel that cut 42.5 design
-        // units off each side, taking the car node, its halo and the "Now" label - the anchor the
-        // whole slack reading is measured from. The route is a horizontal object, so the full
-        // design width always has to be on screen. The ground is procedural and simply fills any
-        // extra height.
-        var scale = area.Width / DesignWidth;
-        var top = (area.Height - (DesignHeight * scale)) / 2f;
-        canvas.Translate(0f, top);
-        canvas.Scale(scale);
-
-        // No ground since v2: real OSM tiles sit underneath this canvas, so drawing the schematic
-        // map here would paint over them. The route, its labels and its pins still draw, which is
-        // the whole point of keeping the ruler - the map is a textured backdrop, not the geometry.
-        if (snapshot.HasRoute)
+        if (snapshot.Projection is not { } projection)
         {
-            // No horizontal crop now, so the full design width is what labels clamp against.
-            DrawRoute(canvas, snapshot, palette, visibleWidth: DesignWidth);
+            return;
         }
 
-        canvas.Restore();
-    }
+        EnsurePaths(projection);
 
-    // ---- ground ------------------------------------------------------------------------------
-
-    private void DrawGround(SKCanvas canvas, RouteRulerPalette palette, float visibleTop, float visibleBottom)
-    {
-        canvas.Clear(palette.Map);
-
-        _fill.Color = palette.Park;
-        canvas.DrawPath(_parkA, _fill);
-        canvas.DrawPath(_parkB, _fill);
-        canvas.DrawPath(_parkC, _fill);
-
-        _stroke.Color = palette.Water;
-        _stroke.StrokeWidth = 9f;
-        _stroke.StrokeCap = SKStrokeCap.Round;
-        _stroke.StrokeJoin = SKStrokeJoin.Round;
-        canvas.DrawPath(_water, _stroke);
-
-        // A street grid at a slight angle, so the route reads as running across a neighbourhood
-        // rather than along a ruler.
-        canvas.Save();
-        canvas.RotateDegrees(-22f, 178f, 107f);
-
-        _stroke.Color = palette.Road;
-        _stroke.StrokeWidth = 1.6f;
-        DrawGrid(canvas, major: true);
-
-        _stroke.Color = palette.Road.WithAlpha(204);
-        _stroke.StrokeWidth = 0.9f;
-        DrawGrid(canvas, major: false);
-
-        canvas.Restore();
-
-        // Flat ground under the ETA block, then a soft ramp into the map.
-        //
-        // The hold runs to the big number's right edge so the digits never sit on grid lines, and
-        // the ramp is finished before the route's first node. Cached against the map colour: this
-        // is the render thread, and the entrance asks for 30 frames a second.
-        if (_fade is null || _fadeBuiltFor != palette.Map)
-        {
-            _fade?.Dispose();
-            _fade = SKShader.CreateLinearGradient(
-                new SKPoint(0, 0),
-                new SKPoint(FadeEnd, 0),
-                new[] { palette.Map, palette.Map, palette.Map.WithAlpha(0) },
-                new[] { 0f, FadeHoldStop, 1f },
-                SKShaderTileMode.Clamp);
-            _fadeBuiltFor = palette.Map;
-        }
-
-        _fill.Shader = _fade;
-        _fill.Color = SKColors.White;
-        canvas.DrawRect(0, visibleTop, DesignWidth, visibleBottom - visibleTop, _fill);
-        _fill.Shader = null;
-    }
-
-    private void DrawGrid(SKCanvas canvas, bool major)
-    {
-        var spacing = major ? 80f : 40f;
-        var offset = major ? -20f : 20f;
-
-        for (var y = offset - 200f; y <= 460f; y += spacing)
-        {
-            canvas.DrawLine(-40f, y, 420f, y, _stroke);
-        }
-
-        var xSpacing = major ? 100f : 50f;
-        var xOffset = major ? 0f : 50f;
-
-        for (var x = xOffset; x <= 400f; x += xSpacing)
-        {
-            canvas.DrawLine(x, -280f, x, 520f, _stroke);
-        }
-    }
-
-    // ---- the ruler ---------------------------------------------------------------------------
-
-    private void DrawRoute(SKCanvas canvas, RouteRulerSnapshot snapshot, RouteRulerPalette palette, float visibleWidth)
-    {
-        var late = snapshot.IsLate;
-        var driveColor = late ? palette.Danger : palette.Accent;
-        var pointInk = late ? palette.DangerInk : palette.Ink;
-
-        var fLeave = (float)Math.Clamp(snapshot.Leave, 0d, 1d);
-        var fArrive = (float)Math.Clamp(snapshot.Arrive, 0d, 1d);
-
-        var p0 = PointAt(0f);
-        var pLeave = PointAt(fLeave);
-        var pArrive = PointAt(fArrive);
-        var pBell = PointAt(1f);
-
+        var palette = snapshot.Palette;
         var t = snapshot.Progress;
-        var hasSlack = !late && fLeave > 0f;
 
-        // Trip order: the dots fill in, the drive draws, the walk follows, then the markers land.
-        var dotsT = Ease(Phase(t, 0.00, 0.18));
-        var driveT = Ease(Phase(t, 0.14, 0.52));
-        var walkT = Ease(Phase(t, 0.50, 0.66));
-        var markerT = Phase(t, 0.62, 0.82);
-        var labelT = Phase(t, 0.78, 1.00);
+        // Trip order: the wait appears, the drive draws itself along the road, the walk follows,
+        // the ticks arrive, then the pins land and the labels settle.
+        var ringT = Ease(Phase(t, 0.00, 0.20));
+        var driveT = Ease(Phase(t, 0.14, 0.54));
+        var walkT = Ease(Phase(t, 0.52, 0.68));
+        var tickT = Phase(t, 0.62, 0.82);
+        var markerT = Phase(t, 0.70, 0.90);
+        var labelT = Phase(t, 0.82, 1.00);
 
-        if (hasSlack && dotsT > 0f)
+        var driveColor = snapshot.IsLate ? palette.Danger : palette.Accent;
+
+        DrawCasing(canvas, palette, driveT, walkT);
+        DrawRouteLines(canvas, palette, driveColor, driveT, walkT);
+
+        if (tickT > 0f)
         {
-            DrawSlackDots(canvas, fLeave, dotsT, palette.Ink3);
+            DrawTicks(canvas, projection, palette, driveColor, tickT);
         }
 
-        if (driveT > 0f)
+        if (ringT > 0f)
         {
-            _segment.Color = driveColor;
-            DrawSegment(canvas, late ? 0f : fLeave, fArrive, driveT);
-        }
-
-        if (walkT > 0f)
-        {
-            _segment.Color = palette.Amber;
-            DrawSegment(canvas, fArrive, 1f, walkT);
-        }
-
-        // The car sits at the start whether or not there is slack left.
-        _fill.Color = palette.Accent.WithAlpha(46);
-        canvas.DrawCircle(p0.X, p0.Y, 14f, _fill);
-        DrawNode(canvas, p0, 6.5f, palette.Accent, palette.NodeStroke, 3f);
-
-        // A small grey marker for the current time, a little way along the slack. The car dot is
-        // where the car is; this is what the "Now" label points at.
-        if (hasSlack)
-        {
-            var now = PointAt(fLeave * NowMarkerFraction);
-            _fill.Color = palette.Ink2;
-            canvas.DrawCircle(now.X, now.Y, 3.5f, _fill);
+            DrawRing(canvas, projection.OriginDwell, palette, driveColor, ringT);
+            DrawRing(canvas, projection.DestinationDwell, palette, palette.Amber, ringT);
         }
 
         if (markerT > 0f)
         {
-            var pop = BackOut(markerT);
-
-            if (hasSlack)
-            {
-                DrawPoppedNode(canvas, pLeave, 5f, palette.Accent, palette.NodeStroke, 2.5f, pop);
-            }
-
-            DrawPoppedNode(canvas, pArrive, 5f, late ? palette.Danger : palette.Accent, palette.NodeStroke, 2.5f, pop);
-            DrawPoppedNode(canvas, pBell, 4f, palette.Amber, palette.NodeStroke, 2.5f, pop);
-
-            DrawPin(canvas, pBell, palette, pop);
-            DrawDrivePill(canvas, snapshot, fLeave, fArrive, late, palette, pop);
+            DrawMarkers(canvas, projection, palette, driveColor, BackOut(markerT));
         }
 
         if (labelT > 0f)
         {
-            DrawLabels(canvas, snapshot, p0, pLeave, pArrive, pBell, fLeave, fArrive, hasSlack, pointInk, palette, labelT, visibleWidth);
+            DrawCallouts(canvas, snapshot, projection, palette, labelT, area);
         }
+
+        DrawCursor(canvas, projection, palette, driveColor, markerT);
     }
 
-    private void DrawSlackDots(SKCanvas canvas, float fLeave, float progress, SKColor color)
+    // ---- the route ----------------------------------------------------------------------------
+
+    /// <summary>
+    /// Rebuilds the cached paths when the projection changes - a new viewport, new times, or a
+    /// theme switch. Not per frame.
+    /// </summary>
+    private void EnsurePaths(RulerProjection projection)
     {
-        _fill.Color = color;
-
-        var from = 12f;
-        var to = (fLeave * _length) - 10f;
-
-        if (to <= from)
+        if (ReferenceEquals(_builtFor, projection))
         {
             return;
         }
 
-        var count = (int)Math.Floor((to - from) / SlackDotStep) + 1;
-        var visible = (int)Math.Ceiling(count * progress);
+        _builtFor = projection;
 
-        for (var i = 0; i < visible; i++)
-        {
-            var distance = from + (i * SlackDotStep);
+        BuildPath(_drive, projection.Drive);
+        BuildPath(_walk, projection.Walk);
 
-            if (distance >= to)
-            {
-                break;
-            }
+        _driveMeasure?.Dispose();
+        _walkMeasure?.Dispose();
 
-            if (_measure.GetPosition(distance, out var point))
-            {
-                canvas.DrawCircle(point.X, point.Y, SlackDotRadius, _fill);
-            }
-        }
+        _driveMeasure = new SKPathMeasure(_drive, forceClosed: false);
+        _walkMeasure = new SKPathMeasure(_walk, forceClosed: false);
+
+        _ringDash ??= SKPathEffect.CreateDash(RingDash, 0f);
+        _walkDash ??= SKPathEffect.CreateDash(WalkDash, 0f);
     }
 
-    /// <summary>Draws the stretch between two fractions, grown to <paramref name="progress"/>.</summary>
-    private void DrawSegment(SKCanvas canvas, float from, float to, float progress)
+    private static void BuildPath(SKPath path, IReadOnlyList<SKPoint> points)
     {
-        var start = from * _length;
-        var end = start + ((to - from) * _length * progress);
+        path.Reset();
 
-        if (end - start < 0.5f)
+        if (points.Count < 2)
         {
             return;
         }
 
-        _scratch.Reset();
+        path.MoveTo(points[0]);
 
-        if (_measure.GetSegment(start, end, _scratch, startWithMoveTo: true))
+        for (var i = 1; i < points.Count; i++)
         {
-            canvas.DrawPath(_scratch, _segment);
+            path.LineTo(points[i]);
         }
-    }
-
-    private void DrawNode(SKCanvas canvas, SKPoint at, float radius, SKColor fill, SKColor ring, float ringWidth)
-    {
-        _fill.Color = fill;
-        canvas.DrawCircle(at.X, at.Y, radius, _fill);
-
-        _stroke.Color = ring;
-        _stroke.StrokeWidth = ringWidth;
-        canvas.DrawCircle(at.X, at.Y, radius, _stroke);
-    }
-
-    private void DrawPoppedNode(SKCanvas canvas, SKPoint at, float radius, SKColor fill, SKColor ring, float ringWidth, float pop)
-    {
-        canvas.Save();
-        canvas.Translate(at.X, at.Y);
-        canvas.Scale(pop);
-        canvas.Translate(-at.X, -at.Y);
-        DrawNode(canvas, at, radius, fill, ring, ringWidth);
-        canvas.Restore();
-    }
-
-    private void DrawPin(SKCanvas canvas, SKPoint at, RouteRulerPalette palette, float pop)
-    {
-        canvas.Save();
-        canvas.Translate(at.X, at.Y);
-        canvas.Scale(pop);
-        canvas.Translate(-at.X, -at.Y);
-
-        // A rounded square with a short tail, sitting directly above the bell node.
-        const float size = 26f;
-        const float gap = 8f;
-        var top = at.Y - gap - size;
-        var box = new SKRect(at.X - (size / 2f), top, at.X + (size / 2f), top + size);
-
-        _fill.Color = palette.Pin;
-        canvas.DrawRoundRect(box, PinCornerRadius, PinCornerRadius, _fill);
-
-        _pinTail.Reset();
-        _pinTail.MoveTo(at.X - 4f, box.Bottom - 1f);
-        _pinTail.LineTo(at.X + 4f, box.Bottom - 1f);
-        _pinTail.LineTo(at.X, box.Bottom + 5f);
-        _pinTail.Close();
-        canvas.DrawPath(_pinTail, _fill);
-
-        // The school mortarboard inside it.
-        _fill.Color = palette.Map;
-        canvas.Save();
-        canvas.Translate(box.MidX - 7.5f, box.MidY - 7.5f);
-        canvas.Scale(0.625f);
-        canvas.DrawPath(_mortarboard, _fill);
-        canvas.Restore();
-
-        canvas.Restore();
-    }
-
-    private void DrawDrivePill(
-        SKCanvas canvas,
-        RouteRulerSnapshot snapshot,
-        float fLeave,
-        float fArrive,
-        bool late,
-        RouteRulerPalette palette,
-        float pop)
-    {
-        var mid = PointAt((fLeave + fArrive) / 2f);
-
-        // Above the drive's midpoint, riding the line rather than sitting in the corner below it.
-        var cx = mid.X + 8f;
-        var cy = mid.Y - 26f;
-
-        canvas.Save();
-        canvas.Translate(cx, cy);
-        canvas.Scale(pop);
-        canvas.Translate(-cx, -cy);
-
-        _fill.Color = late ? palette.Danger : palette.Accent;
-        var rect = new SKRect(cx - (PillWidth / 2f), cy - (PillHeight / 2f), cx + (PillWidth / 2f), cy + (PillHeight / 2f));
-        canvas.DrawRoundRect(rect, 7f, 7f, _fill);
-
-        _fill.Color = palette.OnAccent;
-        var width = _pillFont.MeasureText(snapshot.DriveLabel);
-        canvas.DrawText(snapshot.DriveLabel, cx - (width / 2f), cy + 4.5f, _pillFont, _fill);
-
-        canvas.Restore();
-    }
-
-    private void DrawLabels(
-        SKCanvas canvas,
-        RouteRulerSnapshot snapshot,
-        SKPoint p0,
-        SKPoint pLeave,
-        SKPoint pArrive,
-        SKPoint pBell,
-        float fLeave,
-        float fArrive,
-        bool hasSlack,
-        SKColor pointInk,
-        RouteRulerPalette palette,
-        float alpha,
-        float visibleWidth)
-    {
-        var a = (byte)Math.Clamp(alpha * 255f, 0f, 255f);
-
-        Label(canvas, snapshot.NowLabel, p0.X + 2f, p0.Y - 16f, TextAnchor.Start, pointInk.WithAlpha(a), palette.Map);
-
-        if (hasSlack)
-        {
-            var gap = pLeave.X - p0.X;
-
-            if (gap > LeaveLabelGapThreshold)
-            {
-                Label(canvas, snapshot.LeaveLabel, pLeave.X - 4f, pLeave.Y - 16f, TextAnchor.Start, palette.Ink.WithAlpha(a), palette.Map);
-
-                var midSlack = PointAt(fLeave / 2f);
-                Label(canvas, snapshot.SlackLabel, midSlack.X, midSlack.Y + 20f, TextAnchor.Middle, palette.Ink2.WithAlpha(a), palette.Map);
-            }
-            else
-            {
-                // Too tight for a label above the path, and the slack caption would collide.
-                Label(canvas, snapshot.LeaveLabel, pLeave.X + 6f, pLeave.Y + 22f, TextAnchor.Start, palette.Ink.WithAlpha(a), palette.Map);
-            }
-        }
-
-        Label(canvas, snapshot.ArriveLabel, pArrive.X - 10f, pArrive.Y - 6f, TextAnchor.End, pointInk.WithAlpha(a), palette.Map);
-
-        var midWalk = PointAt((fArrive + 1f) / 2f);
-        Label(canvas, snapshot.WalkLabel, midWalk.X + 6f, midWalk.Y + 22f, TextAnchor.Start, palette.AmberInk.WithAlpha(a), palette.Map);
-
-        // The bell sits near the right edge, so its label runs off the panel once the design space
-        // is sliced to a narrower card. Flip it to the left of the node rather than clipping it.
-        var bellRoom = visibleWidth - (pBell.X + 11f) - _labelFont.MeasureText(snapshot.BellLabel);
-
-        if (bellRoom < 4f)
-        {
-            Label(canvas, snapshot.BellLabel, pBell.X - 9f, pBell.Y + 4f, TextAnchor.End, pointInk.WithAlpha(a), palette.Map);
-        }
-        else
-        {
-            Label(canvas, snapshot.BellLabel, pBell.X + 11f, pBell.Y + 4f, TextAnchor.Start, pointInk.WithAlpha(a), palette.Map);
-        }
-    }
-
-    private enum TextAnchor
-    {
-        Start,
-        Middle,
-        End,
     }
 
     /// <summary>
-    /// Text with a halo in the map colour, so a label stays legible where it crosses a road or the
-    /// route itself.
+    /// A pale casing under the route, drawn to the same progress as the line above it so the two
+    /// grow together rather than the casing running ahead.
     /// </summary>
-    private void Label(SKCanvas canvas, string text, float x, float y, TextAnchor anchor, SKColor color, SKColor halo)
+    private void DrawCasing(SKCanvas canvas, RouteRulerPalette palette, float driveT, float walkT)
+    {
+        _line.PathEffect = null;
+        _line.StrokeWidth = CasingWidth;
+        _line.Color = palette.NodeStroke.WithAlpha(210);
+
+        DrawPartial(canvas, _drive, _driveMeasure, driveT);
+        DrawPartial(canvas, _walk, _walkMeasure, walkT);
+    }
+
+    private void DrawRouteLines(
+        SKCanvas canvas,
+        RouteRulerPalette palette,
+        SKColor driveColor,
+        float driveT,
+        float walkT)
+    {
+        _line.PathEffect = null;
+        _line.StrokeWidth = RouteWidth;
+        _line.Color = driveColor;
+        DrawPartial(canvas, _drive, _driveMeasure, driveT);
+
+        // Hollow, and amber: the mode change has to read without a legend.
+        _line.PathEffect = _walkDash;
+        _line.StrokeWidth = RouteWidth - 1f;
+        _line.Color = palette.Amber;
+        DrawPartial(canvas, _walk, _walkMeasure, walkT);
+        _line.PathEffect = null;
+    }
+
+    /// <summary>
+    /// Draws the first <paramref name="progress"/> of a path. Whole when settled, so the common
+    /// case does not pay for a path extraction.
+    /// </summary>
+    private void DrawPartial(SKCanvas canvas, SKPath path, SKPathMeasure? measure, float progress)
+    {
+        if (progress <= 0f || path.IsEmpty)
+        {
+            return;
+        }
+
+        if (progress >= 1f || measure is null || measure.Length <= 0f)
+        {
+            canvas.DrawPath(path, _line);
+            return;
+        }
+
+        using var segment = new SKPath();
+
+        if (measure.GetSegment(0f, measure.Length * progress, segment, startWithMoveTo: true))
+        {
+            canvas.DrawPath(segment, _line);
+        }
+    }
+
+    // ---- ticks --------------------------------------------------------------------------------
+
+    /// <summary>
+    /// The minute marks, perpendicular to the route. Their spacing is the reading: bunched is slow,
+    /// spread is fast.
+    /// </summary>
+    private void DrawTicks(
+        SKCanvas canvas,
+        RulerProjection projection,
+        RouteRulerPalette palette,
+        SKColor driveColor,
+        float progress)
+    {
+        var ticks = projection.Ticks;
+
+        // The ticks arrive in order along the route rather than all at once, which reads as the
+        // ruler being laid down over the line that has just drawn itself.
+        var shown = (int)Math.Ceiling(ticks.Count * Ease(progress));
+
+        for (var i = 0; i < shown && i < ticks.Count; i++)
+        {
+            var tick = ticks[i];
+            var ink = tick.Mode == RouteMode.Walk ? palette.AmberInk : driveColor;
+
+            var nx = (float)-Math.Sin(tick.BearingRadians);
+            var ny = (float)Math.Cos(tick.BearingRadians);
+            var half = (tick.IsMajor ? MajorTickLength : MinorTickLength) / 2f;
+
+            _stroke.PathEffect = null;
+            _stroke.Color = ink;
+            _stroke.StrokeWidth = tick.IsMajor ? MajorTickWidth : MinorTickWidth;
+            _stroke.StrokeCap = SKStrokeCap.Round;
+
+            canvas.DrawLine(
+                tick.Point.X - (nx * half),
+                tick.Point.Y - (ny * half),
+                tick.Point.X + (nx * half),
+                tick.Point.Y + (ny * half),
+                _stroke);
+
+            if (!tick.IsMajor || string.IsNullOrEmpty(tick.Label))
+            {
+                continue;
+            }
+
+            // The label sits off the same side every time. Picking the "outside of the turn" per
+            // tick would make consecutive labels flip sides on a winding street.
+            var lx = tick.Point.X + (nx * (half + TickLabelGap));
+            var ly = tick.Point.Y + (ny * (half + TickLabelGap)) + (LabelSize / 3f);
+
+            Label(canvas, tick.Label, lx, ly, TextAnchor.Middle, ink, palette.Map, _labelFont);
+        }
+    }
+
+    // ---- dwell rings --------------------------------------------------------------------------
+
+    /// <summary>
+    /// Time spent standing still, as an arc on a clock face: a full turn is sixty minutes and the
+    /// arc starts at twelve.
+    /// </summary>
+    private void DrawRing(
+        SKCanvas canvas,
+        ProjectedRing? ring,
+        RouteRulerPalette palette,
+        SKColor color,
+        float progress)
+    {
+        if (ring is not { } value || value.SweepDegrees <= 0f)
+        {
+            return;
+        }
+
+        var box = new SKRect(
+            value.Center.X - RingRadius,
+            value.Center.Y - RingRadius,
+            value.Center.X + RingRadius,
+            value.Center.Y + RingRadius);
+
+        // A faint full circle behind the arc, so the hour the arc is a fraction of is visible.
+        _stroke.PathEffect = null;
+        _stroke.StrokeWidth = 1f;
+        _stroke.StrokeCap = SKStrokeCap.Butt;
+        _stroke.Color = palette.Ink3.WithAlpha((byte)(70 * progress));
+        canvas.DrawCircle(value.Center, RingRadius, _stroke);
+
+        // -90 starts the sweep at twelve o'clock; Skia measures from three.
+        _stroke.PathEffect = _ringDash;
+        _stroke.StrokeWidth = RingWidth;
+        _stroke.StrokeCap = SKStrokeCap.Round;
+        _stroke.Color = color.WithAlpha((byte)(255 * progress));
+
+        using var arc = new SKPath();
+        arc.AddArc(box, -90f, value.SweepDegrees * progress);
+        canvas.DrawPath(arc, _stroke);
+
+        _stroke.PathEffect = null;
+
+        if (string.IsNullOrEmpty(value.OverflowLabel))
+        {
+            return;
+        }
+
+        // Past the hour the ring is already full, so the remainder goes in a badge.
+        Label(
+            canvas,
+            value.OverflowLabel,
+            value.Center.X,
+            value.Center.Y - RingRadius - 6f,
+            TextAnchor.Middle,
+            color,
+            palette.Map,
+            _labelFont);
+    }
+
+    // ---- pins and cursor ----------------------------------------------------------------------
+
+    private void DrawMarkers(
+        SKCanvas canvas,
+        RulerProjection projection,
+        RouteRulerPalette palette,
+        SKColor driveColor,
+        float pop)
+    {
+        DrawPin(canvas, projection.Origin, driveColor, palette.NodeStroke, pop);
+
+        if (projection.HasWalk)
+        {
+            DrawPin(canvas, projection.Parking, palette.Amber, palette.NodeStroke, pop);
+        }
+
+        DrawPin(canvas, projection.Destination, palette.Pin, palette.NodeStroke, pop);
+    }
+
+    private void DrawPin(SKCanvas canvas, SKPoint at, SKColor fill, SKColor ring, float pop)
+    {
+        var radius = PinRadius * Math.Clamp(pop, 0f, 1.2f);
+
+        if (radius <= 0f)
+        {
+            return;
+        }
+
+        _stroke.PathEffect = null;
+        _stroke.Color = ring;
+        _stroke.StrokeWidth = PinRingWidth;
+        _stroke.StrokeCap = SKStrokeCap.Butt;
+        canvas.DrawCircle(at, radius, _stroke);
+
+        _fill.Color = fill;
+        canvas.DrawCircle(at, radius, _fill);
+    }
+
+    /// <summary>
+    /// Where the morning has got to. On a ring it rides the arc; on the road it sits on the route
+    /// facing the way the car is going.
+    /// </summary>
+    private void DrawCursor(
+        SKCanvas canvas,
+        RulerProjection projection,
+        RouteRulerPalette palette,
+        SKColor driveColor,
+        float progress)
+    {
+        var cursor = projection.Cursor;
+
+        if (cursor.Kind == NowCursorKind.None || progress <= 0f)
+        {
+            return;
+        }
+
+        var at = cursor.Point;
+
+        if (cursor.Kind is NowCursorKind.OnOriginRing or NowCursorKind.OnDestinationRing)
+        {
+            var angle = (cursor.RingAngleDegrees - 90f) * Math.PI / 180d;
+
+            at = new SKPoint(
+                cursor.Point.X + (float)(Math.Cos(angle) * RingRadius),
+                cursor.Point.Y + (float)(Math.Sin(angle) * RingRadius));
+        }
+
+        var color = cursor.Kind == NowCursorKind.OnDestinationRing ? palette.Amber : driveColor;
+        var radius = CursorRadius * Math.Clamp(progress, 0f, 1f);
+
+        _fill.Color = color.WithAlpha(52);
+        canvas.DrawCircle(at, radius * 2.4f, _fill);
+
+        _stroke.PathEffect = null;
+        _stroke.Color = palette.NodeStroke;
+        _stroke.StrokeWidth = 2f;
+        _stroke.StrokeCap = SKStrokeCap.Butt;
+        canvas.DrawCircle(at, radius, _stroke);
+
+        _fill.Color = color;
+        canvas.DrawCircle(at, radius, _fill);
+    }
+
+    // ---- callouts -----------------------------------------------------------------------------
+
+    /// <summary>
+    /// The three times, anchored to the points they describe. These are the only text on the map
+    /// besides the tick labels, so they carry a filled plate rather than a halo.
+    /// </summary>
+    private void DrawCallouts(
+        SKCanvas canvas,
+        RouteRulerSnapshot snapshot,
+        RulerProjection projection,
+        RouteRulerPalette palette,
+        float progress,
+        SKSize area)
+    {
+        var alpha = (byte)(255 * Math.Clamp(progress, 0f, 1f));
+        var driveColor = snapshot.IsLate ? palette.Danger : palette.Accent;
+
+        // A pin wearing a dwell ring is four times its own radius across, so its label has to clear
+        // the ring rather than the pin - otherwise the arc is drawn straight through the text.
+        Callout(
+            canvas, snapshot.LeaveLabel, projection.Origin, driveColor, palette.OnAccent, alpha,
+            above: false, area, Reach(projection.OriginDwell));
+
+        // The parking spot and the door are a few hundred metres apart, which at the resolution a
+        // whole commute fits into is a few pixels: their two callouts would sit on top of each
+        // other. The bell is the one that matters, so the arrival label stands down rather than
+        // both being drawn illegibly.
+        if (projection.HasWalk && Apart(projection.Parking, projection.Destination) >= CalloutClearance)
+        {
+            Callout(
+                canvas, snapshot.ArriveLabel, projection.Parking, palette.Amber, palette.AmberInk,
+                alpha, above: true, area, PinRadius);
+        }
+
+        Callout(
+            canvas, snapshot.BellLabel, projection.Destination, palette.Pin, palette.NodeStroke,
+            alpha, above: true, area, Reach(projection.DestinationDwell));
+    }
+
+    /// <summary>How far out from a pin its own furniture reaches: the ring when it has one.</summary>
+    private static float Reach(ProjectedRing? ring) =>
+        ring is { SweepDegrees: > 0f } ? RingRadius + (RingWidth / 2f) : PinRadius;
+
+    private static float Apart(SKPoint a, SKPoint b)
+    {
+        var dx = a.X - b.X;
+        var dy = a.Y - b.Y;
+
+        return (float)Math.Sqrt((dx * dx) + (dy * dy));
+    }
+
+    private void Callout(
+        SKCanvas canvas,
+        string text,
+        SKPoint anchor,
+        SKColor plate,
+        SKColor ink,
+        byte alpha,
+        bool above,
+        SKSize area,
+        float reach)
     {
         if (string.IsNullOrEmpty(text))
         {
             return;
         }
 
-        var width = _labelFont.MeasureText(text);
+        var width = _calloutFont.MeasureText(text);
+        var height = CalloutTextSize + (CalloutPadY * 2f);
+        var offset = reach + 6f;
+
+        var top = above ? anchor.Y - offset - height : anchor.Y + offset;
+
+        // A callout on a pin near the panel edge would otherwise be cut in half by it. Flipping to
+        // the other side of its pin keeps it attached to the thing it names, where nudging it along
+        // the edge would leave it pointing at nothing.
+        if (top < CalloutMargin)
+        {
+            top = anchor.Y + offset;
+        }
+        else if (top + height > area.Height - CalloutMargin)
+        {
+            top = anchor.Y - offset - height;
+        }
+
+        var half = (width / 2f) + CalloutPadX;
+        var centerX = Math.Clamp(anchor.X, half + CalloutMargin, area.Width - half - CalloutMargin);
+
+        var box = new SKRect(
+            centerX - half,
+            top,
+            centerX + half,
+            top + height);
+
+        _fill.Color = plate.WithAlpha(alpha);
+        canvas.DrawRoundRect(box, CalloutCornerRadius, CalloutCornerRadius, _fill);
+
+        _fill.Color = ink.WithAlpha(alpha);
+        canvas.DrawText(
+            text,
+            box.MidX - (width / 2f),
+            box.MidY + (CalloutTextSize / 3f),
+            _calloutFont,
+            _fill);
+    }
+
+    /// <summary>
+    /// Text with a halo in the map colour, so a label stays legible where it crosses a road or the
+    /// route itself.
+    /// </summary>
+    private void Label(
+        SKCanvas canvas,
+        string text,
+        float x,
+        float y,
+        TextAnchor anchor,
+        SKColor color,
+        SKColor halo,
+        SKFont font)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return;
+        }
+
+        var width = font.MeasureText(text);
 
         var left = anchor switch
         {
@@ -503,21 +594,17 @@ internal sealed class RouteRulerRenderer : IDisposable
             _ => x,
         };
 
+        _stroke.PathEffect = null;
         _stroke.Color = halo.WithAlpha(color.Alpha);
         _stroke.StrokeWidth = 3f;
         _stroke.StrokeJoin = SKStrokeJoin.Round;
-        canvas.DrawText(text, left, y, _labelFont, _stroke);
+        canvas.DrawText(text, left, y, font, _stroke);
 
         _fill.Color = color;
-        canvas.DrawText(text, left, y, _labelFont, _fill);
+        canvas.DrawText(text, left, y, font, _fill);
     }
 
-    // ---- helpers -----------------------------------------------------------------------------
-
-    private SKPoint PointAt(float fraction) =>
-        _measure.GetPosition(Math.Clamp(fraction, 0f, 1f) * _length, out var point)
-            ? point
-            : SKPoint.Empty;
+    // ---- helpers ------------------------------------------------------------------------------
 
     /// <summary>Maps overall progress onto one phase of the entrance, clamped to 0..1.</summary>
     private static float Phase(double t, double from, double to) =>
@@ -538,28 +625,25 @@ internal sealed class RouteRulerRenderer : IDisposable
         return 1f + (c3 * u * u * u) + (c1 * u * u);
     }
 
-
     public void Dispose()
     {
-        _route.Dispose();
-        _measure.Dispose();
-        _scratch.Dispose();
+        _drive.Dispose();
+        _walk.Dispose();
+        _driveMeasure?.Dispose();
+        _walkMeasure?.Dispose();
+        _ringDash?.Dispose();
+        _walkDash?.Dispose();
         _fill.Dispose();
         _stroke.Dispose();
-        _segment.Dispose();
+        _line.Dispose();
         _labelFont.Dispose();
-        _pillFont.Dispose();
-        _fade?.Dispose();
-        _parkA.Dispose();
-        _parkB.Dispose();
-        _parkC.Dispose();
-        _water.Dispose();
-        _mortarboard.Dispose();
-        _pinTail.Dispose();
+        _calloutFont.Dispose();
     }
 }
 
-
-
-
-
+internal enum TextAnchor
+{
+    Start,
+    Middle,
+    End,
+}

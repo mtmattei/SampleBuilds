@@ -66,8 +66,8 @@
       <Color x:Key="AmberChipColor">#242F8A4E</Color>
       <Color x:Key="DangerChipColor">#1FA32C24</Color>
       <Color x:Key="GoodChipColor">#1F1F8A5B</Color>
-      <Color x:Key="EtaScrimColor">#F2F3F5F7</Color>
-      <Color x:Key="EtaScrimFadeColor">#00F3F5F7</Color>
+      <Color x:Key="EtaScrimColor">#F2FFFFFF</Color>
+      <Color x:Key="EtaScrimFadeColor">#00FFFFFF</Color>
       <Color x:Key="GlassInkColor">#FFFFFF</Color>  <!-- Ground for controls sitting on top of map tiles. -->
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
@@ -76,8 +76,6 @@
       <SolidColorBrush x:Key="AccentChipBrush" Color="{StaticResource AccentChipColor}" />
       <SolidColorBrush x:Key="AmberChipBrush" Color="{StaticResource AmberChipColor}" />
       <SolidColorBrush x:Key="DangerChipBrush" Color="{StaticResource DangerChipColor}" />
-      <SolidColorBrush x:Key="MapInk2Brush" Color="#4C555F" />
-      <SolidColorBrush x:Key="MapInk3Brush" Color="#6E7885" />
       <SolidColorBrush x:Key="GoodChipBrush" Color="{StaticResource GoodChipColor}" />
       <SolidColorBrush x:Key="GlassInkBrush" Color="{StaticResource GlassInkColor}" />
       <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
@@ -154,8 +152,8 @@
       <Color x:Key="AmberChipColor">#2EF0A63A</Color>
       <Color x:Key="DangerChipColor">#2EEF6A5F</Color>
       <Color x:Key="GoodChipColor">#2E3CCF8A</Color>
-      <Color x:Key="EtaScrimColor">#F2F3F5F7</Color>
-      <Color x:Key="EtaScrimFadeColor">#00F3F5F7</Color>
+      <Color x:Key="EtaScrimColor">#F2181E26</Color>
+      <Color x:Key="EtaScrimFadeColor">#00181E26</Color>
       <Color x:Key="GlassInkColor">#10151C</Color>
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
@@ -164,8 +162,6 @@
       <SolidColorBrush x:Key="AccentChipBrush" Color="{StaticResource AccentChipColor}" />
       <SolidColorBrush x:Key="AmberChipBrush" Color="{StaticResource AmberChipColor}" />
       <SolidColorBrush x:Key="DangerChipBrush" Color="{StaticResource DangerChipColor}" />
-      <SolidColorBrush x:Key="MapInk2Brush" Color="#4C555F" />
-      <SolidColorBrush x:Key="MapInk3Brush" Color="#6E7885" />
       <SolidColorBrush x:Key="GoodChipBrush" Color="{StaticResource GoodChipColor}" />
       <SolidColorBrush x:Key="GlassInkBrush" Color="{StaticResource GlassInkColor}" />
       <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />

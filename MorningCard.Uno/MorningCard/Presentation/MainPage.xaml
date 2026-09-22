@@ -28,23 +28,21 @@
             Padding="16,36,16,56"
             HorizontalAlignment="Stretch"
             MaxWidth="{StaticResource CardMaxWidth}"
-            RowSpacing="24"
-            ColumnSpacing="24">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="0" />
-        </Grid.ColumnDefinitions>
+            RowSpacing="24">
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!--
-          Top-aligned like the Simulator beside it. In the wide stage both sit in one Auto row, so
-          the row takes the height of the taller panel and a stretched card grew ~290 px of empty
-          glass under the action row. The card is a content-sized object, never a column filler.
-        -->
+        <!-- Content-sized, never a column filler: as tall as it has something to say. -->
         <mc:MorningCardView VerticalAlignment="Top" />
+
+        <!--
+          The Simulator is a row under the card at every width, not a second column at 1140. Beside
+          the card it read as a panel of equal weight to the product, and it set the height of the
+          row the card sat in - a stretched card grew about 290 px of empty glass under its action
+          row. Under the card it stays what it is: stage machinery.
+        -->
 
         <ContentControl x:Name="SimulatorRegion"
                         Grid.Row="1"
@@ -54,25 +52,6 @@
                         HorizontalContentAlignment="Stretch"
                         VerticalAlignment="Top" />
 
-        <VisualStateManager.VisualStateGroups>
-          <VisualStateGroup>
-            <VisualState x:Name="Narrow" />
-
-            <!-- Side by side once there is room for two cards and the gap. -->
-            <VisualState x:Name="Wide">
-              <VisualState.StateTriggers>
-                <AdaptiveTrigger MinWindowWidth="1140" />
-              </VisualState.StateTriggers>
-              <VisualState.Setters>
-                <!-- Two cards plus the gap and the stage padding; see StageMaxWidthWide. -->
-                <Setter Target="Stage.MaxWidth" Value="{StaticResource StageMaxWidthWide}" />
-                <Setter Target="Stage.ColumnDefinitions[1].Width" Value="*" />
-                <Setter Target="SimulatorRegion.(Grid.Row)" Value="0" />
-                <Setter Target="SimulatorRegion.(Grid.Column)" Value="1" />
-              </VisualState.Setters>
-            </VisualState>
-          </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
       </Grid>
     </ScrollViewer>
   </Grid>

@@ -1,4 +1,8 @@
+// Uno ships its own MapControl in Microsoft.UI.Xaml.Controls, which has no desktop support and is
+// not the one here. Aliased rather than fully qualified, which would read the same eight times.
+using MapControl = Mapsui.UI.WinUI.MapControl;
 using Microsoft.UI.Xaml.Automation;
+using MorningCard.Core.Route;
 using MorningCard.Themes;
 using SkiaSharp;
 using Uno.WinUI.Graphics2DSK;
@@ -83,6 +87,46 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         set => SetValue(ProgressProperty, value);
     }
 
+    public static readonly DependencyProperty GeometryProperty =
+        DependencyProperty.Register(
+            nameof(Geometry),
+            typeof(RouteGeometry),
+            typeof(RouteRulerCanvas),
+            new PropertyMetadata(null, (d, _) => ((RouteRulerCanvas)d).Refresh()));
+
+    /// <summary>
+    /// The committed route. Null until the asset has loaded, which leaves the tiles on their own -
+    /// the same as a morning with no trip.
+    /// </summary>
+    public RouteGeometry? Geometry
+    {
+        get => (RouteGeometry?)GetValue(GeometryProperty);
+        set => SetValue(GeometryProperty, value);
+    }
+
+    public static readonly DependencyProperty MapProperty =
+        DependencyProperty.Register(
+            nameof(Map),
+            typeof(MapControl),
+            typeof(RouteRulerCanvas),
+            new PropertyMetadata(null, (d, e) => ((RouteRulerCanvas)d).OnMapChanged(e)));
+
+    /// <summary>
+    /// The map this canvas draws over. Its viewport is the only thing that turns world coordinates
+    /// into the pixels underneath, so the route cannot be projected without it.
+    /// </summary>
+    public MapControl? Map
+    {
+        get => (MapControl?)GetValue(MapProperty);
+        set => SetValue(MapProperty, value);
+    }
+
+    /// <summary>
+    /// The tick interval, chosen once from the resolution the map was fitted at. The map is pan-
+    /// and zoom-locked, so that is the only resolution the route is ever drawn at.
+    /// </summary>
+    private int _interval = 1;
+
     protected override void RenderOverride(SKCanvas canvas, Size area)
     {
         // Render thread: read the snapshot, draw, allocate nothing.
@@ -103,6 +147,11 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         CardMotion.ReplayRequested -= OnReplayRequested;
         CardChrome.Changed -= OnChromeChanged;
 
+        if (Map?.Map is { } map)
+        {
+            map.Navigator.ViewportChanged -= OnViewportChanged;
+        }
+
         // A timer left running would keep asking for frames after the card is gone. The renderer
         // is NOT disposed here: a re-parent fires Unloaded then Loaded, and RenderOverride would
         // then be drawing with freed native handles.
@@ -114,6 +163,32 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         _palette = null;
         Refresh();
     }
+
+    /// <summary>
+    /// Follows the map's viewport, because every projected point moves with it.
+    /// </summary>
+    /// <remarks>
+    /// With the map pan- and zoom-locked this fires on the initial fit and on resize, not on every
+    /// frame of a drag - so reprojecting the whole route here is cheap. It arrives off the UI
+    /// thread, hence the hop.
+    /// </remarks>
+    private void OnMapChanged(DependencyPropertyChangedEventArgs e)
+    {
+        if (e.OldValue is MapControl old && old.Map is not null)
+        {
+            old.Map.Navigator.ViewportChanged -= OnViewportChanged;
+        }
+
+        if (e.NewValue is MapControl map && map.Map is not null)
+        {
+            map.Map.Navigator.ViewportChanged += OnViewportChanged;
+        }
+
+        Refresh();
+    }
+
+    private void OnViewportChanged(object? sender, EventArgs e) =>
+        DispatcherQueue.TryEnqueue(Refresh);
 
     /// <summary>Cheap path for the entrance: one field write and one frame, no resource lookups.</summary>
     private void AdvanceProgress()
@@ -217,8 +292,7 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         {
             HasRoute = eta is not null,
             IsLate = eta?.IsLate ?? false,
-            Leave = eta?.RouteLeave ?? 0d,
-            Arrive = eta?.RouteArrive ?? 1d,
+            Projection = Project(eta),
             NowLabel = eta?.NowLabel ?? string.Empty,
             LeaveLabel = eta?.LeaveLabel ?? string.Empty,
             SlackLabel = eta?.SlackLabel ?? string.Empty,
@@ -234,6 +308,55 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         AutomationProperties.SetName(this, eta?.RouteDescription ?? string.Empty);
 
         Invalidate();
+    }
+
+    /// <summary>
+    /// Lays the morning's times onto the route and projects the result into this canvas's pixels.
+    /// </summary>
+    /// <remarks>
+    /// Returns null until all three parts are present - the trip, the asset and a sized map. Any
+    /// one of them missing leaves the tiles showing on their own, which is honest: there is nothing
+    /// to say about a route the card cannot place.
+    /// </remarks>
+    private RulerProjection? Project(EtaView? eta)
+    {
+        if (eta?.Ruler is not { } plan || Geometry is not { } geometry)
+        {
+            return null;
+        }
+
+        if (Map?.Map?.Navigator.Viewport is not { Width: > 0, Height: > 0 } viewport)
+        {
+            return null;
+        }
+
+        var layout = TimeRulerLayout.Compute(
+            geometry, plan.Timeline, plan.WalkMin, plan.Bell, plan.Now, _interval);
+
+        return RulerProjection.Create(layout, viewport);
+    }
+
+    /// <summary>
+    /// Picks the tick interval for the resolution the map has settled at. Called once per viewport,
+    /// not per refresh: the answer only changes when the map is resized.
+    /// </summary>
+    public void ChooseInterval()
+    {
+        if (Geometry is not { } geometry ||
+            Map?.Map?.Navigator.Viewport is not { Width: > 0 } viewport)
+        {
+            return;
+        }
+
+        _interval = TimeRulerLayout.ChooseInterval(geometry, viewport.Resolution);
+        Refresh();
+
+        // The asset loads after the trip does, so the entrance that played when the ETA arrived had
+        // nothing to draw. This is the first moment there is a route on screen, so it plays here.
+        if (_snapshot.Projection is not null)
+        {
+            PlayEntrance();
+        }
     }
 
     /// <summary>

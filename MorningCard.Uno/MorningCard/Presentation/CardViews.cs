@@ -69,7 +69,17 @@ public record EtaView(
     string ArriveLabel,
     string WalkLabel,
     string BellLabel,
-    string RouteDescription);
+    string RouteDescription,
+    // Null on a failed lookup, which has no trip to lay on the map.
+    RulerPlan? Ruler = null);
+
+/// <summary>
+/// What the route ruler needs from the morning, handed over whole rather than pre-computed.
+///
+/// The layout cannot be built here: the tick interval depends on the resolution the map is fitted
+/// at, which only the view knows. So the model supplies the times and the view supplies the map.
+/// </summary>
+public record RulerPlan(TripTimeline Timeline, int WalkMin, TimeOnly Bell, TimeOnly Now);
 
 /// <summary>
 /// Wraps the trip so a no-trip morning stays a value on the header's feed. Without it the null
@@ -140,5 +150,10 @@ public record CarView(
     string ParkingStreet,
     string ParkingNote,
     bool HasDestination,
-    bool IsStale);
+    bool IsStale,
+    // The card's one state label, moved down here from the header's pill. It rides this feed
+    // because a FeedView template resolves commands through Parent but not state, so the bar has
+    // to be handed what it reports rather than reach up for it.
+    string StatusBadge,
+    CardTone Tone);
 

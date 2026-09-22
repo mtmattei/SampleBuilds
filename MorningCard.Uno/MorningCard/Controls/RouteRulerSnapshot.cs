@@ -12,11 +12,11 @@ public sealed record RouteRulerSnapshot
 
     public bool IsLate { get; init; }
 
-    /// <summary>Where the drive starts along the path, 0 to 1.</summary>
-    public double Leave { get; init; }
-
-    /// <summary>Where the walk starts along the path, 0 to 1.</summary>
-    public double Arrive { get; init; }
+    /// <summary>
+    /// The route in screen pixels, projected through the map's viewport on the UI thread. Null
+    /// before the asset has loaded or the map has been fitted, which leaves only the tiles.
+    /// </summary>
+    public RulerProjection? Projection { get; init; }
 
     public string NowLabel { get; init; } = string.Empty;
 
