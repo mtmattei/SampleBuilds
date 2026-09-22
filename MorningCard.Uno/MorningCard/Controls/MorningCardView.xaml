@@ -105,6 +105,14 @@
               BorderBrush="{ThemeResource LineBrush}"
               BorderThickness="1">
         <Grid>
+          <!--
+            The ground is always drawn, so the panel keeps its shape through loading, empty and
+            error; only the route comes and goes with the trip. The canvas sits outside the FeedView
+            for that reason and reads the feed's value through FeedViewState, which is null in every
+            state but value.
+          -->
+          <mc:RouteRulerCanvas x:Name="Ruler" Eta="{Binding State.Data, ElementName=EtaFeed}" />
+
           <mvux:FeedView x:Name="EtaFeed" Source="{Binding Eta}">
 
             <mvux:FeedView.ValueTemplate>
