@@ -2,6 +2,7 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="using:MorningCard.Controls"
+      xmlns:uen="using:Uno.Extensions.Navigation.UI"
       xmlns:utu="using:Uno.Toolkit.UI"
       Background="{ThemeResource GroundBrush}"
       utu:StatusBar.Foreground="Auto"
@@ -17,16 +18,52 @@
     <ScrollViewer utu:SafeArea.Insets="Left,Top,Right,Bottom"
                   VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Disabled">
-      <Grid Padding="16,36,16,56" HorizontalAlignment="Stretch">
+      <!-- A star column with a max width, never a content-sized panel: an empty state must not
+           collapse the card to the width of its longest word. -->
+      <Grid x:Name="Stage"
+            Padding="16,36,16,56"
+            HorizontalAlignment="Stretch"
+            MaxWidth="400"
+            RowSpacing="24"
+            ColumnSpacing="24">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="0" />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-        <!-- A star column with a max width, never a content-sized panel: an empty state must not
-             collapse the card to the width of its longest word. -->
-        <Grid MaxWidth="{ThemeResource CardMaxWidth}" HorizontalAlignment="Stretch">
-          <mc:MorningCardView />
-        </Grid>
+        <mc:MorningCardView />
+
+        <ContentControl x:Name="SimulatorRegion"
+                        Grid.Row="1"
+                        uen:Region.Attached="True"
+                        uen:Region.Name="Simulator"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalAlignment="Top" />
+
+        <VisualStateManager.VisualStateGroups>
+          <VisualStateGroup>
+            <VisualState x:Name="Narrow" />
+
+            <!-- Side by side once there is room for two 400s and the gap. -->
+            <VisualState x:Name="Wide">
+              <VisualState.StateTriggers>
+                <AdaptiveTrigger MinWindowWidth="900" />
+              </VisualState.StateTriggers>
+              <VisualState.Setters>
+                <!-- 400 + 24 gap + 400, plus the stage's own 16 of side padding each way. -->
+                <Setter Target="Stage.MaxWidth" Value="856" />
+                <Setter Target="Stage.ColumnDefinitions[1].Width" Value="*" />
+                <Setter Target="SimulatorRegion.(Grid.Row)" Value="0" />
+                <Setter Target="SimulatorRegion.(Grid.Column)" Value="1" />
+              </VisualState.Setters>
+            </VisualState>
+          </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
       </Grid>
     </ScrollViewer>
   </Grid>

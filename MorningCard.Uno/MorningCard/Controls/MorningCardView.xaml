@@ -12,7 +12,8 @@
     on Android.
   -->
   <Grid>
-    <Border Background="{ThemeResource GlassBrush}"
+    <Border x:Name="Glass"
+            Background="{ThemeResource GlassBrush}"
             BorderBrush="{ThemeResource GlassEdgeBrush}"
             BorderThickness="1"
             CornerRadius="{ThemeResource CardCornerRadius}" />
@@ -429,8 +430,8 @@
                       Style="{StaticResource CardActionButtonStyle}"
                       Command="{Binding Parent.SendToCar}"
                       IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}"
-                      mc:CardAction.Label="Send to car"
-                      AutomationProperties.Name="Send to car">
+                      mc:CardAction.Label="{Binding Parent.SendLabel}"
+                      AutomationProperties.Name="{Binding Parent.SendLabel}">
                 <Viewbox Width="24" Height="24">
                   <Path Stroke="{ThemeResource InkBrush}"
                         StrokeThickness="1.7"
@@ -460,4 +461,5 @@
     </Grid>
   </Grid>
 </UserControl>
+
 

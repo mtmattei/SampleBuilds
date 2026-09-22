@@ -14,6 +14,7 @@
   <mp:StaleOpacityConverter x:Key="StaleOpacity" />
   <mp:BoolToVisibilityConverter x:Key="BoolToVisibility" />
   <mp:InverseBoolConverter x:Key="InverseBool" />
+  <mp:ConnectionModeLabelConverter x:Key="ConnectionModeLabel" />
   <mp:NullToVisibilityConverter x:Key="NullToVisibility" />
   <mp:PercentToStarConverter x:Key="PercentToStar" />
 

@@ -73,6 +73,16 @@ internal record TripResult(TripPlan? Plan, string FailureMessage)
     public static TripResult Failure(string message) => new(null, message);
 }
 
+/// <summary>
+/// One connection mode as the chips show it. A chip renders its item's ToString alongside any
+/// ItemTemplate, so the two overlapped when the enum was bound directly; naming the option is the
+/// simpler fix and keeps selection typed.
+/// </summary>
+public record ModeOption(ConnectionMode Value, string Label)
+{
+    public override string ToString() => Label;
+}
+
 /// <summary>The stats row and the four actions.</summary>
 public record CarView(
     string RangeValue,

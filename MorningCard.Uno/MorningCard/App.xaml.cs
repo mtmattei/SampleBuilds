@@ -125,11 +125,17 @@ public partial class App : Application
     private static void RegisterRoutes(IViewRegistry views, IRouteRegistry routes)
     {
         views.Register(
-            new ViewMap<MainPage, MainModel>()
+            new ViewMap<MainPage, MainModel>(),
+            new ViewMap<TuningPanel, TuningModel>()
         );
 
         routes.Register(
-            new RouteMap("Main", View: views.FindByViewModel<MainModel>(), IsDefault:true)
+            // The Simulator is a nested region rather than a property on the card's model: a model
+            // exposed as a property would hand XAML its raw IState objects with no bindable proxy.
+            new RouteMap("Main", View: views.FindByViewModel<MainModel>(), IsDefault: true, Nested:
+            [
+                new RouteMap("Simulator", View: views.FindByViewModel<TuningModel>(), IsDefault: true)
+            ])
         );
     }
 }

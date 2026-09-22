@@ -83,6 +83,25 @@ public sealed class LateInkConverter : IValueConverter
 }
 
 /// <summary>
+/// The connection modes as the design names them. The chips bind to the enum so selection stays
+/// typed; without this they would read "NoTrip".
+/// </summary>
+public sealed class ConnectionModeLabelConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language) => value switch
+    {
+        ConnectionMode.Live => "Live",
+        ConnectionMode.Loading => "Loading",
+        ConnectionMode.Offline => "Offline",
+        ConnectionMode.NoTrip => "No trip",
+        _ => string.Empty,
+    };
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}
+
+/// <summary>
 /// Negates a flag, for the commands that stay off while the car is unreachable. A visibility
 /// converter cannot stand in here: handing a Visibility to IsEnabled silently leaves the control
 /// enabled, which is how the offline state shipped with four live buttons.

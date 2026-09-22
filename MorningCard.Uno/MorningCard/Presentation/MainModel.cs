@@ -48,6 +48,10 @@ public partial record MainModel
     /// <summary>True for 1.4 seconds after a destination is sent, driving the "Sent" label.</summary>
     public IState<bool> SendConfirmed => State.Value(this, () => false);
 
+    /// <summary>"Send to car", or "Sent" while the confirmation is showing.</summary>
+    public IFeed<string> SendLabel => SendConfirmed.Select(sent =>
+        Text(sent ? "Action_Sent" : "Action_SendToCar"));
+
     private IFeed<TripResult> Trip => Feed<TripResult>.AsyncEnumerable(WatchTrip);
 
     /// <summary>

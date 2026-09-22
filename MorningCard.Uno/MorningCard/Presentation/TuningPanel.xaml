@@ -1,0 +1,153 @@
+<UserControl x:Class="MorningCard.Presentation.TuningPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:utu="using:Uno.Toolkit.UI"
+             xmlns:mvux="using:Uno.Extensions.Reactive.UI">
+
+  <Border Background="{ThemeResource GlassSecondaryBrush}"
+          BorderBrush="{ThemeResource GlassEdgeBrush}"
+          BorderThickness="1"
+          CornerRadius="22"
+          Padding="20,18,20,20">
+    <StackPanel Spacing="12">
+
+      <TextBlock x:Uid="SimulatorTitle" Style="{StaticResource PanelHeading}" />
+      <TextBlock x:Uid="SimulatorNote"
+                 Style="{StaticResource ActionLabel}"
+                 Foreground="{ThemeResource Ink2Brush}"
+                 TextWrapping="Wrap" />
+
+      <!--
+        Single select: exactly one mode is always in force.
+
+        KNOWN DEFECT: each chip draws a stray glyph after its label. It is not the item template
+        (removing it changed nothing) and not clipping (it survives with the chips stacked), so the
+        likely cause is a symbol glyph inheriting the Material font override - Instrument Sans is
+        latin-subset only, so an icon codepoint renders as tofu. Next step is to find the chip's
+        icon font key and leave it on the Material face.
+      -->
+      <utu:ChipGroup ItemsSource="{Binding Modes}"
+                     SelectedItem="{Binding Mode, Mode=TwoWay}"
+                     SelectionMode="SingleOrNone"
+                     Style="{StaticResource FilterChipGroupStyle}" />
+
+      <StackPanel Spacing="2">
+        <Grid>
+          <TextBlock x:Uid="DialClock" Style="{StaticResource ActionLabel}" />
+          <TextBlock Style="{StaticResource ActionLabel}"
+                     HorizontalAlignment="Right"
+                     Foreground="{ThemeResource Ink2Brush}"
+                     Text="{Binding ClockText}" />
+        </Grid>
+        <Slider Minimum="420" Maximum="490" StepFrequency="1" Value="{Binding Clock, Mode=TwoWay}" />
+      </StackPanel>
+
+      <StackPanel Spacing="2">
+        <Grid>
+          <TextBlock x:Uid="DialTraffic" Style="{StaticResource ActionLabel}" />
+          <TextBlock Style="{StaticResource ActionLabel}"
+                     HorizontalAlignment="Right"
+                     Foreground="{ThemeResource Ink2Brush}"
+                     Text="{Binding TrafficDelay}" />
+        </Grid>
+        <Slider Minimum="0" Maximum="25" StepFrequency="1" Value="{Binding TrafficDelay, Mode=TwoWay}" />
+      </StackPanel>
+
+      <StackPanel Spacing="2">
+        <Grid>
+          <TextBlock x:Uid="DialRange" Style="{StaticResource ActionLabel}" />
+          <TextBlock Style="{StaticResource ActionLabel}"
+                     HorizontalAlignment="Right"
+                     Foreground="{ThemeResource Ink2Brush}"
+                     Text="{Binding Range}" />
+        </Grid>
+        <Slider Minimum="0" Maximum="400" StepFrequency="2" Value="{Binding Range, Mode=TwoWay}" />
+      </StackPanel>
+
+      <StackPanel Spacing="2">
+        <Grid>
+          <TextBlock x:Uid="DialCabin" Style="{StaticResource ActionLabel}" />
+          <TextBlock Style="{StaticResource ActionLabel}"
+                     HorizontalAlignment="Right"
+                     Foreground="{ThemeResource Ink2Brush}"
+                     Text="{Binding CabinTemp}" />
+        </Grid>
+        <Slider Minimum="10" Maximum="80" StepFrequency="1" Value="{Binding CabinTemp, Mode=TwoWay}" />
+      </StackPanel>
+
+      <StackPanel Spacing="2">
+        <Grid>
+          <TextBlock x:Uid="DialTire" Style="{StaticResource ActionLabel}" />
+          <TextBlock Style="{StaticResource ActionLabel}"
+                     HorizontalAlignment="Right"
+                     Foreground="{ThemeResource Ink2Brush}"
+                     Text="{Binding TirePressure}" />
+        </Grid>
+        <Slider Minimum="20" Maximum="36" StepFrequency="1" Value="{Binding TirePressure, Mode=TwoWay}" />
+      </StackPanel>
+
+      <Grid>
+        <TextBlock x:Uid="DialPlug" Style="{StaticResource ActionLabel}" VerticalAlignment="Center" />
+        <ToggleSwitch HorizontalAlignment="Right" IsOn="{Binding PluggedIn, Mode=TwoWay}" OnContent="" OffContent="" />
+      </Grid>
+
+      <!-- Charge only means something while the car is plugged in. -->
+      <StackPanel Spacing="2" IsEnabled="{Binding PluggedIn}">
+        <Grid>
+          <TextBlock x:Uid="DialCharge" Style="{StaticResource ActionLabel}" />
+          <TextBlock Style="{StaticResource ActionLabel}"
+                     HorizontalAlignment="Right"
+                     Foreground="{ThemeResource Ink2Brush}"
+                     Text="{Binding ChargePercent}" />
+        </Grid>
+        <Slider Minimum="0" Maximum="100" StepFrequency="1" Value="{Binding ChargePercent, Mode=TwoWay}" />
+      </StackPanel>
+
+      <StackPanel Spacing="2">
+        <Grid>
+          <TextBlock x:Uid="DialHue" Style="{StaticResource ActionLabel}" />
+          <TextBlock Style="{StaticResource ActionLabel}"
+                     HorizontalAlignment="Right"
+                     Foreground="{ThemeResource Ink2Brush}"
+                     Text="{Binding Hue}" />
+        </Grid>
+        <Slider Minimum="0" Maximum="360" StepFrequency="1" Value="{Binding Hue, Mode=TwoWay}" />
+      </StackPanel>
+
+      <StackPanel Spacing="2">
+        <Grid>
+          <TextBlock x:Uid="DialRadius" Style="{StaticResource ActionLabel}" />
+          <TextBlock Style="{StaticResource ActionLabel}"
+                     HorizontalAlignment="Right"
+                     Foreground="{ThemeResource Ink2Brush}"
+                     Text="{Binding CornerRadius}" />
+        </Grid>
+        <Slider Minimum="12" Maximum="44" StepFrequency="1" Value="{Binding CornerRadius, Mode=TwoWay}" />
+      </StackPanel>
+
+      <StackPanel Spacing="2">
+        <Grid>
+          <TextBlock x:Uid="DialMotion" Style="{StaticResource ActionLabel}" />
+          <TextBlock Style="{StaticResource ActionLabel}"
+                     HorizontalAlignment="Right"
+                     Foreground="{ThemeResource Ink2Brush}"
+                     Text="{Binding MotionSpeed}" />
+        </Grid>
+        <Slider Minimum="0.25" Maximum="2" StepFrequency="0.25" Value="{Binding MotionSpeed, Mode=TwoWay}" />
+      </StackPanel>
+
+      <!-- Desktop has no OS reduced-motion signal in Uno, so this switch is it. -->
+      <Grid>
+        <TextBlock x:Uid="DialReducedMotion" Style="{StaticResource ActionLabel}" VerticalAlignment="Center" />
+        <ToggleSwitch HorizontalAlignment="Right" IsOn="{Binding ReducedMotion, Mode=TwoWay}" OnContent="" OffContent="" />
+      </Grid>
+
+      <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+        <Button x:Uid="ButtonReplay" Style="{StaticResource OutlinedButtonStyle}" Command="{Binding ReplayEntrance}" />
+        <Button x:Uid="ButtonTheme" Style="{StaticResource OutlinedButtonStyle}" Command="{Binding ToggleTheme}" />
+      </StackPanel>
+
+    </StackPanel>
+  </Border>
+</UserControl>
+

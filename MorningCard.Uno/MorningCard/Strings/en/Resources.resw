@@ -235,4 +235,50 @@
   <data name="Header_NoTripTitle" xml:space="preserve">
     <value>This morning</value>
   </data>
+  <data name="SimulatorTitle.Text" xml:space="preserve">
+    <value>Simulator</value>
+  </data>
+  <data name="SimulatorNote.Text" xml:space="preserve">
+    <value>The car and the trip are simulated. Each control writes to the simulated hub, and the card reads the result.</value>
+  </data>
+  <data name="DialClock.Text" xml:space="preserve">
+    <value>Clock</value>
+  </data>
+  <data name="DialTraffic.Text" xml:space="preserve">
+    <value>Traffic delay</value>
+  </data>
+  <data name="DialRange.Text" xml:space="preserve">
+    <value>Range</value>
+  </data>
+  <data name="DialCabin.Text" xml:space="preserve">
+    <value>Cabin temperature</value>
+  </data>
+  <data name="DialTire.Text" xml:space="preserve">
+    <value>Front-left tire</value>
+  </data>
+  <data name="DialPlug.Text" xml:space="preserve">
+    <value>Plugged in</value>
+  </data>
+  <data name="DialCharge.Text" xml:space="preserve">
+    <value>Charge</value>
+  </data>
+  <data name="DialHue.Text" xml:space="preserve">
+    <value>Route hue</value>
+  </data>
+  <data name="DialRadius.Text" xml:space="preserve">
+    <value>Corner radius</value>
+  </data>
+  <data name="DialMotion.Text" xml:space="preserve">
+    <value>Motion speed</value>
+  </data>
+  <data name="DialReducedMotion.Text" xml:space="preserve">
+    <value>Reduced motion</value>
+  </data>
+  <data name="ButtonReplay.Content" xml:space="preserve">
+    <value>Replay entrance</value>
+  </data>
+  <data name="ButtonTheme.Content" xml:space="preserve">
+    <value>Toggle theme</value>
+  </data>
 </root>
+
