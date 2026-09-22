@@ -1,0 +1,101 @@
+<!--
+  The card's type scale, each style based on the nearest Material role so the ramp still reads as
+  Material where sizes are not overridden. This is the only file that sets a font size: pages and
+  controls pick a style.
+
+  CharacterSpacing is a no-op on the Skia text stack, so the prototype's -0.02em and -0.03em
+  tracking on the title and the ETA number is not carried over.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- 42 / 700: the minutes-to-arrival number, the loudest thing on the card. -->
+  <Style x:Key="EtaNumber" TargetType="TextBlock" BasedOn="{StaticResource DisplayMedium}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontBold}" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="FontSize" Value="42" />
+    <Setter Property="LineHeight" Value="42" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+  </Style>
+
+  <!-- 18 / 600: the "min" that follows it. -->
+  <Style x:Key="EtaUnit" TargetType="TextBlock" BasedOn="{StaticResource TitleMedium}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
+    <Setter Property="FontSize" Value="18" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+  </Style>
+
+  <!-- 23 / 600: the trip title. -->
+  <Style x:Key="CardTitle" TargetType="TextBlock" BasedOn="{StaticResource TitleLarge}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
+    <Setter Property="FontSize" Value="23" />
+    <Setter Property="LineHeight" Value="26" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+  </Style>
+
+  <!-- 16 / 600: stat values. -->
+  <Style x:Key="StatValue" TargetType="TextBlock" BasedOn="{StaticResource TitleMedium}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
+    <Setter Property="FontSize" Value="16" />
+    <Setter Property="LineHeight" Value="19" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+  </Style>
+
+  <!-- 15 / 400: the leave-in sentence and the arrival line. -->
+  <Style x:Key="CardBody" TargetType="TextBlock" BasedOn="{StaticResource BodyLarge}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="LineHeight" Value="21" />
+    <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
+  </Style>
+
+  <!-- 14 / 400: the greeting. -->
+  <Style x:Key="CardLabel" TargetType="TextBlock" BasedOn="{StaticResource BodyMedium}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="LineHeight" Value="20" />
+    <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
+  </Style>
+
+  <!-- 14 / 600: the traffic verdict, which carries its own semantic colour. -->
+  <Style x:Key="CardLabelStrong" TargetType="TextBlock" BasedOn="{StaticResource CardLabel}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
+  </Style>
+
+  <!-- 13 / 400: action labels and simulator text. -->
+  <Style x:Key="ActionLabel" TargetType="TextBlock" BasedOn="{StaticResource LabelLarge}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="LineHeight" Value="16" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+  </Style>
+
+  <!-- 12.5 / 400: stat captions, car status, secondary action lines. -->
+  <Style x:Key="CardCaption" TargetType="TextBlock" BasedOn="{StaticResource BodySmall}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
+    <Setter Property="FontSize" Value="12.5" />
+    <Setter Property="LineHeight" Value="16" />
+    <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
+  </Style>
+
+  <!-- 12.5 / 500: the car's name. -->
+  <Style x:Key="CardCaptionStrong" TargetType="TextBlock" BasedOn="{StaticResource CardCaption}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontMedium}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+  </Style>
+
+  <!-- 22 / 600: the empty state's headline, inside the map panel. -->
+  <Style x:Key="EmptyTitle" TargetType="TextBlock" BasedOn="{StaticResource TitleLarge}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
+    <Setter Property="FontSize" Value="22" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+  </Style>
+
+  <!-- 13 / 600: the simulator's own heading. -->
+  <Style x:Key="PanelHeading" TargetType="TextBlock" BasedOn="{StaticResource LabelLarge}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+  </Style>
+
+</ResourceDictionary>

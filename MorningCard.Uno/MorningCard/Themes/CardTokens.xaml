@@ -1,0 +1,131 @@
+<!--
+  The card's palette. Light is the base and dark redefines the same names, matching the prototype's
+  CSS custom properties one for one.
+
+  Colours live in theme dictionaries; brushes sit at the root as single instances whose Color is a
+  ThemeResource. That matters for the accent: the hue dial mutates these brush instances in place,
+  which is the only way to hit the design's exact hsl() values (Material's seed derives HCT tones
+  that do not match).
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <ResourceDictionary.ThemeDictionaries>
+
+    <ResourceDictionary x:Key="Light">
+      <Color x:Key="GroundColor">#D9D6D0</Color>
+
+      <!-- Out-of-focus backdrop blobs. -->
+      <Color x:Key="BlobAColor">#D9B37A</Color>
+      <Color x:Key="BlobBColor">#A9C4DD</Color>
+      <Color x:Key="BlobCColor">#8F9AA6</Color>
+      <Color x:Key="BlobDColor">#F1E6D2</Color>
+
+      <Color x:Key="GlassColor">#BDFFFFFF</Color>
+      <Color x:Key="GlassEdgeColor">#B3FFFFFF</Color>
+      <Color x:Key="GlassSecondaryColor">#8CFFFFFF</Color>
+
+      <Color x:Key="InkColor">#1B2430</Color>
+      <Color x:Key="Ink2Color">#5B6570</Color>
+      <Color x:Key="Ink3Color">#98A1AB</Color>
+      <Color x:Key="LineColor">#1A1B2430</Color>
+      <Color x:Key="ChipColor">#0F1B2430</Color>
+
+      <!-- hsl(218 82% 52%) and hsl(218 70% 42%): the default route accent. -->
+      <Color x:Key="AccentColor">#2169E9</Color>
+      <Color x:Key="AccentInkColor">#2057B6</Color>
+      <Color x:Key="OnAccentColor">#FFFFFF</Color>
+
+      <Color x:Key="GoodColor">#1F8A5B</Color>
+      <Color x:Key="GoodInkColor">#1B7A51</Color>
+      <Color x:Key="AmberColor">#E8931C</Color>
+      <Color x:Key="AmberInkColor">#B8690A</Color>
+      <Color x:Key="DangerColor">#D9453A</Color>
+      <Color x:Key="DangerInkColor">#B7352C</Color>
+
+      <Color x:Key="MapColor">#ECEFEC</Color>
+      <Color x:Key="MapRoadColor">#FFFFFF</Color>
+      <Color x:Key="MapParkColor">#D6E7CF</Color>
+      <Color x:Key="MapWaterColor">#BCD7F2</Color>
+      <Color x:Key="PinColor">#3A424B</Color>
+
+      <Color x:Key="CardShadowNearColor">#14141C28</Color>
+      <Color x:Key="CardShadowFarColor">#73141C28</Color>
+    </ResourceDictionary>
+
+    <ResourceDictionary x:Key="Dark">
+      <Color x:Key="GroundColor">#10151C</Color>
+
+      <Color x:Key="BlobAColor">#5A4322</Color>
+      <Color x:Key="BlobBColor">#23405A</Color>
+      <Color x:Key="BlobCColor">#2C3540</Color>
+      <Color x:Key="BlobDColor">#3A3126</Color>
+
+      <Color x:Key="GlassColor">#B8181E26</Color>
+      <Color x:Key="GlassEdgeColor">#24FFFFFF</Color>
+      <Color x:Key="GlassSecondaryColor">#0FFFFFFF</Color>
+
+      <Color x:Key="InkColor">#F0F3F6</Color>
+      <Color x:Key="Ink2Color">#A9B3BD</Color>
+      <Color x:Key="Ink3Color">#6F7A86</Color>
+      <Color x:Key="LineColor">#1AFFFFFF</Color>
+      <Color x:Key="ChipColor">#14FFFFFF</Color>
+
+      <!-- hsl(218 90% 66%) and hsl(218 90% 72%). -->
+      <Color x:Key="AccentColor">#5A93F6</Color>
+      <Color x:Key="AccentInkColor">#77A6F8</Color>
+      <Color x:Key="OnAccentColor">#0F151C</Color>
+
+      <Color x:Key="GoodColor">#3CCF8A</Color>
+      <Color x:Key="GoodInkColor">#5FDC9E</Color>
+      <Color x:Key="AmberColor">#F0A63A</Color>
+      <Color x:Key="AmberInkColor">#F5BD66</Color>
+      <Color x:Key="DangerColor">#EF6A5F</Color>
+      <Color x:Key="DangerInkColor">#F58A80</Color>
+
+      <Color x:Key="MapColor">#1A222B</Color>
+      <Color x:Key="MapRoadColor">#26303B</Color>
+      <Color x:Key="MapParkColor">#1F3328</Color>
+      <Color x:Key="MapWaterColor">#223D5C</Color>
+      <Color x:Key="PinColor">#E6EBF0</Color>
+
+      <Color x:Key="CardShadowNearColor">#4D000000</Color>
+      <Color x:Key="CardShadowFarColor">#CC000000</Color>
+    </ResourceDictionary>
+
+  </ResourceDictionary.ThemeDictionaries>
+
+  <SolidColorBrush x:Key="GroundBrush" Color="{ThemeResource GroundColor}" />
+  <SolidColorBrush x:Key="GlassBrush" Color="{ThemeResource GlassColor}" />
+  <SolidColorBrush x:Key="GlassEdgeBrush" Color="{ThemeResource GlassEdgeColor}" />
+  <SolidColorBrush x:Key="GlassSecondaryBrush" Color="{ThemeResource GlassSecondaryColor}" />
+
+  <SolidColorBrush x:Key="InkBrush" Color="{ThemeResource InkColor}" />
+  <SolidColorBrush x:Key="Ink2Brush" Color="{ThemeResource Ink2Color}" />
+  <SolidColorBrush x:Key="Ink3Brush" Color="{ThemeResource Ink3Color}" />
+  <SolidColorBrush x:Key="LineBrush" Color="{ThemeResource LineColor}" />
+  <SolidColorBrush x:Key="ChipBrush" Color="{ThemeResource ChipColor}" />
+
+  <SolidColorBrush x:Key="AccentBrush" Color="{ThemeResource AccentColor}" />
+  <SolidColorBrush x:Key="AccentInkBrush" Color="{ThemeResource AccentInkColor}" />
+  <SolidColorBrush x:Key="OnAccentBrush" Color="{ThemeResource OnAccentColor}" />
+
+  <SolidColorBrush x:Key="GoodBrush" Color="{ThemeResource GoodColor}" />
+  <SolidColorBrush x:Key="GoodInkBrush" Color="{ThemeResource GoodInkColor}" />
+  <SolidColorBrush x:Key="AmberBrush" Color="{ThemeResource AmberColor}" />
+  <SolidColorBrush x:Key="AmberInkBrush" Color="{ThemeResource AmberInkColor}" />
+  <SolidColorBrush x:Key="DangerBrush" Color="{ThemeResource DangerColor}" />
+  <SolidColorBrush x:Key="DangerInkBrush" Color="{ThemeResource DangerInkColor}" />
+
+  <SolidColorBrush x:Key="MapBrush" Color="{ThemeResource MapColor}" />
+  <SolidColorBrush x:Key="PinBrush" Color="{ThemeResource PinColor}" />
+
+  <!-- Geometry the card and its canvases share. CardCornerRadius is what the radius dial writes. -->
+  <x:Double x:Key="CardCornerRadiusValue">34</x:Double>
+  <CornerRadius x:Key="CardCornerRadius">34</CornerRadius>
+  <CornerRadius x:Key="MapCornerRadius">20</CornerRadius>
+  <Thickness x:Key="CardPadding">22</Thickness>
+  <x:Double x:Key="CardMaxWidth">400</x:Double>
+  <x:Double x:Key="MapPanelHeight">214</x:Double>
+
+</ResourceDictionary>

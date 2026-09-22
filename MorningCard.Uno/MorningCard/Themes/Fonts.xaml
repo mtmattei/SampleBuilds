@@ -1,0 +1,19 @@
+<!--
+  Instrument Sans as four static faces.
+
+  Variable fonts are not supported on the Skia text stack: FontWeight does not select the wght axis,
+  so a single variable file would render its default instance everywhere. scripts/fetch-fonts.ps1
+  downloads static slices and prints each file's internal family name, which is what the #fragment
+  below has to match exactly. Google's slices carry weight-suffixed family names for Medium and
+  SemiBold, while Bold declares itself as "Instrument Sans" with a Bold subfamily - hence the
+  matching FontWeight in the text styles.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <FontFamily x:Key="CardFontRegular">ms-appx:///Assets/Fonts/InstrumentSans-Regular.ttf#Instrument Sans</FontFamily>
+  <FontFamily x:Key="CardFontMedium">ms-appx:///Assets/Fonts/InstrumentSans-Medium.ttf#Instrument Sans Medium</FontFamily>
+  <FontFamily x:Key="CardFontSemiBold">ms-appx:///Assets/Fonts/InstrumentSans-SemiBold.ttf#Instrument Sans SemiBold</FontFamily>
+  <FontFamily x:Key="CardFontBold">ms-appx:///Assets/Fonts/InstrumentSans-Bold.ttf#Instrument Sans</FontFamily>
+
+</ResourceDictionary>
