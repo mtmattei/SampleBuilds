@@ -218,7 +218,7 @@
                       Stroke="{ThemeResource Ink3Brush}"
                       StrokeThickness="4"
                       StrokeDashCap="Round"
-                      StrokeDashArray="0.01 0.9" />
+                      StrokeDashArray="0.01 2.5" />
 
                 <Border Grid.Column="1"
                         Height="8"

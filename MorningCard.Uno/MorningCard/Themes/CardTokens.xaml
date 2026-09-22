@@ -18,17 +18,11 @@
     <ResourceDictionary x:Key="Light">
       <Color x:Key="GroundColor">#D9D6D0</Color>
 
-      <!-- Out-of-focus backdrop blobs. -->
-      <Color x:Key="BlobAColor">#D9B37A</Color>
-      <Color x:Key="BlobBColor">#A9C4DD</Color>
-      <Color x:Key="BlobCColor">#8F9AA6</Color>
-      <Color x:Key="BlobDColor">#F1E6D2</Color>
-
       <Color x:Key="GlassColor">#9EFFFFFF</Color>
       <Color x:Key="GlassEdgeColor">#C7FFFFFF</Color>
       <Color x:Key="GlassSecondaryColor">#8CFFFFFF</Color>
       <!-- The white card nested inside the shell. Opaque, unlike the shell: the mockup reads as
-           paper on frosted glass, and a translucent inner card let the backdrop blobs through it. -->
+           paper on frosted glass, and a translucent inner card let the backdrop through it. -->
       <Color x:Key="CardSurfaceColor">#FFFFFFFF</Color>
 
       <Color x:Key="InkColor">#1B2430</Color>
@@ -115,11 +109,6 @@
 
     <ResourceDictionary x:Key="Dark">
       <Color x:Key="GroundColor">#10151C</Color>
-
-      <Color x:Key="BlobAColor">#5A4322</Color>
-      <Color x:Key="BlobBColor">#23405A</Color>
-      <Color x:Key="BlobCColor">#2C3540</Color>
-      <Color x:Key="BlobDColor">#3A3126</Color>
 
       <Color x:Key="GlassColor">#9E181E26</Color>
       <Color x:Key="GlassEdgeColor">#2EFFFFFF</Color>
