@@ -87,7 +87,7 @@
               </StackPanel>
 
               <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                <mc:CarGlyph Width="92" Height="42" />
+                <mc:CarGlyph Width="96" Height="56" />
                 <TextBlock Style="{StaticResource CardCaptionStrong}"
                            TextAlignment="Center"
                            Text="{Binding Data.CarName}" />
@@ -469,6 +469,7 @@
     </Grid>
   </Grid>
 </UserControl>
+
 
 
 
