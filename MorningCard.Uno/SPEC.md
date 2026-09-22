@@ -18,7 +18,7 @@ The card answers one question at a glance: when do I leave for school drop-off? 
 | # | Capability the design implies | Status | Note |
 |---|---|---|---|
 | 1 | Route time ruler (slack, drive, walk laid along a path) | implemented | `SKCanvasElement` with `SKPathMeasure`. This is the signature device and it is a schematic: minutes become distance along the path. |
-| 2 | Map (ground under the route, school pin) | implemented on the Trip page, **schematic on the card (decided, 1a)** | The card ground stays a drawn schematic because the slack stretch has no geographic meaning (the car is parked during slack). The real, pannable map lives on the Trip page: Mapsui `MapControl`, OSM tiles, route line, home and school pins. |
+| 2 | Map (ground under the route, school pin) | **substituted by decision** | The card is the whole sample, so there is no real map anywhere. The ground is a Skia schematic: the slack stretch has no geographic meaning (the car is parked during slack), so a real map could not carry the ruler unchanged. Mapsui was added, verified to build against the bundled SkiaSharp 3.119.2, and removed as unused. |
 | 3 | Live trip data (drive time, traffic delay, usual time) | **substituted (decided)** | No routing endpoint exists. `ITripService` contract plus a simulated implementation with latency and failure injection. |
 | 4 | Live vehicle telemetry (range, cabin, tires, lock, plug, last seen) | **substituted (decided)** | No vehicle API credentials exist. `IVehicleService` contract plus the same simulated hub. |
 | 5 | Remote commands (lock, climate, send destination to car) | **substituted (decided)** | Commands go to the simulated hub. The tuning panel is titled "Simulator" so the surface stays honest. |
@@ -27,7 +27,7 @@ The card answers one question at a glance: when do I leave for school drop-off? 
 | 8 | Light and dark theme, runtime toggle | implemented | Material theme, `ThemeService`, token dictionaries with Light and Dark entries. |
 | 9 | Dialable accent hue, corner radius, motion speed | implemented | Debug tuning surface writes brush colors, a radius resource and a motion multiplier. |
 | 10 | Frosted glass card over a blurred backdrop | implemented, technique pending spike R2 | First choice is the platform's Skia-native `AcrylicBrush`, then a `SaveLayer` backdrop filter, with a translucent fill over the pre-blurred bokeh as the floor. |
-| 11 | Navigation from the title chevron and the tires chevron | title implemented (opens the Trip page), **tires omitted (decided, logic later)** | The tires cell keeps its chevron and does nothing. Listed in the README's known gaps. |
+| 11 | Navigation from the title chevron and the tires chevron | **omitted by decision** | Nothing sits behind the card, so both chevrons keep their look and do nothing. Listed in the README's known gaps. |
 | 12 | "More" action | **omitted (decided, logic later)** | Keeps its look, does nothing. Listed in the README's known gaps. |
 | 13 | Charging state | implemented | `IsPluggedIn` and `ChargePercent` on the snapshot, driven from the Simulator. |
 | 14 | Localization and units | implemented for English, **French and a units switch omitted (decided)** | `Localization` UnoFeature, `.resw`, `x:Uid` from day one, `en` only. Units stay miles, °F and psi. |
@@ -568,9 +568,9 @@ After two failed fix cycles on one root cause, stop and write a Debug Checkpoint
 
 | # | Question | Decision |
 |---|---|---|
-| 1 | Map | **1a.** The card keeps the Skia route ruler over the drawn ground as a glance surface. A Trip page carries a real, pannable Mapsui map of the route. |
+| 1 | Map | **Superseded 2026-09-21: the card is the whole sample, so there is no real map and no trip page.** The ground stays a Skia schematic. Mapsui was added and verified to build against the bundled SkiaSharp, then removed as unused. (Originally 1a: schematic on the card, Mapsui map on a trip page.) |
 | 2 | Data and commands | Simulated hub behind `ITripService` and `IVehicleService`. No `Http` feature. |
-| 3 | Dead buttons | Left as they are in the prototype; logic comes later. The tires cell and More keep their look and do nothing. See Unresolved Question 1 for the title chevron. |
+| 3 | Dead buttons | Left as they are in the prototype; logic comes later. The tires cell, More **and the title chevron** keep their look and do nothing, since nothing sits behind the card. |
 | 4 | Charging cell | Add plug state: `IsPluggedIn` and `ChargePercent` on `VehicleSnapshot`, plus tuning controls. |
 | 5 | Languages and units | English only for now. Strings still live in `.resw` with `x:Uid`, so French is an added folder later. Units stay miles, °F and psi, as in the mockup (delegated call). |
 | 6 | Tuning panel | Ships in all builds (delegated call). It is the "Dial it in" panel under the card in the prototype: the state chips and sliders that drive the simulated car and trip. In a sample it is the only way a viewer can see the late, warning, offline, loading and empty states, so it is part of the demonstration. It is titled "Simulator". |
@@ -586,3 +586,5 @@ Accepted gap, stated plainly per the capability rule: the tires chevron and the 
 1. **Title chevron.** Decision 1a needs an entry point for the Trip page, and decision 3 leaves dead buttons alone. This spec resolves the overlap by wiring only the title ("School drop-off >") to the Trip page and leaving the tires cell and More inert. If the title should stay inert too, the Trip page needs another entry point; say which.
 2. **Sample route geography.** The Trip page needs real coordinates. The simulated service ships one fixed sample polyline (home to a school, about 14 minutes of driving) and labels it as sample data. Any preferred area, or is a generic Montreal West Island route fine?
 3. **OSM tiles.** The Trip page map loads OpenStreetMap tiles over the network with an app user agent, which is the one real remote dependency in the app. Fine for a sample, or should it use a different tile source?
+
+

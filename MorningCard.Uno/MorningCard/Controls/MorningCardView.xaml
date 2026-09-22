@@ -55,9 +55,13 @@
                              Text="{Binding Data.Greeting}" />
                 </StackPanel>
 
+                <!--
+                  The chevron has no destination: this sample is the card, so nothing sits behind
+                  it. Listed in the README's known gaps alongside the tires cell and More.
+                -->
                 <Button Style="{StaticResource CardTitleButtonStyle}"
                         Margin="0,4,0,2"
-                        uen:Navigation.Request="Trip"
+                        IsEnabled="False"
                         AutomationProperties.Name="{Binding Data.Title}">
                   <StackPanel Orientation="Horizontal" Spacing="6">
                     <TextBlock Style="{StaticResource CardTitle}"
