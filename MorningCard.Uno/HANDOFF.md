@@ -1,83 +1,82 @@
-# HANDOFF — MorningCard v3 (card redesign)
-Updated: 2026-09-22 11:05
+# HANDOFF — MorningCard v5 Android form factors (step 0, baseline)
+Updated: 2026-09-22 15:05
 
 ## Where we are
 
-The card was redesigned twice in this session. **v2** replaced the stats row and action circles with
-three list rows and put a real Mapsui/OSM map under the route. **v3** (mock: `refeference2.png` and
-the three-frame screenshot) added a state badge, a timeline strip, a "Before you go" checklist, a
-bottom action bar, and **restored the three service commands v2 had deleted**. A `/ui-craft` and
-`/impeccable:audit` pass followed; four of five craft findings and the audit's one critical are
-fixed. The card builds clean on both heads and is verified on desktop in light and dark.
+v5 (SPEC.md, last section) has started. The work lives in a **git worktree** so the card-polish
+work on `spec/morningcard-uno` stays undisturbed:
+`C:\Users\Platform006\UnoProjects\SampleBuilds-android` on branch `feat/android-form-factors`,
+branched from `691c52f`. Step 0 (phone emulator baseline) is **half done**. The Android build
+deploys and runs, and the light live capture is in `captures/android/live.png`. The first Android
+run since v1 showed two defects:
 
-**SPEC.md is three versions behind.** It carries a v2 delta only. v3 is undocumented — most
-importantly the command restoration, which reverses v2 decision A recorded in that same file.
+1. **The route ruler is missing on Android.** There are no ticks, rings or now-cursor, and the map
+   is not fitted to the route (it shows all of Montreal). `route.json` is packaged
+   (`obj/.../assets/Assets/route.json`), so the fault is at runtime and not yet diagnosed. v4 plan
+   step 6 (Android verification) was therefore never done.
+2. **The title is clipped** to "School dro|": the car image overlaps it at 1080 px width.
+
+Map tiles, fonts, the strip, the checks row and the action bar render correctly.
 
 ## Last verified state
 
-- Build: `net10.0-desktop` and `net10.0-android` both clean, 0 warnings, 0 errors.
-- Tests: 62 passed, 0 failed.
-- Runtime: desktop verified by capture in light and dark, expanded and collapsed, plus the three
-  tone states (on time / leave now / running late). **Android has not been run since v1.**
-- Git: branch `spec/morningcard-uno`, last commit `84207cd`, working tree clean.
+- Build: `net10.0-android` Debug, 0 warnings, 0 errors (worktree). Desktop not rebuilt this session.
+- Runtime: the phone card rendered on `chefs36` (API 36, 1080x2400); `live.png` shows it. Dark and
+  the state set are not captured yet.
+- Git: `feat/android-form-factors`, with this handoff and `captures/android/live.png` committed.
+  The **main tree** (`SampleBuilds`, `spec/morningcard-uno`) holds another session's uncommitted
+  edits to `MorningCardView.xaml`, `RouteRulerRenderer.cs` and `CardTokens.xaml`. Leave them alone;
+  they belong to the card-polish work.
 
 ## Next actions (in order)
 
-1. **Rework the route on the map.** The schematic ruler cuts across streets it does not follow. The
-   decision to keep it schematic predates the timeline strip; now that the strip carries slack,
-   drive and walk proportionally, the map no longer has to encode time at all. Proposed split:
-   strip owns time, map owns geography. Concretely: a fixed polyline of real Plateau coordinates
-   drawn as a Mapsui line layer (so it survives pan and zoom), pins at leave/arrive/bell with the
-   time labels as callouts, and the dotted slack run removed from the map entirely — the car has
-   not moved, so it has no geographic length. Confirm the split before building.
-2. **Write the v3 delta into SPEC.md**, with the command restoration recorded as a reversal of v2
-   decision A, and the capability inventory updated.
-3. **Run v2/v3 on Android.** Everything since v1 is desktop-only. The emulator (`emulator-5554`)
-   was working; `dotnet build MorningCard/MorningCard.csproj -f net10.0-android -t:Run`.
-4. **Touch targets** (audit H2): overflow is 28x24, row chevrons 16x16. Fails WCAG 2.5.8 and
-   matters on the phone head.
-5. **Delete dead code**: `TireFrontLeftPsi` and its Simulator slider, `RouteRulerRenderer.DrawGround`,
-   `CarView.FuelPercent`, and the `CarTile*` tokens now that the car has no tile.
+1. Boot `chefs36` and **finish the baseline**: dark, loading, empty, error, offline, leave-now and
+   late. Drive the states with `debug.mono.env` (see the gotcha below), one short hook per launch.
+2. **Diagnose the missing ruler.** `MC_TRACE` needs a full path, which is too long for
+   `debug.mono.env`. Add a short hook (e.g. `MC_TRACE=1`, which resolves to
+   `ApplicationData.Current.LocalFolder` in code), then read the file with `adb shell run-as
+   com.companyname.morningcard cat files/...`. Suspects: `RouteGeometryLoader` asset read on
+   Android, and the fit running before `MapControl` has a size (Mapsui navigator rule).
+3. Fix the ruler and the title clip in their own `fix:` commits, then commit the full baseline
+   (`chore: android baseline captures`). The plan's step 2 split needs a correct phone card to
+   compare against.
+4. v5 step 1 spikes R3, R4, R5, R6.
 
 ## Open questions
 
-- The reveal motion is verified by build, not by eye: a 260ms animation cannot be caught by a
-  capture with ~2s latency. Unverified rather than confirmed.
-- The overflow menu opens (trace confirms `ShowAt`) but has never been photographed — `PrintWindow`
-  does not capture popup layers.
-- "Skip" from the mock was dropped rather than shipped inert; it needs a meaning first.
-- Weather and the parking note are seeded on the hub like everything else. Fine for a sample,
-  but no real source exists.
+- Should the ruler and title fixes happen before step 1? Proposed: yes (see action 3). The user has
+  not answered.
+- TV, Wear and Automotive system images are not installed; steps 5, 6 and 8 need them. Ask before
+  running `sdkmanager` (1–2 GB each).
+- The `pixel_9_pro_xl_-_api_36_1` AVD cannot boot because its `android-36.1` Play Store image is
+  missing. Use `chefs36`.
+- Worktree tradeoff: the App MCP only registers in a session rooted in the folder with the `.sln`.
+  Start sessions in `SampleBuilds-android\MorningCard.Uno`, or merge back before desktop parity
+  (steps 5–6).
+- v5 Unresolved Questions 1–7 in SPEC.md are still open.
 
-## Recurring trap worth knowing before touching the card
+## Gotchas found this session
 
-**Ink resolved from the app theme while its ground does not follow the theme.** Three occurrences
-this session: the converter brushes, the Skia route labels, and the ETA block (which went invisible
-in dark on a deliberately-light scrim). Anything drawn on the map takes the map's palette — the map
-is light in both themes because OSM has no dark style.
-
-Second trap: **`{Binding Parent.X}` resolves commands but not state from inside a `FeedView`
-template.** It cost two defects here. Carry state on the feed the template already binds to.
+- **A `debug.mono.env` value of 50 characters or more aborts the app at startup** (monodroid
+  `string_base<50>`: `Attempt to store too much data in a buffer (capacity: N; exceeded by: 1)`,
+  SIGABRT). It looks like an app crash. Keep each value short; `MC_THEME=dark` is fine.
+- In Git Bash, set `MSYS_NO_PATHCONV=1` before `adb shell setprop ... /data/...`, or the path is
+  mangled and `setprop` prints its usage text.
+- `adb`/`emulator` are not on PATH: `$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe`.
 
 ## Relaunch
 
 ```powershell
-cd C:\Users\Platform006\UnoProjects\SampleBuilds\MorningCard.Uno
-dotnet build MorningCard/MorningCard.csproj -f net10.0-desktop
-dotnet test
+cd C:\Users\Platform006\UnoProjects\SampleBuilds-android\MorningCard.Uno
+& "$env:LOCALAPPDATA\Android\Sdk\emulator\emulator.exe" -avd chefs36 -no-snapshot-save -no-boot-anim
+dotnet build MorningCard/MorningCard.csproj -f net10.0-android -t:Run
 
-# Kill first: the running exe locks the build output (MSB3027).
-Get-Process MorningCard -ErrorAction SilentlyContinue | Stop-Process -Force
-$env:APP_NO_HOTDESIGN = '1'   # UseStudio() never creates the window without a DevServer
-$p = Start-Process .\MorningCard\bin\Debug\net10.0-desktop\MorningCard.exe -PassThru
-Start-Sleep -Seconds 14
-.\scripts\Capture-Tall.ps1 -ProcessId $p.Id -Out capture.png -Height 1220
+$adb = "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe"
+& $adb shell setprop debug.mono.env "MC_THEME=dark"   # '' to clear; under 50 chars
+& $adb shell am force-stop com.companyname.morningcard
+& $adb shell am start -n com.companyname.morningcard/crc649f50cfeacb723221.MainActivity
+Start-Sleep 16; & $adb exec-out screencap -p > captures/android/dark.png
 ```
 
-Debug hooks: `MC_THEME`, `MC_STATE` (offline/empty/error), `MC_CLOCK`, `MC_DELAY`, `MC_RANGE`,
-`MC_OPEN` (checks|menu), `MC_PROBE_RETRY`, `MC_PROBE_FOCUS`, `MC_PROBE_CHIPS`, `MC_TRACE=<file>`.
-`scripts/capture-states.ps1` shoots all eleven states.
-
-Start the next session **rooted in `MorningCard.Uno`** so the project `.mcp.json` registers the
-`uno-app` server — it was never available this session, and everything above was verified with
-`adb` and `PrintWindow` instead.
+Never run `pm clear` on the Debug build: it deletes the Fast Deployment assemblies (see the rules
+file).
