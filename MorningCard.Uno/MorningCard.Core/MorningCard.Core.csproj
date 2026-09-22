@@ -4,4 +4,10 @@
     <RootNamespace>MorningCard.Core</RootNamespace>
     <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The Mercator projection is an implementation detail of the route asset loader, but it is
+         the one piece of it worth pinning against a known coordinate, so the tests can see it. -->
+    <InternalsVisibleTo Include="MorningCard.Tests" />
+  </ItemGroup>
 </Project>
