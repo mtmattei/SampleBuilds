@@ -15,11 +15,7 @@
   <!-- The house curve. Default for almost everything. -->
   <KeySpline x:Key="EaseSmooth" ControlPoint1="0.22,1" ControlPoint2="0.36,1" />
 
-  <!-- Decorative entrances, where the arrival should feel a touch lighter. -->
-  <KeySpline x:Key="EaseOut" ControlPoint1="0.17,1" ControlPoint2="0.32,1" />
 
-  <!-- Symmetric moves: something that goes out the way it came in. -->
-  <KeySpline x:Key="EaseInOut" ControlPoint1="0.66,0" ControlPoint2="0.34,1" />
 
   <!--
     There is deliberately no spring curve here. A KeySpline clamps its control points to 0..1 on
@@ -29,13 +25,7 @@
     curve; it silently clamps and you get a flat move that looks like a mistake.
   -->
 
-  <Duration x:Key="DurationFast">0:0:0.15</Duration>
-  <Duration x:Key="DurationNormal">0:0:0.2</Duration>
-  <Duration x:Key="DurationSlow">0:0:0.28</Duration>
 
-  <!-- The same three as plain numbers, for animations built in C#. -->
-  <x:Double x:Key="DurationFastMs">150</x:Double>
-  <x:Double x:Key="DurationNormalMs">200</x:Double>
   <x:Double x:Key="DurationSlowMs">280</x:Double>
 
   <!--
@@ -45,7 +35,5 @@
   -->
   <x:Double x:Key="PressScale">0.98</x:Double>
 
-  <!-- How far a hero entrance rises as it fades in. -->
-  <x:Double x:Key="EntranceRise">8</x:Double>
 
 </ResourceDictionary>

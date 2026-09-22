@@ -30,20 +30,6 @@ public sealed class StatLevelBrushConverter : IValueConverter
         throw new NotSupportedException();
 }
 
-/// <summary>The range bar's fill follows the same severity as its value.</summary>
-public sealed class StatLevelFillConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, string language) => value switch
-    {
-        StatLevel.Bad => Tokens.Of("DangerBrush"),
-        StatLevel.Warn => Tokens.Of("AmberBrush"),
-        _ => Tokens.Of("GoodBrush"),
-    };
-
-    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
-        throw new NotSupportedException();
-}
-
 /// <summary>Traffic keeps green, amber and red apart from the route accent on purpose.</summary>
 public sealed class TrafficBrushConverter : IValueConverter
 {
@@ -68,23 +54,6 @@ public sealed class AccentToneConverter : IValueConverter
         value is CardTone.Late
             ? Tokens.Of("DangerInkBrush")
             : Tokens.Of("AccentInkBrush");
-
-    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
-        throw new NotSupportedException();
-}
-
-/// <summary>
-/// The state badge's ground. A tint rather than a solid fill, so the badge reads as a label on the
-/// card and not as a button someone forgot to wire up.
-/// </summary>
-public sealed class ToneChipBrushConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, string language) => value switch
-    {
-        CardTone.Late => Tokens.Of("DangerChipBrush"),
-        CardTone.LeaveNow => Tokens.Of("AmberChipBrush"),
-        _ => Tokens.Of("AccentChipBrush"),
-    };
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
         throw new NotSupportedException();
@@ -170,28 +139,6 @@ public sealed class InverseBoolConverter : IValueConverter
 }
 
 /// <summary>
-/// Shows or hides one of two glyphs held in the same cell. Cross-fading opacity is the only way to
-/// swap an icon without a flick: Path.Data and FontIcon.Glyph are strings, not animatable.
-/// </summary>
-public sealed class BoolToOpacityConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, string language)
-    {
-        var flag = value is true;
-
-        if (string.Equals(parameter as string, "Invert", StringComparison.OrdinalIgnoreCase))
-        {
-            flag = !flag;
-        }
-
-        return flag ? 1d : 0d;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
-        throw new NotSupportedException();
-}
-
-/// <summary>
 /// Points the checklist's chevron at what tapping it does: down to open, up once open. Rotating one
 /// glyph rather than swapping two keeps a single asset, which is the rule for icon states.
 /// </summary>
@@ -204,6 +151,16 @@ public sealed class ChecksHeaderRadiusConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language) =>
         value is true ? new CornerRadius(24, 24, 0, 0) : new CornerRadius(24);
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}
+
+/// <summary>The padlock, open or shut, from one icon set rather than two assets.</summary>
+public sealed class LockGlyphConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language) =>
+        Application.Current.Resources[value is true ? "IconLock" : "IconUnlock"];
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
         throw new NotSupportedException();

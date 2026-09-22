@@ -7,13 +7,12 @@
                     xmlns:mp="using:MorningCard.Presentation">
 
   <mp:StatLevelBrushConverter x:Key="StatLevelBrush" />
-  <mp:StatLevelFillConverter x:Key="StatLevelFill" />
   <mp:TrafficBrushConverter x:Key="TrafficBrush" />
   <mp:ToneBrushConverter x:Key="ToneBrush" />
+  <mp:LockGlyphConverter x:Key="LockGlyph" />
   <mp:ChecksHeaderRadiusConverter x:Key="ChecksHeaderRadius" />
   <mp:CheckDotBrushConverter x:Key="CheckDotBrush" />
   <mp:AccentToneConverter x:Key="AccentTone" />
-  <mp:ToneChipBrushConverter x:Key="ToneChipBrush" />
   <mp:ToneChipInkConverter x:Key="ToneChipInk" />
   <mp:ToneTrackBrushConverter x:Key="ToneTrackBrush" />
   <mp:BoolToAngleConverter x:Key="BoolToAngle" />
@@ -21,7 +20,6 @@
   <mp:StaleOpacityConverter x:Key="StaleOpacity" />
   <mp:BoolToVisibilityConverter x:Key="BoolToVisibility" />
   <mp:InverseBoolConverter x:Key="InverseBool" />
-  <mp:BoolToOpacityConverter x:Key="BoolToOpacity" />
   <mp:NullToVisibilityConverter x:Key="NullToVisibility" />
   <mp:PercentToStarConverter x:Key="PercentToStar" />
 

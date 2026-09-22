@@ -54,9 +54,6 @@
       <Color x:Key="DangerInkColor">#A32C24</Color>
 
       <Color x:Key="MapColor">#ECEFEC</Color>
-      <Color x:Key="MapRoadColor">#FFFFFF</Color>
-      <Color x:Key="MapParkColor">#D6E7CF</Color>
-      <Color x:Key="MapWaterColor">#BCD7F2</Color>
       <Color x:Key="PinColor">#3A424B</Color>
 
       <Color x:Key="CardShadowNearColor">#14141C28</Color>
@@ -114,7 +111,6 @@
       <SolidColorBrush x:Key="AmberInkBrush" Color="{StaticResource AmberInkColor}" />
       <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
       <SolidColorBrush x:Key="DangerInkBrush" Color="{StaticResource DangerInkColor}" />
-      <SolidColorBrush x:Key="MapBrush" Color="{StaticResource MapColor}" />
     </ResourceDictionary>
 
     <ResourceDictionary x:Key="Dark">
@@ -156,9 +152,6 @@
       <Color x:Key="DangerInkColor">#F58A80</Color>
 
       <Color x:Key="MapColor">#1A222B</Color>
-      <Color x:Key="MapRoadColor">#26303B</Color>
-      <Color x:Key="MapParkColor">#1F3328</Color>
-      <Color x:Key="MapWaterColor">#223D5C</Color>
       <Color x:Key="PinColor">#E6EBF0</Color>
 
       <Color x:Key="CardShadowNearColor">#4D000000</Color>
@@ -207,7 +200,6 @@
       <SolidColorBrush x:Key="AmberInkBrush" Color="{StaticResource AmberInkColor}" />
       <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
       <SolidColorBrush x:Key="DangerInkBrush" Color="{StaticResource DangerInkColor}" />
-      <SolidColorBrush x:Key="MapBrush" Color="{StaticResource MapColor}" />
     </ResourceDictionary>
 
   </ResourceDictionary.ThemeDictionaries>

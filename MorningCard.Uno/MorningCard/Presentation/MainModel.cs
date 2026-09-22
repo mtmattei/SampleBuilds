@@ -283,6 +283,7 @@ public partial record MainModel
             IsStale: car.IsStale,
             CarName: car.Name,
             LockText: lockText,
+            IsLocked: car.IsLocked,
             OutsideTemp: Format("Status_Temp", car.OutsideTemp),
             WeatherSummary: car.WeatherSummary,
             NowText: Format("Status_Now", Clock(now)),

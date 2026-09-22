@@ -37,12 +37,6 @@
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
-  <!-- 16 / 600: stat values. -->
-  <Style x:Key="StatValue" TargetType="TextBlock" BasedOn="{StaticResource TitleMedium}">
-    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
-    <Setter Property="FontSize" Value="16" />
-    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
-  </Style>
 
   <!-- 15 / 400: the leave-in sentence and the arrival line. -->
   <Style x:Key="CardBody" TargetType="TextBlock" BasedOn="{StaticResource BodyLarge}">
@@ -77,11 +71,6 @@
     <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
   </Style>
 
-  <!-- 12.5 / 500: the car's name. -->
-  <Style x:Key="CardCaptionStrong" TargetType="TextBlock" BasedOn="{StaticResource CardCaption}">
-    <Setter Property="FontFamily" Value="{StaticResource CardFontMedium}" />
-    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
-  </Style>
 
   <!-- 23 / 600: the empty and error headline inside the map panel. Shares CardTitle's size: 22 sat one pixel away for no reason. -->
   <Style x:Key="EmptyTitle" TargetType="TextBlock" BasedOn="{StaticResource TitleLarge}">
@@ -115,12 +104,6 @@
     <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
   </Style>
 
-  <!-- 17 / 500: the left label column of a list row. -->
-  <Style x:Key="RowLabel" TargetType="TextBlock" BasedOn="{StaticResource CardBody}">
-    <Setter Property="FontFamily" Value="{StaticResource CardFontMedium}" />
-    <Setter Property="FontSize" Value="17" />
-    <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
-  </Style>
 
   <!-- 18 / 600: a list row's primary value. -->
   <Style x:Key="RowValueStrong" TargetType="TextBlock" BasedOn="{StaticResource CardBody}">

@@ -41,11 +41,6 @@ public sealed record RouteRulerSnapshot
 /// </summary>
 public sealed record RouteRulerPalette(
     SKColor Map,
-    SKColor Road,
-    SKColor Park,
-    SKColor Water,
-    SKColor Ink,
-    SKColor Ink2,
     SKColor Ink3,
     SKColor Accent,
     SKColor OnAccent,
@@ -59,11 +54,6 @@ public sealed record RouteRulerPalette(
     /// <summary>Light-theme values, used until the control has read the live resources.</summary>
     public static RouteRulerPalette Fallback { get; } = new(
         Map: new SKColor(0xEC, 0xEF, 0xEC),
-        Road: SKColors.White,
-        Park: new SKColor(0xD6, 0xE7, 0xCF),
-        Water: new SKColor(0xBC, 0xD7, 0xF2),
-        Ink: new SKColor(0x1B, 0x24, 0x30),
-        Ink2: new SKColor(0x5B, 0x65, 0x70),
         Ink3: new SKColor(0x98, 0xA1, 0xAB),
         Accent: new SKColor(0x21, 0x69, 0xE9),
         OnAccent: SKColors.White,

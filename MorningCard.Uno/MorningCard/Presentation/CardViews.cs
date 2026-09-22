@@ -27,6 +27,9 @@ public record HeaderView(
     bool IsStale,
     string CarName,
     string LockText,
+    // The state itself, not only the sentence about it: the bar's lock button showed a shut
+    // padlock while its own label read "Unlocked".
+    bool IsLocked,
     string OutsideTemp,
     string WeatherSummary,
     string NowText,

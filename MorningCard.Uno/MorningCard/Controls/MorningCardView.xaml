@@ -681,7 +681,7 @@
                       IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}"
                       AutomationProperties.Name="{Binding Data.LockText}">
                 <FontIcon FontFamily="{StaticResource IconFont}"
-                          Glyph="{StaticResource IconLock}"
+                          Glyph="{Binding Data.IsLocked, Converter={StaticResource LockGlyph}}"
                           FontSize="18"
                           Foreground="{ThemeResource InkBrush}" />
               </Button>
@@ -689,8 +689,20 @@
               <Button Grid.Column="2"
                       Style="{StaticResource StartDriveStyle}"
                       Command="{Binding Parent.StartDrive}"
-                      IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}"
-                      Content="{Binding Parent.DriveLabel}" />
+                      IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}">
+                <StackPanel Orientation="Horizontal" Spacing="7">
+                  <FontIcon FontFamily="{StaticResource IconFont}"
+                            Glyph="{StaticResource IconDrive}"
+                            FontSize="15"
+                            Foreground="{ThemeResource GlassInkBrush}"
+                            VerticalAlignment="Center" />
+                  <TextBlock Text="{Binding Parent.DriveLabel}"
+                             FontFamily="{StaticResource CardFontMedium}"
+                             FontSize="13"
+                             Foreground="{ThemeResource GlassInkBrush}"
+                             VerticalAlignment="Center" />
+                </StackPanel>
+              </Button>
             </Grid>
           </DataTemplate>
         </mvux:FeedView.ValueTemplate>

@@ -372,11 +372,6 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
 
         return new RouteRulerPalette(
             Map: Read("MapColor", theme, fallback.Map),
-            Road: Read("MapRoadColor", theme, fallback.Road),
-            Park: Read("MapParkColor", theme, fallback.Park),
-            Water: Read("MapWaterColor", theme, fallback.Water),
-            Ink: Read("InkColor", theme, fallback.Ink),
-            Ink2: Read("Ink2Color", theme, fallback.Ink2),
             Ink3: Read("Ink3Color", theme, fallback.Ink3),
             // Read from the brush, not the colour: the hue dial writes the brush.
             Accent: ReadBrush("AccentBrush", theme, fallback.Accent),
