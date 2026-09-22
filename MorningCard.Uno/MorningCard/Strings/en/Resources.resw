@@ -326,6 +326,10 @@
   <data name="Cabin_WarmDetail" xml:space="preserve"><value>Warm to {0}° while you drive.</value></data>
   <data name="Drive_Start" xml:space="preserve"><value>Start drive</value></data>
   <data name="Drive_Sent" xml:space="preserve"><value>Sent to car</value></data>
+  <data name="OverflowButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>More actions</value></data>
+  <data name="MenuRefresh.Text" xml:space="preserve"><value>Refresh</value></data>
+  <data name="MenuOpenMaps.Text" xml:space="preserve"><value>Open in Maps</value></data>
+  <data name="MenuReplay.Text" xml:space="preserve"><value>Replay entrance</value></data>
 </root>
 
 

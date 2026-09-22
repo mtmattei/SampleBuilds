@@ -334,5 +334,65 @@
     <Setter Property="Padding" Value="17,9" />
   </Style>
 
+
+  <!--
+    A button that looks like the row it wraps. The checklist header is the disclosure control, so
+    the whole row is the target - but it must not read as a button, hence no chrome until pointer
+    over. Hit area matches the visual, which is the thing a separate chevron button gets wrong.
+  -->
+  <Style x:Key="RowButtonStyle" TargetType="Button">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="UseSystemFocusVisuals" Value="True" />
+    <Setter Property="FocusVisualPrimaryBrush" Value="{ThemeResource AccentBrush}" />
+    <Setter Property="FocusVisualPrimaryThickness" Value="2" />
+    <Setter Property="FocusVisualSecondaryThickness" Value="0" />
+    <Setter Property="FocusVisualMargin" Value="-2" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="Shell"
+                  Background="{TemplateBinding Background}"
+                  CornerRadius="{StaticResource SmallCornerRadius}"
+                  Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="Shell.Background" Value="{ThemeResource ChipBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="Shell.Background" Value="{ThemeResource ChipBrush}" />
+                    <Setter Target="Shell.Opacity" Value="0.7" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="Shell.Opacity" Value="0.4" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- 28x28: under the 44px touch minimum, which is recorded as a desktop-only trade-off. -->
+  <Style x:Key="OverflowButtonStyle" TargetType="Button" BasedOn="{StaticResource RowButtonStyle}">
+    <Setter Property="Width" Value="28" />
+    <Setter Property="Height" Value="24" />
+    <Setter Property="HorizontalAlignment" Value="Right" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+  </Style>
+
 </ResourceDictionary>
 

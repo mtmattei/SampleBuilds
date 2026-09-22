@@ -178,6 +178,19 @@ public sealed class BoolToOpacityConverter : IValueConverter
         throw new NotSupportedException();
 }
 
+/// <summary>
+/// Points the checklist's chevron at what tapping it does: down to open, up once open. Rotating one
+/// glyph rather than swapping two keeps a single asset, which is the rule for icon states.
+/// </summary>
+public sealed class BoolToAngleConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language) =>
+        value is true ? 180d : 0d;
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>Stale data dims the whole stats row without hiding it.</summary>
 public sealed class StaleOpacityConverter : IValueConverter
 {

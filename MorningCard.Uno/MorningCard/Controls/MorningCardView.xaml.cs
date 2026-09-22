@@ -94,6 +94,12 @@ public sealed partial class MorningCardView : UserControl
         }
     }
 
+    /// <summary>
+    /// Replays the route's entrance. It lives in the view because the animation is the view's, not
+    /// the model's - the Simulator raises the same signal.
+    /// </summary>
+    private void OnReplayEntrance(object sender, RoutedEventArgs e) => CardMotion.RequestReplay();
+
     private static void DebugTrace(string message)
     {
 #if DEBUG

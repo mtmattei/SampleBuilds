@@ -139,6 +139,11 @@ public partial class App : Application
         {
             _ = DebugHooks.ProbeChipsAsync(chipRoot);
         }
+
+        if (DebugHooks.OpenTarget is { } openTarget && MainWindow.Content is { } openRoot)
+        {
+            _ = DebugHooks.OpenAsync(openRoot, openTarget);
+        }
 #endif
     }
 

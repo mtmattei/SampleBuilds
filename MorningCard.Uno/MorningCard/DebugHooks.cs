@@ -85,6 +85,48 @@ internal static class DebugHooks
 
     public static bool ProbeChips => Read("MC_PROBE_CHIPS") == "1";
 
+    /// <summary>MC_OPEN=checks opens the checklist; MC_OPEN=menu drops the overflow menu.</summary>
+    public static string? OpenTarget => Read("MC_OPEN")?.ToLowerInvariant();
+
+    /// <summary>
+    /// Invokes the checklist header or the overflow button through its automation peer.
+    ///
+    /// Synthesised pointer input cannot drive an Uno desktop window from a background process -
+    /// Windows refuses SetForegroundWindow, so every click lands on whatever is actually on top.
+    /// Asking the peer to invoke is the same thing the control does on a real click, and it is the
+    /// only way to photograph these two states without a human at the keyboard.
+    /// </summary>
+    public static async Task OpenAsync(DependencyObject root, string target)
+    {
+        await Task.Delay(TimeSpan.FromSeconds(5));
+
+        var name = target == "menu" ? "Overflow" : "ChecksHeader";
+
+        if (FindByName<Button>(root, name) is not { } button)
+        {
+            Trace($"PROBE open: {name} not in the tree");
+            return;
+        }
+
+        if (target == "menu")
+        {
+            button.Flyout?.ShowAt(button);
+            Trace($"PROBE open: showed the flyout on {name}");
+            return;
+        }
+
+        // A command, not a Click handler, so the peer's Invoke is what a real press would run.
+        if (button.Command is { } command && command.CanExecute(null))
+        {
+            command.Execute(null);
+            Trace($"PROBE open: executed {name}'s command");
+        }
+        else
+        {
+            Trace($"PROBE open: {name} has no executable command (Command={button.Command is null})");
+        }
+    }
+
     /// <summary>
     /// Dumps the mode chips' subtree, because the stray mark over the widest chip labels has
     /// survived every guess made from screenshots. Every TextBlock under the group is reported with

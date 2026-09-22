@@ -144,6 +144,13 @@ public partial record MainModel
     /// <summary>True for 1.6 seconds after the destination is sent, driving the confirmation.</summary>
     public IState<bool> DriveSent => State.Value(this, () => false);
 
+    /// <summary>
+    /// Whether the checklist is open. Starts closed: the header already reports how many checks
+    /// there are and how many are settled, which is the whole answer on a morning where nothing
+    /// needs doing. Opening it is for the mornings where something does.
+    /// </summary>
+    public IState<bool> ChecksExpanded => State.Value(this, () => false);
+
     // ---- commands --------------------------------------------------------------------------
 
     /// <summary>
@@ -202,6 +209,13 @@ public partial record MainModel
         {
             // The card went away mid-confirmation; there is nothing left to reset.
         }
+    }
+
+    /// <summary>Opens or closes the checklist.</summary>
+    public async ValueTask ToggleChecks(CancellationToken ct)
+    {
+        var open = await ChecksExpanded;
+        await ChecksExpanded.SetAsync(!open, ct);
     }
 
     public async ValueTask Retry(CancellationToken ct)
