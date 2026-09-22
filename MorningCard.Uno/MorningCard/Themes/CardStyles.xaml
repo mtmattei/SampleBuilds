@@ -191,10 +191,6 @@
     </Setter>
   </Style>
 
-  <!-- The tires cell: looks tappable, and in this version it is not wired to anything. -->
-  <Style x:Key="CardCellButtonStyle" TargetType="Button" BasedOn="{StaticResource CardTitleButtonStyle}">
-    <Setter Property="HorizontalAlignment" Value="Stretch" />
-    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-  </Style>
 
 </ResourceDictionary>
+

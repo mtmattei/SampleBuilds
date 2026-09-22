@@ -69,7 +69,6 @@
       <SolidColorBrush x:Key="ChipBrush" Color="{StaticResource ChipColor}" />
       <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
       <SolidColorBrush x:Key="AccentInkBrush" Color="{StaticResource AccentInkColor}" />
-      <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
       <SolidColorBrush x:Key="GoodBrush" Color="{StaticResource GoodColor}" />
       <SolidColorBrush x:Key="GoodInkBrush" Color="{StaticResource GoodInkColor}" />
       <SolidColorBrush x:Key="AmberBrush" Color="{StaticResource AmberColor}" />
@@ -77,7 +76,7 @@
       <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
       <SolidColorBrush x:Key="DangerInkBrush" Color="{StaticResource DangerInkColor}" />
       <SolidColorBrush x:Key="MapBrush" Color="{StaticResource MapColor}" />
-      <SolidColorBrush x:Key="PinBrush" Color="{StaticResource PinColor}" />    </ResourceDictionary>
+    </ResourceDictionary>
 
     <ResourceDictionary x:Key="Dark">
       <Color x:Key="GroundColor">#10151C</Color>
@@ -128,7 +127,6 @@
       <SolidColorBrush x:Key="ChipBrush" Color="{StaticResource ChipColor}" />
       <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
       <SolidColorBrush x:Key="AccentInkBrush" Color="{StaticResource AccentInkColor}" />
-      <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
       <SolidColorBrush x:Key="GoodBrush" Color="{StaticResource GoodColor}" />
       <SolidColorBrush x:Key="GoodInkBrush" Color="{StaticResource GoodInkColor}" />
       <SolidColorBrush x:Key="AmberBrush" Color="{StaticResource AmberColor}" />
@@ -136,13 +134,12 @@
       <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
       <SolidColorBrush x:Key="DangerInkBrush" Color="{StaticResource DangerInkColor}" />
       <SolidColorBrush x:Key="MapBrush" Color="{StaticResource MapColor}" />
-      <SolidColorBrush x:Key="PinBrush" Color="{StaticResource PinColor}" />    </ResourceDictionary>
+    </ResourceDictionary>
 
   </ResourceDictionary.ThemeDictionaries>
 
 
   <!-- Geometry the card and its canvases share. CardCornerRadius is what the radius dial writes. -->
-  <x:Double x:Key="CardCornerRadiusValue">34</x:Double>
   <CornerRadius x:Key="CardCornerRadius">34</CornerRadius>
   <CornerRadius x:Key="MapCornerRadius">20</CornerRadius>
   <!-- Skeleton bars, the map pin and other small rounded shapes share one value. 6, 9 and 10 were
@@ -156,6 +153,7 @@
   <x:Double x:Key="MapPanelHeight">248</x:Double>
 
 </ResourceDictionary>
+
 
 
 

@@ -167,7 +167,7 @@
                                Margin="4,0,0,0"
                                VerticalAlignment="Bottom"
                                Foreground="{Binding Data.IsLate, Converter={StaticResource LateInk}}"
-                               Text="min" />
+                               Text="{Binding Parent.EtaUnitLabel}" />
                   </StackPanel>
 
                   <TextBlock Style="{StaticResource CardBody}"
@@ -434,9 +434,9 @@
                             IsChecked="{Binding Data.ClimateOn, Mode=OneWay}"
                             Command="{Binding Parent.ToggleClimate}"
                             IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}"
-                            mc:CardAction.Label="Climate"
+                            mc:CardAction.Label="{Binding Parent.ClimateLabel}"
                             mc:CardAction.SubLabel="{Binding Data.ClimateValue}"
-                            AutomationProperties.Name="Climate">
+                            AutomationProperties.Name="{Binding Parent.ClimateLabel}">
                 <Viewbox Width="24" Height="24">
                   <Path Stroke="{ThemeResource InkBrush}"
                         StrokeThickness="1.7"
@@ -467,8 +467,8 @@
               <Button Grid.Column="3"
                       Style="{StaticResource CardActionButtonStyle}"
                       IsEnabled="False"
-                      mc:CardAction.Label="More"
-                      AutomationProperties.Name="More">
+                      mc:CardAction.Label="{Binding Parent.MoreLabel}"
+                      AutomationProperties.Name="{Binding Parent.MoreLabel}">
                 <Viewbox Width="24" Height="24">
                   <Path Fill="{ThemeResource InkBrush}"
                         Data="M6 10.8 A1.2 1.2 0 1 1 5.99 10.8 Z M12 10.8 A1.2 1.2 0 1 1 11.99 10.8 Z M18 10.8 A1.2 1.2 0 1 1 17.99 10.8 Z" />
@@ -482,6 +482,7 @@
     </Grid>
   </Grid>
 </UserControl>
+
 
 
 

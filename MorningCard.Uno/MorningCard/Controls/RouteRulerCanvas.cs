@@ -219,7 +219,6 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
             IsLate = eta?.IsLate ?? false,
             Leave = eta?.RouteLeave ?? 0d,
             Arrive = eta?.RouteArrive ?? 1d,
-            SlackVisibleMinutes = eta?.SlackVisibleMinutes ?? 0,
             NowLabel = eta?.NowLabel ?? string.Empty,
             LeaveLabel = eta?.LeaveLabel ?? string.Empty,
             SlackLabel = eta?.SlackLabel ?? string.Empty,
@@ -258,7 +257,6 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
             Ink3: Read("Ink3Color", theme, fallback.Ink3),
             // Read from the brush, not the colour: the hue dial writes the brush.
             Accent: ReadBrush("AccentBrush", theme, fallback.Accent),
-            AccentInk: ReadBrush("AccentInkBrush", theme, fallback.AccentInk),
             OnAccent: Read("OnAccentColor", theme, fallback.OnAccent),
             Amber: Read("AmberColor", theme, fallback.Amber),
             AmberInk: Read("AmberInkColor", theme, fallback.AmberInk),
@@ -318,6 +316,7 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         }
     }
 }
+
 
 
 

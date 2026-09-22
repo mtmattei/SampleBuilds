@@ -17,7 +17,6 @@ public record HeaderView(
     string Title,
     string Headline,
     CardTone Tone,
-    bool HasTrip,
     bool IsStale,
     string CarName,
     string CarStatus);
@@ -92,7 +91,6 @@ public record CarView(
     double RangePercent,
     string ChargeValue,
     string ChargeCaption,
-    bool IsCharging,
     string TireValue,
     string TireCaption,
     StatLevel TireLevel,
@@ -101,3 +99,4 @@ public record CarView(
     string LockLabel,
     string ClimateValue,
     bool IsStale);
+

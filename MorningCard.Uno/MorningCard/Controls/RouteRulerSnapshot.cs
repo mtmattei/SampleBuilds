@@ -18,8 +18,6 @@ public sealed record RouteRulerSnapshot
     /// <summary>Where the walk starts along the path, 0 to 1.</summary>
     public double Arrive { get; init; }
 
-    public int SlackVisibleMinutes { get; init; }
-
     public string NowLabel { get; init; } = string.Empty;
 
     public string LeaveLabel { get; init; } = string.Empty;
@@ -39,7 +37,6 @@ public sealed record RouteRulerSnapshot
 
     public RouteRulerPalette Palette { get; init; } = RouteRulerPalette.Fallback;
 
-    public SKTypeface? Typeface { get; init; }
 }
 
 /// <summary>
@@ -55,7 +52,6 @@ public sealed record RouteRulerPalette(
     SKColor Ink2,
     SKColor Ink3,
     SKColor Accent,
-    SKColor AccentInk,
     SKColor OnAccent,
     SKColor Amber,
     SKColor AmberInk,
@@ -74,7 +70,6 @@ public sealed record RouteRulerPalette(
         Ink2: new SKColor(0x5B, 0x65, 0x70),
         Ink3: new SKColor(0x98, 0xA1, 0xAB),
         Accent: new SKColor(0x21, 0x69, 0xE9),
-        AccentInk: new SKColor(0x20, 0x57, 0xB6),
         OnAccent: SKColors.White,
         Amber: new SKColor(0xE8, 0x93, 0x1C),
         AmberInk: new SKColor(0xB8, 0x69, 0x0A),
@@ -83,3 +78,4 @@ public sealed record RouteRulerPalette(
         Pin: new SKColor(0x3A, 0x42, 0x4B),
         NodeStroke: SKColors.White);
 }
+

@@ -48,6 +48,16 @@ public partial record MainModel
     /// <summary>True for 1.4 seconds after a destination is sent, driving the "Sent" label.</summary>
     public IState<bool> SendConfirmed => State.Value(this, () => false);
 
+    /// <summary>
+    /// Static labels that live in XAML elsewhere, exposed here so the last three English literals
+    /// leave the markup and their already-present resource keys stop being orphans.
+    /// </summary>
+    public string ClimateLabel => Text("Action_Climate");
+
+    public string MoreLabel => Text("Action_More");
+
+    public string EtaUnitLabel => Text("Eta_Unit");
+
     /// <summary>"Send to car", or "Sent" while the confirmation is showing.</summary>
     public IFeed<string> SendLabel => SendConfirmed.Select(sent =>
         Text(sent ? "Action_Sent" : "Action_SendToCar"));
@@ -194,7 +204,6 @@ public partial record MainModel
             Title: plan?.Title ?? Text("Header_NoTripTitle"),
             Headline: headline,
             Tone: timeline?.Tone ?? CardTone.Ok,
-            HasTrip: plan is not null,
             IsStale: car.IsStale,
             CarName: car.Name,
             CarStatus: status);
@@ -272,7 +281,6 @@ public partial record MainModel
             RangePercent: TripMath.RangeBarPercent(car.Range, car.RangeMax),
             ChargeValue: car.IsPluggedIn ? Format("Stat_ChargeValue", car.ChargePercent) : Text("Stat_ChargeNone"),
             ChargeCaption: chargeCaption,
-            IsCharging: car.IsPluggedIn,
             TireValue: tireValue,
             TireCaption: Text("Stat_TireCaption"),
             TireLevel: tireLevel,
@@ -318,8 +326,25 @@ public partial record MainModel
     private string Format(string key, params object[] args) =>
         string.Format(CultureInfo.CurrentCulture, _text[key]!, args);
 
-    private static string Clock(TimeOnly time) => time.ToString("H:mm", CultureInfo.InvariantCulture);
+    /// <summary>
+    /// A bare clock time for the map labels: the culture's short-time pattern with the AM/PM
+    /// designator removed. Seven labels each carrying "AM" crowds the panel and says nothing on a
+    /// card that only ever shows one morning - the designator belongs to the arrival line alone.
+    /// A 24-hour culture is unaffected, since its pattern has no designator to strip.
+    /// </summary>
+    private static string Clock(TimeOnly time) =>
+        time.ToString(BareTimePattern, CultureInfo.CurrentCulture);
 
-    private static string ClockWithPeriod(TimeOnly time) => time.ToString("h:mm tt", CultureInfo.InvariantCulture);
+    /// <summary>The arrival line, where the designator earns its place.</summary>
+    private static string ClockWithPeriod(TimeOnly time) => time.ToString("t", CultureInfo.CurrentCulture);
+
+    private static readonly string BareTimePattern =
+        CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern
+            .Replace("tt", string.Empty, StringComparison.Ordinal)
+            .Replace("t", string.Empty, StringComparison.Ordinal)
+            .Trim();
 
 }
+
+
+
