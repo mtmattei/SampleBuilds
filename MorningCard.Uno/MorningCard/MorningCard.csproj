@@ -1,6 +1,7 @@
 <Project Sdk="Uno.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\MorningCard.Core\MorningCard.Core.csproj" />
+    <PackageReference Include="Mapsui.Uno.WinUI" />
   </ItemGroup>
 
   <PropertyGroup>

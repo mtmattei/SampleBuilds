@@ -39,7 +39,12 @@
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <mc:MorningCardView />
+        <!--
+          Top-aligned like the Simulator beside it. In the wide stage both sit in one Auto row, so
+          the row takes the height of the taller panel and a stretched card grew ~290 px of empty
+          glass under the action row. The card is a content-sized object, never a column filler.
+        -->
+        <mc:MorningCardView VerticalAlignment="Top" />
 
         <ContentControl x:Name="SimulatorRegion"
                         Grid.Row="1"

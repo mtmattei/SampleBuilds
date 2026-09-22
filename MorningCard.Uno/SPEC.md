@@ -587,4 +587,78 @@ Accepted gap, stated plainly per the capability rule: the tires chevron and the 
 2. **Sample route geography.** The Trip page needs real coordinates. The simulated service ships one fixed sample polyline (home to a school, about 14 minutes of driving) and labels it as sample data. Any preferred area, or is a generic Montreal West Island route fine?
 3. **OSM tiles.** The Trip page map loads OpenStreetMap tiles over the network with an app user agent, which is the one real remote dependency in the app. Fine for a sample, or should it use a different tile source?
 
+---
+
+# v2 — Redesign against `refeference2.png` (2026-09-22)
+
+The mockup was replaced. This section is the delta; everything above stands except where contradicted
+here.
+
+## v2 Resolved Decisions (user, 2026-09-22)
+
+| # | Question | Decision |
+|---|---|---|
+| A | The four action circles (Lock / Climate / Send to car / More) | **Delete them, and the service commands behind them.** The card becomes read-only. `SetLockedAsync`, `SetClimateAsync` and `SendDestinationAsync` go, along with their pending, disabled and offline-gated states. |
+| B | Map | **Real map (Mapsui) under the route.** This reverses v1 decision 1. Spiked and confirmed rendering on Uno Skia desktop with OSM tiles, 2026-09-22. |
+| C | Car asset | **Keep the Volvo XC60.** The mockup's Subaru Outback is treated as incidental; the vehicle label stays XC60. |
+| D | Units | **Hard switch to km and Celsius.** Seeded data and formatting both move to metric. No culture-driven unit resolution. |
+
+## v2 Capability Inventory (delta only)
+
+| # | Capability | Status | Note |
+|---|---|---|---|
+| 2 | Map under the route | **implemented (reversal of v1)** | Mapsui 5.1.0 + OSM tiles. Verified desktop 2026-09-22; Android verification is the gating risk (see R-v2-1). Open question: the route ruler is a *schematic* — minutes become distance along a path — so laying it over real geography means the slack stretch, during which the car is parked, has no geographic length. Resolving that is R-v2-2. |
+| 5 | Remote commands | **removed by decision A** | Was "substituted"; now gone entirely. This is a capability *reduction*, recorded here rather than absorbed silently. The Simulator keeps writing state, so the card still demonstrates the state machine, but nothing on the card commands the car. |
+| 14 | Units | **changed by decision D** | km, °C. Still English-only. |
+| 17 | Weather (`-3°`, `Clear, 9°` in the status strip) | **new, not yet sourced** | The mockup shows current temperature and a conditions summary. No weather service exists. Needs a decision: seed it on the simulated hub like everything else, or omit the two right-hand status items. |
+| 18 | Parking rules ("At school / Rue Rachel Est / No parking from 9:30") | **new, not yet sourced** | New data the model has no field for. Same choice as 17: seed it, or drop the row. |
+| 19 | "Open in Maps ↗" | **new** | Launches the platform maps app with the destination. `Windows.System.Launcher` with a `geo:` or platform URI. Honest only if it actually launches; otherwise it is another dead button and must be listed as one. |
+| 20 | Locate button (map, top-right) | **new** | Recentres the map on the current position. With no location capability, this either recentres on the seeded origin or comes out. |
+
+## v2 Design Brief (delta)
+
+**Status strip** (new, above the headline): sun glyph + "Good morning" | divider | lock glyph +
+"Outback locked" | right-aligned "-3°" | divider | "Clear, 9°". One row, caption-sized, secondary ink.
+Absorbs the car status caption that used to sit under the car image.
+
+**Headline block**: title steps up substantially (mockup reads ~2x the current 23px). "Leave in
+**9 min** to arrive on time." puts the duration in accent blue inline — two `Run`s, not a separate
+block. New third line: "Leave by 7:33 · Arrive 7:47 · Bell 7:50", secondary ink, middot separators.
+
+**Car image**: moves from the top-right corner to the right of the headline, larger, captioned
+"XC60" (decision C).
+
+**Map panel**: taller, full-bleed to the card's inner width, rounded and clipped. The big "17 min"
+ETA number moves *out* of the map. Adds a circular locate button top-right and an "Open in Maps ↗"
+pill bottom-right. OSM attribution must remain visible and must not collide with the pill.
+
+**Body**: the three-column stats row and the four action circles are both replaced by three list
+rows separated by hairlines. Each row is `icon | label | value (+ sub-line) | chevron`. Rows are
+Fuel, Cabin, At school. Icons are colour-coded (orange fuel, blue thermometer, outlined P).
+
+## v2 Risks (time-boxed spikes)
+
+- **R-v2-1 — Mapsui on the Android Skia head.** Unverified upstream and in these rules. Desktop
+  passed 2026-09-22. If Android fails, decision B has to be revisited before any layout work lands
+  on it. *Gating: do this before rebuilding the card.*
+- **R-v2-2 — Schematic ruler over real geography.** The ruler places time along a path; a real map
+  places metres along a path. These disagree, most visibly across the slack stretch where the car
+  has not moved. Options: draw the route as a real polyline and move the time labels to pin
+  callouts (mockup-accurate), or keep the schematic ruler and accept that it is not geographic.
+- **R-v2-3 — Tiles are a network dependency.** The card now fails visibly with no network. The
+  offline state has to cover "map did not load", which the schematic never needed.
+
+## v2 Unresolved Questions
+
+1. **Weather** (capability 17): seed `-3°` / `Clear, 9°` on the simulated hub, or drop the two
+   right-hand status-strip items?
+2. **Parking** (capability 18): seed the "At school / Rue Rachel Est / No parking from 9:30" row, or
+   drop it and ship two list rows?
+3. **"Open in Maps"** (capability 19): wire it to the platform maps app, or let it join the known
+   dead controls? Per the capability rule it cannot silently look tappable and do nothing.
+4. **Locate button** (capability 20): recentre on the seeded origin, or remove it? There is no
+   location capability and the card should not impersonate one.
+5. **R-v2-2**: real polyline with pin callouts, or keep the schematic ruler over the map?
+6. **Offline map** (R-v2-3): what does the map panel show with no network?
+
 

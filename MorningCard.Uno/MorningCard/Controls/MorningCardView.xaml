@@ -4,7 +4,8 @@
              xmlns:mc="using:MorningCard.Controls"
              xmlns:mvux="using:Uno.Extensions.Reactive.UI"
              xmlns:uen="using:Uno.Extensions.Navigation.UI"
-             HorizontalAlignment="Stretch">
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Top">
 
   <!--
     The card is a Border over a childless glass sibling. Keeping the translucent fill on its own
