@@ -52,7 +52,7 @@
             <!-- Side by side once there is room for two cards and the gap. -->
             <VisualState x:Name="Wide">
               <VisualState.StateTriggers>
-                <AdaptiveTrigger MinWindowWidth="1000" />
+                <AdaptiveTrigger MinWindowWidth="1140" />
               </VisualState.StateTriggers>
               <VisualState.Setters>
                 <!-- Two cards plus the gap and the stage padding; see StageMaxWidthWide. -->
@@ -68,5 +68,6 @@
     </ScrollViewer>
   </Grid>
 </Page>
+
 
 
