@@ -113,7 +113,7 @@ public class SimulatedDriveHubTests
     }
 
     [Fact]
-    public async Task Refreshing_clears_the_fault_so_a_retry_can_succeed()
+    public async Task The_fault_is_transient_so_resubscribing_is_a_real_retry()
     {
         using var hub = NewHub(out _);
         hub.InjectFault();
@@ -123,10 +123,43 @@ public class SimulatedDriveHubTests
             await Assert.ThrowsAsync<CarUnreachableException>(async () => await broken.MoveNextAsync());
         }
 
-        await ((ITripService)hub).RefreshAsync(default);
-
+        // This is what the error template's Retry does: it re-requests the feed. If the fault
+        // survived, the button would be a guaranteed second failure and worth nothing.
         await using var retried = ((ITripService)hub).Watch(default).GetAsyncEnumerator();
         Assert.NotNull(await NextAsync(retried));
+        Assert.False(hub.State.Faulted);
+    }
+
+    [Fact]
+    public async Task Refreshing_also_clears_a_fault_that_was_never_observed()
+    {
+        using var hub = NewHub(out _);
+        hub.InjectFault();
+
+        await ((ITripService)hub).RefreshAsync(default);
+
+        await using var trips = ((ITripService)hub).Watch(default).GetAsyncEnumerator();
+        Assert.NotNull(await NextAsync(trips));
+    }
+
+    [Fact]
+    public async Task The_last_known_stream_rides_out_a_fault_instead_of_throwing()
+    {
+        using var hub = NewHub(out _);
+        var trip = (ITripService)hub;
+
+        await using var header = trip.WatchLastKnown(default).GetAsyncEnumerator();
+        Assert.NotNull(await NextAsync(header));
+
+        hub.InjectFault();
+
+        // No throw: the fault is published like any other change and simply carries no news here.
+        Assert.NotNull(await NextAsync(header));
+
+        // The header keeps updating too: the failure belongs to the map panel, which shows it.
+        hub.SetTrafficDelay(5);
+        var plan = await NextAsync(header);
+        Assert.Equal(5, plan!.DelayMin);
     }
 
     [Fact]

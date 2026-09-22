@@ -117,10 +117,39 @@
 
             <mvux:FeedView.ValueTemplate>
               <DataTemplate>
+                <Grid>
+                <!--
+                  The failure lives here rather than in ErrorTemplate. Measured 2026-09-21: a feed
+                  built on a push stream cannot be recovered by FeedView.Refresh, so a Retry bound
+                  to it executes and leaves the card broken. As a value, the stream stays alive and
+                  the model's own Retry puts a good trip back through it. ErrorTemplate would also
+                  have hidden the car status and the actions, which stay useful here.
+                -->
+                <StackPanel x:Name="ErrorPanel"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Padding="24"
+                            Spacing="8"
+                            Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}}">
+                  <TextBlock x:Uid="ErrorTitle"
+                             Style="{StaticResource EmptyTitle}"
+                             TextAlignment="Center" />
+                  <TextBlock Style="{StaticResource CardLabel}"
+                             MaxWidth="260"
+                             TextAlignment="Center"
+                             TextWrapping="Wrap"
+                             Text="{Binding Data.FailureMessage}" />
+                  <Button x:Name="RetryButton"
+                          x:Uid="ErrorRetry"
+                          HorizontalAlignment="Center"
+                          Command="{Binding Parent.Retry}" />
+                </StackPanel>
+
                 <StackPanel Margin="16,14,0,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
-                            MaxWidth="190">
+                            MaxWidth="190"
+                            Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}">
                   <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource EtaNumber}"
                                Foreground="{Binding Data.IsLate, Converter={StaticResource LateInk}}"
@@ -150,6 +179,7 @@
                     <TextBlock Style="{StaticResource CardCaption}" Text="{Binding Data.VsUsualText}" />
                   </StackPanel>
                 </StackPanel>
+                </Grid>
               </DataTemplate>
             </mvux:FeedView.ValueTemplate>
 
@@ -185,31 +215,6 @@
                 </StackPanel>
               </DataTemplate>
             </mvux:FeedView.ProgressTemplate>
-
-            <!--
-              The error template's DataContext is the exception itself, so Retry is reached by name
-              on the FeedView rather than through Parent, which does not exist here.
-            -->
-            <mvux:FeedView.ErrorTemplate>
-              <DataTemplate>
-                <StackPanel HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Padding="24"
-                            Spacing="8">
-                  <TextBlock x:Uid="ErrorTitle"
-                             Style="{StaticResource EmptyTitle}"
-                             TextAlignment="Center" />
-                  <TextBlock Style="{StaticResource CardLabel}"
-                             MaxWidth="260"
-                             TextAlignment="Center"
-                             TextWrapping="Wrap"
-                             Text="{Binding Message}" />
-                  <Button x:Uid="ErrorRetry"
-                          HorizontalAlignment="Center"
-                          Command="{Binding Refresh, ElementName=EtaFeed}" />
-                </StackPanel>
-              </DataTemplate>
-            </mvux:FeedView.ErrorTemplate>
 
           </mvux:FeedView>
         </Grid>

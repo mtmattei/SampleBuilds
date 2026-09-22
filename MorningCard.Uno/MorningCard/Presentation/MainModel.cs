@@ -41,26 +41,72 @@ public partial record MainModel
     /// Goes none when there is no trip, which is what the map panel's empty state binds to. A fault
     /// upstream surfaces here as the error state.
     /// </summary>
-    public IFeed<EtaView> Eta => Feed.Combine(Plan, Now).Select(BuildEta);
+    public IFeed<EtaView> Eta => Feed.Combine(Trip, Now).Select(BuildEta);
 
     public IFeed<CarView> Stats => Car.Select(BuildCar);
 
     /// <summary>True for 1.4 seconds after a destination is sent, driving the "Sent" label.</summary>
     public IState<bool> SendConfirmed => State.Value(this, () => false);
 
-    private IFeed<TripPlan> Plan => Feed<TripPlan>.AsyncEnumerable(WatchPlan);
+    private IFeed<TripResult> Trip => Feed<TripResult>.AsyncEnumerable(WatchTrip);
 
     /// <summary>
-    /// Turns the service's null into an explicit none, which is what puts the map panel into its
-    /// empty state. A plain nullable would not satisfy the feed's notnull constraint.
+    /// Reads the trip, and owns reconnecting after a failure.
+    ///
+    /// A service that cannot reach the car throws, which is the honest contract; the stream it was
+    /// feeding dies with it. So the failure is turned into a value, and the loop then waits for the
+    /// user's retry before opening a fresh subscription. Nothing else can restart it: refreshing
+    /// the feed does not re-subscribe a stream that has thrown.
+    ///
+    /// A null plan stays an explicit none, which is what draws the empty state.
     /// </summary>
-    private async IAsyncEnumerable<Option<TripPlan>> WatchPlan([EnumeratorCancellation] CancellationToken ct)
+    private async IAsyncEnumerable<Option<TripResult>> WatchTrip([EnumeratorCancellation] CancellationToken ct)
     {
-        await foreach (var plan in _trip.Watch(ct).ConfigureAwait(false))
+        while (!ct.IsCancellationRequested)
         {
-            yield return plan is null ? Option.None<TripPlan>() : Option.Some(plan);
+            await using var trips = _trip.Watch(ct).GetAsyncEnumerator(ct);
+            string? failure = null;
+
+            while (failure is null)
+            {
+                TripPlan? plan;
+
+                try
+                {
+                    if (!await trips.MoveNextAsync().ConfigureAwait(false))
+                    {
+                        yield break;
+                    }
+
+                    plan = trips.Current;
+                }
+                catch (CarUnreachableException error)
+                {
+                    failure = error.Message;
+                    break;
+                }
+
+                yield return plan is null
+                    ? Option.None<TripResult>()
+                    : Option.Some(TripResult.Ok(plan));
+            }
+
+            yield return Option.Some(TripResult.Failure(failure));
+
+            await WaitForRetryAsync(ct).ConfigureAwait(false);
         }
     }
+
+    /// <summary>Blocks the trip loop until <see cref="Retry"/> runs.</summary>
+    private Task WaitForRetryAsync(CancellationToken ct)
+    {
+        var waiter = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Interlocked.Exchange(ref _retryWaiter, waiter);
+        ct.Register(() => waiter.TrySetResult());
+        return waiter.Task;
+    }
+
+    private TaskCompletionSource? _retryWaiter;
 
     // ---- commands --------------------------------------------------------------------------
 
@@ -101,13 +147,16 @@ public partial record MainModel
     {
         await _vehicle.RefreshAsync(ct);
         await _trip.RefreshAsync(ct);
+
+        // Releases the trip loop, which then opens a fresh subscription.
+        Interlocked.Exchange(ref _retryWaiter, null)?.TrySetResult();
     }
 
     // ---- projections -----------------------------------------------------------------------
 
     private async IAsyncEnumerable<TripSlot> WatchSlot([EnumeratorCancellation] CancellationToken ct)
     {
-        await foreach (var plan in _trip.Watch(ct).ConfigureAwait(false))
+        await foreach (var plan in _trip.WatchLastKnown(ct).ConfigureAwait(false))
         {
             yield return new TripSlot(plan);
         }
@@ -145,9 +194,15 @@ public partial record MainModel
             CarStatus: status);
     }
 
-    private EtaView BuildEta((TripPlan Plan, TimeOnly Now) input)
+    private EtaView BuildEta((TripResult Result, TimeOnly Now) input)
     {
-        var (plan, now) = input;
+        var (result, now) = input;
+
+        if (result.Plan is not { } plan)
+        {
+            return Empty with { Failed = true, FailureMessage = result.FailureMessage };
+        }
+
         var timeline = TripMath.Derive(plan, now);
         var route = RouteLayout.Fractions(timeline, plan.WalkMin);
 
@@ -165,6 +220,8 @@ public partial record MainModel
                 Clock(now), Clock(timeline.LeaveBy), route.SlackVisibleMin, timeline.DriveMin, Clock(timeline.Arrive), plan.WalkMin, Clock(plan.Bell));
 
         return new EtaView(
+            Failed: false,
+            FailureMessage: string.Empty,
             TotalMinutes: timeline.TotalMin,
             ArrivalText: Format("Eta_Arrive", ClockWithPeriod(timeline.Arrive)),
             Traffic: timeline.Traffic,
@@ -227,6 +284,28 @@ public partial record MainModel
         await Task.Delay(TimeSpan.FromMilliseconds(1400));
         await SendConfirmed.SetAsync(false, CancellationToken.None);
     }
+
+    /// <summary>A blank view to build a failure on, so every member stays non-null.</summary>
+    private static EtaView Empty { get; } = new(
+        Failed: false,
+        FailureMessage: string.Empty,
+        TotalMinutes: 0,
+        ArrivalText: string.Empty,
+        Traffic: TrafficLevel.Light,
+        TrafficText: string.Empty,
+        VsUsualText: string.Empty,
+        IsLate: false,
+        RouteLeave: 0d,
+        RouteArrive: 1d,
+        SlackVisibleMinutes: 0,
+        NowLabel: string.Empty,
+        LeaveLabel: string.Empty,
+        SlackLabel: string.Empty,
+        DriveLabel: string.Empty,
+        ArriveLabel: string.Empty,
+        WalkLabel: string.Empty,
+        BellLabel: string.Empty,
+        RouteDescription: string.Empty);
 
     private string Text(string key) => _text[key]!;
 

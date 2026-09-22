@@ -82,7 +82,8 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
     /// </summary>
     private void Refresh()
     {
-        var eta = Eta;
+        // A failed lookup has no route to draw, so only the ground is left, same as no trip at all.
+        var eta = Eta is { Failed: false } value ? value : null;
 
         _snapshot = new RouteRulerSnapshot
         {

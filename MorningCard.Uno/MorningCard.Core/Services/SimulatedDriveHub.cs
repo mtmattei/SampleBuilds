@@ -81,7 +81,9 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
     });
 
     /// <summary>
-    /// Breaks the trip feed so the error template and its retry can be driven end to end.
+    /// Breaks the next trip lookup so the error template and its retry can be driven end to end.
+    /// The failure is transient: it is consumed by the attempt that trips on it, so retrying
+    /// succeeds. That is what makes a retry worth offering in the first place.
     /// </summary>
     public void InjectFault() => Mutate(state => state with { Faulted = true });
 
@@ -93,10 +95,28 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
         {
             if (state.Faulted)
             {
+                // Consumed on the way out, so the retry that follows is a real attempt rather than
+                // a second guaranteed failure.
+                Mutate(current => current with { Faulted = false });
                 throw new CarUnreachableException("Could not reach the car to plan this morning's trip.");
             }
 
             // Loading means nothing has arrived, so yield nothing and let the feed stay in progress.
+            if (state.Mode == ConnectionMode.Loading)
+            {
+                continue;
+            }
+
+            yield return state.Mode == ConnectionMode.NoTrip ? null : state.Trip;
+        }
+    }
+
+    public async IAsyncEnumerable<TripPlan?> WatchLastKnown([EnumeratorCancellation] CancellationToken ct)
+    {
+        await foreach (var state in _state.Watch(ct).ConfigureAwait(false))
+        {
+            // A fault says the lookup failed, not that the known plan changed, so it is ignored
+            // here. Only loading withholds a value.
             if (state.Mode == ConnectionMode.Loading)
             {
                 continue;

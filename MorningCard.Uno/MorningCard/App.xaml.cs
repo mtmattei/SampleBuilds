@@ -93,6 +93,23 @@ public partial class App : Application
             () => Task.FromResult(builder.Build()),
             initialRoute: "Main"
         );
+
+#if DEBUG
+        // After navigation on purpose: there is no window root before it, and the theme hook has to
+        // beat the theme service's saved choice.
+        var hub = Host.Services.GetRequiredService<SimulatedDriveHub>();
+        DebugHooks.ApplyTo(hub);
+
+        if (DebugHooks.Theme is { } theme && MainWindow.Content is FrameworkElement root)
+        {
+            root.RequestedTheme = theme;
+        }
+
+        if (DebugHooks.ProbeRetry && MainWindow.Content is { } content)
+        {
+            _ = DebugHooks.ProbeRetryAsync(content, hub);
+        }
+#endif
     }
 
     private static void RegisterRoutes(IViewRegistry views, IRouteRegistry routes)

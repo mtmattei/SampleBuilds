@@ -14,6 +14,13 @@ public interface ITripService
     /// </summary>
     IAsyncEnumerable<TripPlan?> Watch(CancellationToken ct);
 
+    /// <summary>
+    /// The same stream without the failures: it reports what is known and stops rather than
+    /// throwing. The header uses it so a failed trip lookup does not also blank the car status,
+    /// which the map panel's error state is already reporting.
+    /// </summary>
+    IAsyncEnumerable<TripPlan?> WatchLastKnown(CancellationToken ct);
+
     /// <summary>The drive as geography, for the map on the trip page.</summary>
     ValueTask<TripRoute> GetRouteAsync(CancellationToken ct);
 

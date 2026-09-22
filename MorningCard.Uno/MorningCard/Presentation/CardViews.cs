@@ -29,6 +29,8 @@ public record HeaderView(
 /// <param name="RouteLeave">Where the drive starts along the path, 0 to 1.</param>
 /// <param name="RouteArrive">Where the walk starts along the path, 0 to 1.</param>
 public record EtaView(
+    bool Failed,
+    string FailureMessage,
     int TotalMinutes,
     string ArrivalText,
     TrafficLevel Traffic,
@@ -52,6 +54,24 @@ public record EtaView(
 /// becomes a none state and the header loses the car status it still has to show.
 /// </summary>
 internal record TripSlot(TripPlan? Plan);
+
+/// <summary>
+/// One attempt at reading the trip: either a plan, or the reason there isn't one.
+///
+/// The failure travels as a value rather than as a feed error because a feed built on a push stream
+/// cannot be recovered by FeedView.Refresh: measured on 2026-09-21, the Retry button executed with
+/// CanExecute true and the card stayed on its error template, because refreshing does not
+/// re-subscribe a stream that has already thrown. Carrying the failure keeps the stream alive, so
+/// the model's own retry can put a good value through it.
+/// </summary>
+internal record TripResult(TripPlan? Plan, string FailureMessage)
+{
+    public bool Failed => Plan is null;
+
+    public static TripResult Ok(TripPlan plan) => new(plan, string.Empty);
+
+    public static TripResult Failure(string message) => new(null, message);
+}
 
 /// <summary>The stats row and the four actions.</summary>
 public record CarView(
