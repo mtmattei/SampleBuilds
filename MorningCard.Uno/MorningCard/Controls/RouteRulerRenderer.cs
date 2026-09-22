@@ -388,7 +388,11 @@ internal sealed class RouteRulerRenderer : IDisposable
     {
         DrawPin(canvas, projection.Origin, driveColor, palette.NodeStroke, pop);
 
-        if (projection.HasWalk)
+        // The parking spot and the door are a couple of hundred metres apart, which at the zoom a
+        // whole commute fits into is a few pixels - two pins touching, reading as one smudged
+        // marker rather than as two places. The same clearance the callouts use decides it: below
+        // that, only the door is marked, because that is the end of the trip.
+        if (projection.HasWalk && Apart(projection.Parking, projection.Destination) >= CalloutClearance)
         {
             DrawPin(canvas, projection.Parking, palette.Amber, palette.NodeStroke, pop);
         }
@@ -429,6 +433,15 @@ internal sealed class RouteRulerRenderer : IDisposable
         var cursor = projection.Cursor;
 
         if (cursor.Kind == NowCursorKind.None || progress <= 0f)
+        {
+            return;
+        }
+
+        // Not on the origin ring. That ring shortens as the wait runs out rather than filling, so
+        // the marker was pinned to its far end - which is the arc's own terminus, right beside the
+        // origin pin. Two dots a few pixels apart, saying the same thing twice. The arc ending
+        // where it ends is already the reading.
+        if (cursor.Kind == NowCursorKind.OnOriginRing)
         {
             return;
         }

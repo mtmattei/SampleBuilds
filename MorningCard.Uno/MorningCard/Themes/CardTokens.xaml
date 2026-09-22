@@ -72,12 +72,16 @@
       <Color x:Key="EtaScrimFadeColor">#00FFFFFF</Color>
       <!-- Intermediate stops for the scrim ramp, approximating an ease-out: a steep initial drop
            once the text has its ground, then a long low tail. Measured at the old values the scrim
-           was still 81% opaque at the panel's midpoint, which is what killed the map by half. -->
-      <Color x:Key="EtaScrimStop1Color">#A0FFFFFF</Color>
-      <Color x:Key="EtaScrimStop2Color">#5AFFFFFF</Color>
-      <Color x:Key="EtaScrimStop3Color">#2EFFFFFF</Color>
-      <Color x:Key="EtaScrimStop4Color">#16FFFFFF</Color>
-      <Color x:Key="EtaScrimStop5Color">#08FFFFFF</Color>
+           was still 81% opaque at the panel's midpoint, which is what killed the map by half.
+           Seven stops rather than four, so the long tail can stay gradual all the way out instead
+           of stepping; the scrim only reaches fully clear in the last five percent. -->
+      <Color x:Key="EtaScrimStop1Color">#A8FFFFFF</Color>
+      <Color x:Key="EtaScrimStop2Color">#6EFFFFFF</Color>
+      <Color x:Key="EtaScrimStop3Color">#46FFFFFF</Color>
+      <Color x:Key="EtaScrimStop4Color">#2CFFFFFF</Color>
+      <Color x:Key="EtaScrimStop5Color">#1AFFFFFF</Color>
+      <Color x:Key="EtaScrimStop6Color">#0EFFFFFF</Color>
+      <Color x:Key="EtaScrimStop7Color">#06FFFFFF</Color>
       <Color x:Key="GlassInkColor">#FFFFFF</Color>  <!-- Ground for controls sitting on top of map tiles. -->
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
@@ -164,11 +168,13 @@
       <Color x:Key="GoodChipColor">#2E3CCF8A</Color>
       <Color x:Key="EtaScrimColor">#FF181E26</Color>
       <Color x:Key="EtaScrimFadeColor">#00181E26</Color>
-      <Color x:Key="EtaScrimStop1Color">#A0181E26</Color>
-      <Color x:Key="EtaScrimStop2Color">#5A181E26</Color>
-      <Color x:Key="EtaScrimStop3Color">#2E181E26</Color>
-      <Color x:Key="EtaScrimStop4Color">#16181E26</Color>
-      <Color x:Key="EtaScrimStop5Color">#08181E26</Color>
+      <Color x:Key="EtaScrimStop1Color">#A8181E26</Color>
+      <Color x:Key="EtaScrimStop2Color">#6E181E26</Color>
+      <Color x:Key="EtaScrimStop3Color">#46181E26</Color>
+      <Color x:Key="EtaScrimStop4Color">#2C181E26</Color>
+      <Color x:Key="EtaScrimStop5Color">#1A181E26</Color>
+      <Color x:Key="EtaScrimStop6Color">#0E181E26</Color>
+      <Color x:Key="EtaScrimStop7Color">#06181E26</Color>
       <Color x:Key="GlassInkColor">#10151C</Color>
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
