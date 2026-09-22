@@ -806,3 +806,266 @@ than something the user can zoom out of.
    the card may be saying the same thing twice. Left alone until the ruler lands, then reviewed.
 2. Untouched from v3: touch targets (overflow 28x24, chevrons 16x16, WCAG 2.5.8), "Skip" has no
    meaning yet, and Android has not run since v1.
+
+---
+
+# v5 — Android form factors: TV, Wear OS, Android Auto (2026-09-22)
+
+The card ships to three more Android surfaces from this solution. Artboards:
+`docs/artboards/android_tv.png` (1280x720), `docs/artboards/wear_os.png` (four round frames, one
+scrolled screen), `docs/artboards/android_auto.png` (1440x640, parked). They reuse the card's
+content and tokens and rearrange it per surface. Where an artboard and an earlier version of this
+spec disagree on layout, the artboard wins; where it disagrees on *capability*, the capability
+inventory below records the decision.
+
+The form-factor plan comes from the retired `C:\Users\Platform006\SchoolDropoff\docs\SPEC.md`,
+which was written for the same artboards against a from-scratch build. This card already
+implements most of what that build lacked, so the work continues here.
+
+## v5 Resolved Decisions (user, 2026-09-22)
+
+| # | Question | Decision |
+|---|---|---|
+| A5 | Where the work lives | **This repo**, branch `feat/android-form-factors` off `spec/morningcard-uno`. SchoolDropoff is archived. |
+| B5 | How the watch reuses the card | **Extract `MorningCard.UI`**, an Uno class library, shared by the phone/TV app and a standalone `MorningCard.Watch` app. |
+| C5 | Session shape | Spec now; build in a fresh session rooted in `MorningCard.Uno` so the App MCP can drive it. |
+
+## v5 Architecture Brief
+
+### Solution structure
+
+```mermaid
+flowchart TD
+  Core["MorningCard.Core<br/>records, TripMath, SimulatedDriveHub (unchanged)"]
+  UI["MorningCard.UI (new)<br/>MainModel, CardViews, card part controls,<br/>RouteRuler*, tokens, fonts, car image, route.json, Strings"]
+  App["MorningCard<br/>phone + TV + CarAppService<br/>UnoFeatures += AndroidTV; AndroidAuto"]
+  Watch["MorningCard.Watch (new)<br/>AndroidWear, standalone APK"]
+  Core --> UI
+  UI --> App
+  UI --> Watch
+```
+
+| Project | Type | Holds |
+|---|---|---|
+| `MorningCard.Core` | .NET library | unchanged |
+| `MorningCard.UI` | Uno class library (`Material;Toolkit;MVUX;Localization;SkiaRenderer`, Mapsui) | everything under `Controls/`, `Themes/`, `Presentation/{MainModel,CardViews,Converters}.cs`, `Assets/{Car,Fonts}`, `route.json`, `Strings/` |
+| `MorningCard` | Uno app, `net10.0-android;net10.0-desktop` | `App`, `MainPage` (phone), `TvPage`, `Car/` (CarAppService, session, screen, surface renderer), Simulator/Tuning, TV banner |
+| `MorningCard.Watch` | Uno app, `net10.0-android` only, `ApplicationId com.companyname.morningcard.watch` | `WatchPage`, `DropoffTileService` |
+
+Decision: move the MVUX model into `MorningCard.UI`, not only the controls.
+Reason: the watch needs the same feeds and commands; a second model would fork the headline logic.
+Tradeoff: every `ms-appx:///` asset path gains the `MorningCard.UI/` prefix, and localization moves
+into a library (risk R3).
+
+### Card decomposition
+
+`MorningCardView` (719 lines) is one control today. TV and Wear need its parts separately, so it
+is split into part controls that `MorningCardView` recomposes unchanged for the phone:
+
+| Part | Holds |
+|---|---|
+| `CardHeader` | sun, greeting, weather pill, state badge, overflow |
+| `TripPanel` | title + chevron, headline sentence, car image, lock line, LEAVE BY / ARRIVE / BELL, timeline strip |
+| `RouteMapPanel` | Mapsui `MapControl` + `RouteRulerCanvas` + ETA block (`17 min`, traffic) + Open in Maps |
+| `ChecksPanel` | Before you go header, chip, ready dots, three rows; `IsAlwaysExpanded` for TV |
+| `ActionBar` | vehicle line, Unlock, primary action (label from `DriveLabel`) |
+
+Parts bind to the same `MainModel` proxy through the page's DataContext. The FeedView rule holds:
+state reaches a template only through the feed that template binds to (`Parent.X` is commands only).
+
+### State model
+
+Unchanged: `Header`, `Eta`, `Stats`, `DriveLabel`, `DriveSent`, `ChecksExpanded`, commands
+`ToggleLock`, `ToggleClimate`, `StartDrive`, `ToggleChecks`, `Retry`. MVUX stays (durable async
+feeds, FeedView states). New: nothing on the model. Form factor is a startup fact, not state.
+
+### Form factor selection
+
+`FormFactor { Phone, Television, Watch }` from `UiModeManager.CurrentModeType` at startup in
+`MorningCard.UI`. `DebugHooks` gains `MORNINGCARD_FORM_FACTOR` (DEBUG only) so desktop renders the
+TV and Wear pages for App MCP parity runs without an emulator, plus `MORNINGCARD_WINDOW=WxH`
+(resize twice, see the Skia resize gotcha). The phone app routes to `TvPage` on Television; the
+watch app always shows `WatchPage`.
+
+### Navigation model
+
+- Phone: unchanged (`MainPage`, Simulator region). The Simulator is stage machinery and appears on
+  desktop and phone only.
+- TV: `TvPage` registered as its own route; no in-app navigation. Back exits.
+- Watch: `WatchPage`, one vertical `ScrollViewer`, no horizontal paging (conflicts with
+  swipe-to-dismiss).
+- Car: `CarAppService` → `Session` → `DropoffCarScreen`. No XAML.
+
+### Services and data flow
+
+`SimulatedDriveHub` stays the single source for all four surfaces (a sample: no backend). The car
+screen resolves `MainModel`'s services from the app host, subscribes to the same
+`IVehicleService.Watch` / trip stream in C#, and calls `Invalidate()` on change. Start drive hands
+off with a `google.navigation:` intent (car: `CarContext.startCarApp`).
+
+### Platform constraints
+
+| Surface | Opt-in / manifest | Constraint |
+|---|---|---|
+| TV | `AndroidTV`; leanback + touchscreen `required="false"`; 320x180 xhdpi banner | D-pad only; overscan 96x54 at 1080p |
+| Wear | `AndroidWear` in the watch project only; `android.hardware.type.watch required="true"`; minSdk 26 | Round 454 px; Tiles are ProtoLayout, never XAML |
+| Auto | `AndroidAuto`; `automotive_app_desc.xml` → `template`; POI category; `ACCESS_SURFACE` + `MAP_TEMPLATES` | Templates only; we draw the map surface; host requires dark support; row limits from `ConstraintManager` |
+
+Pinned: Uno.Sdk 6.7.30, Mapsui.Uno.WinUI 5.1.0 (current `Directory.Packages.props`). No other new
+packages; the three opt-ins bring their AndroidX packages.
+
+### Testing and validation
+
+- Existing 62 tests stay green after the extraction (they target Core).
+- Desktop parity per form factor via App MCP (`MORNINGCARD_FORM_FACTOR` + `MORNINGCARD_WINDOW`),
+  element-level score against the artboard, target ≥85%.
+- Emulators: phone (baseline), Android TV 1080p, Wear Round API 33+, phone + DHU for Auto.
+
+## v5 Capability Inventory (delta only)
+
+| # | Capability | Status | Note |
+|---|---|---|---|
+| 27 | TV layout, D-pad focus | to implement | `TvPage`, `XYFocusKeyboardNavigation`, focus ring 3 px white + 3 px accent, scale 1.06 |
+| 28 | TV "Send to car" | implemented as label | `StartDrive` + `DriveSent` already model "sent"; the TV shows `Drive_Sent` wording. No real queue (simulated hub). |
+| 29 | Wear app, standalone | to implement | four sections per artboard |
+| 30 | Wear map | implemented if R1 passes | Mapsui + ruler, locked; tap opens Maps. Fallback: ruler over the Skia ground, raised as a substitution |
+| 31 | Wear rotary crown scroll | to verify | Uno Wear docs do not mention it |
+| 32 | Wear Tile | to implement | ProtoLayout: countdown, times, Start drive chip |
+| 33 | Auto screen | to implement | `MapWithContentTemplate` + `PaneTemplate` |
+| 34 | Auto map surface | implemented if R2 passes | Mapsui rendered off-XAML to an `SKCanvas`, ruler on top, blitted to the host `Surface`. Fallback: ruler over the Skia ground, raised as a substitution |
+| 35 | Auto map zoom / recenter | host action strip | artboard shows +, −, recenter; map is locked elsewhere (B4), so zoom here reopens B4 for the car only |
+| 36 | Auto custom panel look | **substituted by platform** | POI apps get host-drawn pane rows; the artboard's panel styling, car image and inline Start/Skip buttons cannot be reproduced. Content maps to rows and pane actions. |
+| 37 | Unlock | phone, TV, Wear | hidden in the car (driver is inside) |
+
+## v5 Design Brief
+
+Tokens, fonts (Instrument Sans), palette and motion tokens come from `MorningCard.UI/Themes`
+unchanged. Each surface adds a ramp dictionary (`FormFactor.Tv.xaml`, `FormFactor.Wear.xaml`)
+that overrides sizes only, merged at startup after `CardTokens.xaml`.
+
+| Role | Phone (current) | TV (1080p = artboard ×1.5) | Wear (454 round) |
+|---|---|---|---|
+| Title | current | 54 | 30 |
+| Headline / countdown | current sentence | sentence, 27 | "Leave in" / **9 min** at 68 / "to arrive on time." |
+| ETA number | current | 81 | 40 |
+| Row title / meta | current | 27 / 21 | 19 / 15 |
+| Caps labels | current | 17 | 11 |
+| Primary action height | current | 72 | 64, bottom edge, full width |
+
+### Layout per surface
+
+- **TV** (artboard `android_tv.png`): glass shell with the `BokehBackdrop`; header row spans
+  (greeting, weather pill, Now 7:24, status); left panel `TripPanel` over `ChecksPanel`
+  (always expanded, `3 checks` chip, Start warming / Skip inline); right panel `RouteMapPanel` at
+  full height with the ETA block top-left and ruler callouts (14 min, 3 min walk, Bell 7:50,
+  Now 7:24, 9 min slack); `ActionBar` footer spans with Unlock and **Send to car**. No Open in
+  Maps or overflow (no pointer). Overscan margins applied to the shell.
+- **Wear** (artboard `wear_os.png`), one scroll, four sections each one screen tall, content inset
+  10% for the round mask, clock row at top:
+  1. greeting · On time · dots, title + chevron, countdown, LEAVE BY / ARRIVE / BELL, strip,
+     Start drive on the bottom edge
+  2. `ROUTE` caps, map with ETA overlay (23 min, Arrive 7:47, Light traffic), Open in Maps ↗
+  3. Before you go, `3 checks · 2 of 3 ready`, three pill rows; cabin row tappable ("tap to start")
+  4. car image, Outback status, weather pill, Unlock, Start drive on the bottom edge
+- **Auto** (artboard `android_auto.png`): our surface draws the full-bleed map, ruler, callouts,
+  and the ETA block top-right of the pane; the host draws the pane: title "School drop-off",
+  rows in order Leave in 9 min · Leave by 7:33 · Bell 7:50, fuel, cabin, parking (truncate at
+  the host row limit); pane actions Start drive (primary) and Start warming (hidden once decided).
+
+### Theme usage
+
+Phone keeps light + dark (ThemeService). TV follows the app theme. Wear: see Unresolved Q2.
+Car: the map ink is pinned Light today (OSM has no dark style); the host requires dark support,
+so the car surface needs a night treatment (Unresolved Q1).
+
+## v5 Interaction Brief
+
+### User flows (all surfaces)
+
+1. Glance: countdown and ETA in one look.
+2. Warm the cabin: `ToggleClimate` (Start warming); Skip remains undefined (v3).
+3. Start drive: handoff to navigation (phone, Wear, car); **Send to car** on TV.
+4. Unlock: phone, TV, Wear.
+
+### Input behavior
+
+| Surface | Input | Rules |
+|---|---|---|
+| TV | D-pad, OK, Back | Initial focus Start warming while climate is undecided, else Send to car. Order: header → trip → checks → footer; map not focusable. Back exits. |
+| Wear | touch, crown | Vertical only; primary action ≥52 dp; long-press on a check row for secondary actions |
+| Auto | host touch / rotary | Only template actions; no text input |
+
+### Empty, loading, error states
+
+The card's existing states (captures: `loading`, `empty`, `error`, `offline`, `leave-now`,
+`late`) carry over through the part controls unchanged. Per surface: TV shows them inside the
+shell panels; Wear shows them in section 1 only and collapses sections 2-4; the car uses
+`PaneTemplate.setLoading(true)`, a `MessageTemplate` for empty/error with a Retry action, and
+"Car offline" in the cabin row.
+
+### Animations
+
+Card motion tokens unchanged. TV focus: scale 1.06, 160 ms ease-out. The ruler's 1700 ms entrance
+plays on phone and TV; Wear and car render the settled frame (battery; host draws on demand).
+Reduced motion honored where the platform reports it (animator duration scale 0 on Android).
+
+### Accessibility
+
+Touch targets ≥48 dp (fixes the v3 audit items on the phone as part of the split: overflow and
+chevrons), Wear ≥52 dp; TV focus visible at 3 m; countdown announced as "Leave in 9 minutes";
+status never by colour alone.
+
+### Runtime verification steps
+
+1. Phone emulator baseline before any change (Android has not run since v1).
+2. After the split and the extraction: phone + desktop captures match the baseline.
+3. Desktop parity runs for TV (1280x720) and Wear (454x454) via App MCP, ≥85% element score.
+4. TV emulator D-pad-only pass; Wear Round touch + crown; DHU day and night.
+5. State matrix: loading, empty, error, offline × TV, Wear, Auto.
+
+## v5 Risks (time-boxed spikes)
+
+| # | Risk | Box | Pass condition |
+|---|---|---|---|
+| R1 | Mapsui `MapControl` on a Wear OS round emulator | 15 min | tiles + ruler render on API 33 Wear |
+| R2 | Mapsui rendered off-XAML (`Mapsui.Rendering.Skia` `MapRenderer`) to an `SKCanvas`, blitted to the car `Surface` | 15 min | a DHU frame shows tiles + ruler |
+| R3 | `.resw` localization from a class library (`x:Uid` resolves in app and watch) | 10 min | one string renders from `MorningCard.UI/Strings` on both apps |
+| R4 | `AndroidTV;AndroidAuto` on the app and `AndroidWear` on the watch build with Mapsui + Toolkit on 6.7.30 | 10 min | both `net10.0-android` builds clean |
+| R5 | Car App Library version bundled by 6.7.30 supports `MapWithContentTemplate` (Car API level 7+) | 10 min | type resolves in the binding |
+| R6 | Asset URIs from the library on Android (`ms-appx:///MorningCard.UI/Assets/...`), incl. fonts | 10 min | font + car image load on the phone emulator |
+
+Two failed cycles on any spike: Debug Checkpoint, then decide the fallback listed in the inventory.
+
+## v5 Implementation Plan
+
+Each step ends in a build or runtime check and one conventional commit.
+
+0. Branch `feat/android-form-factors`. Run the phone emulator baseline; capture light/dark and
+   the state set. `chore: android baseline captures`
+1. Spikes R3, R4, R5, R6 (R1 with step 6, R2 with step 8). Record results in this section.
+2. Split `MorningCardView` into the five parts; phone and desktop captures unchanged; fix the v3
+   touch-target items in the parts. `refactor: split the card into part controls`
+3. Extract `MorningCard.UI`; 62 tests green; phone + desktop unchanged.
+   `refactor: extract MorningCard.UI`
+4. `FormFactor` detection, debug hooks, TV and Wear ramp dictionaries.
+   `feat: form factor detection and ramps`
+5. TV: opt-in, manifest, banner, `TvPage`, focus. Desktop parity ≥85%, then TV emulator D-pad pass.
+   `feat: add Android TV layout`
+6. Watch: `MorningCard.Watch`, `WatchPage`. R1. Desktop parity ≥85%, Wear emulator.
+   `feat: add Wear OS app`
+7. Wear Tile. `feat: add Wear OS drop-off tile`
+8. Car: opt-in, POI service, `DropoffCarScreen`, R2 surface renderer, night treatment. DHU day/night.
+   `feat: add Android Auto screen`
+9. State matrix on all three surfaces; accessibility labels. `feat: form factor states`
+
+## v5 Unresolved Questions
+
+1. **Car night treatment.** The host requires dark support; the map ink is pinned Light because OSM
+   tiles are light. Options: dim the tiles with a colour filter and switch the ruler to a night
+   palette, or use a dark tile source (policy check needed). Decide at step 8.
+2. **Wear theme.** The artboard is light; Wear convention is dark on OLED. Ship light per artboard?
+3. **Car zoom/recenter** (inventory 35): honor the artboard's controls in the car, reopening B4 there?
+4. **Skip** still has no meaning (v3); the TV and car artboards both show it.
+5. **Wear Start drive:** open Maps on the watch, or hand off to the paired phone?
+6. **Application ids:** `com.companyname.morningcard[.watch]` are placeholders.
+7. **Wear rotary crown** support in Uno is undocumented; verify at step 6 before promising it.
