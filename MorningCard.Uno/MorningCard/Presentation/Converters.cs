@@ -130,6 +130,22 @@ public sealed class ToneBrushConverter : IValueConverter
         throw new NotSupportedException();
 }
 
+/// <summary>
+/// The ETA number, drawn on the map. Its ink cannot follow the app theme: the scrim under it is
+/// light in both themes because OSM has no dark style, so the dark palette's near-white ink was
+/// invisible on it. Same rule the route labels follow - ink belongs to what it sits on.
+/// </summary>
+public sealed class MapLateInkConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language) =>
+        AccentPalette.Lookup(value is true ? "DangerInkColor" : "InkColor", ElementTheme.Light) is Windows.UI.Color colour
+            ? new SolidColorBrush(colour)
+            : Tokens.Of("InkBrush");
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>The big arrival number goes red when the arrival is after the bell.</summary>
 public sealed class LateInkConverter : IValueConverter
 {

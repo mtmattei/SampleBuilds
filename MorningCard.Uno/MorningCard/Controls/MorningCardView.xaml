@@ -298,6 +298,16 @@
             <mapsui:MapControl x:Name="Map" />
           </Border>
 
+          <Border Visibility="{Binding State.Data.Failed, ElementName=EtaFeed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert, FallbackValue=Collapsed}">
+            <Border.Background>
+              <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0" />
+                <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0.18" />
+                <GradientStop Color="{ThemeResource EtaScrimFadeColor}" Offset="0.62" />
+              </LinearGradientBrush>
+            </Border.Background>
+          </Border>
+
           <mc:RouteRulerCanvas x:Name="Ruler" Eta="{Binding State.Data, ElementName=EtaFeed}" />
 
           <!-- Real launch, not a decorative pill: it opens the platform maps app at the school. -->
@@ -329,19 +339,7 @@
                   unreadable. The fade keeps the map legible where the route runs and gives the
                   figures a ground where they sit.
                 -->
-                <Border HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Width="215"
-                        Height="150"
-                        Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}">
-                  <Border.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0.72">
-                      <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0" />
-                      <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0.42" />
-                      <GradientStop Color="{ThemeResource EtaScrimFadeColor}" Offset="1" />
-                    </LinearGradientBrush>
-                  </Border.Background>
-                </Border>
+
 
                 <!--
                   Back inside the map in v3. It carries the minutes, the arrival and the traffic
@@ -353,9 +351,12 @@
                             MaxWidth="200"
                             Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}"><StackPanel.Resources><Style TargetType="TextBlock" BasedOn="{StaticResource CardBody}" /></StackPanel.Resources>
                   <TextBlock Style="{StaticResource EtaNumber}"
-                             Foreground="{Binding Data.IsLate, Converter={StaticResource LateInk}}"><Run Text="{Binding Data.TotalMinutes}" /><Run Text=" " /><Run Text="{Binding Parent.EtaUnitLabel}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" FontSize="{StaticResource EtaUnitSize}" /></TextBlock>
+                             Foreground="{Binding Data.IsLate, Converter={StaticResource MapLateInk}}"><Run Text="{Binding Data.TotalMinutes}" /><Run Text=" " /><Run Text="{Binding Parent.EtaUnitLabel}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" FontSize="{StaticResource EtaUnitSize}" /></TextBlock>
 
-                  <TextBlock Style="{StaticResource CardBody}" Margin="0,1,0,0" Text="{Binding Data.ArrivalText}" />
+                  <TextBlock Style="{StaticResource CardBody}"
+                             Margin="0,1,0,0"
+                             Foreground="{ThemeResource MapInk2Brush}"
+                             Text="{Binding Data.ArrivalText}" />
 
                   <StackPanel Margin="0,7,0,0">
                     <StackPanel Orientation="Horizontal" Spacing="6">
@@ -366,7 +367,9 @@
                                  Foreground="{Binding Data.Traffic, Converter={StaticResource TrafficBrush}}"
                                  Text="{Binding Data.TrafficText}" />
                     </StackPanel>
-                    <TextBlock Style="{StaticResource CardCaption}" Text="{Binding Data.VsUsualText}" />
+                    <TextBlock Style="{StaticResource CardCaption}"
+                               Foreground="{ThemeResource MapInk3Brush}"
+                               Text="{Binding Data.VsUsualText}" />
                   </StackPanel>
                 </StackPanel>
 
@@ -462,7 +465,7 @@
                   <!-- One glyph, rotated, rather than two glyphs swapped. -->
                   <Viewbox Grid.Column="4" Width="16" Height="16" VerticalAlignment="Center" Margin="10,0,0,0" RenderTransformOrigin="0.5,0.5">
                     <Viewbox.RenderTransform>
-                      <RotateTransform Angle="{Binding Parent.ChecksExpanded, Converter={StaticResource BoolToAngle}}" />
+                      <RotateTransform Angle="{Binding Data.ChecksExpanded, Converter={StaticResource BoolToAngle}}" />
                     </Viewbox.RenderTransform>
                     <Canvas Width="24" Height="24">
                       <Path Stroke="{ThemeResource Ink3Brush}" StrokeThickness="2.2" StrokeLineJoin="Round"
@@ -473,7 +476,7 @@
               </Button>
 
               <!-- Everything below the header collapses together. -->
-              <StackPanel Visibility="{Binding Parent.ChecksExpanded, Converter={StaticResource BoolToVisibility}}">
+              <StackPanel Visibility="{Binding Data.ChecksExpanded, Converter={StaticResource BoolToVisibility}}">
               <Rectangle Style="{StaticResource RowRule}" />
 
               <!-- Fuel: informational, so it carries a status chip and no action. -->

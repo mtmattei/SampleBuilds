@@ -55,7 +55,7 @@ public partial record MainModel
     /// The three list rows. Takes the trip as well as the car, because the destination row is a
     /// property of where this trip ends rather than of the vehicle.
     /// </summary>
-    public IFeed<CarView> Stats => Feed.Combine(Car, Slot).Select(BuildCar);
+    public IFeed<CarView> Stats => Feed.Combine(Car, Slot, ChecksExpanded).Select(BuildCar);
 
     public string EtaUnitLabel => Text("Eta_Unit");
 
@@ -356,9 +356,9 @@ public partial record MainModel
         _ => Text("VsUsual_Same"),
     };
 
-    private CarView BuildCar((VehicleSnapshot Car, TripSlot Slot) input)
+    private CarView BuildCar((VehicleSnapshot Car, TripSlot Slot, bool Expanded) input)
     {
-        var (car, slot) = input;
+        var (car, slot, expanded) = input;
         var fuelLevel = TripMath.RangeLevel(car.Range);
 
         // Two clauses: whether today's driving fits, and whether it needs attention soon. The
@@ -394,6 +394,7 @@ public partial record MainModel
             // one the driver can still act on, which is what "2 of 3" is counting.
             ChecksReady: Format("Checks_Ready", car.ClimateOn ? 3 : 2, 3),
             CabinNeedsWarming: !car.ClimateOn,
+            ChecksExpanded: expanded,
             ParkingChip: slot.Plan is null ? string.Empty : Format("Checks_ParkingChip", slot.Plan.ParkingNote),
             DestinationLabel: slot.Plan?.DestinationLabel ?? string.Empty,
             ParkingStreet: slot.Plan?.ParkingStreet ?? string.Empty,

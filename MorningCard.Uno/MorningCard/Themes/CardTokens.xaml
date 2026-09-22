@@ -76,6 +76,8 @@
       <SolidColorBrush x:Key="AccentChipBrush" Color="{StaticResource AccentChipColor}" />
       <SolidColorBrush x:Key="AmberChipBrush" Color="{StaticResource AmberChipColor}" />
       <SolidColorBrush x:Key="DangerChipBrush" Color="{StaticResource DangerChipColor}" />
+      <SolidColorBrush x:Key="MapInk2Brush" Color="#4C555F" />
+      <SolidColorBrush x:Key="MapInk3Brush" Color="#6E7885" />
       <SolidColorBrush x:Key="GoodChipBrush" Color="{StaticResource GoodChipColor}" />
       <SolidColorBrush x:Key="GlassInkBrush" Color="{StaticResource GlassInkColor}" />
       <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
@@ -162,6 +164,8 @@
       <SolidColorBrush x:Key="AccentChipBrush" Color="{StaticResource AccentChipColor}" />
       <SolidColorBrush x:Key="AmberChipBrush" Color="{StaticResource AmberChipColor}" />
       <SolidColorBrush x:Key="DangerChipBrush" Color="{StaticResource DangerChipColor}" />
+      <SolidColorBrush x:Key="MapInk2Brush" Color="#4C555F" />
+      <SolidColorBrush x:Key="MapInk3Brush" Color="#6E7885" />
       <SolidColorBrush x:Key="GoodChipBrush" Color="{StaticResource GoodChipColor}" />
       <SolidColorBrush x:Key="GlassInkBrush" Color="{StaticResource GlassInkColor}" />
       <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />

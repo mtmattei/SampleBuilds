@@ -134,6 +134,7 @@ public record CarView(
     string ChecksCount,
     string ChecksReady,
     bool CabinNeedsWarming,
+    bool ChecksExpanded,
     string ParkingChip,
     string DestinationLabel,
     string ParkingStreet,
