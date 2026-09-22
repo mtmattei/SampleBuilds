@@ -70,18 +70,22 @@
       <Color x:Key="GoodChipColor">#1F1F8A5B</Color>
       <Color x:Key="EtaScrimColor">#FFFFFFFF</Color>
       <Color x:Key="EtaScrimFadeColor">#00FFFFFF</Color>
-      <!-- Intermediate stops for the scrim ramp, approximating an ease-out: a steep initial drop
-           once the text has its ground, then a long low tail. Measured at the old values the scrim
-           was still 81% opaque at the panel's midpoint, which is what killed the map by half.
-           Seven stops rather than four, so the long tail can stay gradual all the way out instead
-           of stepping; the scrim only reaches fully clear in the last five percent. -->
-      <Color x:Key="EtaScrimStop1Color">#A8FFFFFF</Color>
-      <Color x:Key="EtaScrimStop2Color">#6EFFFFFF</Color>
-      <Color x:Key="EtaScrimStop3Color">#46FFFFFF</Color>
-      <Color x:Key="EtaScrimStop4Color">#2CFFFFFF</Color>
-      <Color x:Key="EtaScrimStop5Color">#1AFFFFFF</Color>
-      <Color x:Key="EtaScrimStop6Color">#0EFFFFFF</Color>
-      <Color x:Key="EtaScrimStop7Color">#06FFFFFF</Color>
+      <!--
+        Intermediate stops for the scrim ramp, taken off the mockup rather than invented.
+
+        Measured across the reference's map panel: 94% washed at a fifth across, 83% at two fifths,
+        still 77% at the midpoint, then a fast release - 63%, 40%, 15% - and fully clear by about
+        0.73. It HOLDS and then lets go, which is the opposite of what was here before: a steep
+        early drop and a weak tail trailing to 0.95. That shape was why no amount of tuning the
+        tail made it look right; the tail was never the problem.
+      -->
+      <Color x:Key="EtaScrimStop1Color">#F2FFFFFF</Color>
+      <Color x:Key="EtaScrimStop2Color">#DCFFFFFF</Color>
+      <Color x:Key="EtaScrimStop3Color">#C0FFFFFF</Color>
+      <Color x:Key="EtaScrimStop4Color">#96FFFFFF</Color>
+      <Color x:Key="EtaScrimStop5Color">#56FFFFFF</Color>
+      <Color x:Key="EtaScrimStop6Color">#1EFFFFFF</Color>
+      <Color x:Key="EtaScrimStop7Color">#0AFFFFFF</Color>
       <Color x:Key="GlassInkColor">#FFFFFF</Color>  <!-- Ground for controls sitting on top of map tiles. -->
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
@@ -168,13 +172,13 @@
       <Color x:Key="GoodChipColor">#2E3CCF8A</Color>
       <Color x:Key="EtaScrimColor">#FF181E26</Color>
       <Color x:Key="EtaScrimFadeColor">#00181E26</Color>
-      <Color x:Key="EtaScrimStop1Color">#A8181E26</Color>
-      <Color x:Key="EtaScrimStop2Color">#6E181E26</Color>
-      <Color x:Key="EtaScrimStop3Color">#46181E26</Color>
-      <Color x:Key="EtaScrimStop4Color">#2C181E26</Color>
-      <Color x:Key="EtaScrimStop5Color">#1A181E26</Color>
-      <Color x:Key="EtaScrimStop6Color">#0E181E26</Color>
-      <Color x:Key="EtaScrimStop7Color">#06181E26</Color>
+      <Color x:Key="EtaScrimStop1Color">#F2181E26</Color>
+      <Color x:Key="EtaScrimStop2Color">#DC181E26</Color>
+      <Color x:Key="EtaScrimStop3Color">#C0181E26</Color>
+      <Color x:Key="EtaScrimStop4Color">#96181E26</Color>
+      <Color x:Key="EtaScrimStop5Color">#56181E26</Color>
+      <Color x:Key="EtaScrimStop6Color">#1E181E26</Color>
+      <Color x:Key="EtaScrimStop7Color">#0A181E26</Color>
       <Color x:Key="GlassInkColor">#10151C</Color>
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />

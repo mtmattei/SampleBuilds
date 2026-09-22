@@ -71,27 +71,21 @@ internal static class RouteGeometryLoader
         var width = Math.Max(maxX - minX, 1d);
         var height = Math.Max(maxY - minY, 1d);
 
-        // Room for the furniture that hangs off the end pins - a dwell ring at 22px radius and a
-        // callout about 70px wide. All of it is screen-constant while this box is in metres, and
-        // the resolution is not known until the fit happens, so the padding is expressed as the
-        // fraction of the route's width that lands roughly 60px at the width the panel fits. Six
-        // percent was not enough and clipped the origin's callout against the right edge.
-        var pad = width * 0.13d;
+        // Framed the way the reference frames it: the route sits across the middle of the panel,
+        // roughly from three tenths to three quarters. These two numbers are the solution to
+        // putting the route's own extent in that window - asymmetric because the scrim owns the
+        // left of the panel and the route has no business under the ETA block.
+        var leftPad = width * 0.67d;
+        var rightPad = width * 0.56d;
 
-        // A little top padding, to keep the route off the attribution line along the bottom. It used
-        // to be four times this, pushing the route into the lower band to dodge the ETA text - but
-        // the scrim is opaque now and the gutter below clears that text horizontally, so the extra
-        // drop only served to park the origin pin underneath the Open in Maps button.
+        // A little at the top, to keep the route off the attribution line along the bottom.
         var headroom = width * 0.10d;
 
-        // A small left gutter as well, since the ETA block reaches furthest on that side.
-        var etaGutter = width * 1.05d;
-
         return new Mapsui.MRect(
-            minX - pad - etaGutter,
-            minY - pad,
-            maxX + pad,
-            maxY + pad + headroom);
+            minX - leftPad,
+            minY - rightPad,
+            maxX + rightPad,
+            maxY + rightPad + headroom);
     }
 
     private static void DebugTrace(string message)
