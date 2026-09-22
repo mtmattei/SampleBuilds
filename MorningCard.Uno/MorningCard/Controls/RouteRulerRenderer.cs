@@ -32,6 +32,9 @@ internal sealed class RouteRulerRenderer : IDisposable
     /// </summary>
     private const float LeaveLabelGapThreshold = 84f;
 
+    /// <summary>How far along the slack stretch the grey "now" marker sits.</summary>
+    private const float NowMarkerFraction = 0.26f;
+
     private readonly SKPath _route = SKPath.ParseSvgPathData(RouteData);
     private readonly SKPathMeasure _measure;
     private readonly float _length;
@@ -208,6 +211,15 @@ internal sealed class RouteRulerRenderer : IDisposable
         canvas.DrawCircle(p0.X, p0.Y, 14f, _fill);
         DrawNode(canvas, p0, 6.5f, palette.Accent, palette.NodeStroke, 3f);
 
+        // A small grey marker for the current time, a little way along the slack. The car dot is
+        // where the car is; this is what the "Now" label points at.
+        if (hasSlack)
+        {
+            var now = PointAt(fLeave * NowMarkerFraction);
+            _fill.Color = palette.Ink2;
+            canvas.DrawCircle(now.X, now.Y, 3.5f, _fill);
+        }
+
         if (markerT > 0f)
         {
             var pop = BackOut(markerT);
@@ -307,25 +319,32 @@ internal sealed class RouteRulerRenderer : IDisposable
         canvas.Scale(pop);
         canvas.Translate(-at.X, -at.Y);
 
-        _stroke.Color = palette.Ink3;
-        _stroke.StrokeWidth = 1f;
-        canvas.DrawLine(at.X, at.Y, at.X, at.Y - 18f, _stroke);
+        // A rounded square with a short tail, sitting directly above the bell node.
+        const float size = 26f;
+        const float gap = 8f;
+        var top = at.Y - gap - size;
+        var box = new SKRect(at.X - (size / 2f), top, at.X + (size / 2f), top + size);
 
         _fill.Color = palette.Pin;
-        using (var teardrop = SKPath.ParseSvgPathData(
-            $"M{F(at.X)} {F(at.Y - 12f)} l-5 -8 a12 12 0 1 1 10 0 z"))
+        canvas.DrawRoundRect(box, 9f, 9f, _fill);
+
+        using (var tail = new SKPath())
         {
-            canvas.DrawPath(teardrop, _fill);
+            tail.MoveTo(at.X - 4f, box.Bottom - 1f);
+            tail.LineTo(at.X + 4f, box.Bottom - 1f);
+            tail.LineTo(at.X, box.Bottom + 5f);
+            tail.Close();
+            canvas.DrawPath(tail, _fill);
         }
 
-        // The school mortarboard inside the pin.
+        // The school mortarboard inside it.
         _fill.Color = palette.Map;
         using (var glyph = SKPath.ParseSvgPathData(
             "M12 3 2 8l10 5 8-4v6h2V8L12 3zm-6 9.5V17c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.5l-6 3-6-3z"))
         {
             canvas.Save();
-            canvas.Translate(at.X - 6f, at.Y - 40f);
-            canvas.Scale(0.5f);
+            canvas.Translate(box.MidX - 7.5f, box.MidY - 7.5f);
+            canvas.Scale(0.625f);
             canvas.DrawPath(glyph, _fill);
             canvas.Restore();
         }
@@ -344,9 +363,9 @@ internal sealed class RouteRulerRenderer : IDisposable
     {
         var mid = PointAt((fLeave + fArrive) / 2f);
 
-        // The pill sits below and right of the drive's midpoint, in the open corner of the map.
-        var cx = mid.X + 30f;
-        var cy = mid.Y + 32f;
+        // Above the drive's midpoint, riding the line rather than sitting in the corner below it.
+        var cx = mid.X + 8f;
+        var cy = mid.Y - 26f;
 
         canvas.Save();
         canvas.Translate(cx, cy);
