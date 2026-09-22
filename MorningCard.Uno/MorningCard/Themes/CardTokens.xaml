@@ -24,12 +24,12 @@
       <Color x:Key="BlobCColor">#8F9AA6</Color>
       <Color x:Key="BlobDColor">#F1E6D2</Color>
 
-      <Color x:Key="GlassColor">#BDFFFFFF</Color>
-      <Color x:Key="GlassEdgeColor">#B3FFFFFF</Color>
+      <Color x:Key="GlassColor">#9EFFFFFF</Color>
+      <Color x:Key="GlassEdgeColor">#C7FFFFFF</Color>
       <Color x:Key="GlassSecondaryColor">#8CFFFFFF</Color>
 
       <Color x:Key="InkColor">#1B2430</Color>
-      <Color x:Key="Ink2Color">#5B6570</Color>
+      <Color x:Key="Ink2Color">#4C555F</Color>
       <Color x:Key="Ink3Color">#98A1AB</Color>
       <Color x:Key="LineColor">#1A1B2430</Color>
       <Color x:Key="ChipColor">#0F1B2430</Color>
@@ -83,8 +83,8 @@
       <Color x:Key="BlobCColor">#2C3540</Color>
       <Color x:Key="BlobDColor">#3A3126</Color>
 
-      <Color x:Key="GlassColor">#B8181E26</Color>
-      <Color x:Key="GlassEdgeColor">#24FFFFFF</Color>
+      <Color x:Key="GlassColor">#9E181E26</Color>
+      <Color x:Key="GlassEdgeColor">#2EFFFFFF</Color>
       <Color x:Key="GlassSecondaryColor">#0FFFFFFF</Color>
 
       <Color x:Key="InkColor">#F0F3F6</Color>
@@ -142,8 +142,12 @@
   <CornerRadius x:Key="CardCornerRadius">34</CornerRadius>
   <CornerRadius x:Key="MapCornerRadius">20</CornerRadius>
   <Thickness x:Key="CardPadding">22</Thickness>
-  <x:Double x:Key="CardMaxWidth">400</x:Double>
+  <!-- 460 is the original 400 plus 15%. The two-column stage is two of these plus the 24 gap and
+       the stage's own 16 of side padding each way. -->
+  <x:Double x:Key="CardMaxWidth">460</x:Double>
+  <x:Double x:Key="StageMaxWidthWide">976</x:Double>
   <x:Double x:Key="MapPanelHeight">214</x:Double>
 
 </ResourceDictionary>
+
 

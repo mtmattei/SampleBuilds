@@ -36,13 +36,15 @@ internal sealed class RouteRulerRenderer : IDisposable
     private const float NowMarkerFraction = 0.26f;
 
     /// <summary>Where the ground wash has finished clearing, in design units.</summary>
-    private const float FadeEnd = DesignWidth * 0.66f;
+    private const float FadeEnd = DesignWidth * 0.60f;
 
     /// <summary>
-    /// How much of the wash is held solid before it starts to ramp. Lands at roughly 30% of the
-    /// panel, which is the right edge of the duration digits.
+    /// How much of the wash is held solid before it starts to ramp. At 0.60 of a 0.60 end, the
+    /// hold runs to 36% of the panel and the ramp finishes by 60% - more solid ground under the
+    /// text than the first version, over a ramp a third shorter, so the map arrives crisply
+    /// instead of drifting in.
     /// </summary>
-    private const float FadeHoldStop = 0.46f;
+    private const float FadeHoldStop = 0.60f;
 
     private readonly SKPath _route = SKPath.ParseSvgPathData(RouteData);
     private readonly SKPathMeasure _measure;

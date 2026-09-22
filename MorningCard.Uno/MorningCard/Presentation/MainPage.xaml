@@ -23,7 +23,7 @@
       <Grid x:Name="Stage"
             Padding="16,36,16,56"
             HorizontalAlignment="Stretch"
-            MaxWidth="400"
+            MaxWidth="{StaticResource CardMaxWidth}"
             RowSpacing="24"
             ColumnSpacing="24">
         <Grid.ColumnDefinitions>
@@ -49,14 +49,14 @@
           <VisualStateGroup>
             <VisualState x:Name="Narrow" />
 
-            <!-- Side by side once there is room for two 400s and the gap. -->
+            <!-- Side by side once there is room for two cards and the gap. -->
             <VisualState x:Name="Wide">
               <VisualState.StateTriggers>
-                <AdaptiveTrigger MinWindowWidth="900" />
+                <AdaptiveTrigger MinWindowWidth="1000" />
               </VisualState.StateTriggers>
               <VisualState.Setters>
-                <!-- 400 + 24 gap + 400, plus the stage's own 16 of side padding each way. -->
-                <Setter Target="Stage.MaxWidth" Value="856" />
+                <!-- Two cards plus the gap and the stage padding; see StageMaxWidthWide. -->
+                <Setter Target="Stage.MaxWidth" Value="{StaticResource StageMaxWidthWide}" />
                 <Setter Target="Stage.ColumnDefinitions[1].Width" Value="*" />
                 <Setter Target="SimulatorRegion.(Grid.Row)" Value="0" />
                 <Setter Target="SimulatorRegion.(Grid.Column)" Value="1" />
@@ -68,3 +68,5 @@
     </ScrollViewer>
   </Grid>
 </Page>
+
+
