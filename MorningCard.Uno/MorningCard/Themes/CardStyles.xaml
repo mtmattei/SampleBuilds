@@ -192,5 +192,47 @@
   </Style>
 
 
+
+  <!-- One row of the list under the map. Fixed height keeps the three rules evenly spaced. -->
+  <Style x:Key="ListRowStyle" TargetType="Grid">
+    <Setter Property="Padding" Value="0,14" />
+    <Setter Property="ColumnSpacing" Value="14" />
+  </Style>
+
+  <!-- The hairline between rows. A Rectangle rather than a Border: one job, one element. -->
+  <Style x:Key="RowRule" TargetType="Rectangle">
+    <Setter Property="Height" Value="1" />
+    <Setter Property="Fill" Value="{ThemeResource LineBrush}" />
+  </Style>
+
+  <!--
+    The "Open in Maps" pill. Sits on the map, so it carries its own opaque-ish ground rather than
+    relying on whatever tile happens to be underneath - the same lesson as the Simulator panel.
+  -->
+  <Style x:Key="MapPillStyle" TargetType="Button">
+    <Setter Property="Background" Value="{ThemeResource MapPillBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="14,7" />
+    <Setter Property="CornerRadius" Value="16" />
+    <Setter Property="FontFamily" Value="{StaticResource CardFontMedium}" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="UseSystemFocusVisuals" Value="True" />
+    <Setter Property="FocusVisualPrimaryBrush" Value="{ThemeResource AccentBrush}" />
+    <Setter Property="FocusVisualPrimaryThickness" Value="2" />
+    <Setter Property="FocusVisualSecondaryThickness" Value="0" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border Background="{TemplateBinding Background}"
+                  CornerRadius="{TemplateBinding CornerRadius}"
+                  Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
 </ResourceDictionary>
 

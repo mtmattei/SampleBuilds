@@ -13,11 +13,11 @@ public static class TripMath
     /// <summary>Slack at or above this shows a countdown; below it the card says "leave now".</summary>
     public const int LeaveNowThresholdMin = 2;
 
-    /// <summary>Range warns below this, in miles.</summary>
-    public const int RangeWarnMi = 70;
+    /// <summary>Range warns below this, in kilometres.</summary>
+    public const int RangeWarnKm = 110;
 
-    /// <summary>Range is bad below this, in miles.</summary>
-    public const int RangeBadMi = 30;
+    /// <summary>Range is bad below this, in kilometres.</summary>
+    public const int RangeBadKm = 50;
 
     /// <summary>Tire pressure warns below this, in psi.</summary>
     public const int TireWarnPsi = 30;
@@ -73,8 +73,8 @@ public static class TripMath
 
     public static StatLevel RangeLevel(int rangeMi) => rangeMi switch
     {
-        < RangeBadMi => StatLevel.Bad,
-        < RangeWarnMi => StatLevel.Warn,
+        < RangeBadKm => StatLevel.Bad,
+        < RangeWarnKm => StatLevel.Warn,
         _ => StatLevel.Normal,
     };
 

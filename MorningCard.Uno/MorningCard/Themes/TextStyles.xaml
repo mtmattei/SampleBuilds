@@ -96,6 +96,39 @@
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
+
+  <!-- 13 / 400: the status strip above the headline. -->
+  <Style x:Key="StatusLine" TargetType="TextBlock" BasedOn="{StaticResource CardCaption}">
+    <Setter Property="FontSize" Value="13" />
+  </Style>
+
+  <!-- Same size, ink-weight: the temperature and conditions read as values, not captions. -->
+  <Style x:Key="StatusLineStrong" TargetType="TextBlock" BasedOn="{StaticResource StatusLine}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontMedium}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+  </Style>
+
+  <!-- 19 / 400: the sentence under the title, which carries the accented duration inline. -->
+  <Style x:Key="CardLead" TargetType="TextBlock" BasedOn="{StaticResource CardBody}">
+    <Setter Property="FontSize" Value="19" />
+    <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
+  </Style>
+
+  <!-- 17 / 500: the left label column of a list row. -->
+  <Style x:Key="RowLabel" TargetType="TextBlock" BasedOn="{StaticResource CardBody}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontMedium}" />
+    <Setter Property="FontSize" Value="17" />
+    <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
+  </Style>
+
+  <!-- 18 / 600: a list row's primary value. -->
+  <Style x:Key="RowValueStrong" TargetType="TextBlock" BasedOn="{StaticResource CardBody}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="FontSize" Value="18" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+  </Style>
+
 </ResourceDictionary>
 
 

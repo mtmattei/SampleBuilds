@@ -244,7 +244,11 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
     /// </summary>
     private RouteRulerPalette ReadPalette()
     {
-        var theme = ActualTheme;
+        // Pinned to Light, not ActualTheme. Since v2 the route is drawn over real OSM tiles, and
+        // OSM has no dark style - the map stays light in both themes. Following the app theme put
+        // the dark palette's near-white label ink on a light map, so "Now 7:24" and "9 min slack"
+        // were white on pale grey. The ink has to follow what it is drawn on, which is the map.
+        const ElementTheme theme = ElementTheme.Light;
         var fallback = RouteRulerPalette.Fallback;
 
         return new RouteRulerPalette(

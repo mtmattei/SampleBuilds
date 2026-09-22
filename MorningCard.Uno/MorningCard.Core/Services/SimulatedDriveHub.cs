@@ -65,6 +65,20 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
         Vehicle = state.Vehicle with { CabinTemp = degrees },
     });
 
+    public void SetOutsideTemp(int degrees) => Mutate(state => state with
+    {
+        Vehicle = state.Vehicle with { OutsideTemp = degrees },
+    });
+
+    /// <summary>
+    /// The card shows lock state in its status strip but can no longer change it, so the Simulator
+    /// owns the only way to move it. Direct, not awaited: this is the simulator, not the car.
+    /// </summary>
+    public void SetLocked(bool locked) => Mutate(state => state with
+    {
+        Vehicle = state.Vehicle with { IsLocked = locked },
+    });
+
     public void SetTireFrontLeft(int psi) => Mutate(state => state with
     {
         Vehicle = state.Vehicle with { TireFrontLeftPsi = psi },
@@ -158,26 +172,6 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
             last = state.ClockMinutes;
             yield return TripMath.FromMinutes(state.ClockMinutes);
         }
-    }
-
-    public async ValueTask SetLockedAsync(bool locked, CancellationToken ct)
-    {
-        await DelayAsync(ct).ConfigureAwait(false);
-        Mutate(state => state with { Vehicle = state.Vehicle with { IsLocked = locked } });
-    }
-
-    public async ValueTask SetClimateAsync(bool on, CancellationToken ct)
-    {
-        await DelayAsync(ct).ConfigureAwait(false);
-        Mutate(state => state with { Vehicle = state.Vehicle with { ClimateOn = on } });
-    }
-
-    public async ValueTask SendDestinationAsync(CancellationToken ct)
-    {
-        await DelayAsync(ct).ConfigureAwait(false);
-
-        // Nothing to change on the car; the confirmation lives in the view.
-        Mutate(state => state);
     }
 
     ValueTask IVehicleService.RefreshAsync(CancellationToken ct) => ReconnectAsync(ct);

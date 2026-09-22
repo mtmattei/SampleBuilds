@@ -120,12 +120,9 @@ internal sealed class RouteRulerRenderer : IDisposable
         canvas.Translate(0f, top);
         canvas.Scale(scale);
 
-        // Visible design bounds in y, which the ground has to cover.
-        var visibleTop = -top / scale;
-        var visibleBottom = visibleTop + (area.Height / scale);
-
-        DrawGround(canvas, palette, visibleTop, visibleBottom);
-
+        // No ground since v2: real OSM tiles sit underneath this canvas, so drawing the schematic
+        // map here would paint over them. The route, its labels and its pins still draw, which is
+        // the whole point of keeping the ruler - the map is a textured backdrop, not the geometry.
         if (snapshot.HasRoute)
         {
             // No horizontal crop now, so the full design width is what labels clamp against.

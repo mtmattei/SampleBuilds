@@ -89,15 +89,16 @@ public class TripMathTests
         Assert.Equal(expected, timeline.VsUsualMin);
     }
 
+    // Kilometres since v2: the thresholds moved with the units, so the boundary cases move too.
     [Theory]
-    [InlineData(320, StatLevel.Normal)]
-    [InlineData(70, StatLevel.Normal)]
-    [InlineData(69, StatLevel.Warn)]
-    [InlineData(30, StatLevel.Warn)]
-    [InlineData(29, StatLevel.Bad)]
+    [InlineData(520, StatLevel.Normal)]
+    [InlineData(110, StatLevel.Normal)]
+    [InlineData(109, StatLevel.Warn)]
+    [InlineData(50, StatLevel.Warn)]
+    [InlineData(49, StatLevel.Bad)]
     [InlineData(0, StatLevel.Bad)]
-    public void Range_thresholds(int rangeMi, StatLevel expected) =>
-        Assert.Equal(expected, TripMath.RangeLevel(rangeMi));
+    public void Range_thresholds(int rangeKm, StatLevel expected) =>
+        Assert.Equal(expected, TripMath.RangeLevel(rangeKm));
 
     [Theory]
     [InlineData(33, StatLevel.Normal)]

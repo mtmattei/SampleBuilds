@@ -43,24 +43,13 @@ public partial record MainModel
     /// </summary>
     public IFeed<EtaView> Eta => Feed.Combine(Trip, Now).Select(BuildEta);
 
-    public IFeed<CarView> Stats => Car.Select(BuildCar);
-
-    /// <summary>True for 1.4 seconds after a destination is sent, driving the "Sent" label.</summary>
-    public IState<bool> SendConfirmed => State.Value(this, () => false);
-
     /// <summary>
-    /// Static labels that live in XAML elsewhere, exposed here so the last three English literals
-    /// leave the markup and their already-present resource keys stop being orphans.
+    /// The three list rows. Takes the trip as well as the car, because the destination row is a
+    /// property of where this trip ends rather than of the vehicle.
     /// </summary>
-    public string ClimateLabel => Text("Action_Climate");
-
-    public string MoreLabel => Text("Action_More");
+    public IFeed<CarView> Stats => Feed.Combine(Car, Slot).Select(BuildCar);
 
     public string EtaUnitLabel => Text("Eta_Unit");
-
-    /// <summary>"Send to car", or "Sent" while the confirmation is showing.</summary>
-    public IFeed<string> SendLabel => SendConfirmed.Select(sent =>
-        Text(sent ? "Action_Sent" : "Action_SendToCar"));
 
     private IFeed<TripResult> Trip => Feed<TripResult>.AsyncEnumerable(WatchTrip);
 
@@ -139,39 +128,6 @@ public partial record MainModel
 
     // ---- commands --------------------------------------------------------------------------
 
-    // Awaiting a feed yields nothing while it is still loading, so both toggles read the current
-    // snapshot rather than taking the new value as a command parameter: parameters bound from
-    // inside a FeedView template do not arrive reliably.
-    public async ValueTask ToggleLock(CancellationToken ct)
-    {
-        if (await Car is not { } car)
-        {
-            return;
-        }
-
-        await _vehicle.SetLockedAsync(!car.IsLocked, ct);
-    }
-
-    public async ValueTask ToggleClimate(CancellationToken ct)
-    {
-        if (await Car is not { } car)
-        {
-            return;
-        }
-
-        await _vehicle.SetClimateAsync(!car.ClimateOn, ct);
-    }
-
-    public async ValueTask SendToCar(CancellationToken ct)
-    {
-        await _vehicle.SendDestinationAsync(ct);
-        await SendConfirmed.SetAsync(true, ct);
-
-        // The 1.4s reset runs outside the command: a generated command holds its button disabled for
-        // as long as the method runs, and "Sent" is a confirmation, not a wait.
-        _ = ResetSendConfirmationAsync();
-    }
-
     public async ValueTask Retry(CancellationToken ct)
     {
         await _vehicle.RefreshAsync(ct);
@@ -197,31 +153,50 @@ public partial record MainModel
         var plan = slot.Plan;
         var timeline = plan is null ? null : TripMath.Derive(plan, now);
 
-        var headline = car.IsStale
-            ? Format("Headline_Offline", Clock(car.LastSeen))
+        // Three parts so the duration can take the accent colour inline, which is what the v2
+        // mockup draws. Only the middle Run is coloured; an empty accent collapses to plain text.
+        var (lead, accent, tail) = car.IsStale
+            ? (Format("Headline_Offline", Clock(car.LastSeen)), string.Empty, string.Empty)
             : timeline is null
-                ? Text("Headline_NoTrip")
+                ? (Text("Headline_NoTrip"), string.Empty, string.Empty)
                 : timeline.Tone switch
                 {
-                    CardTone.Late => Format("Headline_Late", -timeline.SlackMin, Clock(timeline.Arrive)),
-                    CardTone.LeaveNow => Text("Headline_LeaveNow"),
-                    _ => Format("Headline_LeaveIn", timeline.SlackMin),
+                    CardTone.Late => (
+                        Text("Headline_LatePrefix"),
+                        Format("Headline_LateAccent", -timeline.SlackMin),
+                        Format("Headline_LateTail", Clock(timeline.Arrive))),
+                    CardTone.LeaveNow => (
+                        Text("Headline_LeaveNowPrefix"),
+                        Text("Headline_LeaveNowAccent"),
+                        Text("Headline_LeaveNowTail")),
+                    _ => (
+                        Text("Headline_LeaveInPrefix"),
+                        Format("Headline_LeaveInAccent", timeline.SlackMin),
+                        Text("Headline_LeaveInTail")),
                 };
 
-        var status = car.IsStale
+        // The strip reports lock state; nothing on the card changes it any more (v2 decision A).
+        var lockText = car.IsStale
             ? Format("CarStatus_LastSeen", Clock(car.LastSeen))
-            : Format("CarStatus_Line", Text(car.IsLocked ? "CarStatus_Locked" : "CarStatus_Unlocked"), car.CabinTemp);
+            : Format(car.IsLocked ? "Status_Locked" : "Status_Unlocked", car.Name);
 
         return new HeaderView(
             Greeting: Text("Greeting"),
             // Not "No drop-off today": the map panel already says that, and a card should not
             // deliver the same sentence twice.
             Title: plan?.Title ?? Text("Header_NoTripTitle"),
-            Headline: headline,
+            HeadlineLead: lead,
+            HeadlineAccent: accent,
+            HeadlineTail: tail,
+            TimesLine: timeline is null || plan is null
+                ? string.Empty
+                : Format("Header_Times", Clock(timeline.LeaveBy), Clock(timeline.Arrive), Clock(plan.Bell)),
             Tone: timeline?.Tone ?? CardTone.Ok,
             IsStale: car.IsStale,
             CarName: car.Name,
-            CarStatus: status);
+            LockText: lockText,
+            OutsideTemp: Format("Status_Temp", car.OutsideTemp),
+            WeatherSummary: car.WeatherSummary);
     }
 
     private EtaView BuildEta((TripResult Result, TimeOnly Now) input)
@@ -271,59 +246,39 @@ public partial record MainModel
             RouteDescription: description);
     }
 
-    private CarView BuildCar(VehicleSnapshot car)
+    private CarView BuildCar((VehicleSnapshot Car, TripSlot Slot) input)
     {
-        var tireLevel = TripMath.TireLevel(car.TireFrontLeftPsi);
+        var (car, slot) = input;
+        var fuelLevel = TripMath.RangeLevel(car.Range);
 
-        var tireValue = tireLevel switch
+        // Two clauses: whether today's driving fits, and whether it needs attention soon. The
+        // mockup joins them with a middot, and the second half is what turns the icon amber.
+        var fuelNote = fuelLevel switch
         {
-            StatLevel.Bad => Format("Stat_TirePsi", car.TireFrontLeftPsi),
-            StatLevel.Warn => Text("Stat_TireLow"),
-            _ => Text("Stat_TireAllGood"),
+            StatLevel.Bad => Text("Fuel_NoteLow"),
+            StatLevel.Warn => Text("Fuel_NoteSoon"),
+            _ => Text("Fuel_NoteFine"),
         };
 
-        var chargeCaption = !car.IsPluggedIn
-            ? Text("Stat_ChargeNotCharging")
-            : car.ChargePercent >= 100
-                ? Text("Stat_ChargeFull")
-                : Text("Stat_ChargeCharging");
+        // Climate off means the cabin is not going anywhere, so the row states the temperature
+        // rather than inventing a target it is not heading for.
+        var cabinLead = car.ClimateOn ? Text("Cabin_WarmingLead") : Text("Cabin_RestingLead");
 
         return new CarView(
-            RangeValue: car.Range.ToString(CultureInfo.CurrentCulture),
-            RangeUnit: Text("Stat_RangeUnit"),
-            RangeCaption: Text("Stat_RangeCaption"),
-            RangeLevel: TripMath.RangeLevel(car.Range),
-            RangePercent: TripMath.RangeBarPercent(car.Range, car.RangeMax),
-            ChargeValue: car.IsPluggedIn ? Format("Stat_ChargeValue", car.ChargePercent) : Text("Stat_ChargeNone"),
-            ChargeCaption: chargeCaption,
-            TireValue: tireValue,
-            TireCaption: Text("Stat_TireCaption"),
-            TireLevel: tireLevel,
-            IsLocked: car.IsLocked,
-            ClimateOn: car.ClimateOn,
-            LockLabel: Text(car.IsLocked ? "Action_Lock" : "Action_Unlock"),
-            ClimateValue: car.ClimateOn
-                ? Format("Action_ClimateOn", car.CabinTemp)
-                : Format("Action_ClimateOff", car.CabinTemp),
+            FuelValue: car.Range.ToString(CultureInfo.CurrentCulture),
+            FuelUnit: Text("Fuel_Unit"),
+            FuelNote: fuelNote,
+            FuelLevel: fuelLevel,
+            FuelPercent: TripMath.RangeBarPercent(car.Range, car.RangeMax),
+            CabinLabel: Text("Cabin_Label"),
+            CabinLead: cabinLead,
+            CabinFrom: Format("Temp_Degrees", car.CabinTemp),
+            CabinMid: car.ClimateOn ? Text("Cabin_To") : string.Empty,
+            CabinTo: car.ClimateOn ? Format("Temp_Degrees", car.CabinTarget) : string.Empty,
+            DestinationLabel: slot.Plan?.DestinationLabel ?? Text("Destination_None"),
+            ParkingStreet: slot.Plan?.ParkingStreet ?? string.Empty,
+            ParkingNote: slot.Plan?.ParkingNote ?? string.Empty,
             IsStale: car.IsStale);
-    }
-
-    /// <summary>
-    /// Clears the "Sent" label. Deliberately not awaited by the command, which would hold the
-    /// button disabled for the whole confirmation - so the exception has to be observed here, or a
-    /// model disposed inside the window becomes an unobserved task exception.
-    /// </summary>
-    private async Task ResetSendConfirmationAsync()
-    {
-        try
-        {
-            await Task.Delay(TimeSpan.FromMilliseconds(1400));
-            await SendConfirmed.SetAsync(false, CancellationToken.None);
-        }
-        catch (ObjectDisposedException)
-        {
-            // The card went away mid-confirmation; there is nothing left to reset.
-        }
     }
 
     /// <summary>A blank view to build a failure on, so every member stays non-null.</summary>

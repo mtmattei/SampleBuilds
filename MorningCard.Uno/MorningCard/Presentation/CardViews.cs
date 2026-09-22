@@ -8,18 +8,26 @@ namespace MorningCard.Presentation;
 /// members are where that generation breaks. Everything here is a string, a number, a bool or an
 /// enum, which also keeps the XAML free of converters.
 /// </summary>
-/// <param name="Headline">
-/// The one sentence the card exists to deliver, already resolved for late, leave-now, no-trip and
-/// unreachable.
+/// <param name="HeadlineLead">Text before the accented span, e.g. "Leave in ".</param>
+/// <param name="HeadlineAccent">
+/// The span the design colours, e.g. "9 min". Split into three parts rather than carrying markup,
+/// because the headline is three <c>Run</c>s in one TextBlock and a converter cannot produce Runs.
 /// </param>
+/// <param name="TimesLine">"Leave by 7:33 · Arrive 7:47 · Bell 7:50", empty when there is no trip.</param>
+/// <param name="LockText">Status-strip lock line, e.g. "XC60 locked".</param>
 public record HeaderView(
     string Greeting,
     string Title,
-    string Headline,
+    string HeadlineLead,
+    string HeadlineAccent,
+    string HeadlineTail,
+    string TimesLine,
     CardTone Tone,
     bool IsStale,
     string CarName,
-    string CarStatus);
+    string LockText,
+    string OutsideTemp,
+    string WeatherSummary);
 
 /// <summary>
 /// The ETA block and the route ruler. Reached only when there is a trip: no trip means the feed is
@@ -82,21 +90,28 @@ public record ModeOption(ConnectionMode Value, string Label)
     public override string ToString() => Label;
 }
 
-/// <summary>The stats row and the four actions.</summary>
+/// <summary>
+/// The three list rows under the map: Fuel, Cabin, and the destination.
+///
+/// Flat strings on purpose. MVUX generates a bindable proxy for every type a feed carries,
+/// recursively, so a list of row records would pull the generator into exactly the shapes it fails
+/// on. Three rows is a fixed number the design sets, not a collection.
+/// </summary>
+/// <param name="CabinFrom">Bolded in the row, so it is its own Run: "-3°".</param>
+/// <param name="CabinTo">The other bolded Run: "20°".</param>
 public record CarView(
-    string RangeValue,
-    string RangeUnit,
-    string RangeCaption,
-    StatLevel RangeLevel,
-    double RangePercent,
-    string ChargeValue,
-    string ChargeCaption,
-    string TireValue,
-    string TireCaption,
-    StatLevel TireLevel,
-    bool IsLocked,
-    bool ClimateOn,
-    string LockLabel,
-    string ClimateValue,
+    string FuelValue,
+    string FuelUnit,
+    string FuelNote,
+    StatLevel FuelLevel,
+    double FuelPercent,
+    string CabinLabel,
+    string CabinLead,
+    string CabinFrom,
+    string CabinMid,
+    string CabinTo,
+    string DestinationLabel,
+    string ParkingStreet,
+    string ParkingNote,
     bool IsStale);
 

@@ -58,6 +58,21 @@ public sealed class TrafficBrushConverter : IValueConverter
         throw new NotSupportedException();
 }
 
+/// <summary>
+/// The accented span inside the headline. Late is the one tone that overrides the route accent:
+/// a red sentence with a blue duration in the middle of it would read as two messages.
+/// </summary>
+public sealed class AccentToneConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language) =>
+        value is CardTone.Late
+            ? Tokens.Of("DangerInkBrush")
+            : Tokens.Of("AccentInkBrush");
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>Running late turns the headline red; everything else reads as secondary ink.</summary>
 public sealed class ToneBrushConverter : IValueConverter
 {

@@ -235,17 +235,18 @@ public class SimulatedDriveHubTests
         Assert.Equal(before.Revision + 1, after.Revision);
     }
 
+    /// <summary>
+    /// The remote commands went with the action row in v2, so lock state now moves only from the
+    /// Simulator. The card reports it and cannot change it.
+    /// </summary>
     [Fact]
-    public async Task Lock_and_climate_commands_reach_the_car()
+    public void Lock_state_is_driven_by_the_simulator()
     {
         using var hub = NewHub(out _);
-        var car = (IVehicleService)hub;
 
-        await car.SetLockedAsync(false, default);
+        hub.SetLocked(false);
+
         Assert.False(hub.State.Vehicle.IsLocked);
-
-        await car.SetClimateAsync(true, default);
-        Assert.True(hub.State.Vehicle.ClimateOn);
     }
 
     [Fact]

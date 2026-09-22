@@ -33,14 +33,25 @@ public record DriveHubState(
             BaseDriveMin: 14,
             UsualDriveMin: 16,
             DelayMin: 0,
-            WalkMin: 3),
+            WalkMin: 3,
+            DestinationLabel: "At school",
+            ParkingStreet: "Rue Rachel Est",
+            ParkingNote: "No parking from 9:30"),
         Vehicle: new VehicleSnapshot(
             Name: "XC60",
             IsLocked: true,
-            ClimateOn: false,
-            CabinTemp: 68,
-            Range: 320,
-            RangeMax: 400,
+            // On, so the Cabin row says what it is doing rather than only where it is.
+            ClimateOn: true,
+            // A cold Montreal morning: the cabin sits at the outside temperature and climate is
+            // heading for 20. This is what makes the Cabin row say something worth reading.
+            CabinTemp: -3,
+            CabinTarget: 20,
+            OutsideTemp: -3,
+            WeatherSummary: "Clear, 9°",
+            // Kilometres. 62 is deliberately under the warning threshold so the seeded card shows
+            // the "Fuel soon" state the mockup draws, rather than a green everything-is-fine row.
+            Range: 62,
+            RangeMax: 700,
             TireFrontLeftPsi: 33,
             IsPluggedIn: false,
             ChargePercent: 0,

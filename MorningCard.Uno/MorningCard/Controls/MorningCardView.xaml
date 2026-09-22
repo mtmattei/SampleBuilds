@@ -4,6 +4,7 @@
              xmlns:mc="using:MorningCard.Controls"
              xmlns:mvux="using:Uno.Extensions.Reactive.UI"
              xmlns:uen="using:Uno.Extensions.Navigation.UI"
+             xmlns:mapsui="using:Mapsui.UI.WinUI"
              HorizontalAlignment="Stretch"
              VerticalAlignment="Top">
 
@@ -22,7 +23,7 @@
             BorderThickness="1"
             CornerRadius="{StaticResource CardCornerRadius}" />
 
-    <Grid Padding="{StaticResource CardPadding}" RowSpacing="18">
+    <Grid Padding="{StaticResource CardPadding}" RowSpacing="16">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
@@ -30,100 +31,182 @@
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
 
-      <!-- ============================ header ============================ -->
       <mvux:FeedView Source="{Binding Header}">
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
-            <Grid ColumnSpacing="10">
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="100" />
-              </Grid.ColumnDefinitions>
+            <StackPanel Spacing="14">
 
-              <StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                  <!-- sun -->
-                  <Viewbox Width="22" Height="22" VerticalAlignment="Center">
+              <!-- ======================== status strip ======================== -->
+              <!--
+                Greeting, lock state and weather on one caption-weight line. It absorbs the car
+                status that used to sit under the car image, and it is read-only: since v2 the card
+                reports lock state but cannot change it.
+              -->
+              <Grid ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" Spacing="7">
+                  <Viewbox Width="18" Height="18" VerticalAlignment="Center">
                     <Canvas Width="24" Height="24">
-                      <Path Stroke="{ThemeResource Ink2Brush}"
-                            StrokeThickness="1.7"
-                            StrokeLineJoin="Round"
+                      <Path Stroke="{ThemeResource SunInkBrush}"
+                            StrokeThickness="1.9"
                             StrokeStartLineCap="Round"
                             StrokeEndLineCap="Round"
-                            Data="M12 8 A4 4 0 1 1 11.99 8 Z M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4" />
+                            Data="M12 4V2M12 22v-2M4 12H2M22 12h-2M5.6 5.6 4.2 4.2M19.8 19.8l-1.4-1.4M5.6 18.4l-1.4 1.4M19.8 4.2l-1.4 1.4" />
+                      <Ellipse Canvas.Left="7.5"
+                               Canvas.Top="7.5"
+                               Width="9"
+                               Height="9"
+                               Fill="{ThemeResource SunInkBrush}" />
                     </Canvas>
                   </Viewbox>
-                  <TextBlock Style="{StaticResource CardLabel}"
+                  <TextBlock Style="{StaticResource StatusLine}"
                              VerticalAlignment="Center"
                              Text="{Binding Data.Greeting}" />
                 </StackPanel>
 
-                <!--
-                  A plain heading, not a disabled Button. Nothing sits behind the card in this
-                  sample, and a permanently disabled Button announced the card's own title as
-                  "unavailable" while contributing no heading structure.
-                -->
-                <StackPanel Orientation="Horizontal"
-                            Spacing="6"
-                            Margin="0,4,0,2"
-                            AutomationProperties.HeadingLevel="Level2"
-                            AutomationProperties.Name="{Binding Data.Title}">
+                <Rectangle Grid.Column="1"
+                           Width="1"
+                           Height="14"
+                           VerticalAlignment="Center"
+                           Fill="{ThemeResource LineBrush}" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="7">
+                  <Viewbox Width="16" Height="16" VerticalAlignment="Center">
+                    <Canvas Width="24" Height="24">
+                      <Path Stroke="{ThemeResource Ink2Brush}"
+                            StrokeThickness="1.9"
+                            StrokeLineJoin="Round"
+                            StrokeStartLineCap="Round"
+                            StrokeEndLineCap="Round"
+                            Data="M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM8 11V8a4 4 0 0 1 8 0v3" />
+                    </Canvas>
+                  </Viewbox>
+                  <TextBlock Style="{StaticResource StatusLine}"
+                             VerticalAlignment="Center"
+                             Text="{Binding Data.LockText}" />
+                </StackPanel>
+
+                <TextBlock Grid.Column="4"
+                           Style="{StaticResource StatusLineStrong}"
+                           VerticalAlignment="Center"
+                           Text="{Binding Data.OutsideTemp}" />
+
+                <Rectangle Grid.Column="5"
+                           Width="1"
+                           Height="14"
+                           VerticalAlignment="Center"
+                           Fill="{ThemeResource LineBrush}" />
+
+                <TextBlock Grid.Column="6"
+                           Style="{StaticResource StatusLineStrong}"
+                           VerticalAlignment="Center"
+                           Text="{Binding Data.WeatherSummary}" />
+              </Grid>
+
+              <!-- ======================== headline ======================== -->
+              <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel VerticalAlignment="Center">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Style="{StaticResource CardTitle}"
                                VerticalAlignment="Center"
                                Text="{Binding Data.Title}" />
-                    <Viewbox Width="18" Height="18" VerticalAlignment="Center">
+                    <Viewbox Width="22" Height="22" VerticalAlignment="Center" Margin="0,3,0,0">
                       <Canvas Width="24" Height="24">
-                        <Path Stroke="{ThemeResource Ink3Brush}"
+                        <Path Stroke="{ThemeResource Ink2Brush}"
                               StrokeThickness="2.2"
                               StrokeLineJoin="Round"
                               StrokeStartLineCap="Round"
                               StrokeEndLineCap="Round"
-                              Data="M9 5l7 7-7 7" />
+                              Data="M9 6l6 6-6 6" />
                       </Canvas>
                     </Viewbox>
                   </StackPanel>
-                
 
-                <!--
-                  Two lines are reserved: at phone width this sentence wraps, and the map below must
-                  not jump as the card moves between states.
-                -->
-                <TextBlock Style="{StaticResource CardBody}"
-                           MinHeight="42"
-                           TextWrapping="Wrap"
-                           AutomationProperties.LiveSetting="Polite"
-                           Foreground="{Binding Data.Tone, Converter={StaticResource ToneBrush}}"
-                           Text="{Binding Data.Headline}" />
-              </StackPanel>
+                  <!--
+                    One TextBlock, three Runs. Only the middle one takes the accent colour, which is
+                    how the design puts the duration in blue without splitting the sentence into
+                    separate blocks that would not share a baseline.
+                  -->
+                  <TextBlock Style="{StaticResource CardLead}"
+                             Margin="0,4,0,0"
+                             TextWrapping="Wrap"
+                             Foreground="{Binding Data.Tone, Converter={StaticResource ToneBrush}}">
+                    <Run Text="{Binding Data.HeadlineLead}" />
+                    <Run Text="{Binding Data.HeadlineAccent}"
+                         FontFamily="{StaticResource CardFontSemiBold}"
+                         FontWeight="SemiBold"
+                         Foreground="{Binding Data.Tone, Converter={StaticResource AccentTone}}" />
+                    <Run Text="{Binding Data.HeadlineTail}" />
+                  </TextBlock>
 
-              <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                <mc:CarGlyph Width="100" Height="52" />
-                <TextBlock Style="{StaticResource CardCaptionStrong}"
-                           TextAlignment="Center"
-                           Text="{Binding Data.CarName}" />
-                <TextBlock Style="{StaticResource CardCaption}"
-                           TextAlignment="Center"
-                           TextWrapping="WrapWholeWords"
-                           Text="{Binding Data.CarStatus}" />
-              </StackPanel>
-            </Grid>
+                  <TextBlock Style="{StaticResource CardCaption}"
+                             Margin="0,3,0,0"
+                             TextWrapping="Wrap"
+                             Text="{Binding Data.TimesLine}"
+                             Visibility="{Binding Data.TimesLine, Converter={StaticResource NullToVisibility}}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                  <Image Source="ms-appx:///Assets/Car/xc60.png"
+                         Width="150"
+                         Stretch="Uniform" />
+                  <TextBlock Style="{StaticResource CardCaptionStrong}"
+                             HorizontalAlignment="Center"
+                             Margin="0,2,0,0"
+                             Text="{Binding Data.CarName}" />
+                </StackPanel>
+              </Grid>
+            </StackPanel>
           </DataTemplate>
         </mvux:FeedView.ValueTemplate>
       </mvux:FeedView>
 
       <!-- ============================ map panel ============================ -->
-      <Border Grid.Row="1"
-              MinHeight="{StaticResource MapPanelHeight}"
+      <Border x:Name="MapPanel"
+              Grid.Row="1"
+              Height="{StaticResource MapPanelHeight}"
               CornerRadius="{StaticResource MapCornerRadius}"
               Background="{ThemeResource MapBrush}">
         <Grid>
           <!--
-            The ground is always drawn, so the panel keeps its shape through loading, empty and
-            error; only the route comes and goes with the trip. The canvas sits outside the FeedView
-            for that reason and reads the feed's value through FeedViewState, which is null in every
-            state but value.
+            Real OSM tiles since v2. The route above it stays schematic - minutes become distance
+            along a path - so the drawn line deliberately does not follow the streets underneath:
+            the map is a textured ground, not the route's geometry. Recorded in SPEC.md v2 as the
+            accepted cost of keeping the time-as-distance device.
           -->
+          <!--
+            Wrapped in its own rounded Border. The panel's CornerRadius does not reach the map: it
+            draws through its own surface, so the outer Border clipped everything except the tiles
+            and the map showed square corners inside a rounded panel.
+          -->
+          <Border CornerRadius="{StaticResource MapCornerRadius}">
+            <mapsui:MapControl x:Name="Map" />
+          </Border>
+
           <mc:RouteRulerCanvas x:Name="Ruler" Eta="{Binding State.Data, ElementName=EtaFeed}" />
+
+          <!-- Real launch, not a decorative pill: it opens the platform maps app at the school. -->
+          <Button x:Name="OpenInMaps"
+                  x:Uid="OpenInMapsButton"
+                  Style="{StaticResource MapPillStyle}"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Bottom"
+                  Margin="0,0,12,30"
+                  Click="OnOpenInMaps" />
 
           <mvux:FeedView x:Name="EtaFeed" Source="{Binding Eta}">
 
@@ -134,101 +217,57 @@
                   The failure lives here rather than in ErrorTemplate. Measured 2026-09-21: a feed
                   built on a push stream cannot be recovered by FeedView.Refresh, so a Retry bound
                   to it executes and leaves the card broken. As a value, the stream stays alive and
-                  the model's own Retry puts a good trip back through it. ErrorTemplate would also
-                  have hidden the car status and the actions, which stay useful here.
+                  the model's own Retry puts a good trip back through it.
                 -->
-                <StackPanel x:Name="ErrorPanel"
+                <Border x:Name="ErrorPanel"
+                        Background="{ThemeResource MapScrimBrush}"
+                        Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}}">
+                  <StackPanel HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Padding="24"
+                              Spacing="8">
+                    <TextBlock x:Uid="ErrorTitle"
+                               Style="{StaticResource EmptyTitle}"
+                               TextAlignment="Center" />
+                    <TextBlock Style="{StaticResource CardLabel}"
+                               MaxWidth="260"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               Text="{Binding Data.FailureMessage}" />
+                    <Button x:Name="RetryButton"
+                            x:Uid="ErrorRetry"
                             HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Padding="24"
-                            Spacing="8"
-                            Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}}">
-                  <TextBlock x:Uid="ErrorTitle"
-                             Style="{StaticResource EmptyTitle}"
-                             TextAlignment="Center" />
-                  <TextBlock Style="{StaticResource CardLabel}"
-                             MaxWidth="260"
-                             TextAlignment="Center"
-                             TextWrapping="Wrap"
-                             Text="{Binding Data.FailureMessage}" />
-                  <Button x:Name="RetryButton"
-                          x:Uid="ErrorRetry"
-                          HorizontalAlignment="Center"
-                          Command="{Binding Parent.Retry}" />
-                </StackPanel>
-
-                <StackPanel Margin="16,14,0,0"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Top"
-                            MaxWidth="190"
-                            Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}">
-                  <!--
-                    One TextBlock, two Runs. Bottom-aligning two separate TextBlocks aligned their
-                    boxes, not their baselines, and a 52px box reserves far more descender space
-                    than a 22px one - so "min" sat visibly low. Runs in a single block share a
-                    baseline by definition.
-                  -->
-                  <TextBlock Style="{StaticResource EtaNumber}"
-                             Foreground="{Binding Data.IsLate, Converter={StaticResource LateInk}}">
-                    <Run Text="{Binding Data.TotalMinutes}" />
-                    <Run Text="{Binding Parent.EtaUnitLabel}"
-                         FontFamily="{StaticResource CardFontSemiBold}"
-                         FontWeight="SemiBold"
-                         FontSize="{StaticResource EtaUnitSize}" />
-                  </TextBlock>
-
-                  <TextBlock Style="{StaticResource CardBody}"
-                             Margin="0,2,0,0"
-                             Text="{Binding Data.ArrivalText}" />
-
-                  <StackPanel Margin="0,8,0,0">
-                    <StackPanel Orientation="Horizontal" Spacing="7">
-                      <Ellipse Width="9"
-                               Height="9"
-                               VerticalAlignment="Center"
-                               Fill="{Binding Data.Traffic, Converter={StaticResource TrafficBrush}}" />
-                      <TextBlock Style="{StaticResource CardLabelStrong}"
-                                 VerticalAlignment="Center"
-                                 Foreground="{Binding Data.Traffic, Converter={StaticResource TrafficBrush}}"
-                                 Text="{Binding Data.TrafficText}" />
-                    </StackPanel>
-                    <TextBlock Style="{StaticResource CardCaption}" Text="{Binding Data.VsUsualText}" />
+                            Command="{Binding Parent.Retry}" />
                   </StackPanel>
-                </StackPanel>
+                </Border>
                 </Grid>
               </DataTemplate>
             </mvux:FeedView.ValueTemplate>
 
-            <!-- Nothing on the calendar: the ground stays, the route and the ETA go. -->
+            <!-- Nothing on the calendar: the map stays, the route goes. -->
             <mvux:FeedView.NoneTemplate>
               <DataTemplate>
-                <StackPanel HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Padding="24"
-                            Spacing="4">
-                  <TextBlock x:Uid="EmptyTitle"
-                             Style="{StaticResource EmptyTitle}"
-                             TextAlignment="Center" />
-                  <TextBlock x:Uid="EmptyNote"
-                             Style="{StaticResource CardLabel}"
-                             MaxWidth="260"
-                             TextAlignment="Center"
-                             TextWrapping="Wrap" />
-                </StackPanel>
+                <Border Background="{ThemeResource MapScrimBrush}">
+                  <StackPanel HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Padding="24"
+                              Spacing="4">
+                    <TextBlock x:Uid="EmptyTitle"
+                               Style="{StaticResource EmptyTitle}"
+                               TextAlignment="Center" />
+                    <TextBlock x:Uid="EmptyNote"
+                               Style="{StaticResource CardLabel}"
+                               MaxWidth="260"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap" />
+                  </StackPanel>
+                </Border>
               </DataTemplate>
             </mvux:FeedView.NoneTemplate>
 
-            <!-- The ground stays; only the numbers are missing yet. -->
             <mvux:FeedView.ProgressTemplate>
               <DataTemplate>
-                <StackPanel Margin="16,16,0,0"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Top"
-                            Spacing="10">
-                  <Border Width="120" Height="14" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
-                  <Border Width="130" Height="54" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
-                  <Border Width="90" Height="14" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
-                </StackPanel>
+                <Border Background="{ThemeResource MapScrimBrush}" />
               </DataTemplate>
             </mvux:FeedView.ProgressTemplate>
 
@@ -236,31 +275,24 @@
         </Grid>
       </Border>
 
-      <!-- ============================ stats + actions ============================ -->
+      <!-- ============================ list rows ============================ -->
       <mvux:FeedView Grid.Row="2" Source="{Binding Stats}">
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
-            <Grid Opacity="{Binding Data.IsStale, Converter={StaticResource StaleOpacity}}">
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.05*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1.05*" />
-              </Grid.ColumnDefinitions>
+            <StackPanel Opacity="{Binding Data.IsStale, Converter={StaticResource StaleOpacity}}">
 
-              <!-- range -->
-              <Grid Padding="0,2,8,0" ColumnSpacing="7" RowSpacing="10">
+              <!-- Fuel -->
+              <Grid Style="{StaticResource ListRowStyle}">
                 <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="20" />
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="92" />
                   <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                  <RowDefinition Height="Auto" />
-                  <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
 
-                <Viewbox Width="26" Height="26" VerticalAlignment="Top" Margin="0,-1,0,0">
+                <Viewbox Width="26" Height="26" VerticalAlignment="Center">
                   <Canvas Width="24" Height="24">
-                    <Path Stroke="{Binding Data.RangeLevel, Converter={StaticResource StatLevelBrush}}"
+                    <Path Stroke="{Binding Data.FuelLevel, Converter={StaticResource StatLevelBrush}}"
                           StrokeThickness="1.7"
                           StrokeLineJoin="Round"
                           StrokeStartLineCap="Round"
@@ -269,257 +301,149 @@
                   </Canvas>
                 </Viewbox>
 
-                <StackPanel Grid.Column="1">
-                  <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource StatValue}"
-                               Foreground="{Binding Data.RangeLevel, Converter={StaticResource StatLevelBrush}}"
-                               Text="{Binding Data.RangeValue}" />
-                    <TextBlock Style="{StaticResource StatValue}"
-                               Margin="3,0,0,0"
-                               FontSize="15"
-                               Foreground="{Binding Data.RangeLevel, Converter={StaticResource StatLevelBrush}}"
-                               Text="{Binding Data.RangeUnit}" />
-                  </StackPanel>
-                  <TextBlock Style="{StaticResource CardCaption}"
-                             Foreground="{Binding Data.RangeLevel, Converter={StaticResource StatLevelBrush}}"
-                             Text="{Binding Data.RangeCaption}" />
+                <TextBlock Grid.Column="1"
+                           x:Uid="FuelLabel"
+                           Style="{StaticResource RowLabel}"
+                           VerticalAlignment="Center" />
+
+                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                  <TextBlock>
+                    <Run Text="{Binding Data.FuelValue}"
+                         FontFamily="{StaticResource CardFontSemiBold}"
+                         FontWeight="SemiBold"
+                         FontSize="21" />
+                    <Run Text="{Binding Data.FuelUnit}" FontSize="15" />
+                  </TextBlock>
+                  <TextBlock Style="{StaticResource CardCaption}" Text="{Binding Data.FuelNote}" />
                 </StackPanel>
 
-                <!-- The bar fills by layout, so it animates as a width without a dependent animation. -->
-                <Grid Grid.Row="1"
-                      Grid.ColumnSpan="2"
-                      Height="6"
-                      CornerRadius="3"
-                      Background="{ThemeResource ChipBrush}">
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="{Binding Data.RangePercent, Converter={StaticResource PercentToStar}}" />
-                    <ColumnDefinition Width="{Binding Data.RangePercent, Converter={StaticResource PercentToStar}, ConverterParameter=Remainder}" />
-                  </Grid.ColumnDefinitions>
-                  <Border CornerRadius="3" Background="{Binding Data.RangeLevel, Converter={StaticResource StatLevelFill}}" />
-                </Grid>
+                <Viewbox Grid.Column="3" Width="18" Height="18" VerticalAlignment="Center">
+                  <Canvas Width="24" Height="24">
+                    <Path Stroke="{ThemeResource Ink3Brush}"
+                          StrokeThickness="2.2"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          Data="M9 6l6 6-6 6" />
+                  </Canvas>
+                </Viewbox>
               </Grid>
 
-              <!-- charging -->
-              <Grid Grid.Column="1"
-                    Padding="9,2,8,0"
-                    ColumnSpacing="7"
-                    BorderThickness="1,0,0,0"
-                    BorderBrush="{ThemeResource LineBrush}">
+              <Rectangle Style="{StaticResource RowRule}" />
+
+              <!-- Cabin -->
+              <Grid Style="{StaticResource ListRowStyle}">
                 <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="20" />
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="92" />
                   <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <Viewbox Width="26" Height="26" VerticalAlignment="Top" Margin="0,-1,0,0">
+                <Viewbox Width="26" Height="26" VerticalAlignment="Center">
                   <Canvas Width="24" Height="24">
-                    <Path Stroke="{ThemeResource InkBrush}"
+                    <Path Stroke="{ThemeResource AccentBrush}"
                           StrokeThickness="1.7"
                           StrokeLineJoin="Round"
                           StrokeStartLineCap="Round"
                           StrokeEndLineCap="Round"
-                          Data="M9 4h6a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM10 2h4M13 9l-3 4h4l-3 4" />
+                          Data="M12 3a2.5 2.5 0 0 1 2.5 2.5v8.2a4.5 4.5 0 1 1-5 0V5.5A2.5 2.5 0 0 1 12 3z" />
+                    <Ellipse Canvas.Left="9.5"
+                             Canvas.Top="15"
+                             Width="5"
+                             Height="5"
+                             Fill="{ThemeResource AccentBrush}" />
                   </Canvas>
                 </Viewbox>
 
-                <StackPanel Grid.Column="1">
-                  <TextBlock Style="{StaticResource StatValue}" Text="{Binding Data.ChargeValue}" />
-                  <TextBlock Style="{StaticResource CardCaption}"
-                             TextWrapping="WrapWholeWords"
-                             Text="{Binding Data.ChargeCaption}" />
-                </StackPanel>
+                <TextBlock Grid.Column="1"
+                           Style="{StaticResource RowLabel}"
+                           VerticalAlignment="Center"
+                           Text="{Binding Data.CabinLabel}" />
+
+                <TextBlock Grid.Column="2" VerticalAlignment="Center" TextWrapping="Wrap">
+                  <Run Text="{Binding Data.CabinLead}" FontSize="17" />
+                  <Run Text="{Binding Data.CabinFrom}"
+                       FontFamily="{StaticResource CardFontSemiBold}"
+                       FontWeight="SemiBold"
+                       FontSize="19" />
+                  <Run Text="{Binding Data.CabinMid}" FontSize="17" />
+                  <Run Text="{Binding Data.CabinTo}"
+                       FontFamily="{StaticResource CardFontSemiBold}"
+                       FontWeight="SemiBold"
+                       FontSize="19" />
+                </TextBlock>
+
+                <Viewbox Grid.Column="3" Width="18" Height="18" VerticalAlignment="Center">
+                  <Canvas Width="24" Height="24">
+                    <Path Stroke="{ThemeResource Ink3Brush}"
+                          StrokeThickness="2.2"
+                          StrokeLineJoin="Round"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          Data="M9 6l6 6-6 6" />
+                  </Canvas>
+                </Viewbox>
               </Grid>
 
-              <!-- tires -->
-              <ContentControl Grid.Column="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False">
-                <Grid Padding="9,2,0,0" ColumnSpacing="7">
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="20" />
-                    <ColumnDefinition Width="*" />
-                  </Grid.ColumnDefinitions>
-                  <Grid.Background>
-                    <SolidColorBrush Color="Transparent" />
-                  </Grid.Background>
+              <Rectangle Style="{StaticResource RowRule}" />
 
-                  <Border Grid.ColumnSpan="2"
-                          Margin="-9,-2,0,0"
-                          BorderThickness="1,0,0,0"
-                          BorderBrush="{ThemeResource LineBrush}" />
+              <!-- Destination -->
+              <Grid Style="{StaticResource ListRowStyle}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="92" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-                  <Viewbox Width="26" Height="26" VerticalAlignment="Top" Margin="0,-1,0,0">
-                    <Canvas Width="24" Height="24">
-                      <Path Stroke="{Binding Data.TireLevel, Converter={StaticResource StatLevelBrush}}"
-                            StrokeThickness="1.7"
-                            StrokeLineJoin="Round"
-                            StrokeStartLineCap="Round"
-                            StrokeEndLineCap="Round"
-                            Data="M7 4Q3 12 7 20M17 4q4 8 0 16M13 8l-3 4h4l-3 4" />
-                    </Canvas>
-                  </Viewbox>
-
-                  <StackPanel Grid.Column="1">
-                    <TextBlock Style="{StaticResource StatValue}"
-                               TextWrapping="NoWrap"
-                               Foreground="{Binding Data.TireLevel, Converter={StaticResource StatLevelBrush}}"
-                               Text="{Binding Data.TireValue}" />
-                    <TextBlock Style="{StaticResource CardCaption}"
-                               TextWrapping="WrapWholeWords"
-                               Foreground="{Binding Data.TireLevel, Converter={StaticResource StatLevelBrush}}"
-                               Text="{Binding Data.TireCaption}" />
-                  </StackPanel>
-                </Grid>
-              </ContentControl>
-            </Grid>
-          </DataTemplate>
-        </mvux:FeedView.ValueTemplate>
-
-        <mvux:FeedView.ProgressTemplate>
-          <DataTemplate>
-            <Grid ColumnSpacing="9" Height="52">
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.05*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1.05*" />
-              </Grid.ColumnDefinitions>
-              <Border Height="14" VerticalAlignment="Top" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
-              <Border Grid.Column="1" Height="14" VerticalAlignment="Top" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
-              <Border Grid.Column="2" Height="14" VerticalAlignment="Top" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
-            </Grid>
-          </DataTemplate>
-        </mvux:FeedView.ProgressTemplate>
-      </mvux:FeedView>
-
-      <!-- ============================ actions ============================ -->
-      <mvux:FeedView Grid.Row="3" Source="{Binding Stats}">
-        <mvux:FeedView.ValueTemplate>
-          <DataTemplate>
-            <Grid Margin="0,4,0,0" ColumnSpacing="6">
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-              </Grid.ColumnDefinitions>
-
-              <!--
-                A plain Button, not a toggle: the mockup draws all four circles neutral while the
-                car is locked, so fill is not how this design reports lock state. Filling it
-                permanently would read as a pressed control that can never be released.
-
-                The shackle carries the state instead. Both glyphs stay in the tree and cross-fade
-                on opacity, because Path.Data is a string and swapping it in place flicks. Without
-                this the action row could not answer "is it locked" on its own - the header line was
-                the only place that said so.
-              -->
-              <Button Style="{StaticResource CardActionButtonStyle}"
-                      IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}"
-                      Command="{Binding Parent.ToggleLock}"
-                      mc:CardAction.Label="{Binding Data.LockLabel}"
-                      AutomationProperties.Name="{Binding Data.LockLabel}">
-                <Grid>
-                  <!-- Locked: the shackle closes onto the body. -->
-                  <Viewbox Width="32"
-                           Height="32"
-                           Opacity="{Binding Data.IsLocked, Converter={StaticResource BoolToOpacity}}">
-                    <Canvas Width="24" Height="24">
-                      <Path Stroke="{ThemeResource InkBrush}"
-                            StrokeThickness="1.7"
-                            StrokeLineJoin="Round"
-                            StrokeStartLineCap="Round"
-                            StrokeEndLineCap="Round"
-                            Data="M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM8 11V8a4 4 0 0 1 8 0v3" />
-                    </Canvas>
-                  </Viewbox>
-
-                  <!-- Unlocked: the shackle stands open, and the body takes the warning ink. -->
-                  <Viewbox Width="32"
-                           Height="32"
-                           Opacity="{Binding Data.IsLocked, Converter={StaticResource BoolToOpacity}, ConverterParameter=Invert}">
-                    <Canvas Width="24" Height="24">
-                      <Path Stroke="{ThemeResource AmberInkBrush}"
-                            StrokeThickness="1.7"
-                            StrokeLineJoin="Round"
-                            StrokeStartLineCap="Round"
-                            StrokeEndLineCap="Round"
-                            Data="M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM8 11V8a4 4 0 0 1 8 0" />
-                    </Canvas>
-                  </Viewbox>
-                </Grid>
-              </Button>
-
-              <ToggleButton Grid.Column="1"
-                            Style="{StaticResource CardActionToggleStyle}"
-                            IsChecked="{Binding Data.ClimateOn, Mode=OneWay}"
-                            Command="{Binding Parent.ToggleClimate}"
-                            IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}"
-                            mc:CardAction.Label="{Binding Parent.ClimateLabel}"
-                            mc:CardAction.SubLabel="{Binding Data.ClimateValue}"
-                            AutomationProperties.Name="{Binding Parent.ClimateLabel}">
-                <Viewbox Width="32" Height="32">
+                <Viewbox Width="26" Height="26" VerticalAlignment="Center">
                   <Canvas Width="24" Height="24">
+                    <Ellipse Canvas.Left="2"
+                             Canvas.Top="2"
+                             Width="20"
+                             Height="20"
+                             Stroke="{ThemeResource InkBrush}"
+                             StrokeThickness="1.7" />
                     <Path Stroke="{ThemeResource InkBrush}"
                           StrokeThickness="1.7"
                           StrokeLineJoin="Round"
                           StrokeStartLineCap="Round"
-                          StrokeEndLineCap="Round"
-                          Data="M12 10 A2 2 0 1 1 11.99 10 Z M12 10c0-3 1-6 3-6s3 3 0 6M14 12c3 0 6 1 6 3s-3 3-6 0M12 14c0 3-1 6-3 6s-3-3 0-6M10 12c-3 0-6-1-6-3s3-3 6 0" />
+                          Data="M10 17V7h3.2a3 3 0 0 1 0 6H10" />
                   </Canvas>
                 </Viewbox>
-              </ToggleButton>
 
-              <Button Grid.Column="2"
-                      Style="{StaticResource CardActionButtonStyle}"
-                      Command="{Binding Parent.SendToCar}"
-                      IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}"
-                      mc:CardAction.Label="{Binding Parent.SendLabel}"
-                      AutomationProperties.Name="{Binding Parent.SendLabel}">
-                <Viewbox Width="32" Height="32">
+                <TextBlock Grid.Column="1"
+                           Style="{StaticResource RowLabel}"
+                           VerticalAlignment="Center"
+                           TextWrapping="Wrap"
+                           Text="{Binding Data.DestinationLabel}" />
+
+                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                  <TextBlock Style="{StaticResource RowValueStrong}"
+                             TextWrapping="Wrap"
+                             Text="{Binding Data.ParkingStreet}" />
+                  <TextBlock Style="{StaticResource CardCaption}"
+                             TextWrapping="Wrap"
+                             Text="{Binding Data.ParkingNote}"
+                             Visibility="{Binding Data.ParkingNote, Converter={StaticResource NullToVisibility}}" />
+                </StackPanel>
+
+                <Viewbox Grid.Column="3" Width="18" Height="18" VerticalAlignment="Center">
                   <Canvas Width="24" Height="24">
-                    <Path Stroke="{ThemeResource InkBrush}"
-                          StrokeThickness="1.7"
+                    <Path Stroke="{ThemeResource Ink3Brush}"
+                          StrokeThickness="2.2"
                           StrokeLineJoin="Round"
                           StrokeStartLineCap="Round"
                           StrokeEndLineCap="Round"
-                          Data="M20 4 4 11l7 2 2 7z" />
+                          Data="M9 6l6 6-6 6" />
                   </Canvas>
                 </Viewbox>
-              </Button>
-
-              <!-- Inert in this version; it keeps its place so the row reads as designed. -->
-              <Button Grid.Column="3"
-                      Style="{StaticResource CardActionButtonStyle}"
-                      IsEnabled="False"
-                      mc:CardAction.Label="{Binding Parent.MoreLabel}"
-                      AutomationProperties.Name="{Binding Parent.MoreLabel}">
-                <Viewbox Width="32" Height="32">
-                  <Canvas Width="24" Height="24">
-                    <Path Fill="{ThemeResource InkBrush}"
-                          Data="M6 10.8 A1.2 1.2 0 1 1 5.99 10.8 Z M12 10.8 A1.2 1.2 0 1 1 11.99 10.8 Z M18 10.8 A1.2 1.2 0 1 1 17.99 10.8 Z" />
-                  </Canvas>
-                </Viewbox>
-              </Button>
-            </Grid>
+              </Grid>
+            </StackPanel>
           </DataTemplate>
         </mvux:FeedView.ValueTemplate>
       </mvux:FeedView>
-
     </Grid>
   </Grid>
 </UserControl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
