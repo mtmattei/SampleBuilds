@@ -43,7 +43,7 @@ public partial record MainModel
     /// </summary>
     private IState<bool> Unreachable => State.Value(this, () => false);
 
-    public IFeed<HeaderView> Header => Feed.Combine(Slot, Now, Car, Unreachable).Select(BuildHeader);
+    public IFeed<HeaderView> Header => Feed.Combine(Slot, Now, Car).Select(BuildHeader);
 
     /// <summary>
     /// Goes none when there is no trip, which is what the map panel's empty state binds to. A fault
@@ -159,9 +159,9 @@ public partial record MainModel
         }
     }
 
-    private HeaderView BuildHeader((TripSlot Slot, TimeOnly Now, VehicleSnapshot Car, bool Unreachable) input)
+    private HeaderView BuildHeader((TripSlot Slot, TimeOnly Now, VehicleSnapshot Car) input)
     {
-        var (slot, now, car, unreachable) = input;
+        var (slot, now, car) = input;
         var plan = slot.Plan;
         var timeline = plan is null ? null : TripMath.Derive(plan, now);
 
@@ -187,7 +187,8 @@ public partial record MainModel
                         Text("Headline_LeaveInTail")),
                 };
 
-        // The strip reports lock state; nothing on the card changes it any more (v2 decision A).
+        // Under the car now rather than in the status strip, which the strip's weather half needed
+        // the room for. Read-only: nothing on the card changes lock state since v2.
         var lockText = car.IsStale
             ? Format("CarStatus_LastSeen", Clock(car.LastSeen))
             : Format(car.IsLocked ? "Status_Locked" : "Status_Unlocked", car.Name);
@@ -200,18 +201,6 @@ public partial record MainModel
             HeadlineLead: lead,
             HeadlineAccent: accent,
             HeadlineTail: tail,
-            // Gone while the trip lookup is failing. Stating five specifics as current fact beside
-            // "Can't reach the car" left the user no way to tell which half was true. The headline
-            // stays, from last known data, which is one claim rather than five.
-            TimesLine: timeline is null || plan is null || unreachable
-                ? string.Empty
-                : Format("Header_Times", Clock(timeline.LeaveBy), Clock(timeline.Arrive), Clock(plan.Bell)),
-            Traffic: timeline?.Traffic ?? TrafficLevel.Light,
-            // Carries its own leading separator: composed here rather than as a literal Run, because
-            // adjacent Runs are joined with the whitespace between them in the markup.
-            TrafficText: timeline is null || unreachable
-                ? string.Empty
-                : Format("Header_TrafficClause", Text($"Traffic_{timeline.Traffic}")),
             Tone: timeline?.Tone ?? CardTone.Ok,
             IsStale: car.IsStale,
             CarName: car.Name,
@@ -251,6 +240,14 @@ public partial record MainModel
             IsLate: timeline.IsLate,
             RouteLeave: route.Leave,
             RouteArrive: route.Arrive,
+            LeaveByTime: Clock(timeline.LeaveBy),
+            ArriveTime: Clock(timeline.Arrive),
+            BellTime: Clock(plan.Bell),
+            // A floor on each, so no segment collapses to nothing and the track keeps its shape
+            // even when the slack is gone or the walk is a single minute.
+            TrackSlack: Math.Max(route.Leave, 0.04),
+            TrackDrive: Math.Max(route.Arrive - route.Leave, 0.04),
+            TrackWalk: Math.Max(1d - route.Arrive, 0.04),
             SlackVisibleMinutes: route.SlackVisibleMin,
             NowLabel: Format("Route_Now", Clock(now)),
             LeaveLabel: Format("Route_Leave", Clock(timeline.LeaveBy)),
@@ -276,12 +273,12 @@ public partial record MainModel
         var fuelLevel = TripMath.RangeLevel(car.Range);
 
         // Two clauses: whether today's driving fits, and whether it needs attention soon. The
-        // mockup joins them with a middot, and the second half is what turns the icon amber.
+        // second half is the one that carries the colour, so it travels separately.
         var fuelNote = fuelLevel switch
         {
-            StatLevel.Bad => Text("Fuel_NoteLow"),
-            StatLevel.Warn => Text("Fuel_NoteSoon"),
-            _ => Text("Fuel_NoteFine"),
+            StatLevel.Bad => Text("Fuel_NoteLowAccent"),
+            StatLevel.Warn => Text("Fuel_NoteSoonAccent"),
+            _ => string.Empty,
         };
 
         // Climate off means the cabin is not going anywhere, so the row states the temperature
@@ -291,7 +288,8 @@ public partial record MainModel
         return new CarView(
             FuelValue: car.Range.ToString(CultureInfo.CurrentCulture),
             FuelUnit: Text("Fuel_Unit"),
-            FuelNote: fuelNote,
+            FuelNote: Text("Fuel_NoteFine"),
+            FuelNoteAccent: fuelNote,
             FuelLevel: fuelLevel,
             FuelPercent: TripMath.RangeBarPercent(car.Range, car.RangeMax),
             CabinLabel: Text("Cabin_Label"),
@@ -299,6 +297,8 @@ public partial record MainModel
             CabinFrom: Format("Temp_Degrees", car.CabinTemp),
             CabinMid: car.ClimateOn ? Text("Cabin_To") : string.Empty,
             CabinTo: car.ClimateOn ? Format("Temp_Degrees", car.CabinTarget) : string.Empty,
+            // Reports the climate command the Simulator holds; the card can no longer send one.
+            CabinAccent: car.ClimateOn ? Text("Cabin_RemoteOn") : string.Empty,
             DestinationLabel: slot.Plan?.DestinationLabel ?? string.Empty,
             ParkingStreet: slot.Plan?.ParkingStreet ?? string.Empty,
             ParkingNote: slot.Plan?.ParkingNote ?? string.Empty,
@@ -320,6 +320,12 @@ public partial record MainModel
         IsLate: false,
         RouteLeave: 0d,
         RouteArrive: 1d,
+        LeaveByTime: string.Empty,
+        ArriveTime: string.Empty,
+        BellTime: string.Empty,
+        TrackSlack: 1d,
+        TrackDrive: 1d,
+        TrackWalk: 1d,
         SlackVisibleMinutes: 0,
         NowLabel: string.Empty,
         LeaveLabel: string.Empty,

@@ -66,22 +66,6 @@ public class SimulatedDriveHubTests
     }
 
     [Fact]
-    public async Task Loading_mode_pushes_nothing_at_all()
-    {
-        using var hub = NewHub(out _);
-        hub.SetMode(ConnectionMode.Loading);
-
-        await using var trips = ((ITripService)hub).Watch(default).GetAsyncEnumerator();
-
-        // Subscribing while loading must not deliver the current plan; the next value is the one
-        // that arrives once the mode changes, with nothing before it.
-        hub.SetMode(ConnectionMode.Live);
-
-        var plan = await NextAsync(trips);
-        Assert.Equal("School drop-off", plan!.Title);
-    }
-
-    [Fact]
     public async Task Offline_keeps_serving_the_car_but_marks_it_stale()
     {
         using var hub = NewHub(out _);

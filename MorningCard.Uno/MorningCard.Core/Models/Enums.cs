@@ -35,9 +35,6 @@ public enum ConnectionMode
     /// <summary>Everything reachable, data flowing.</summary>
     Live,
 
-    /// <summary>Nothing has arrived yet, so the feeds stay in their progress state.</summary>
-    Loading,
-
     /// <summary>The car is unreachable; the last snapshot is served with a stale marker.</summary>
     Offline,
 

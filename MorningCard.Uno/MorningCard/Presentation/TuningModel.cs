@@ -97,7 +97,6 @@ public partial record TuningModel
     /// <summary>The four connection modes, in the order the design lists them.</summary>
     private static readonly IImmutableList<ModeOption> Options = ImmutableList.Create(
         new ModeOption(ConnectionMode.Live, "Live"),
-        new ModeOption(ConnectionMode.Loading, "Loading"),
         new ModeOption(ConnectionMode.Offline, "Offline"),
         new ModeOption(ConnectionMode.NoTrip, "No trip"));
 

@@ -217,11 +217,11 @@
     <value>. Leave now to arrive {0}.</value>
   </data>
   <data name="Status_Locked" xml:space="preserve">
-    <value>{0} locked</value>
+    <value>{0} · Locked</value>
     <comment>Status strip, car is locked.</comment>
   </data>
   <data name="Status_Unlocked" xml:space="preserve">
-    <value>{0} unlocked</value>
+    <value>{0} · Unlocked</value>
     <comment>Status strip, car is unlocked.</comment>
   </data>
   <data name="Status_Temp" xml:space="preserve">
@@ -243,25 +243,25 @@
   <data name="Fuel_NoteFine" xml:space="preserve">
     <value>Enough for today</value>
   </data>
-  <data name="Fuel_NoteSoon" xml:space="preserve">
-    <value>Enough for today · Fuel soon</value>
+  <data name="Fuel_NoteSoonAccent" xml:space="preserve">
+    <value> · Fuel soon</value>
   </data>
-  <data name="Fuel_NoteLow" xml:space="preserve">
-    <value>Not enough for today · Fuel now</value>
+  <data name="Fuel_NoteLowAccent" xml:space="preserve">
+    <value> · Fuel now</value>
   </data>
   <data name="Cabin_Label" xml:space="preserve">
     <value>Cabin</value>
     <comment>Second list row.</comment>
   </data>
   <data name="Cabin_WarmingLead" xml:space="preserve">
-    <value>Warming from </value>
+    <value>Warming up</value>
   </data>
   <data name="Cabin_RestingLead" xml:space="preserve">
-    <value>Now </value>
+    <value>Cabin at rest</value>
     <comment>Climate is off, so no target to warm to.</comment>
   </data>
   <data name="Cabin_To" xml:space="preserve">
-    <value> to </value>
+    <value>  →  </value>
   </data>
   <data name="Destination_None" xml:space="preserve">
     <value>No destination</value>
@@ -284,6 +284,24 @@
   <data name="Header_TrafficClause" xml:space="preserve">
     <value> · {0}</value>
     <comment>Leading separator lives in the string: adjacent Runs join with the markup's whitespace.</comment>
+  </data>
+  <data name="TimelineLeaveBy.Text" xml:space="preserve">
+    <value>LEAVE BY</value>
+  </data>
+  <data name="TimelineArrive.Text" xml:space="preserve">
+    <value>ARRIVE</value>
+  </data>
+  <data name="TimelineBell.Text" xml:space="preserve">
+    <value>BELL</value>
+  </data>
+  <data name="Cabin_RemoteOn" xml:space="preserve">
+    <value> · Remote start on</value>
+  </data>
+  <data name="Fuel_RangeWord" xml:space="preserve">
+    <value>range</value>
+  </data>
+  <data name="FuelRangeWord.Text" xml:space="preserve">
+    <value>range</value>
   </data>
 </root>
 

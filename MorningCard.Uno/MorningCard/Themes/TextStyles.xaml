@@ -129,6 +129,22 @@
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
+
+  <!-- 11 / 500 uppercase: the timeline's column labels. CharacterSpacing is a no-op on the Skia
+       text stack, so the letterspacing the design shows is not attempted here. -->
+  <Style x:Key="TimelineLabel" TargetType="TextBlock" BasedOn="{StaticResource CardCaption}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontMedium}" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Foreground" Value="{ThemeResource Ink3Brush}" />
+  </Style>
+
+  <!-- 21 / 600: the times over the track. -->
+  <Style x:Key="TimelineTime" TargetType="TextBlock" BasedOn="{StaticResource CardBody}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="FontSize" Value="21" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+  </Style>
 </ResourceDictionary>
 
 

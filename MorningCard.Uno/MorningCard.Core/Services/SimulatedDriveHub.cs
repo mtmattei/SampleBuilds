@@ -115,12 +115,6 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
                 throw new CarUnreachableException("Could not reach the car to plan this morning's trip.");
             }
 
-            // Loading means nothing has arrived, so yield nothing and let the feed stay in progress.
-            if (state.Mode == ConnectionMode.Loading)
-            {
-                continue;
-            }
-
             yield return state.Mode == ConnectionMode.NoTrip ? null : state.Trip;
         }
     }
@@ -129,13 +123,7 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
     {
         await foreach (var state in _state.Watch(ct).ConfigureAwait(false))
         {
-            // A fault says the lookup failed, not that the known plan changed, so it is ignored
-            // here. Only loading withholds a value.
-            if (state.Mode == ConnectionMode.Loading)
-            {
-                continue;
-            }
-
+            // A fault says the lookup failed, not that the known plan changed, so it is ignored here.
             yield return state.Mode == ConnectionMode.NoTrip ? null : state.Trip;
         }
     }
@@ -148,11 +136,6 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
     {
         await foreach (var state in _state.Watch(ct).ConfigureAwait(false))
         {
-            if (state.Mode == ConnectionMode.Loading)
-            {
-                continue;
-            }
-
             yield return state.Vehicle;
         }
     }

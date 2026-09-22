@@ -47,7 +47,7 @@ public record DriveHubState(
             CabinTemp: -3,
             CabinTarget: 20,
             OutsideTemp: -3,
-            WeatherSummary: "Clear, 9°",
+            WeatherSummary: "Clear · High 9°",
             // Kilometres. 62 is deliberately under the warning threshold so the seeded card shows
             // the "Fuel soon" state the mockup draws, rather than a green everything-is-fine row.
             Range: 62,

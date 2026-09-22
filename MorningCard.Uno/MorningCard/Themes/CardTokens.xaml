@@ -60,10 +60,12 @@
       <Color x:Key="CardShadowFarColor">#73141C28</Color>
             <Color x:Key="SunInkColor">#E8912B</Color>  <!-- The sun glyph in the status strip. Warm, and the only orange up there. -->
       <Color x:Key="MapScrimColor">#E8F2F3F5</Color>  <!-- Covers the tiles when the map has no route to show. -->
-      <Color x:Key="MapPillColor">#F2FFFFFF</Color>  <!-- Ground for controls sitting on top of map tiles. -->
+      <Color x:Key="MapPillColor">#F2FFFFFF</Color>
+      <Color x:Key="CarTileColor">#141B2430</Color>  <!-- Ground for controls sitting on top of map tiles. -->
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
       <SolidColorBrush x:Key="MapPillBrush" Color="{StaticResource MapPillColor}" />
+      <SolidColorBrush x:Key="CarTileBrush" Color="{StaticResource CarTileColor}" />
       <SolidColorBrush x:Key="GroundBrush" Color="{StaticResource GroundColor}" />
       <SolidColorBrush x:Key="GlassBrush" Color="{StaticResource GlassColor}" />
       <SolidColorBrush x:Key="GlassEdgeBrush" Color="{StaticResource GlassEdgeColor}" />
@@ -132,9 +134,11 @@
             <Color x:Key="SunInkColor">#F0A64A</Color>
       <Color x:Key="MapScrimColor">#E011161E</Color>
       <Color x:Key="MapPillColor">#F21C2430</Color>
+      <Color x:Key="CarTileColor">#14FFFFFF</Color>
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
       <SolidColorBrush x:Key="MapPillBrush" Color="{StaticResource MapPillColor}" />
+      <SolidColorBrush x:Key="CarTileBrush" Color="{StaticResource CarTileColor}" />
       <SolidColorBrush x:Key="GroundBrush" Color="{StaticResource GroundColor}" />
       <SolidColorBrush x:Key="GlassBrush" Color="{StaticResource GlassColor}" />
       <SolidColorBrush x:Key="GlassEdgeBrush" Color="{StaticResource GlassEdgeColor}" />

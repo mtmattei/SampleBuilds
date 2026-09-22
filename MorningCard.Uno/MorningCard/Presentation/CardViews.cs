@@ -13,22 +13,14 @@ namespace MorningCard.Presentation;
 /// The span the design colours, e.g. "9 min". Split into three parts rather than carrying markup,
 /// because the headline is three <c>Run</c>s in one TextBlock and a converter cannot produce Runs.
 /// </param>
-/// <param name="TimesLine">"Leave by 7:33 · Arrive 7:47 · Bell 7:50", empty when there is no trip.</param>
-/// <param name="TrafficText">
-/// Joins the times line rather than sitting on its own. The v2 mockup dropped the ETA block that
-/// used to carry traffic, and the app still computes it, so losing it would have been a silent
-/// capability reduction. It keeps its severity colour, which is the part that matters at a glance.
-/// </param>
-/// <param name="LockText">Status-strip lock line, e.g. "XC60 locked".</param>
+/// <param name="LockText">Sits under the car, e.g. "XC60 · Locked".</param>
+/// <param name="WeatherSummary">Conditions and the day's high, e.g. "Clear · High 9°".</param>
 public record HeaderView(
     string Greeting,
     string Title,
     string HeadlineLead,
     string HeadlineAccent,
     string HeadlineTail,
-    string TimesLine,
-    TrafficLevel Traffic,
-    string TrafficText,
     CardTone Tone,
     bool IsStale,
     string CarName,
@@ -42,6 +34,7 @@ public record HeaderView(
 /// </summary>
 /// <param name="RouteLeave">Where the drive starts along the path, 0 to 1.</param>
 /// <param name="RouteArrive">Where the walk starts along the path, 0 to 1.</param>
+/// <param name="LeaveByTime">Bare "7:33" for the timeline strip, which supplies its own labels.</param>
 public record EtaView(
     bool Failed,
     string FailureMessage,
@@ -53,6 +46,14 @@ public record EtaView(
     bool IsLate,
     double RouteLeave,
     double RouteArrive,
+    string LeaveByTime,
+    string ArriveTime,
+    string BellTime,
+    // The strip's three track segments, as star weights. Computed here rather than in a converter
+    // because the middle one is a span between two fractions and a value converter sees only one.
+    double TrackSlack,
+    double TrackDrive,
+    double TrackWalk,
     int SlackVisibleMinutes,
     string NowLabel,
     string LeaveLabel,
@@ -110,6 +111,8 @@ public record CarView(
     string FuelValue,
     string FuelUnit,
     string FuelNote,
+    /// <summary>The half of the note that takes the severity colour, e.g. "Fuel soon".</summary>
+    string FuelNoteAccent,
     StatLevel FuelLevel,
     double FuelPercent,
     string CabinLabel,
@@ -117,6 +120,7 @@ public record CarView(
     string CabinFrom,
     string CabinMid,
     string CabinTo,
+    string CabinAccent,
     string DestinationLabel,
     string ParkingStreet,
     string ParkingNote,
