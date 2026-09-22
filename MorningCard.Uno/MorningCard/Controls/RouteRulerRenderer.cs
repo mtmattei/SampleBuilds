@@ -85,7 +85,9 @@ internal sealed class RouteRulerRenderer : IDisposable
 
         if (snapshot.HasRoute)
         {
-            DrawRoute(canvas, snapshot, palette);
+            // The panel slices the design space, so at a narrower card less than the full 356
+            // design units are on screen. Labels clamp against what is visible, not the design box.
+            DrawRoute(canvas, snapshot, palette, visibleWidth: area.Width / scale);
         }
 
         canvas.Restore();
@@ -165,7 +167,7 @@ internal sealed class RouteRulerRenderer : IDisposable
 
     // ---- the ruler ---------------------------------------------------------------------------
 
-    private void DrawRoute(SKCanvas canvas, RouteRulerSnapshot snapshot, RouteRulerPalette palette)
+    private void DrawRoute(SKCanvas canvas, RouteRulerSnapshot snapshot, RouteRulerPalette palette, float visibleWidth)
     {
         var late = snapshot.IsLate;
         var driveColor = late ? palette.Danger : palette.Accent;
@@ -238,7 +240,7 @@ internal sealed class RouteRulerRenderer : IDisposable
 
         if (labelT > 0f)
         {
-            DrawLabels(canvas, snapshot, p0, pLeave, pArrive, pBell, fLeave, fArrive, hasSlack, pointInk, palette, labelT);
+            DrawLabels(canvas, snapshot, p0, pLeave, pArrive, pBell, fLeave, fArrive, hasSlack, pointInk, palette, labelT, visibleWidth);
         }
     }
 
@@ -395,7 +397,8 @@ internal sealed class RouteRulerRenderer : IDisposable
         bool hasSlack,
         SKColor pointInk,
         RouteRulerPalette palette,
-        float alpha)
+        float alpha,
+        float visibleWidth)
     {
         var a = (byte)Math.Clamp(alpha * 255f, 0f, 255f);
 
@@ -424,7 +427,18 @@ internal sealed class RouteRulerRenderer : IDisposable
         var midWalk = PointAt((fArrive + 1f) / 2f);
         Label(canvas, snapshot.WalkLabel, midWalk.X + 6f, midWalk.Y + 22f, TextAnchor.Start, palette.AmberInk.WithAlpha(a), palette.Map);
 
-        Label(canvas, snapshot.BellLabel, pBell.X + 11f, pBell.Y + 4f, TextAnchor.Start, pointInk.WithAlpha(a), palette.Map);
+        // The bell sits near the right edge, so its label runs off the panel once the design space
+        // is sliced to a narrower card. Flip it to the left of the node rather than clipping it.
+        var bellRoom = visibleWidth - (pBell.X + 11f) - _labelFont.MeasureText(snapshot.BellLabel);
+
+        if (bellRoom < 4f)
+        {
+            Label(canvas, snapshot.BellLabel, pBell.X - 9f, pBell.Y + 4f, TextAnchor.End, pointInk.WithAlpha(a), palette.Map);
+        }
+        else
+        {
+            Label(canvas, snapshot.BellLabel, pBell.X + 11f, pBell.Y + 4f, TextAnchor.Start, pointInk.WithAlpha(a), palette.Map);
+        }
     }
 
     private enum TextAnchor
@@ -503,3 +517,4 @@ internal sealed class RouteRulerRenderer : IDisposable
         _pillFont.Dispose();
     }
 }
+

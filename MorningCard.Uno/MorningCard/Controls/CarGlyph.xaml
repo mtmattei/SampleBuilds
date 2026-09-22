@@ -3,71 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <!--
-    A stylised XC60 in the mockup's white-over-silver, drawn as vectors.
+    The car, as the mockup has it: a front three-quarter XC60 cutout.
 
-    Not the mockup's photograph: the licensable photos on Wikimedia Commons are all street shots
-    needing attribution and a background cutout, and there is no reliable way to cut one here. A
-    vector also scales and themes, which a press photo does not. To use a real photo instead, drop
-    a cutout PNG at Assets/Car/xc60.png and swap the Canvas below for an Image - nothing else on
-    the card depends on this control's internals.
+    Supplied as a transparent PNG and trimmed to its opaque bounds, then resampled to 576x300 -
+    six times the 96 epx slot, so it stays crisp on a 3x phone while dropping the file from 1.6 MB
+    to 276 KB. The source aspect is 1.92, and the slot matches it, so Uniform neither letterboxes
+    nor crops.
 
-    Drawn as a raised SUV side profile: tall greenhouse, upright nose, roof rails and wheel-arch
-    cladding are what separate the silhouette from a wagon at this size.
+    This replaced three attempts at a hand-drawn vector. At this size a drawing cannot carry the
+    detail a photograph does, and the near-realistic versions read as a generic sedan.
   -->
-  <Viewbox Stretch="Uniform">
-    <Canvas Width="132" Height="68">
-      <Canvas.Resources>
-        <LinearGradientBrush x:Key="BodyPaint" StartPoint="0,0" EndPoint="0,1">
-          <GradientStop Offset="0" Color="#FFFFFF" />
-          <GradientStop Offset="0.55" Color="#EDEFF2" />
-          <GradientStop Offset="1" Color="#C3C9D0" />
-        </LinearGradientBrush>
-        <LinearGradientBrush x:Key="GlassPaint" StartPoint="0,0" EndPoint="0,1">
-          <GradientStop Offset="0" Color="#93A0AC" />
-          <GradientStop Offset="1" Color="#6B7683" />
-        </LinearGradientBrush>
-      </Canvas.Resources>
-
-      <!-- Contact shadow, so the car sits on the card rather than floating. -->
-      <Ellipse Canvas.Left="12" Canvas.Top="54" Width="110" Height="9" Fill="#1F1B2430" />
-
-      <!-- Roof rails. -->
-      <Path Fill="#9AA3AC" Data="M41 11 H92 V13 H41 Z" />
-
-      <!-- Body: upright nose, long tall cabin, short rear overhang. -->
-      <Path Fill="{StaticResource BodyPaint}"
-            Data="M7 44 L8 32 Q9 25 19 23 L33 21 L41 11 Q44 7 51 7 L92 7 Q99 7 103 11 L113 23 L121 25 Q128 27 128 35 L128 45 Q128 50 122 50 L12 50 Q7 50 7 46 Z" />
-
-      <!-- Greenhouse: windscreen, two side windows, quarter light. -->
-      <Path Fill="{StaticResource GlassPaint}"
-            Data="M40 21 L47 11 Q48.5 9.5 52 9.5 L67 9.5 L67 21 Z
-                  M70 21 L70 9.5 L88 9.5 Q92 9.5 94 12 L101 21 Z" />
-
-      <!-- Shoulder crease, the line that reads as sheet metal. -->
-      <Path Stroke="#AEB6BE" StrokeThickness="1" Data="M12 36 H124" />
-
-      <!-- Lower cladding and sill, matte against the gloss. -->
-      <Path Fill="#79828B" Data="M9 44 L127 44 L127 46 Q127 50 122 50 L12 50 Q8 50 8 46 Z" />
-
-      <!-- Wheel arches, then wheels. -->
-      <Path Fill="#5E666E" Data="M25 44 A12 12 0 0 1 49 44 L44 44 A7 7 0 0 0 30 44 Z" />
-      <Path Fill="#5E666E" Data="M85 44 A12 12 0 0 1 109 44 L104 44 A7 7 0 0 0 90 44 Z" />
-
-      <Path Fill="#23282D" Data="M37 36 A9.5 9.5 0 1 1 36.99 36 Z" />
-      <Path Fill="#C8CFD6" Data="M37 41.5 A4.3 4.3 0 1 1 36.99 41.5 Z" />
-      <Path Fill="#8F98A1" Data="M37 43 A2.2 2.2 0 1 1 36.99 43 Z" />
-
-      <Path Fill="#23282D" Data="M97 36 A9.5 9.5 0 1 1 96.99 36 Z" />
-      <Path Fill="#C8CFD6" Data="M97 41.5 A4.3 4.3 0 1 1 96.99 41.5 Z" />
-      <Path Fill="#8F98A1" Data="M97 43 A2.2 2.2 0 1 1 96.99 43 Z" />
-
-      <!-- Headlight and tail light. -->
-      <Path Fill="#F4F7FA" Data="M8 28 L17 27 Q19 27 19 29 L19 32 Q19 34 17 34 L8 33 Z" />
-      <Path Fill="#C7443C" Data="M121 28 L127 29 Q128.5 29.5 128.5 31 L128.5 33 Q128.5 34.5 127 34.5 L121 34 Z" />
-
-      <!-- Door handles. -->
-      <Path Fill="#A9B1B9" Data="M60 33 H67 V35 H60 Z M84 33 H91 V35 H84 Z" />
-    </Canvas>
-  </Viewbox>
+  <Image Source="ms-appx:///Assets/Car/xc60.png"
+         Stretch="Uniform"
+         AutomationProperties.AccessibilityView="Raw" />
 </UserControl>
-

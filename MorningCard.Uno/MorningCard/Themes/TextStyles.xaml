@@ -84,10 +84,10 @@
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
-  <!-- 22 / 600: the empty state's headline, inside the map panel. -->
+  <!-- 23 / 600: the empty and error headline inside the map panel. Shares CardTitle's size: 22 sat one pixel away for no reason. -->
   <Style x:Key="EmptyTitle" TargetType="TextBlock" BasedOn="{StaticResource TitleLarge}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
-    <Setter Property="FontSize" Value="22" />
+    <Setter Property="FontSize" Value="23" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
@@ -99,3 +99,4 @@
   </Style>
 
 </ResourceDictionary>
+

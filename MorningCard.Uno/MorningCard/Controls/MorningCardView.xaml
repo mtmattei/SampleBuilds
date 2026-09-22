@@ -36,7 +36,7 @@
             <Grid ColumnSpacing="10">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="92" />
+                <ColumnDefinition Width="100" />
               </Grid.ColumnDefinitions>
 
               <StackPanel>
@@ -44,7 +44,7 @@
                   <!-- sun -->
                   <Viewbox Width="18" Height="18" VerticalAlignment="Center">
                     <Path Stroke="{ThemeResource Ink2Brush}"
-                          StrokeThickness="1.8"
+                          StrokeThickness="1.7"
                           StrokeLineJoin="Round"
                           StrokeStartLineCap="Round"
                           StrokeEndLineCap="Round"
@@ -91,13 +91,13 @@
               </StackPanel>
 
               <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                <mc:CarGlyph Width="96" Height="56" />
+                <mc:CarGlyph Width="100" Height="52" />
                 <TextBlock Style="{StaticResource CardCaptionStrong}"
                            TextAlignment="Center"
                            Text="{Binding Data.CarName}" />
                 <TextBlock Style="{StaticResource CardCaption}"
                            TextAlignment="Center"
-                           TextWrapping="Wrap"
+                           TextWrapping="WrapWholeWords"
                            Text="{Binding Data.CarStatus}" />
               </StackPanel>
             </Grid>
@@ -312,27 +312,23 @@
                 <StackPanel Grid.Column="1">
                   <TextBlock Style="{StaticResource StatValue}" Text="{Binding Data.ChargeValue}" />
                   <TextBlock Style="{StaticResource CardCaption}"
-                             TextWrapping="Wrap"
+                             TextWrapping="WrapWholeWords"
                              Text="{Binding Data.ChargeCaption}" />
                 </StackPanel>
               </Grid>
 
               <!-- tires: chevron gets its own column so the value cannot collide with it -->
-              <Button Grid.Column="2"
-                      Style="{StaticResource CardCellButtonStyle}"
-                      IsEnabled="False"
-                      AutomationProperties.Name="{Binding Data.TireCaption}">
+              <ContentControl Grid.Column="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False">
                 <Grid Padding="9,2,0,0" ColumnSpacing="7">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="20" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="12" />
                   </Grid.ColumnDefinitions>
                   <Grid.Background>
                     <SolidColorBrush Color="Transparent" />
                   </Grid.Background>
 
-                  <Border Grid.ColumnSpan="3"
+                  <Border Grid.ColumnSpan="2"
                           Margin="-9,-2,0,0"
                           BorderThickness="1,0,0,0"
                           BorderBrush="{ThemeResource LineBrush}" />
@@ -348,25 +344,16 @@
 
                   <StackPanel Grid.Column="1">
                     <TextBlock Style="{StaticResource StatValue}"
-                               TextTrimming="CharacterEllipsis"
+                               TextWrapping="NoWrap"
                                Foreground="{Binding Data.TireLevel, Converter={StaticResource StatLevelBrush}}"
                                Text="{Binding Data.TireValue}" />
                     <TextBlock Style="{StaticResource CardCaption}"
-                               TextWrapping="Wrap"
+                               TextWrapping="WrapWholeWords"
                                Foreground="{Binding Data.TireLevel, Converter={StaticResource StatLevelBrush}}"
                                Text="{Binding Data.TireCaption}" />
                   </StackPanel>
-
-                  <Viewbox Grid.Column="2" Width="12" Height="12" VerticalAlignment="Top" Margin="0,4,0,0">
-                    <Path Stroke="{ThemeResource Ink3Brush}"
-                          StrokeThickness="2.2"
-                          StrokeLineJoin="Round"
-                          StrokeStartLineCap="Round"
-                          StrokeEndLineCap="Round"
-                          Data="M9 5l7 7-7 7" />
-                  </Viewbox>
                 </Grid>
-              </Button>
+              </ContentControl>
             </Grid>
           </DataTemplate>
         </mvux:FeedView.ValueTemplate>
@@ -473,6 +460,10 @@
     </Grid>
   </Grid>
 </UserControl>
+
+
+
+
 
 
 
