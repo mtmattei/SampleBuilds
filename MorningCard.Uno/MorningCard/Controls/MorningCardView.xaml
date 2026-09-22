@@ -12,6 +12,9 @@
     on Android.
   -->
   <Grid>
+    <!-- Sits at a negative margin so the wide blur has room; hit-test transparent. -->
+    <mc:CardShadowCanvas />
+
     <Border x:Name="Glass"
             Background="{ThemeResource GlassBrush}"
             BorderBrush="{ThemeResource GlassEdgeBrush}"

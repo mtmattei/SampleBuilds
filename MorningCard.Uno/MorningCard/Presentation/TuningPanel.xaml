@@ -20,14 +20,15 @@
       <!--
         Single select: exactly one mode is always in force.
 
-        KNOWN DEFECT: the Offline and No trip chips draw a stray mark over the end of their label;
-        Live and Loading are clean. Ruled out by measurement, not guesswork: it is not the item
-        template (removing it changed nothing), not clipping or the group style (it survives with
-        the chips stacked one per line), and not the Material font override (it survives with the
-        override removed). Next step needs the visual tree - a justMyCode:false snapshot of one
-        chip through the App MCP - to see what the second element actually is. If it turns out to
-        be unreachable, the fallback is a ListView with pill containers, which gives single-select
-        from the platform and leaves the item look under our control.
+        KNOWN DEFECT: the Offline and No trip chips sometimes draw a stray mark over the end of
+        their label. Ruled out by measurement: not the item template (removing it changed nothing),
+        not clipping or the group style (it survives with the chips stacked one per line), and not
+        the Material font override (it survives with the override removed). It is INTERMITTENT -
+        one capture showed all four chips clean - which points at a measure race leaving the label
+        trimmed, so the mark is most likely a clipped ellipsis rather than a second element. Next
+        step is a visual-tree snapshot through the App MCP while it is visible; the fallback is a
+        ListView with pill containers, which gives single-select from the platform and leaves the
+        item look under our control.
       -->
       <utu:ChipGroup ItemsSource="{Binding Modes}"
                      SelectedItem="{Binding Mode, Mode=TwoWay}"
