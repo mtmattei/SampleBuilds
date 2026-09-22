@@ -146,13 +146,9 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6">
-                  <!-- The car sits in its own tile, which separates it from the headline it stands
-                       beside and gives the lock caption something to belong to. -->
-                  <Border Background="{ThemeResource CarTileBrush}"
-                          CornerRadius="{StaticResource MapCornerRadius}"
-                          Padding="10,8">
-                    <Image Source="ms-appx:///Assets/Car/xc60.png" Width="140" Stretch="Uniform" />
-                  </Border>
+                  <!-- No tile behind it: the car reads as a photograph of the car, and a panel
+                       under it only added a second container inside the card. -->
+                  <Image Source="ms-appx:///Assets/Car/xc60.png" Width="150" Stretch="Uniform" />
                   <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
                     <Viewbox Width="13" Height="13" VerticalAlignment="Center">
                       <Canvas Width="24" Height="24">
@@ -475,8 +471,17 @@
                 </Grid>
               </Button>
 
-              <!-- Everything below the header collapses together. -->
-              <StackPanel Visibility="{Binding Data.ChecksExpanded, Converter={StaticResource BoolToVisibility}}">
+              <!--
+                Everything below the header collapses together. The reveal fades and rises rather
+                than animating height: measuring a growing panel every frame is the expensive way,
+                and the job here is continuity, not spectacle.
+              -->
+              <StackPanel x:Name="ChecksBody"
+                          Visibility="{Binding Data.ChecksExpanded, Converter={StaticResource BoolToVisibility}}"
+                          RenderTransformOrigin="0.5,0">
+                <StackPanel.RenderTransform>
+                  <TranslateTransform x:Name="ChecksBodyShift" />
+                </StackPanel.RenderTransform>
               <Rectangle Style="{StaticResource RowRule}" />
 
               <!-- Fuel: informational, so it carries a status chip and no action. -->
@@ -506,6 +511,10 @@
                   <TextBlock Style="{StaticResource CardCaption}" Foreground="{ThemeResource AmberInkBrush}" Text="{Binding Data.FuelChip}" />
                 </Border>
 
+                <!--
+                  Decorative, and accepted as such: nothing sits behind these rows in a sample whose
+                  whole product is one card. Recorded here rather than left for a reviewer to find.
+                -->
                 <Viewbox Grid.Column="3" Width="16" Height="16" VerticalAlignment="Center" Margin="10,0,0,0">
                   <Canvas Width="24" Height="24">
                     <Path Stroke="{ThemeResource Ink3Brush}" StrokeThickness="2.2" StrokeLineJoin="Round"
@@ -589,6 +598,10 @@
                   <TextBlock Style="{StaticResource CardCaption}" Foreground="{ThemeResource GoodInkBrush}" Text="{Binding Data.ParkingChip}" />
                 </Border>
 
+                <!--
+                  Decorative, and accepted as such: nothing sits behind these rows in a sample whose
+                  whole product is one card. Recorded here rather than left for a reviewer to find.
+                -->
                 <Viewbox Grid.Column="3" Width="16" Height="16" VerticalAlignment="Center" Margin="10,0,0,0">
                   <Canvas Width="24" Height="24">
                     <Path Stroke="{ThemeResource Ink3Brush}" StrokeThickness="2.2" StrokeLineJoin="Round"

@@ -1,4 +1,6 @@
+using Microsoft.UI.Xaml.Media.Animation;
 using MorningCard.Themes;
+using Windows.Foundation;
 using Windows.System;
 
 namespace MorningCard.Controls;
@@ -32,6 +34,87 @@ public sealed partial class MorningCardView : UserControl
         ApplyChrome();
 
         ShowMap();
+        WatchChecksReveal();
+    }
+
+    private long _checksToken = -1;
+
+    /// <summary>
+    /// Plays the checklist's reveal when the rows appear.
+    ///
+    /// The rows live inside a FeedView template, so there is no VisualState to hang this on and no
+    /// element to name from outside it - watching Visibility is what is actually available. Height
+    /// is deliberately not animated: measuring a growing panel every frame is the expensive way to
+    /// do this, and the job here is continuity, which fade plus a short rise already carries.
+    /// </summary>
+    private void WatchChecksReveal()
+    {
+        if (FindName("ChecksBody") is not FrameworkElement body)
+        {
+            return;
+        }
+
+        if (_checksToken >= 0)
+        {
+            body.UnregisterPropertyChangedCallback(VisibilityProperty, _checksToken);
+        }
+
+        _checksToken = body.RegisterPropertyChangedCallback(
+            VisibilityProperty,
+            (element, _) =>
+            {
+                if (element is FrameworkElement { Visibility: Visibility.Visible } shown)
+                {
+                    PlayReveal(shown);
+                }
+            });
+    }
+
+    private static void PlayReveal(FrameworkElement body)
+    {
+        // Reduced motion resolves instantly rather than playing a shorter version of the same
+        // thing: the setting means "no motion", not "less".
+        if (CardChrome.ReducedMotion)
+        {
+            body.Opacity = 1;
+            return;
+        }
+
+        var shift = body.RenderTransform as TranslateTransform;
+        var duration = TimeSpan.FromMilliseconds(260 / Math.Max(CardChrome.MotionSpeed, 0.1));
+        var ease = new KeySpline { ControlPoint1 = new Point(0.22, 1), ControlPoint2 = new Point(0.36, 1) };
+
+        var board = new Storyboard();
+        board.Children.Add(Fade(body, duration, ease));
+
+        if (shift is not null)
+        {
+            board.Children.Add(Rise(shift, duration, ease));
+        }
+
+        board.Begin();
+    }
+
+    private static DoubleAnimationUsingKeyFrames Fade(DependencyObject target, TimeSpan duration, KeySpline ease)
+    {
+        var fade = new DoubleAnimationUsingKeyFrames();
+        fade.KeyFrames.Add(new DiscreteDoubleKeyFrame { KeyTime = TimeSpan.Zero, Value = 0 });
+        fade.KeyFrames.Add(new SplineDoubleKeyFrame { KeyTime = duration, Value = 1, KeySpline = ease });
+        Storyboard.SetTarget(fade, target);
+        Storyboard.SetTargetProperty(fade, "Opacity");
+
+        return fade;
+    }
+
+    private static DoubleAnimationUsingKeyFrames Rise(TranslateTransform target, TimeSpan duration, KeySpline ease)
+    {
+        var rise = new DoubleAnimationUsingKeyFrames();
+        rise.KeyFrames.Add(new DiscreteDoubleKeyFrame { KeyTime = TimeSpan.Zero, Value = 8 });
+        rise.KeyFrames.Add(new SplineDoubleKeyFrame { KeyTime = duration, Value = 0, KeySpline = ease });
+        Storyboard.SetTarget(rise, target);
+        Storyboard.SetTargetProperty(rise, "Y");
+
+        return rise;
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e) => CardChrome.Changed -= OnChromeChanged;
