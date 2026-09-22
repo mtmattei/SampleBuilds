@@ -101,7 +101,11 @@ public partial record TuningModel
         new ModeOption(ConnectionMode.Offline, "Offline"),
         new ModeOption(ConnectionMode.NoTrip, "No trip"));
 
-    public IFeed<IImmutableList<ModeOption>> Modes => Feed.Async(_ => ValueTask.FromResult(Options));
+    /// <summary>
+    /// A plain property, not a feed: the list is four constants and never changes, so there is
+    /// nothing for a feed to carry and no reason to make the chips wait on one.
+    /// </summary>
+    public IImmutableList<ModeOption> Modes => Options;
 
     /// <summary>Reads back as the clock, so the label under the slider is the time, not a count.</summary>
     public IFeed<string> ClockText => Clock.Select(value => TripMath.FromMinutes((int)value).ToString("H:mm", CultureInfo.InvariantCulture));

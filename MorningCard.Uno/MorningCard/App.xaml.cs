@@ -125,6 +125,11 @@ public partial class App : Application
         {
             _ = DebugHooks.ProbeFocusAsync(focusRoot);
         }
+
+        if (DebugHooks.ProbeChips && MainWindow.Content is { } chipRoot)
+        {
+            _ = DebugHooks.ProbeChipsAsync(chipRoot);
+        }
 #endif
     }
 

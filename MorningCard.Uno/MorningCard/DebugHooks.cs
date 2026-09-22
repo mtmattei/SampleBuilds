@@ -86,6 +86,66 @@ internal static class DebugHooks
 
     public static bool ProbeFocus => Read("MC_PROBE_FOCUS") == "1";
 
+    public static bool ProbeChips => Read("MC_PROBE_CHIPS") == "1";
+
+    /// <summary>
+    /// Dumps the mode chips' subtree, because the stray mark over the widest chip labels has
+    /// survived every guess made from screenshots. Every TextBlock under the group is reported with
+    /// its text and its rect in the group's own coordinates, which settles directly whether a label
+    /// is drawn twice, trimmed, or overlapped by something else.
+    /// </summary>
+    public static async Task ProbeChipsAsync(DependencyObject root)
+    {
+        await Task.Delay(TimeSpan.FromSeconds(4));
+
+        if (FindByName<FrameworkElement>(root, "ModeChips") is not { } group)
+        {
+            Trace("PROBE chips: ModeChips not in the tree");
+            return;
+        }
+
+        var lines = new List<string>();
+        CollectText(group, group, 0, lines);
+        Trace($"PROBE chips: {lines.Count} text elements{Environment.NewLine}  {string.Join($"{Environment.NewLine}  ", lines)}");
+    }
+
+    private static void CollectText(DependencyObject element, UIElement origin, int depth, List<string> lines)
+    {
+        if (element is FrameworkElement fe && (fe.ActualWidth > 0 || fe.ActualHeight > 0))
+        {
+            var rect = "unmeasured";
+
+            try
+            {
+                var point = fe.TransformToVisual(origin).TransformPoint(new Windows.Foundation.Point(0, 0));
+                rect = $"x={point.X:0.##} y={point.Y:0.##} w={fe.ActualWidth:0.##} h={fe.ActualHeight:0.##}";
+            }
+            catch (ArgumentException)
+            {
+                // Not in the same tree yet.
+            }
+
+            var content = fe switch
+            {
+                TextBlock text => $" \"{text.Text}\"",
+                FontIcon icon => $" glyph={(int)icon.Glyph[0]:X4}",
+                ContentPresenter { Content: { } value } => $" content=\"{value}\"",
+                ContentControl { Content: { } value } => $" content=\"{value}\"",
+                _ => string.Empty,
+            };
+
+            lines.Add($"{new string(' ', depth)}{fe.GetType().Name}{content} {rect} " +
+                      $"opacity={fe.Opacity:0.##} vis={fe.Visibility}");
+        }
+
+        var count = VisualTreeHelper.GetChildrenCount(element);
+
+        for (var i = 0; i < count; i++)
+        {
+            CollectText(VisualTreeHelper.GetChild(element, i), origin, depth + 1, lines);
+        }
+    }
+
     /// <summary>
     /// Walks the tab order and traces it.
     ///
