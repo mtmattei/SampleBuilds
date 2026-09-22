@@ -67,9 +67,15 @@ public partial class App : Application
                 .UseLocalization()
                 .ConfigureServices((context, services) =>
                 {
-                    // TODO: Register your services
-                    //services.AddSingleton<IMyService, MyService>();
+                    // One hub stands in for the routing service and the connected car, so the two
+                    // can never disagree about what state the app is in.
+                    services
+                        .AddSingleton(TimeProvider.System)
+                        .AddSingleton<SimulatedDriveHub>()
+                        .AddSingleton<ITripService>(sp => sp.GetRequiredService<SimulatedDriveHub>())
+                        .AddSingleton<IVehicleService>(sp => sp.GetRequiredService<SimulatedDriveHub>());
                 })
+                .UseThemeSwitching()
                 .UseNavigation(ReactiveViewModelMappings.ViewModelMappings, RegisterRoutes)
             );
         MainWindow = builder.Window;

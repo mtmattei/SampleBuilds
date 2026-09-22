@@ -1,123 +1,171 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!--
-    Microsoft ResX Schema
-
-    Version 2.0
-
-    The primary goals of this format is to allow a simple XML format
-    that is mostly human readable. The generation and parsing of the
-    various data types are done through the TypeConverter classes
-    associated with the data types.
-
-    Example:
-
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-
-    There are any number of "resheader" rows that contain simple
-    name/value pairs.
-
-    Each data row contains a name, and value. The row also contains a
-    type or mimetype. Type corresponds to a .NET class that support
-    text/value conversion through the TypeConverter architecture.
-    Classes that don't support this are serialized and stored with the
-    mimetype set.
-
-    The mimetype is used for serialized objects, and tells the
-    ResXResourceReader how to depersist the object. This is currently not
-    extensible. For a given mimetype the value must be set accordingly:
-
-    Note - application/x-microsoft.net.object.binary.base64 is the format
-    that the ResXResourceWriter will generate, however the reader can
-    read any of the formats listed below.
-
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"><xsd:import namespace="http://www.w3.org/XML/1998/namespace" /><xsd:element name="root" msdata:IsDataSet="true"><xsd:complexType><xsd:choice maxOccurs="unbounded"><xsd:element name="metadata"><xsd:complexType><xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" /></xsd:sequence><xsd:attribute name="name" use="required" type="xsd:string" /><xsd:attribute name="type" type="xsd:string" /><xsd:attribute name="mimetype" type="xsd:string" /><xsd:attribute ref="xml:space" /></xsd:complexType></xsd:element><xsd:element name="assembly"><xsd:complexType><xsd:attribute name="alias" type="xsd:string" /><xsd:attribute name="name" type="xsd:string" /></xsd:complexType></xsd:element><xsd:element name="data"><xsd:complexType><xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" /><xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" /></xsd:sequence><xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" /><xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" /><xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" /><xsd:attribute ref="xml:space" /></xsd:complexType></xsd:element><xsd:element name="resheader"><xsd:complexType><xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" /></xsd:sequence><xsd:attribute name="name" type="xsd:string" use="required" /></xsd:complexType></xsd:element></xsd:choice></xsd:complexType></xsd:element></xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="ApplicationName" xml:space="preserve">
-    <value>MorningCard-en</value>
+    <value>Morning Card</value>
+  </data>
+  <data name="Greeting" xml:space="preserve">
+    <value>Good morning</value>
+  </data>
+  <data name="Headline_LeaveIn" xml:space="preserve">
+    <value>Leave in {0} min to arrive on time.</value>
+  </data>
+  <data name="Headline_LeaveNow" xml:space="preserve">
+    <value>Leave now to arrive on time.</value>
+  </data>
+  <data name="Headline_Late" xml:space="preserve">
+    <value>Running {0} min late. Leave now to arrive {1}.</value>
+  </data>
+  <data name="Headline_NoTrip" xml:space="preserve">
+    <value>Nothing on the calendar before 9.</value>
+  </data>
+  <data name="Headline_Offline" xml:space="preserve">
+    <value>Car isn&apos;t reachable, showing {0} data.</value>
+  </data>
+  <data name="CarStatus_Locked" xml:space="preserve">
+    <value>Locked</value>
+  </data>
+  <data name="CarStatus_Unlocked" xml:space="preserve">
+    <value>Unlocked</value>
+  </data>
+  <data name="CarStatus_Line" xml:space="preserve">
+    <value>{0} • {1}°</value>
+  </data>
+  <data name="CarStatus_LastSeen" xml:space="preserve">
+    <value>Last seen {0}</value>
+  </data>
+  <data name="Traffic_Light" xml:space="preserve">
+    <value>Light traffic</value>
+  </data>
+  <data name="Traffic_Moderate" xml:space="preserve">
+    <value>Moderate traffic</value>
+  </data>
+  <data name="Traffic_Heavy" xml:space="preserve">
+    <value>Heavy traffic</value>
+  </data>
+  <data name="VsUsual_Faster" xml:space="preserve">
+    <value>{0} min faster than usual</value>
+  </data>
+  <data name="VsUsual_Slower" xml:space="preserve">
+    <value>{0} min slower than usual</value>
+  </data>
+  <data name="VsUsual_Same" xml:space="preserve">
+    <value>About usual</value>
+  </data>
+  <data name="Eta_Arrive" xml:space="preserve">
+    <value>Arrive {0}</value>
+  </data>
+  <data name="Eta_Unit" xml:space="preserve">
+    <value>min</value>
+  </data>
+  <data name="Route_Now" xml:space="preserve">
+    <value>Now {0}</value>
+  </data>
+  <data name="Route_Leave" xml:space="preserve">
+    <value>Leave {0}</value>
+  </data>
+  <data name="Route_Arrive" xml:space="preserve">
+    <value>Arrive {0}</value>
+  </data>
+  <data name="Route_Bell" xml:space="preserve">
+    <value>Bell {0}</value>
+  </data>
+  <data name="Route_Slack" xml:space="preserve">
+    <value>{0} min slack</value>
+  </data>
+  <data name="Route_Drive" xml:space="preserve">
+    <value>{0} min</value>
+  </data>
+  <data name="Route_Walk" xml:space="preserve">
+    <value>{0} min walk</value>
+  </data>
+  <data name="Route_AutomationName" xml:space="preserve">
+    <value>Route to school. Now {0}. Leave {1} after {2} minutes of slack. {3} minute drive, arriving {4}. {5} minute walk. Bell {6}.</value>
+  </data>
+  <data name="Route_AutomationLate" xml:space="preserve">
+    <value>Route to school. Now {0}, already {1} minutes late. {2} minute drive, arriving {3}. {4} minute walk. Bell {5}.</value>
+  </data>
+  <data name="Stat_RangeCaption" xml:space="preserve">
+    <value>Range</value>
+  </data>
+  <data name="Stat_RangeValue" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="Stat_RangeUnit" xml:space="preserve">
+    <value>mi</value>
+  </data>
+  <data name="Stat_ChargeNotCharging" xml:space="preserve">
+    <value>Not charging</value>
+  </data>
+  <data name="Stat_ChargeCharging" xml:space="preserve">
+    <value>Charging</value>
+  </data>
+  <data name="Stat_ChargeFull" xml:space="preserve">
+    <value>Charged</value>
+  </data>
+  <data name="Stat_ChargeNone" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="Stat_ChargeValue" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="Stat_TireCaption" xml:space="preserve">
+    <value>Tire pressure</value>
+  </data>
+  <data name="Stat_TireAllGood" xml:space="preserve">
+    <value>All good</value>
+  </data>
+  <data name="Stat_TireLow" xml:space="preserve">
+    <value>FL low</value>
+  </data>
+  <data name="Stat_TirePsi" xml:space="preserve">
+    <value>FL {0} psi</value>
+  </data>
+  <data name="Action_Lock" xml:space="preserve">
+    <value>Lock</value>
+  </data>
+  <data name="Action_Unlock" xml:space="preserve">
+    <value>Unlock</value>
+  </data>
+  <data name="Action_Climate" xml:space="preserve">
+    <value>Climate</value>
+  </data>
+  <data name="Action_ClimateOn" xml:space="preserve">
+    <value>On, {0}°</value>
+  </data>
+  <data name="Action_ClimateOff" xml:space="preserve">
+    <value>{0}°</value>
+  </data>
+  <data name="Action_SendToCar" xml:space="preserve">
+    <value>Send to car</value>
+  </data>
+  <data name="Action_Sent" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="Action_More" xml:space="preserve">
+    <value>More</value>
+  </data>
+  <data name="Empty_Title" xml:space="preserve">
+    <value>No drop-off today</value>
+  </data>
+  <data name="Empty_Note" xml:space="preserve">
+    <value>Pedagogical day at school. Nothing else is planned this morning.</value>
+  </data>
+  <data name="Error_Title" xml:space="preserve">
+    <value>Can&apos;t reach the car</value>
+  </data>
+  <data name="Error_Retry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="Simulator_Title" xml:space="preserve">
+    <value>Simulator</value>
+  </data>
+  <data name="Simulator_Note" xml:space="preserve">
+    <value>The car and the trip are simulated. Each control writes to the simulated hub, and the card reads the result.</value>
   </data>
 </root>
+
