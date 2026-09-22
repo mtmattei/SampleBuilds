@@ -29,10 +29,11 @@
   <!-- The ETA's unit. A Run cannot take a Style, so the size lives here as a token. -->
   <x:Double x:Key="EtaUnitSize">22</x:Double>
 
-  <!-- 23 / 600: the trip title. -->
+  <!-- 34 / 600: the trip title. Measured against the reference at 23, where its ink came back a
+       third short in both axes - the headline read at nearly subtitle weight. -->
   <Style x:Key="CardTitle" TargetType="TextBlock" BasedOn="{StaticResource TitleLarge}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
-    <Setter Property="FontSize" Value="23" />
+    <Setter Property="FontSize" Value="34" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
@@ -99,7 +100,7 @@
 
   <!-- 13 / 400: the status strip above the headline. -->
   <Style x:Key="StatusLine" TargetType="TextBlock" BasedOn="{StaticResource CardCaption}">
-    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontSize" Value="14" />
   </Style>
 
   <!-- Same size, ink-weight: the temperature and conditions read as values, not captions. -->
@@ -110,7 +111,7 @@
 
   <!-- 19 / 400: the sentence under the title, which carries the accented duration inline. -->
   <Style x:Key="CardLead" TargetType="TextBlock" BasedOn="{StaticResource CardBody}">
-    <Setter Property="FontSize" Value="19" />
+    <Setter Property="FontSize" Value="17" />
     <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
   </Style>
 

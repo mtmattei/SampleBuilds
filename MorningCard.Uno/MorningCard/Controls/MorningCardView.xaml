@@ -114,7 +114,7 @@
       -->
       <Border Grid.Row="1"
               Grid.RowSpan="4"
-              Margin="-12,-10,-12,-12"
+              Margin="-14,-12,-14,-14"
               Background="{ThemeResource CardSurfaceBrush}"
               BorderBrush="{ThemeResource GlassEdgeBrush}"
               BorderThickness="1"
@@ -452,15 +452,17 @@
                   opens, and a bare row of text gave the disclosure nothing to belong to. The border
                   is what makes the closed state read as a closed thing rather than as a spare line.
                 -->
+                <!-- No border of its own: the container around the whole checklist owns that, and
+                     the two were drawn on top of each other. -->
                 <Button x:Name="ChecksHeader"
                         Style="{StaticResource RowButtonStyle}"
-                        BorderBrush="{ThemeResource LineBrush}"
-                        BorderThickness="1"
                         CornerRadius="{StaticResource MapCornerRadius}"
-                        Padding="14,10"
+                        Padding="14,12"
                         Command="{Binding Parent.ToggleChecks}"
                         AutomationProperties.Name="{Binding Data.ChecksReady}">
-                  <Grid Style="{StaticResource ListRowStyle}">
+                  <!-- Padding zeroed: the row style's own 14pt top and bottom stacked on the
+                       button's and made the closed checklist half again the reference's height. -->
+                  <Grid Style="{StaticResource ListRowStyle}" Padding="0">
                     <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="Auto" />
                       <ColumnDefinition Width="Auto" />

@@ -211,7 +211,7 @@
   <!-- Skeleton bars, the map pin and other small rounded shapes share one value. 6, 9 and 10 were
        three separately invented values within 4px of each other. -->
   <CornerRadius x:Key="SmallCornerRadius">8</CornerRadius>
-  <Thickness x:Key="CardPadding">22</Thickness>
+  <Thickness x:Key="CardPadding">27</Thickness>
   <!-- 529: the original 400 plus 15% twice. The two-column stage is two of these plus the 24 gap and
        the stage's own 16 of side padding each way. -->
   <x:Double x:Key="CardMaxWidth">529</x:Double>
@@ -226,7 +226,8 @@
   -->
   <x:Double x:Key="CardReservedHeight">940</x:Double>
   <x:Double x:Key="StageMaxWidthWide">1114</x:Double>
-  <x:Double x:Key="MapPanelHeight">248</x:Double>
+  <!-- 264: the reference panel scaled to this card width. 248 read 6% short. -->
+  <x:Double x:Key="MapPanelHeight">264</x:Double>
 
 </ResourceDictionary>
 
