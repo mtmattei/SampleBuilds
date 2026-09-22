@@ -20,7 +20,11 @@
                   HorizontalScrollBarVisibility="Disabled">
       <!-- A star column with a max width, never a content-sized panel: an empty state must not
            collapse the card to the width of its longest word. -->
+      <!-- The containing Grid is a region too. Without it the nested Simulator region resolves
+           only because its route is IsDefault and nothing ever issues a Navigation.Request; a
+           second region, or any ./Simulator request, would not resolve. -->
       <Grid x:Name="Stage"
+            uen:Region.Attached="True"
             Padding="16,36,16,56"
             HorizontalAlignment="Stretch"
             MaxWidth="{StaticResource CardMaxWidth}"
@@ -68,6 +72,7 @@
     </ScrollViewer>
   </Grid>
 </Page>
+
 
 
 

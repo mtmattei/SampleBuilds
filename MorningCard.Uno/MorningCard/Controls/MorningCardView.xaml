@@ -173,7 +173,7 @@
                     <Run Text="{Binding Parent.EtaUnitLabel}"
                          FontFamily="{StaticResource CardFontSemiBold}"
                          FontWeight="SemiBold"
-                         FontSize="22" />
+                         FontSize="{StaticResource EtaUnitSize}" />
                   </TextBlock>
 
                   <TextBlock Style="{StaticResource CardBody}"
@@ -328,7 +328,7 @@
                 </StackPanel>
               </Grid>
 
-              <!-- tires: chevron gets its own column so the value cannot collide with it -->
+              <!-- tires -->
               <ContentControl Grid.Column="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False">
                 <Grid Padding="9,2,0,0" ColumnSpacing="7">
                   <Grid.ColumnDefinitions>
@@ -504,6 +504,7 @@
     </Grid>
   </Grid>
 </UserControl>
+
 
 
 

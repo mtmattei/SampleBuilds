@@ -7,13 +7,21 @@
   below has to match exactly. Google's slices carry weight-suffixed family names for Medium and
   SemiBold, while Bold declares itself as "Instrument Sans" with a Bold subfamily - hence the
   matching FontWeight in the text styles.
+
+  Filenames use underscores, never hyphens. The Android build rewrites a hyphen in a Content asset
+  to an underscore, so an ms-appx path written with hyphens resolves on desktop and silently fails
+  on device - and the typeface loader swallows that, leaving the map labels on the default face.
+  Verified against the packaged assets: obj/.../net10.0-android/assets/Assets/Fonts holds
+  InstrumentSans_Regular.ttf.
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <FontFamily x:Key="CardFontRegular">ms-appx:///Assets/Fonts/InstrumentSans-Regular.ttf#Instrument Sans</FontFamily>
-  <FontFamily x:Key="CardFontMedium">ms-appx:///Assets/Fonts/InstrumentSans-Medium.ttf#Instrument Sans Medium</FontFamily>
-  <FontFamily x:Key="CardFontSemiBold">ms-appx:///Assets/Fonts/InstrumentSans-SemiBold.ttf#Instrument Sans SemiBold</FontFamily>
-  <FontFamily x:Key="CardFontBold">ms-appx:///Assets/Fonts/InstrumentSans-Bold.ttf#Instrument Sans</FontFamily>
+  <FontFamily x:Key="CardFontRegular">ms-appx:///Assets/Fonts/InstrumentSans_Regular.ttf#Instrument Sans</FontFamily>
+  <FontFamily x:Key="CardFontMedium">ms-appx:///Assets/Fonts/InstrumentSans_Medium.ttf#Instrument Sans Medium</FontFamily>
+  <FontFamily x:Key="CardFontSemiBold">ms-appx:///Assets/Fonts/InstrumentSans_SemiBold.ttf#Instrument Sans SemiBold</FontFamily>
+  <FontFamily x:Key="CardFontBold">ms-appx:///Assets/Fonts/InstrumentSans_Bold.ttf#Instrument Sans</FontFamily>
 
 </ResourceDictionary>
+
+

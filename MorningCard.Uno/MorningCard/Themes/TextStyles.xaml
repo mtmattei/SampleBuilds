@@ -26,12 +26,8 @@
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
-  <!-- 22 / 600: the "min" that follows it, kept at the mockup's ratio to the digits. -->
-  <Style x:Key="EtaUnit" TargetType="TextBlock" BasedOn="{StaticResource TitleMedium}">
-    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
-    <Setter Property="FontSize" Value="22" />
-    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
-  </Style>
+  <!-- The ETA's unit. A Run cannot take a Style, so the size lives here as a token. -->
+  <x:Double x:Key="EtaUnitSize">22</x:Double>
 
   <!-- 23 / 600: the trip title. -->
   <Style x:Key="CardTitle" TargetType="TextBlock" BasedOn="{StaticResource TitleLarge}">
@@ -101,5 +97,6 @@
   </Style>
 
 </ResourceDictionary>
+
 
 

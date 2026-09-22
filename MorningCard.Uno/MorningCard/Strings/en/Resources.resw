@@ -145,9 +145,6 @@
   <data name="Stat_RangeCaption" xml:space="preserve">
     <value>Range</value>
   </data>
-  <data name="Stat_RangeValue" xml:space="preserve">
-    <value>{0}</value>
-  </data>
   <data name="Stat_RangeUnit" xml:space="preserve">
     <value>mi</value>
   </data>
@@ -201,24 +198,6 @@
   </data>
   <data name="Action_More" xml:space="preserve">
     <value>More</value>
-  </data>
-  <data name="Empty_Title" xml:space="preserve">
-    <value>No drop-off today</value>
-  </data>
-  <data name="Empty_Note" xml:space="preserve">
-    <value>Pedagogical day at school. Nothing else is planned this morning.</value>
-  </data>
-  <data name="Error_Title" xml:space="preserve">
-    <value>Can't reach the car</value>
-  </data>
-  <data name="Error_Retry" xml:space="preserve">
-    <value>Retry</value>
-  </data>
-  <data name="Simulator_Title" xml:space="preserve">
-    <value>Simulator</value>
-  </data>
-  <data name="Simulator_Note" xml:space="preserve">
-    <value>The car and the trip are simulated. Each control writes to the simulated hub, and the card reads the result.</value>
   </data>
   <data name="EmptyTitle.Text" xml:space="preserve">
     <value>No drop-off today</value>
@@ -281,4 +260,5 @@
     <value>Toggle theme</value>
   </data>
 </root>
+
 

@@ -16,9 +16,9 @@
           -->
           <utum:MaterialToolkitTheme.FontOverrideDictionary>
             <ResourceDictionary>
-              <FontFamily x:Key="MaterialLightFontFamily">ms-appx:///Assets/Fonts/InstrumentSans-Regular.ttf#Instrument Sans</FontFamily>
-              <FontFamily x:Key="MaterialRegularFontFamily">ms-appx:///Assets/Fonts/InstrumentSans-Regular.ttf#Instrument Sans</FontFamily>
-              <FontFamily x:Key="MaterialMediumFontFamily">ms-appx:///Assets/Fonts/InstrumentSans-Medium.ttf#Instrument Sans Medium</FontFamily>
+              <FontFamily x:Key="MaterialLightFontFamily">ms-appx:///Assets/Fonts/InstrumentSans_Regular.ttf#Instrument Sans</FontFamily>
+              <FontFamily x:Key="MaterialRegularFontFamily">ms-appx:///Assets/Fonts/InstrumentSans_Regular.ttf#Instrument Sans</FontFamily>
+              <FontFamily x:Key="MaterialMediumFontFamily">ms-appx:///Assets/Fonts/InstrumentSans_Medium.ttf#Instrument Sans Medium</FontFamily>
             </ResourceDictionary>
           </utum:MaterialToolkitTheme.FontOverrideDictionary>
         </utum:MaterialToolkitTheme>
@@ -34,4 +34,5 @@
   </Application.Resources>
 
 </Application>
+
 

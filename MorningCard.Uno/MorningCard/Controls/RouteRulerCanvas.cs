@@ -300,7 +300,7 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         try
         {
             var file = await StorageFile.GetFileFromApplicationUriAsync(
-                new Uri("ms-appx:///Assets/Fonts/InstrumentSans-SemiBold.ttf"));
+                new Uri("ms-appx:///Assets/Fonts/InstrumentSans_SemiBold.ttf"));
 
             using var stream = await file.OpenStreamForReadAsync();
             using var memory = new MemoryStream();
@@ -316,6 +316,7 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         }
     }
 }
+
 
 
 

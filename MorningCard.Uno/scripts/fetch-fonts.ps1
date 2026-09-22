@@ -24,10 +24,10 @@ $ErrorActionPreference = 'Stop'
 $LegacyUserAgent = 'Mozilla/5.0 (Linux; U; Android 2.2; en-us; Nexus One Build/FRF91) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1'
 
 $Requests = @(
-    @{ File = 'InstrumentSans-Regular.ttf';  Css = 'family=Instrument+Sans:wght@400' }
-    @{ File = 'InstrumentSans-Medium.ttf';   Css = 'family=Instrument+Sans:wght@500' }
-    @{ File = 'InstrumentSans-SemiBold.ttf'; Css = 'family=Instrument+Sans:wght@600' }
-    @{ File = 'InstrumentSans-Bold.ttf';     Css = 'family=Instrument+Sans:wght@700' }
+    @{ File = 'InstrumentSans_Regular.ttf';  Css = 'family=Instrument+Sans:wght@400' }
+    @{ File = 'InstrumentSans_Medium.ttf';   Css = 'family=Instrument+Sans:wght@500' }
+    @{ File = 'InstrumentSans_SemiBold.ttf'; Css = 'family=Instrument+Sans:wght@600' }
+    @{ File = 'InstrumentSans_Bold.ttf';     Css = 'family=Instrument+Sans:wght@700' }
 )
 
 if (-not (Test-Path $OutputDirectory)) {
@@ -116,3 +116,4 @@ foreach ($request in $Requests) {
 Write-Host ''
 Write-Host 'Internal family names - the XAML #fragment must match Family exactly:' -ForegroundColor Yellow
 $report | Format-Table -AutoSize
+

@@ -19,12 +19,6 @@ public partial record TuningModel
 {
     private readonly IThemeService _theme;
 
-    /// <summary>
-    /// Held for the model's lifetime: ForEachAsync returns the subscription, and dropping it would
-    /// let the forwarding stop whenever the GC felt like it.
-    /// </summary>
-    private readonly List<IDisposable> _forwarders = new();
-
     public TuningModel(SimulatedDriveHub hub, IThemeService theme)
     {
         _theme = theme;
@@ -50,9 +44,10 @@ public partial record TuningModel
     private IState<T> Forward<T>(T initial, Action<T> apply)
         where T : notnull
     {
-        var state = State.Value(this, () => initial);
-
-        _forwarders.Add(state.ForEachAsync((value, _) =>
+        // ForEach, not the deprecated ForEachAsync: it returns the state and roots the subscription
+        // through AttachedProperty, so no hand-held disposable list is needed to keep forwarding
+        // alive past the next GC.
+        return State.Value(this, () => initial).ForEach((value, _) =>
         {
             // A state can report no value at all; there is nothing to forward then.
             if (value is not null)
@@ -61,9 +56,7 @@ public partial record TuningModel
             }
 
             return ValueTask.CompletedTask;
-        }));
-
-        return state;
+        });
     }
 
     /// <summary>
@@ -122,3 +115,4 @@ public partial record TuningModel
     public async ValueTask ToggleTheme(CancellationToken ct) =>
         await _theme.SetThemeAsync(_theme.Theme == AppTheme.Dark ? AppTheme.Light : AppTheme.Dark);
 }
+
