@@ -85,7 +85,7 @@ internal static class RouteGeometryLoader
         var headroom = width * 0.10d;
 
         // A small left gutter as well, since the ETA block reaches furthest on that side.
-        var etaGutter = width * 0.70d;
+        var etaGutter = width * 1.05d;
 
         return new Mapsui.MRect(
             minX - pad - etaGutter,
