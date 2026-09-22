@@ -59,6 +59,9 @@ public partial record MainModel
 
     public string EtaUnitLabel => Text("Eta_Unit");
 
+    /// <summary>"Start drive", or the confirmation while it is showing.</summary>
+    public IFeed<string> DriveLabel => DriveSent.Select(sent => Text(sent ? "Drive_Sent" : "Drive_Start"));
+
     private IFeed<TripResult> Trip => Feed<TripResult>.AsyncEnumerable(WatchTrip);
 
     /// <summary>
@@ -138,7 +141,68 @@ public partial record MainModel
 
     private TaskCompletionSource? _retryWaiter;
 
+    /// <summary>True for 1.6 seconds after the destination is sent, driving the confirmation.</summary>
+    public IState<bool> DriveSent => State.Value(this, () => false);
+
     // ---- commands --------------------------------------------------------------------------
+
+    /// <summary>
+    /// Restored in v3 with the checklist and the bottom bar. Each reads the current snapshot rather
+    /// than taking the new value as a parameter: parameters bound from inside a FeedView template
+    /// do not arrive reliably.
+    /// </summary>
+    public async ValueTask ToggleLock(CancellationToken ct)
+    {
+        if (await Car is not { } car)
+        {
+            return;
+        }
+
+        await _vehicle.SetLockedAsync(!car.IsLocked, ct);
+    }
+
+    /// <summary>The checklist's "Start warming", and its stop.</summary>
+    public async ValueTask ToggleClimate(CancellationToken ct)
+    {
+        if (await Car is not { } car)
+        {
+            return;
+        }
+
+        await _vehicle.SetClimateAsync(!car.ClimateOn, ct);
+    }
+
+    /// <summary>
+    /// The bottom bar's primary. Sends the drop-off to the car, then hands the driver off to the
+    /// maps app - which is the honest meaning of "start drive" in an app that does not navigate.
+    /// </summary>
+    public async ValueTask StartDrive(CancellationToken ct)
+    {
+        await _vehicle.SendDestinationAsync(ct);
+        await DriveSent.SetAsync(true, ct);
+
+        DriveStarted?.Invoke(this, EventArgs.Empty);
+
+        // Outside the command on purpose: a generated command holds its button disabled for as long
+        // as the method runs, and the confirmation is not something to wait on.
+        _ = ResetDriveConfirmationAsync();
+    }
+
+    /// <summary>Raised once the destination is away, so the view can open the maps app.</summary>
+    public event EventHandler? DriveStarted;
+
+    private async Task ResetDriveConfirmationAsync()
+    {
+        try
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(1600));
+            await DriveSent.SetAsync(false, CancellationToken.None);
+        }
+        catch (ObjectDisposedException)
+        {
+            // The card went away mid-confirmation; there is nothing left to reset.
+        }
+    }
 
     public async ValueTask Retry(CancellationToken ct)
     {
@@ -206,7 +270,15 @@ public partial record MainModel
             CarName: car.Name,
             LockText: lockText,
             OutsideTemp: Format("Status_Temp", car.OutsideTemp),
-            WeatherSummary: car.WeatherSummary);
+            WeatherSummary: car.WeatherSummary,
+            NowText: Format("Status_Now", Clock(now)),
+            // Names the state rather than leaving it to colour alone, which is also what makes the
+            // three frames of the design distinguishable to someone who cannot tell them apart.
+            StatusBadge: car.IsStale
+                ? Text("Badge_Offline")
+                : timeline is null
+                    ? Text("Badge_NoTrip")
+                    : Text($"Badge_{timeline.Tone}"));
     }
 
     private EtaView BuildEta((TripResult Result, TimeOnly Now) input)
@@ -240,7 +312,10 @@ public partial record MainModel
             IsLate: timeline.IsLate,
             RouteLeave: route.Leave,
             RouteArrive: route.Arrive,
-            LeaveByTime: Clock(timeline.LeaveBy),
+            Tone: timeline.Tone,
+            // Once the answer is "Now" the column header loses its "BY": "LEAVE BY Now" reads wrong.
+            LeaveByTime: timeline.Tone == CardTone.Ok ? Clock(timeline.LeaveBy) : Text("Timeline_Now"),
+            LeaveByLabel: Text(timeline.Tone == CardTone.Ok ? "Timeline_LeaveBy" : "Timeline_Leave"),
             ArriveTime: Clock(timeline.Arrive),
             BellTime: Clock(plan.Bell),
             // A floor on each, so no segment collapses to nothing and the track keeps its shape
@@ -290,6 +365,7 @@ public partial record MainModel
             FuelUnit: Text("Fuel_Unit"),
             FuelNote: Text("Fuel_NoteFine"),
             FuelNoteAccent: fuelNote,
+            FuelChip: fuelNote.TrimStart(' ', '\u00b7', ' '),
             FuelLevel: fuelLevel,
             FuelPercent: TripMath.RangeBarPercent(car.Range, car.RangeMax),
             CabinLabel: Text("Cabin_Label"),
@@ -299,6 +375,12 @@ public partial record MainModel
             CabinTo: car.ClimateOn ? Format("Temp_Degrees", car.CabinTarget) : string.Empty,
             // Reports the climate command the Simulator holds; the card can no longer send one.
             CabinAccent: car.ClimateOn ? Text("Cabin_RemoteOn") : string.Empty,
+            ChecksCount: Format("Checks_Count", 3),
+            // Fuel and parking are informational, so they are ready by definition; the cabin is the
+            // one the driver can still act on, which is what "2 of 3" is counting.
+            ChecksReady: Format("Checks_Ready", car.ClimateOn ? 3 : 2, 3),
+            CabinNeedsWarming: !car.ClimateOn,
+            ParkingChip: slot.Plan is null ? string.Empty : Format("Checks_ParkingChip", slot.Plan.ParkingNote),
             DestinationLabel: slot.Plan?.DestinationLabel ?? string.Empty,
             ParkingStreet: slot.Plan?.ParkingStreet ?? string.Empty,
             ParkingNote: slot.Plan?.ParkingNote ?? string.Empty,
@@ -320,7 +402,9 @@ public partial record MainModel
         IsLate: false,
         RouteLeave: 0d,
         RouteArrive: 1d,
+        Tone: CardTone.Ok,
         LeaveByTime: string.Empty,
+        LeaveByLabel: string.Empty,
         ArriveTime: string.Empty,
         BellTime: string.Empty,
         TrackSlack: 1d,

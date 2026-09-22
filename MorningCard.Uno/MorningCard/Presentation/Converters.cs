@@ -73,6 +73,51 @@ public sealed class AccentToneConverter : IValueConverter
         throw new NotSupportedException();
 }
 
+/// <summary>
+/// The state badge's ground. A tint rather than a solid fill, so the badge reads as a label on the
+/// card and not as a button someone forgot to wire up.
+/// </summary>
+public sealed class ToneChipBrushConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language) => value switch
+    {
+        CardTone.Late => Tokens.Of("DangerChipBrush"),
+        CardTone.LeaveNow => Tokens.Of("AmberChipBrush"),
+        _ => Tokens.Of("AccentChipBrush"),
+    };
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}
+
+/// <summary>The ink on that ground, and on the timeline's first column.</summary>
+public sealed class ToneChipInkConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language) => value switch
+    {
+        CardTone.Late => Tokens.Of("DangerInkBrush"),
+        CardTone.LeaveNow => Tokens.Of("AmberInkBrush"),
+        _ => Tokens.Of("AccentInkBrush"),
+    };
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}
+
+/// <summary>The timeline track's drive segment and its "now" marker.</summary>
+public sealed class ToneTrackBrushConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language) => value switch
+    {
+        CardTone.Late => Tokens.Of("DangerBrush"),
+        CardTone.LeaveNow => Tokens.Of("AmberBrush"),
+        _ => Tokens.Of("AccentBrush"),
+    };
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>Running late turns the headline red; everything else reads as secondary ink.</summary>
 public sealed class ToneBrushConverter : IValueConverter
 {

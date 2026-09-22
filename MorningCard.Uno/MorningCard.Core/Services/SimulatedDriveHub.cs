@@ -157,6 +157,26 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
         }
     }
 
+    public async ValueTask SetLockedAsync(bool locked, CancellationToken ct)
+    {
+        await DelayAsync(ct).ConfigureAwait(false);
+        Mutate(state => state with { Vehicle = state.Vehicle with { IsLocked = locked } });
+    }
+
+    public async ValueTask SetClimateAsync(bool on, CancellationToken ct)
+    {
+        await DelayAsync(ct).ConfigureAwait(false);
+        Mutate(state => state with { Vehicle = state.Vehicle with { ClimateOn = on } });
+    }
+
+    public async ValueTask SendDestinationAsync(CancellationToken ct)
+    {
+        await DelayAsync(ct).ConfigureAwait(false);
+
+        // Nothing on the car changes; the confirmation lives in the view.
+        Mutate(state => state);
+    }
+
     ValueTask IVehicleService.RefreshAsync(CancellationToken ct) => ReconnectAsync(ct);
 
     // ---- internals -------------------------------------------------------------------------

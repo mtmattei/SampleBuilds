@@ -303,6 +303,29 @@
   <data name="FuelRangeWord.Text" xml:space="preserve">
     <value>range</value>
   </data>
+  <data name="Status_Now" xml:space="preserve"><value>Now {0}</value></data>
+  <data name="Badge_Ok" xml:space="preserve"><value>On time</value></data>
+  <data name="Badge_LeaveNow" xml:space="preserve"><value>Leave now</value></data>
+  <data name="Badge_Late" xml:space="preserve"><value>Running late</value></data>
+  <data name="Badge_Offline" xml:space="preserve"><value>Offline</value></data>
+  <data name="Badge_NoTrip" xml:space="preserve"><value>Free morning</value></data>
+  <data name="Timeline_LeaveBy" xml:space="preserve"><value>LEAVE BY</value></data>
+  <data name="Timeline_Leave" xml:space="preserve"><value>LEAVE</value></data>
+  <data name="Timeline_Now" xml:space="preserve"><value>Now</value></data>
+  <data name="Checks_Count" xml:space="preserve"><value>{0} checks</value></data>
+  <data name="Checks_Ready" xml:space="preserve"><value>{0} of {1} ready</value></data>
+  <data name="Checks_ParkingChip" xml:space="preserve"><value>Until 9:30</value><comment>{0} is the full note; the chip shows only the deadline.</comment></data>
+  <data name="ChecksTitle.Text" xml:space="preserve"><value>Before you go</value></data>
+  <data name="ChecksFuelTitle.Text" xml:space="preserve"><value>Enough for today</value></data>
+  <data name="ChecksCabinTitle.Text" xml:space="preserve"><value>Warm the cabin</value></data>
+  <data name="ChecksCabinSuggested.Text" xml:space="preserve"><value>Suggested</value></data>
+  <data name="StartWarming.Content" xml:space="preserve"><value>Start warming</value></data>
+  <data name="StopWarming.Content" xml:space="preserve"><value>Stop warming</value></data>
+  <data name="StartDrive.Content" xml:space="preserve"><value>Start drive</value></data>
+  <data name="DriveSent.Content" xml:space="preserve"><value>Sent to car</value></data>
+  <data name="Cabin_WarmDetail" xml:space="preserve"><value>Warm to {0}° while you drive.</value></data>
+  <data name="Drive_Start" xml:space="preserve"><value>Start drive</value></data>
+  <data name="Drive_Sent" xml:space="preserve"><value>Sent to car</value></data>
 </root>
 
 

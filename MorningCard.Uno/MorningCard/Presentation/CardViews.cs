@@ -15,6 +15,8 @@ namespace MorningCard.Presentation;
 /// </param>
 /// <param name="LockText">Sits under the car, e.g. "XC60 · Locked".</param>
 /// <param name="WeatherSummary">Conditions and the day's high, e.g. "Clear · High 9°".</param>
+/// <param name="NowText">"Now 7:24" in the status strip, so the card says what time it is reading.</param>
+/// <param name="StatusBadge">"On time", "Leave now" or "Running late" - the state, named.</param>
 public record HeaderView(
     string Greeting,
     string Title,
@@ -26,7 +28,9 @@ public record HeaderView(
     string CarName,
     string LockText,
     string OutsideTemp,
-    string WeatherSummary);
+    string WeatherSummary,
+    string NowText,
+    string StatusBadge);
 
 /// <summary>
 /// The ETA block and the route ruler. Reached only when there is a trip: no trip means the feed is
@@ -35,6 +39,7 @@ public record HeaderView(
 /// <param name="RouteLeave">Where the drive starts along the path, 0 to 1.</param>
 /// <param name="RouteArrive">Where the walk starts along the path, 0 to 1.</param>
 /// <param name="LeaveByTime">Bare "7:33" for the timeline strip, which supplies its own labels.</param>
+/// <param name="LeaveByLabel">"LEAVE BY" normally, "LEAVE" once the answer is "Now".</param>
 public record EtaView(
     bool Failed,
     string FailureMessage,
@@ -46,7 +51,9 @@ public record EtaView(
     bool IsLate,
     double RouteLeave,
     double RouteArrive,
+    CardTone Tone,
     string LeaveByTime,
+    string LeaveByLabel,
     string ArriveTime,
     string BellTime,
     // The strip's three track segments, as star weights. Computed here rather than in a converter
@@ -107,12 +114,14 @@ public record ModeOption(ConnectionMode Value, string Label)
 /// </summary>
 /// <param name="CabinFrom">Bolded in the row, so it is its own Run: "-3°".</param>
 /// <param name="CabinTo">The other bolded Run: "20°".</param>
+/// <param name="FuelNoteAccent">The half of the note that takes the severity colour, " · Fuel soon".</param>
+/// <param name="FuelChip">The same state as a standalone chip label, without the separator.</param>
 public record CarView(
     string FuelValue,
     string FuelUnit,
     string FuelNote,
-    /// <summary>The half of the note that takes the severity colour, e.g. "Fuel soon".</summary>
     string FuelNoteAccent,
+    string FuelChip,
     StatLevel FuelLevel,
     double FuelPercent,
     string CabinLabel,
@@ -121,6 +130,11 @@ public record CarView(
     string CabinMid,
     string CabinTo,
     string CabinAccent,
+    // The checklist header: how many checks there are and how many are ready.
+    string ChecksCount,
+    string ChecksReady,
+    bool CabinNeedsWarming,
+    string ParkingChip,
     string DestinationLabel,
     string ParkingStreet,
     string ParkingNote,
