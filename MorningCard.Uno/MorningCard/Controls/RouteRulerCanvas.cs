@@ -4,6 +4,7 @@ using SkiaSharp;
 using Uno.WinUI.Graphics2DSK;
 using Windows.Foundation;
 using Windows.Storage;
+using Windows.UI.ViewManagement;
 
 namespace MorningCard.Controls;
 
@@ -26,11 +27,28 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
     private readonly RouteRulerRenderer _renderer = new();
     private RouteRulerSnapshot _snapshot = new();
 
+    /// <summary>
+    /// How long the whole entrance runs at speed 1: dots, then the drive drawing along the path,
+    /// then the walk, then the markers popping in, then the labels.
+    /// </summary>
+    private static readonly TimeSpan EntranceDuration = TimeSpan.FromMilliseconds(1700);
+
+    /// <summary>
+    /// 30fps. A DispatcherTimer produces exactly one frame per invalidation, where a held
+    /// CompositionTarget.Rendering subscription would pin the compositor to display refresh for the
+    /// life of the app - measured at 50 to 70 percent of a core, whatever is on screen.
+    /// </summary>
+    private static readonly TimeSpan FrameInterval = TimeSpan.FromMilliseconds(33);
+
+    private readonly DispatcherTimer _entrance = new() { Interval = FrameInterval };
+    private DateTimeOffset _entranceStarted;
+
     public RouteRulerCanvas()
     {
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
         ActualThemeChanged += OnActualThemeChanged;
+        _entrance.Tick += OnEntranceTick;
     }
 
     public static readonly DependencyProperty EtaProperty =
@@ -38,7 +56,7 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
             nameof(Eta),
             typeof(EtaView),
             typeof(RouteRulerCanvas),
-            new PropertyMetadata(null, (d, _) => ((RouteRulerCanvas)d).Refresh()));
+            new PropertyMetadata(null, (d, e) => ((RouteRulerCanvas)d).OnEtaChanged(e)));
 
     /// <summary>The trip to draw. Null means no trip today, which leaves only the map ground.</summary>
     public EtaView? Eta
@@ -69,11 +87,98 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
+        CardMotion.ReplayRequested += OnReplayRequested;
+        CardChrome.Changed += OnChromeChanged;
+
         Refresh();
         _ = ApplyTypefaceAsync();
     }
 
-    private void OnUnloaded(object sender, RoutedEventArgs e) => _renderer.Dispose();
+    private void OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        CardMotion.ReplayRequested -= OnReplayRequested;
+        CardChrome.Changed -= OnChromeChanged;
+
+        // A timer left running would keep asking for frames after the card is gone.
+        _entrance.Stop();
+        _renderer.Dispose();
+    }
+
+    private void OnChromeChanged(object? sender, EventArgs e) => Refresh();
+
+    private void OnReplayRequested(object? sender, EventArgs e) => PlayEntrance();
+
+    /// <summary>
+    /// The entrance plays when a route first arrives, and again on an explicit replay. It does not
+    /// replay for every clock tick or dial move, which would make the card twitch.
+    /// </summary>
+    private void OnEtaChanged(DependencyPropertyChangedEventArgs e)
+    {
+        var hadRoute = e.OldValue is EtaView { Failed: false };
+        var hasRoute = e.NewValue is EtaView { Failed: false };
+
+        if (hasRoute && !hadRoute)
+        {
+            PlayEntrance();
+            return;
+        }
+
+        Refresh();
+    }
+
+    private void PlayEntrance()
+    {
+        if (ReducedMotion)
+        {
+            _entrance.Stop();
+            Progress = 1d;
+            Refresh();
+            return;
+        }
+
+        _entranceStarted = DateTimeOffset.UtcNow;
+        Progress = 0d;
+        _entrance.Start();
+    }
+
+    private void OnEntranceTick(object? sender, object e)
+    {
+        var scaled = EntranceDuration / Math.Max(0.25d, CardChrome.MotionSpeed);
+        var elapsed = DateTimeOffset.UtcNow - _entranceStarted;
+        var progress = Math.Clamp(elapsed / scaled, 0d, 1d);
+
+        Progress = progress;
+
+        if (progress >= 1d)
+        {
+            // One-shot: the timer stops rather than idling at 30fps for the rest of the session.
+            _entrance.Stop();
+        }
+    }
+
+    /// <summary>
+    /// On desktop <c>UISettings.AnimationsEnabled</c> is hardcoded true, so the Simulator's switch
+    /// is the only signal there. On Android the two are combined.
+    /// </summary>
+    private static bool ReducedMotion
+    {
+        get
+        {
+            if (CardChrome.ReducedMotion)
+            {
+                return true;
+            }
+
+            try
+            {
+                return !new UISettings().AnimationsEnabled;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+    }
 
     private void OnActualThemeChanged(FrameworkElement sender, object args) => Refresh();
 
@@ -190,3 +295,5 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         }
     }
 }
+
+

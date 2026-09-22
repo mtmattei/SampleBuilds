@@ -44,6 +44,11 @@ internal static class DebugHooks
         {
             hub.SetTireFrontLeft(psi);
         }
+        if (Read("MC_MOTION") is { } motion && double.TryParse(motion, CultureInfo.InvariantCulture, out var speed))
+        {
+            Themes.CardChrome.MotionSpeed = speed;
+        }
+
 
         switch (Read("MC_STATE")?.ToLowerInvariant())
         {
@@ -162,3 +167,4 @@ internal static class DebugHooks
     }
 }
 #endif
+

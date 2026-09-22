@@ -20,11 +20,14 @@
       <!--
         Single select: exactly one mode is always in force.
 
-        KNOWN DEFECT: each chip draws a stray glyph after its label. It is not the item template
-        (removing it changed nothing) and not clipping (it survives with the chips stacked), so the
-        likely cause is a symbol glyph inheriting the Material font override - Instrument Sans is
-        latin-subset only, so an icon codepoint renders as tofu. Next step is to find the chip's
-        icon font key and leave it on the Material face.
+        KNOWN DEFECT: the Offline and No trip chips draw a stray mark over the end of their label;
+        Live and Loading are clean. Ruled out by measurement, not guesswork: it is not the item
+        template (removing it changed nothing), not clipping or the group style (it survives with
+        the chips stacked one per line), and not the Material font override (it survives with the
+        override removed). Next step needs the visual tree - a justMyCode:false snapshot of one
+        chip through the App MCP - to see what the second element actually is. If it turns out to
+        be unreachable, the fallback is a ListView with pill containers, which gives single-select
+        from the platform and leaves the item look under our control.
       -->
       <utu:ChipGroup ItemsSource="{Binding Modes}"
                      SelectedItem="{Binding Mode, Mode=TwoWay}"
