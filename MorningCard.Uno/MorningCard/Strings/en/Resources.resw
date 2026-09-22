@@ -281,6 +281,10 @@
   <data name="OpenInMapsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Open this trip in the maps app</value>
   </data>
+  <data name="Header_TrafficClause" xml:space="preserve">
+    <value> · {0}</value>
+    <comment>Leading separator lives in the string: adjacent Runs join with the markup's whitespace.</comment>
+  </data>
 </root>
 
 

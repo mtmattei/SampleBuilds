@@ -8,6 +8,43 @@
              HorizontalAlignment="Stretch"
              VerticalAlignment="Top">
 
+  <UserControl.Resources>
+    <!--
+      Shared by ProgressTemplate and NoneTemplate. A feed that has never yielded reaches the view as
+      None, not Progress - Feed.Combine fast-starts to None as soon as a parent has no value - so
+      handling only Progress left the card as a bare map with no header and no rows.
+    -->
+    <DataTemplate x:Key="HeaderSkeleton"><StackPanel Spacing="12">
+              <Border Width="240" Height="13" HorizontalAlignment="Left" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
+              <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Spacing="10" VerticalAlignment="Center">
+                  <Border Width="210" Height="30" HorizontalAlignment="Left" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
+                  <Border Width="250" Height="17" HorizontalAlignment="Left" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
+                </StackPanel>
+                <Border Grid.Column="1" Width="150" Height="86" CornerRadius="{StaticResource MapCornerRadius}" Background="{ThemeResource ChipBrush}" />
+              </Grid>
+              <Border Width="280" Height="13" HorizontalAlignment="Left" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
+            </StackPanel></DataTemplate>
+
+    <DataTemplate x:Key="RowsSkeleton"><StackPanel>
+              <Grid Style="{StaticResource ListRowStyle}">
+                <Border Width="200" Height="17" HorizontalAlignment="Left" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
+              </Grid>
+              <Rectangle Style="{StaticResource RowRule}" />
+              <Grid Style="{StaticResource ListRowStyle}">
+                <Border Width="240" Height="17" HorizontalAlignment="Left" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
+              </Grid>
+              <Rectangle Style="{StaticResource RowRule}" />
+              <Grid Style="{StaticResource ListRowStyle}">
+                <Border Width="180" Height="17" HorizontalAlignment="Left" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
+              </Grid>
+            </StackPanel></DataTemplate>
+  </UserControl.Resources>
+
   <!--
     The card is a Border over a childless glass sibling. Keeping the translucent fill on its own
     element leaves the content free of the backdrop, which is also what the Skia acrylic path wants
@@ -34,7 +71,7 @@
       <mvux:FeedView Source="{Binding Header}">
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
-            <StackPanel Spacing="14">
+            <StackPanel Spacing="12">
 
               <!-- ======================== status strip ======================== -->
               <!--
@@ -144,20 +181,9 @@
                   <TextBlock Style="{StaticResource CardLead}"
                              Margin="0,4,0,0"
                              TextWrapping="Wrap"
-                             Foreground="{Binding Data.Tone, Converter={StaticResource ToneBrush}}">
-                    <Run Text="{Binding Data.HeadlineLead}" />
-                    <Run Text="{Binding Data.HeadlineAccent}"
-                         FontFamily="{StaticResource CardFontSemiBold}"
-                         FontWeight="SemiBold"
-                         Foreground="{Binding Data.Tone, Converter={StaticResource AccentTone}}" />
-                    <Run Text="{Binding Data.HeadlineTail}" />
-                  </TextBlock>
+                             Foreground="{Binding Data.Tone, Converter={StaticResource ToneBrush}}"><Run Text="{Binding Data.HeadlineLead}" /><Run Text="{Binding Data.HeadlineAccent}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" Foreground="{Binding Data.Tone, Converter={StaticResource AccentTone}}" /><Run Text="{Binding Data.HeadlineTail}" /></TextBlock>
 
-                  <TextBlock Style="{StaticResource CardCaption}"
-                             Margin="0,3,0,0"
-                             TextWrapping="Wrap"
-                             Text="{Binding Data.TimesLine}"
-                             Visibility="{Binding Data.TimesLine, Converter={StaticResource NullToVisibility}}" />
+
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
@@ -170,9 +196,28 @@
                              Text="{Binding Data.CarName}" />
                 </StackPanel>
               </Grid>
+
+              <!--
+                Times, then traffic in its severity colour. Both strings carry their own
+                separators and punctuation: adjacent Runs are joined with whatever whitespace
+                sits between them in the markup, which put a space before the late headline's
+                full stop and doubled every middot here.
+              -->
+              <TextBlock Style="{StaticResource CardCaption}"
+                         Margin="0,3,0,0"
+                         TextWrapping="Wrap"
+                         Visibility="{Binding Data.TimesLine, Converter={StaticResource NullToVisibility}}"><Run Text="{Binding Data.TimesLine}" /><Run Text="{Binding Data.TrafficText}" FontFamily="{StaticResource CardFontMedium}" Foreground="{Binding Data.Traffic, Converter={StaticResource TrafficBrush}}" /></TextBlock>
             </StackPanel>
           </DataTemplate>
         </mvux:FeedView.ValueTemplate>
+
+        <!--
+          Without this the whole header vanished while the feeds were still in progress and the card
+          collapsed to a bare map. The skeleton carries the same footprint, so nothing jumps when
+          the data lands.
+        -->
+        <mvux:FeedView.ProgressTemplate><StaticResource ResourceKey="HeaderSkeleton" /></mvux:FeedView.ProgressTemplate>
+        <mvux:FeedView.NoneTemplate><StaticResource ResourceKey="HeaderSkeleton" /></mvux:FeedView.NoneTemplate>
       </mvux:FeedView>
 
       <!-- ============================ map panel ============================ -->
@@ -200,9 +245,12 @@
           <mc:RouteRulerCanvas x:Name="Ruler" Eta="{Binding State.Data, ElementName=EtaFeed}" />
 
           <!-- Real launch, not a decorative pill: it opens the platform maps app at the school. -->
+          <!-- Hidden whenever a scrim covers the map: a pill showing through "Can't reach the
+               car" offers to open a trip the card just said it could not read. -->
           <Button x:Name="OpenInMaps"
                   x:Uid="OpenInMapsButton"
                   Style="{StaticResource MapPillStyle}"
+                  Visibility="{Binding State.Data.Failed, ElementName=EtaFeed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert, FallbackValue=Collapsed}"
                   HorizontalAlignment="Right"
                   VerticalAlignment="Bottom"
                   Margin="0,0,12,30"
@@ -265,9 +313,18 @@
               </DataTemplate>
             </mvux:FeedView.NoneTemplate>
 
+            <!-- Holds the panel's shape while the route is on its way, so nothing jumps. -->
             <mvux:FeedView.ProgressTemplate>
               <DataTemplate>
-                <Border Background="{ThemeResource MapScrimBrush}" />
+                <Border Background="{ThemeResource MapScrimBrush}">
+                  <StackPanel Margin="18"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Bottom"
+                              Spacing="10">
+                    <Border Width="96" Height="13" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
+                    <Border Width="150" Height="13" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
+                  </StackPanel>
+                </Border>
               </DataTemplate>
             </mvux:FeedView.ProgressTemplate>
 
@@ -386,10 +443,12 @@
                 </Viewbox>
               </Grid>
 
-              <Rectangle Style="{StaticResource RowRule}" />
+              <Rectangle Style="{StaticResource RowRule}"
+                         Visibility="{Binding Data.HasDestination, Converter={StaticResource BoolToVisibility}}" />
 
-              <!-- Destination -->
-              <Grid Style="{StaticResource ListRowStyle}">
+              <!-- Destination. Absent entirely on a no-trip morning rather than drawn empty. -->
+              <Grid Style="{StaticResource ListRowStyle}"
+                    Visibility="{Binding Data.HasDestination, Converter={StaticResource BoolToVisibility}}">
                 <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="Auto" />
                   <ColumnDefinition Width="92" />
@@ -443,6 +502,9 @@
             </StackPanel>
           </DataTemplate>
         </mvux:FeedView.ValueTemplate>
+
+        <mvux:FeedView.ProgressTemplate><StaticResource ResourceKey="RowsSkeleton" /></mvux:FeedView.ProgressTemplate>
+        <mvux:FeedView.NoneTemplate><StaticResource ResourceKey="RowsSkeleton" /></mvux:FeedView.NoneTemplate>
       </mvux:FeedView>
     </Grid>
   </Grid>

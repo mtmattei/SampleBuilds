@@ -35,7 +35,15 @@ public partial record MainModel
     /// </summary>
     private IFeed<TripSlot> Slot => Feed.AsyncEnumerable(WatchSlot);
 
-    public IFeed<HeaderView> Header => Feed.Combine(Slot, Now, Car).Select(BuildHeader);
+    /// <summary>
+    /// Whether the last trip lookup failed. A state, not the trip feed: the header has to keep
+    /// speaking on a no-trip morning, and Feed.Combine fast-starts to None as soon as any parent is
+    /// None - combining with the trip feed took the entire header off the card. A state always has
+    /// a value, so it can join the combine safely.
+    /// </summary>
+    private IState<bool> Unreachable => State.Value(this, () => false);
+
+    public IFeed<HeaderView> Header => Feed.Combine(Slot, Now, Car, Unreachable).Select(BuildHeader);
 
     /// <summary>
     /// Goes none when there is no trip, which is what the map panel's empty state binds to. A fault
@@ -89,10 +97,14 @@ public partial record MainModel
                     break;
                 }
 
+                await Unreachable.SetAsync(false, ct).ConfigureAwait(false);
+
                 yield return plan is null
                     ? Option.None<TripResult>()
                     : Option.Some(TripResult.Ok(plan));
             }
+
+            await Unreachable.SetAsync(true, ct).ConfigureAwait(false);
 
             yield return Option.Some(TripResult.Failure(failure));
 
@@ -147,9 +159,9 @@ public partial record MainModel
         }
     }
 
-    private HeaderView BuildHeader((TripSlot Slot, TimeOnly Now, VehicleSnapshot Car) input)
+    private HeaderView BuildHeader((TripSlot Slot, TimeOnly Now, VehicleSnapshot Car, bool Unreachable) input)
     {
-        var (slot, now, car) = input;
+        var (slot, now, car, unreachable) = input;
         var plan = slot.Plan;
         var timeline = plan is null ? null : TripMath.Derive(plan, now);
 
@@ -188,9 +200,18 @@ public partial record MainModel
             HeadlineLead: lead,
             HeadlineAccent: accent,
             HeadlineTail: tail,
-            TimesLine: timeline is null || plan is null
+            // Gone while the trip lookup is failing. Stating five specifics as current fact beside
+            // "Can't reach the car" left the user no way to tell which half was true. The headline
+            // stays, from last known data, which is one claim rather than five.
+            TimesLine: timeline is null || plan is null || unreachable
                 ? string.Empty
                 : Format("Header_Times", Clock(timeline.LeaveBy), Clock(timeline.Arrive), Clock(plan.Bell)),
+            Traffic: timeline?.Traffic ?? TrafficLevel.Light,
+            // Carries its own leading separator: composed here rather than as a literal Run, because
+            // adjacent Runs are joined with the whitespace between them in the markup.
+            TrafficText: timeline is null || unreachable
+                ? string.Empty
+                : Format("Header_TrafficClause", Text($"Traffic_{timeline.Traffic}")),
             Tone: timeline?.Tone ?? CardTone.Ok,
             IsStale: car.IsStale,
             CarName: car.Name,
@@ -211,12 +232,7 @@ public partial record MainModel
         var timeline = TripMath.Derive(plan, now);
         var route = RouteLayout.Fractions(timeline, plan.WalkMin);
 
-        var vsUsual = timeline.VsUsualMin switch
-        {
-            > 0 => Format("VsUsual_Faster", timeline.VsUsualMin),
-            < 0 => Format("VsUsual_Slower", -timeline.VsUsualMin),
-            _ => Text("VsUsual_Same"),
-        };
+        var vsUsual = VsUsual(timeline.VsUsualMin);
 
         var description = timeline.IsLate
             ? Format("Route_AutomationLate",
@@ -245,6 +261,14 @@ public partial record MainModel
             BellLabel: Format("Route_Bell", Clock(plan.Bell)),
             RouteDescription: description);
     }
+
+    /// <summary>How today compares with a usual morning, shared by the header and the ETA block.</summary>
+    private string VsUsual(int vsUsualMin) => vsUsualMin switch
+    {
+        > 0 => Format("VsUsual_Faster", vsUsualMin),
+        < 0 => Format("VsUsual_Slower", -vsUsualMin),
+        _ => Text("VsUsual_Same"),
+    };
 
     private CarView BuildCar((VehicleSnapshot Car, TripSlot Slot) input)
     {
@@ -275,9 +299,12 @@ public partial record MainModel
             CabinFrom: Format("Temp_Degrees", car.CabinTemp),
             CabinMid: car.ClimateOn ? Text("Cabin_To") : string.Empty,
             CabinTo: car.ClimateOn ? Format("Temp_Degrees", car.CabinTarget) : string.Empty,
-            DestinationLabel: slot.Plan?.DestinationLabel ?? Text("Destination_None"),
+            DestinationLabel: slot.Plan?.DestinationLabel ?? string.Empty,
             ParkingStreet: slot.Plan?.ParkingStreet ?? string.Empty,
             ParkingNote: slot.Plan?.ParkingNote ?? string.Empty,
+            // The row leaves entirely on a no-trip morning. Kept, it rendered a wrapped label, an
+            // empty value column and a chevron pointing at nothing.
+            HasDestination: slot.Plan is not null,
             IsStale: car.IsStale);
     }
 

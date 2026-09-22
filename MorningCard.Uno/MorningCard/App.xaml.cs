@@ -90,16 +90,25 @@ public partial class App : Application
 #endif
         MainWindow.SetWindowIcon();
 
+        var host = builder.Build();
+
+#if DEBUG
+        // Before navigation, so a seeded mode is in force when the feeds first subscribe. Applied
+        // afterwards, MC_STATE=loading arrived too late to matter: every feed already held the
+        // default Live state, so the loading capture was pixel-identical to the live one and the
+        // progress templates were never exercised at all.
+        var hub = host.Services.GetRequiredService<SimulatedDriveHub>();
+        DebugHooks.ApplyTo(hub);
+#endif
+
         Host = await MainWindow.InitializeNavigationAsync(
-            () => Task.FromResult(builder.Build()),
+            () => Task.FromResult(host),
             initialRoute: "Main"
         );
 
 #if DEBUG
-        // After navigation on purpose: there is no window root before it, and the theme hook has to
+        // The theme hook stays after navigation: there is no window root before it, and it has to
         // beat the theme service's saved choice.
-        var hub = Host.Services.GetRequiredService<SimulatedDriveHub>();
-        DebugHooks.ApplyTo(hub);
 
         if (DebugHooks.Theme is { } theme && MainWindow.Content is FrameworkElement themeRoot)
         {

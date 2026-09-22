@@ -14,6 +14,11 @@ namespace MorningCard.Presentation;
 /// because the headline is three <c>Run</c>s in one TextBlock and a converter cannot produce Runs.
 /// </param>
 /// <param name="TimesLine">"Leave by 7:33 · Arrive 7:47 · Bell 7:50", empty when there is no trip.</param>
+/// <param name="TrafficText">
+/// Joins the times line rather than sitting on its own. The v2 mockup dropped the ETA block that
+/// used to carry traffic, and the app still computes it, so losing it would have been a silent
+/// capability reduction. It keeps its severity colour, which is the part that matters at a glance.
+/// </param>
 /// <param name="LockText">Status-strip lock line, e.g. "XC60 locked".</param>
 public record HeaderView(
     string Greeting,
@@ -22,6 +27,8 @@ public record HeaderView(
     string HeadlineAccent,
     string HeadlineTail,
     string TimesLine,
+    TrafficLevel Traffic,
+    string TrafficText,
     CardTone Tone,
     bool IsStale,
     string CarName,
@@ -113,5 +120,6 @@ public record CarView(
     string DestinationLabel,
     string ParkingStreet,
     string ParkingNote,
+    bool HasDestination,
     bool IsStale);
 
