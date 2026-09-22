@@ -27,11 +27,24 @@
         the chips land in still held text from the previous layout. Fixed in Capture-Tall.ps1 by
         sizing twice.
       -->
-      <utu:ChipGroup x:Name="ModeChips"
-                     ItemsSource="{Binding Modes}"
-                     SelectedItem="{Binding Mode, Mode=TwoWay}"
-                     SelectionMode="SingleOrNone"
-                     Style="{StaticResource FilterChipGroupStyle}" />
+      <!--
+        Scrolled rather than wrapped. The four chips measure 431 epx and a phone gives the panel
+        about 340, so on Android the row ran off the edge and "No trip" was cut in half. ChipGroup
+        lays its items out in a StackPanel and the wrapping panels have all disappointed on this
+        stack (UniformGridLayout collapses to one column, FlowLayout does not wrap), so this takes
+        the scrolling chip row Material uses on phones instead. No scrollbar, because the fade at
+        the edge is the affordance and a bar on a 40 epx row is noise.
+      -->
+      <ScrollViewer HorizontalScrollMode="Enabled"
+                    HorizontalScrollBarVisibility="Hidden"
+                    VerticalScrollMode="Disabled"
+                    VerticalScrollBarVisibility="Disabled">
+        <utu:ChipGroup x:Name="ModeChips"
+                       ItemsSource="{Binding Modes}"
+                       SelectedItem="{Binding Mode, Mode=TwoWay}"
+                       SelectionMode="SingleOrNone"
+                       Style="{StaticResource FilterChipGroupStyle}" />
+      </ScrollViewer>
 
       <StackPanel Spacing="2">
         <Grid>

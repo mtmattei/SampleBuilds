@@ -88,7 +88,14 @@
 
       <Color x:Key="GlassColor">#9E181E26</Color>
       <Color x:Key="GlassEdgeColor">#2EFFFFFF</Color>
-      <Color x:Key="GlassSecondaryColor">#0FFFFFFF</Color>
+      <!--
+        Tinted dark at 85%, not a 6% white wash. A wash is only legible where the ground behind it
+        happens to be dark, and the backdrop glow sits directly behind this panel on a phone: the
+        note text and the mode chips measured about 1.5:1 there on Android, against 7:1 on the same
+        build where the glow missed them. At 85% over #141A23 the panel carries its own ground, so
+        Ink2 body text holds 5.5:1 over the brightest part of the glow and 8.3:1 over bare ground.
+      -->
+      <Color x:Key="GlassSecondaryColor">#D9141A23</Color>
 
       <Color x:Key="InkColor">#F0F3F6</Color>
       <Color x:Key="Ink2Color">#A9B3BD</Color>
