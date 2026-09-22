@@ -38,12 +38,11 @@ $Wanted = [ordered]@{
     Checklist   = 'list-checks'
     Fuel        = 'gas-pump'
     Cabin       = 'thermometer-simple'
-    Parking     = 'car-simple'
+    Parking     = 'map-pin'
     Lock        = 'lock-simple'
     Unlock      = 'lock-simple-open'
     Drive       = 'navigation-arrow'
     Overflow    = 'dots-three'
-    MapPin      = 'map-pin'
 }
 
 Write-Verbose "GET $Css"
