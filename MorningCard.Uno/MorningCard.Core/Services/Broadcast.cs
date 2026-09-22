@@ -26,17 +26,6 @@ internal sealed class Broadcast<T>
         }
     }
 
-    public void Publish(T value)
-    {
-        lock (_gate)
-        {
-            _current = value;
-            foreach (var subscriber in _subscribers)
-            {
-                subscriber.Writer.TryWrite(value);
-            }
-        }
-    }
 
     /// <summary>
     /// Applies <paramref name="mutate"/> to the current value and publishes the result, under the
@@ -82,3 +71,4 @@ internal sealed class Broadcast<T>
         }
     }
 }
+

@@ -21,9 +21,6 @@ public interface ITripService
     /// </summary>
     IAsyncEnumerable<TripPlan?> WatchLastKnown(CancellationToken ct);
 
-    /// <summary>The drive as geography, for the map on the trip page.</summary>
-    ValueTask<TripRoute> GetRouteAsync(CancellationToken ct);
-
     /// <summary>Re-asks the source, which is also how a failed trip feed recovers.</summary>
     ValueTask RefreshAsync(CancellationToken ct);
 }

@@ -270,15 +270,5 @@ public class SimulatedDriveHubTests
         Assert.Equal(hub.State.Vehicle.RangeMax, hub.State.Vehicle.Range);
     }
 
-    [Fact]
-    public async Task The_sample_route_runs_from_home_to_school()
-    {
-        using var hub = NewHub(out _);
-
-        var route = await ((ITripService)hub).GetRouteAsync(default);
-
-        Assert.Equal(route.Home, route.Line[0]);
-        Assert.Equal(route.School, route.Line[^1]);
-        Assert.True(route.Line.Count >= 2);
-    }
 }
+

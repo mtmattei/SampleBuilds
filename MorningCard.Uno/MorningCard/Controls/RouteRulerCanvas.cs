@@ -309,15 +309,35 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
 
             return SKTypeface.FromStream(memory);
         }
-        catch (Exception)
+        catch (Exception error)
         {
-            // The default face is a legible fallback; losing the map labels would not be.
+            // The default face is a legible fallback, so this must not throw - but it must not be
+            // silent either. A swallowed failure here is exactly how the Android hyphen-to-
+            // underscore asset rename went unnoticed: the labels just quietly changed font.
+            DebugTrace($"typeface load failed: {error.GetType().Name}: {error.Message}");
             return null;
         }
     }
+    /// <summary>
+    /// Reports an asset failure without taking the card down. Writes to MC_TRACE in DEBUG, and to
+    /// the debugger output otherwise, so a silent fallback still leaves a trail.
+    /// </summary>
+    private static void DebugTrace(string message)
+    {
+        System.Diagnostics.Debug.WriteLine($"RouteRulerCanvas: {message}");
+
+        var path = Environment.GetEnvironmentVariable("MC_TRACE");
+
+        if (!string.IsNullOrWhiteSpace(path))
+        {
+            try
+            {
+                File.AppendAllText(path, $"RouteRulerCanvas: {message}{Environment.NewLine}");
+            }
+            catch (IOException)
+            {
+                // A trace that cannot be written must not take the app with it.
+            }
+        }
+    }
 }
-
-
-
-
-

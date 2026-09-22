@@ -21,7 +21,9 @@ public partial class App : Application
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         var builder = this.CreateBuilder(args)
-            // Add navigation support for toolkit controls such as TabBar and NavigationView
+            // Kept even though no Toolkit control navigates: removing it changed the window's root
+            // content, and AccentPalette.Track then captured the wrong theme - dark mode lost the
+            // ETA number and dimmed the stats, because the converters resolve through that.
             .UseToolkitNavigation()
             .Configure(host => host
 #if DEBUG
@@ -61,7 +63,6 @@ public partial class App : Application
                 .UseConfiguration(configure: configBuilder =>
                     configBuilder
                         .EmbeddedSource<App>()
-                        .Section<AppConfig>()
                 )
                 // Enable localization (see appsettings.json for supported languages)
                 .UseLocalization()
@@ -144,4 +145,6 @@ public partial class App : Application
         );
     }
 }
+
+
 

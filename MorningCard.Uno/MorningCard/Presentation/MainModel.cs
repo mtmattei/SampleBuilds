@@ -111,13 +111,28 @@ public partial record MainModel
         }
     }
 
-    /// <summary>Blocks the trip loop until <see cref="Retry"/> runs.</summary>
-    private Task WaitForRetryAsync(CancellationToken ct)
+    /// <summary>
+    /// Blocks the trip loop until <see cref="Retry"/> runs.
+    ///
+    /// The cancellation registration is disposed in the finally: it used to be discarded, so one
+    /// registration accumulated on the feed's long-lived token per failure-and-retry cycle and was
+    /// only released when the whole subscription ended.
+    /// </summary>
+    private async Task WaitForRetryAsync(CancellationToken ct)
     {
         var waiter = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         Interlocked.Exchange(ref _retryWaiter, waiter);
-        ct.Register(() => waiter.TrySetResult());
-        return waiter.Task;
+
+        var registration = ct.Register(() => waiter.TrySetResult());
+
+        try
+        {
+            await waiter.Task.ConfigureAwait(false);
+        }
+        finally
+        {
+            registration.Dispose();
+        }
     }
 
     private TaskCompletionSource? _retryWaiter;
@@ -293,10 +308,22 @@ public partial record MainModel
             IsStale: car.IsStale);
     }
 
+    /// <summary>
+    /// Clears the "Sent" label. Deliberately not awaited by the command, which would hold the
+    /// button disabled for the whole confirmation - so the exception has to be observed here, or a
+    /// model disposed inside the window becomes an unobserved task exception.
+    /// </summary>
     private async Task ResetSendConfirmationAsync()
     {
-        await Task.Delay(TimeSpan.FromMilliseconds(1400));
-        await SendConfirmed.SetAsync(false, CancellationToken.None);
+        try
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(1400));
+            await SendConfirmed.SetAsync(false, CancellationToken.None);
+        }
+        catch (ObjectDisposedException)
+        {
+            // The card went away mid-confirmation; there is nothing left to reset.
+        }
     }
 
     /// <summary>A blank view to build a failure on, so every member stays non-null.</summary>

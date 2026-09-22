@@ -126,8 +126,6 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
         }
     }
 
-    public ValueTask<TripRoute> GetRouteAsync(CancellationToken ct) => ValueTask.FromResult(SampleRoute.DropOff);
-
     ValueTask ITripService.RefreshAsync(CancellationToken ct) => ReconnectAsync(ct);
 
     // ---- IVehicleService -------------------------------------------------------------------

@@ -16,27 +16,75 @@ public static class AccentPalette
     public const double DefaultHue = 218d;
 
     /// <summary>
-    /// The theme the card is currently drawn in.
-    ///
-    /// Converters have no element to resolve against, and the application-level resource lookup
-    /// answers for the application's theme rather than the root element's - which is the one the
-    /// theme service switches. Reading colours through this kept the stats row and the ETA number
-    /// from rendering dark ink on a dark card. Elements that do have a theme (the Skia canvas) use
-    /// their own ActualTheme instead.
+    /// The element whose theme the card is drawn in. Converters have no element of their own to
+    /// resolve a ThemeResource against, and the application-level lookup answers for the
+    /// application's theme rather than the root element's - which is the one the theme service and
+    /// the debug hook switch. Elements that do have a theme (the Skia canvas) use their own
+    /// ActualTheme instead.
     /// </summary>
-    public static ElementTheme CurrentTheme { get; private set; } = ElementTheme.Light;
+    private static FrameworkElement? _root;
+
+    /// <summary>
+    /// The brushes handed to converters, one live instance per token key.
+    ///
+    /// A converter runs once per binding evaluation and its result is never re-asked, so a brush
+    /// picked out of a theme dictionary is a snapshot of whatever theme was current at first
+    /// layout. That is always Light here: the page is built inside InitializeNavigationAsync, which
+    /// finishes before there is a window root to track, so every converter-driven brush resolved
+    /// Light on a dark card - the ETA number vanished and the stats row went dim. Handing out one
+    /// live brush per key and repainting it on theme change makes the ordering irrelevant, because
+    /// the instance XAML is holding is the one that changes colour.
+    /// </summary>
+    private static readonly Dictionary<string, SolidColorBrush> Live = [];
+
+    public static ElementTheme CurrentTheme => _root?.ActualTheme ?? ElementTheme.Light;
 
     /// <summary>Follows <paramref name="root"/>'s theme for the life of the app.</summary>
     public static void Track(FrameworkElement root)
     {
         ArgumentNullException.ThrowIfNull(root);
 
-        CurrentTheme = root.ActualTheme;
-        root.ActualThemeChanged += (sender, _) => CurrentTheme = sender.ActualTheme;
+        _root = root;
+        root.ActualThemeChanged += (_, _) => Repaint();
+
+        // The converters have already run by now, against no theme at all.
+        Repaint();
     }
 
-    /// <summary>A brush from the current theme's dictionary, or null when the key is unknown.</summary>
-    public static Brush? Brush(string key) => Lookup(key, CurrentTheme) as Brush;
+    /// <summary>
+    /// A live brush for <paramref name="key"/>, repainted whenever the tracked root's theme
+    /// changes. Null when the key is unknown, or when the token is not a solid colour.
+    /// </summary>
+    public static Brush? Brush(string key)
+    {
+        if (Live.TryGetValue(key, out var live))
+        {
+            return live;
+        }
+
+        if (Lookup(key, CurrentTheme) is not SolidColorBrush source)
+        {
+            return Lookup(key, CurrentTheme) as Brush;
+        }
+
+        // A copy, not the dictionary's own brush: repainting that one would rewrite the theme.
+        live = new SolidColorBrush(source.Color);
+        Live[key] = live;
+
+        return live;
+    }
+
+    /// <summary>Pulls every live brush back to the colour its key carries in the current theme.</summary>
+    private static void Repaint()
+    {
+        foreach (var (key, brush) in Live)
+        {
+            if (Lookup(key, CurrentTheme) is SolidColorBrush source)
+            {
+                brush.Color = source.Color;
+            }
+        }
+    }
 
     private const string AccentKey = "AccentBrush";
     private const string AccentInkKey = "AccentInkBrush";
@@ -52,6 +100,9 @@ public static class AccentPalette
             SetBrush(AccentKey, Accent(hue, theme), theme);
             SetBrush(AccentInkKey, AccentInk(hue, theme), theme);
         }
+
+        // The live copies converters are holding do not follow the dictionary on their own.
+        Repaint();
     }
 
     public static Color Accent(double hue, ElementTheme theme) => theme == ElementTheme.Dark
