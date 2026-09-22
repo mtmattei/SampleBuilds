@@ -18,17 +18,13 @@ public sealed record RouteRulerSnapshot
     /// </summary>
     public RulerProjection? Projection { get; init; }
 
-    public string NowLabel { get; init; } = string.Empty;
 
     public string LeaveLabel { get; init; } = string.Empty;
 
-    public string SlackLabel { get; init; } = string.Empty;
 
-    public string DriveLabel { get; init; } = string.Empty;
 
     public string ArriveLabel { get; init; } = string.Empty;
 
-    public string WalkLabel { get; init; } = string.Empty;
 
     public string BellLabel { get; init; } = string.Empty;
 

@@ -44,7 +44,6 @@ internal static class DebugHooks
 
         if (Read("MC_TIRE") is { } tire && int.TryParse(tire, out var psi))
         {
-            hub.SetTireFrontLeft(psi);
         }
         if (Read("MC_REDUCEDMOTION") == "1")
         {

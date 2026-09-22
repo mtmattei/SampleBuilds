@@ -52,7 +52,6 @@ public record DriveHubState(
             // the "Fuel soon" state the mockup draws, rather than a green everything-is-fine row.
             Range: 62,
             RangeMax: 700,
-            TireFrontLeftPsi: 33,
             IsPluggedIn: false,
             ChargePercent: 0,
             IsStale: false,

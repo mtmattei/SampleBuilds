@@ -30,7 +30,6 @@ public partial record TuningModel
         TrafficDelay = Forward(state.Trip.DelayMin, hub.SetTrafficDelay);
         Range = Forward(state.Vehicle.Range, hub.SetRange);
         CabinTemp = Forward(state.Vehicle.CabinTemp, hub.SetCabinTemp);
-        TirePressure = Forward(state.Vehicle.TireFrontLeftPsi, hub.SetTireFrontLeft);
         ChargePercent = Forward(state.Vehicle.ChargePercent, hub.SetChargePercent);
         PluggedIn = Forward(state.Vehicle.IsPluggedIn, hub.SetPluggedIn);
 
@@ -79,8 +78,6 @@ public partial record TuningModel
     public IState<double> Range { get; }
 
     public IState<double> CabinTemp { get; }
-
-    public IState<double> TirePressure { get; }
 
     public IState<bool> PluggedIn { get; }
 

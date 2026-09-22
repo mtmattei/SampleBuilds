@@ -19,15 +19,6 @@ public static class TripMath
     /// <summary>Range is bad below this, in kilometres.</summary>
     public const int RangeBadKm = 50;
 
-    /// <summary>Tire pressure warns below this, in psi.</summary>
-    public const int TireWarnPsi = 30;
-
-    /// <summary>Tire pressure is bad below this, in psi.</summary>
-    public const int TireBadPsi = 26;
-
-    /// <summary>The bar keeps a sliver of fill at zero range, so the track never reads as missing.</summary>
-    public const double RangeBarFloorPercent = 2d;
-
     public static TripTimeline Derive(TripPlan plan, TimeOnly now)
     {
         ArgumentNullException.ThrowIfNull(plan);
@@ -77,24 +68,6 @@ public static class TripMath
         < RangeWarnKm => StatLevel.Warn,
         _ => StatLevel.Normal,
     };
-
-    public static StatLevel TireLevel(int psi) => psi switch
-    {
-        < TireBadPsi => StatLevel.Bad,
-        < TireWarnPsi => StatLevel.Warn,
-        _ => StatLevel.Normal,
-    };
-
-    /// <summary>Fill percentage for the range bar, floored so it stays visible at empty.</summary>
-    public static double RangeBarPercent(int rangeMi, int rangeMaxMi)
-    {
-        if (rangeMaxMi <= 0)
-        {
-            return RangeBarFloorPercent;
-        }
-
-        return Math.Max(RangeBarFloorPercent, 100d * rangeMi / rangeMaxMi);
-    }
 
     /// <summary>Minutes since midnight.</summary>
     public static int ToMinutes(TimeOnly time) => (time.Hour * 60) + time.Minute;

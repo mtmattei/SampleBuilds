@@ -22,7 +22,6 @@ public record VehicleSnapshot(
     string WeatherSummary,
     int Range,
     int RangeMax,
-    int TireFrontLeftPsi,
     bool IsPluggedIn,
     int ChargePercent,
     bool IsStale,

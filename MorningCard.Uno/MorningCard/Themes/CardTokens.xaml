@@ -27,6 +27,9 @@
       <Color x:Key="GlassColor">#9EFFFFFF</Color>
       <Color x:Key="GlassEdgeColor">#C7FFFFFF</Color>
       <Color x:Key="GlassSecondaryColor">#8CFFFFFF</Color>
+      <!-- The white card nested inside the shell. Opaque, unlike the shell: the mockup reads as
+           paper on frosted glass, and a translucent inner card let the backdrop blobs through it. -->
+      <Color x:Key="CardSurfaceColor">#FFFFFFFF</Color>
 
       <Color x:Key="InkColor">#1B2430</Color>
       <Color x:Key="Ink2Color">#4C555F</Color>
@@ -61,7 +64,6 @@
             <Color x:Key="SunInkColor">#E8912B</Color>  <!-- The sun glyph in the status strip. Warm, and the only orange up there. -->
       <Color x:Key="MapScrimColor">#E8F2F3F5</Color>  <!-- Covers the tiles when the map has no route to show. -->
       <Color x:Key="MapPillColor">#F2FFFFFF</Color>
-      <Color x:Key="CarTileColor">#141B2430</Color>
       <Color x:Key="AccentChipColor">#1F2169E9</Color>
       <Color x:Key="AmberChipColor">#242F8A4E</Color>
       <Color x:Key="DangerChipColor">#1FA32C24</Color>
@@ -72,7 +74,6 @@
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
       <SolidColorBrush x:Key="MapPillBrush" Color="{StaticResource MapPillColor}" />
-      <SolidColorBrush x:Key="CarTileBrush" Color="{StaticResource CarTileColor}" />
       <SolidColorBrush x:Key="AccentChipBrush" Color="{StaticResource AccentChipColor}" />
       <SolidColorBrush x:Key="AmberChipBrush" Color="{StaticResource AmberChipColor}" />
       <SolidColorBrush x:Key="DangerChipBrush" Color="{StaticResource DangerChipColor}" />
@@ -83,6 +84,7 @@
       <SolidColorBrush x:Key="GlassBrush" Color="{StaticResource GlassColor}" />
       <SolidColorBrush x:Key="GlassEdgeBrush" Color="{StaticResource GlassEdgeColor}" />
       <SolidColorBrush x:Key="GlassSecondaryBrush" Color="{StaticResource GlassSecondaryColor}" />
+      <SolidColorBrush x:Key="CardSurfaceBrush" Color="{StaticResource CardSurfaceColor}" />
       <SolidColorBrush x:Key="InkBrush" Color="{StaticResource InkColor}" />
       <SolidColorBrush x:Key="Ink2Brush" Color="{StaticResource Ink2Color}" />
       <SolidColorBrush x:Key="Ink3Brush" Color="{StaticResource Ink3Color}" />
@@ -117,6 +119,7 @@
         Ink2 body text holds 5.5:1 over the brightest part of the glow and 8.3:1 over bare ground.
       -->
       <Color x:Key="GlassSecondaryColor">#D9141A23</Color>
+      <Color x:Key="CardSurfaceColor">#FF1B212B</Color>
 
       <Color x:Key="InkColor">#F0F3F6</Color>
       <Color x:Key="Ink2Color">#A9B3BD</Color>
@@ -147,7 +150,6 @@
             <Color x:Key="SunInkColor">#F0A64A</Color>
       <Color x:Key="MapScrimColor">#E011161E</Color>
       <Color x:Key="MapPillColor">#F21C2430</Color>
-      <Color x:Key="CarTileColor">#14FFFFFF</Color>
       <Color x:Key="AccentChipColor">#2E5A93F6</Color>
       <Color x:Key="AmberChipColor">#2EF0A63A</Color>
       <Color x:Key="DangerChipColor">#2EEF6A5F</Color>
@@ -158,7 +160,6 @@
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
       <SolidColorBrush x:Key="MapPillBrush" Color="{StaticResource MapPillColor}" />
-      <SolidColorBrush x:Key="CarTileBrush" Color="{StaticResource CarTileColor}" />
       <SolidColorBrush x:Key="AccentChipBrush" Color="{StaticResource AccentChipColor}" />
       <SolidColorBrush x:Key="AmberChipBrush" Color="{StaticResource AmberChipColor}" />
       <SolidColorBrush x:Key="DangerChipBrush" Color="{StaticResource DangerChipColor}" />
@@ -169,6 +170,7 @@
       <SolidColorBrush x:Key="GlassBrush" Color="{StaticResource GlassColor}" />
       <SolidColorBrush x:Key="GlassEdgeBrush" Color="{StaticResource GlassEdgeColor}" />
       <SolidColorBrush x:Key="GlassSecondaryBrush" Color="{StaticResource GlassSecondaryColor}" />
+      <SolidColorBrush x:Key="CardSurfaceBrush" Color="{StaticResource CardSurfaceColor}" />
       <SolidColorBrush x:Key="InkBrush" Color="{StaticResource InkColor}" />
       <SolidColorBrush x:Key="Ink2Brush" Color="{StaticResource Ink2Color}" />
       <SolidColorBrush x:Key="Ink3Brush" Color="{StaticResource Ink3Color}" />
@@ -190,6 +192,9 @@
 
   <!-- Geometry the card and its canvases share. CardCornerRadius is what the radius dial writes. -->
   <CornerRadius x:Key="CardCornerRadius">34</CornerRadius>
+  <!-- Sits between the map panel inside it and the shell around it, so three nested surfaces
+       read as nested rather than as three unrelated rounded boxes. -->
+  <CornerRadius x:Key="CardInnerCornerRadius">24</CornerRadius>
   <CornerRadius x:Key="MapCornerRadius">20</CornerRadius>
   <!-- Skeleton bars, the map pin and other small rounded shapes share one value. 6, 9 and 10 were
        three separately invented values within 4px of each other. -->

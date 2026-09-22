@@ -114,16 +114,6 @@
             <Slider AutomationProperties.LabeledBy="{Binding ElementName=LabelCabin}" Minimum="10" Maximum="80" StepFrequency="1" Value="{Binding CabinTemp, Mode=TwoWay}" />
           </StackPanel>
 
-          <StackPanel Style="{StaticResource DialStack}">
-            <Grid>
-              <TextBlock x:Name="LabelTire" x:Uid="DialTire" Style="{StaticResource ActionLabel}" />
-              <TextBlock Style="{StaticResource ActionLabel}"
-                         HorizontalAlignment="Right"
-                         Foreground="{ThemeResource Ink2Brush}"
-                         Text="{Binding TirePressure}" />
-            </Grid>
-            <Slider AutomationProperties.LabeledBy="{Binding ElementName=LabelTire}" Minimum="20" Maximum="36" StepFrequency="1" Value="{Binding TirePressure, Mode=TwoWay}" />
-          </StackPanel>
 
           <!-- Charge only means something while the car is plugged in. -->
           <StackPanel Style="{StaticResource DialStack}" IsEnabled="{Binding PluggedIn}">

@@ -30,143 +30,154 @@
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
 
+      <!--
+        On the shell, outside the inner card.
+
+        The mockup is two surfaces, not one: a white card nested in a lighter shell. The strip and
+        the bottom bar are what live on the shell - the greeting and the car's state frame the trip
+        rather than belonging to it, and putting them on the card flattened that reading away.
+      -->
       <mvux:FeedView Source="{Binding Header}">
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
-            <StackPanel Spacing="12">
-
-              <!-- ======================== status strip ======================== -->
-              <!-- Greeting left, weather right. Lock moved under the car: the two halves were
-                   competing for the same row and the weather half needed the room. -->
-              <Grid ColumnSpacing="10">
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="*" />
-                  <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Left">
-                  <Viewbox Width="18" Height="18" VerticalAlignment="Center">
+            <!-- ======================== status strip ======================== -->
+            <!-- Greeting left, weather right. Lock moved under the car: the two halves were
+                 competing for the same row and the weather half needed the room. -->
+            <Grid ColumnSpacing="10">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Left">
+                <Viewbox Width="18" Height="18" VerticalAlignment="Center">
+                  <Canvas Width="24" Height="24">
+                    <Path Stroke="{ThemeResource SunInkBrush}"
+                          StrokeThickness="1.9"
+                          StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round"
+                          Data="M12 4V2M12 22v-2M4 12H2M22 12h-2M5.6 5.6 4.2 4.2M19.8 19.8l-1.4-1.4M5.6 18.4l-1.4 1.4M19.8 4.2l-1.4 1.4" />
+                    <Ellipse Canvas.Left="7.5" Canvas.Top="7.5" Width="9" Height="9" Fill="{ThemeResource SunInkBrush}" />
+                  </Canvas>
+                </Viewbox>
+                <TextBlock Style="{StaticResource StatusLineStrong}"
+                           VerticalAlignment="Center"
+                           Text="{Binding Data.Greeting}" />
+              </StackPanel>
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                <Border Background="{ThemeResource ChipBrush}" CornerRadius="10" Padding="9,3">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <TextBlock Style="{StaticResource StatusLineStrong}" VerticalAlignment="Center" Text="{Binding Data.OutsideTemp}" />
+                    <TextBlock Style="{StaticResource StatusLine}" VerticalAlignment="Center" Text="{Binding Data.WeatherSummary}" />
+                  </StackPanel>
+                </Border>
+                <!--
+                  A real MenuFlyout, not a decorative glyph: every item runs a command the model
+                  already owns. MenuFlyoutItem invokes correctly under synthesized input on Skia
+                  desktop, so this is verifiable without a human at the keyboard.
+                -->
+                <Button x:Name="Overflow"
+                        x:Uid="OverflowButton"
+                        Style="{StaticResource OverflowButtonStyle}"
+                        VerticalAlignment="Center">
+                  <Viewbox Width="16" Height="16">
                     <Canvas Width="24" Height="24">
-                      <Path Stroke="{ThemeResource SunInkBrush}"
-                            StrokeThickness="1.9"
-                            StrokeStartLineCap="Round"
-                            StrokeEndLineCap="Round"
-                            Data="M12 4V2M12 22v-2M4 12H2M22 12h-2M5.6 5.6 4.2 4.2M19.8 19.8l-1.4-1.4M5.6 18.4l-1.4 1.4M19.8 4.2l-1.4 1.4" />
-                      <Ellipse Canvas.Left="7.5" Canvas.Top="7.5" Width="9" Height="9" Fill="{ThemeResource SunInkBrush}" />
+                      <Ellipse Canvas.Left="3.5" Canvas.Top="10.5" Width="3" Height="3" Fill="{ThemeResource Ink2Brush}" />
+                      <Ellipse Canvas.Left="10.5" Canvas.Top="10.5" Width="3" Height="3" Fill="{ThemeResource Ink2Brush}" />
+                      <Ellipse Canvas.Left="17.5" Canvas.Top="10.5" Width="3" Height="3" Fill="{ThemeResource Ink2Brush}" />
                     </Canvas>
                   </Viewbox>
-                  <TextBlock Style="{StaticResource StatusLineStrong}"
-                             VerticalAlignment="Center"
-                             Text="{Binding Data.Greeting}" />
-                </StackPanel>
-
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-                  <Border Background="{ThemeResource ChipBrush}" CornerRadius="10" Padding="9,3">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                      <TextBlock Style="{StaticResource StatusLineStrong}" VerticalAlignment="Center" Text="{Binding Data.OutsideTemp}" />
-                      <TextBlock Style="{StaticResource StatusLine}" VerticalAlignment="Center" Text="{Binding Data.WeatherSummary}" />
-                    </StackPanel>
-                  </Border>
-
-                  <!--
-                    A real MenuFlyout, not a decorative glyph: every item runs a command the model
-                    already owns. MenuFlyoutItem invokes correctly under synthesized input on Skia
-                    desktop, so this is verifiable without a human at the keyboard.
-                  -->
-                  <Button x:Name="Overflow"
-                          x:Uid="OverflowButton"
-                          Style="{StaticResource OverflowButtonStyle}"
-                          VerticalAlignment="Center">
-                    <Viewbox Width="16" Height="16">
-                      <Canvas Width="24" Height="24">
-                        <Ellipse Canvas.Left="3.5" Canvas.Top="10.5" Width="3" Height="3" Fill="{ThemeResource Ink2Brush}" />
-                        <Ellipse Canvas.Left="10.5" Canvas.Top="10.5" Width="3" Height="3" Fill="{ThemeResource Ink2Brush}" />
-                        <Ellipse Canvas.Left="17.5" Canvas.Top="10.5" Width="3" Height="3" Fill="{ThemeResource Ink2Brush}" />
-                      </Canvas>
-                    </Viewbox>
-                    <Button.Flyout>
-                      <MenuFlyout Placement="BottomEdgeAlignedRight">
-                        <MenuFlyoutItem x:Name="MenuRefresh" x:Uid="MenuRefresh" Command="{Binding Parent.Retry}" />
-                        <MenuFlyoutItem x:Name="MenuOpenMaps" x:Uid="MenuOpenMaps" Click="OnOpenInMaps" />
-                        <MenuFlyoutSeparator />
-                        <MenuFlyoutItem x:Name="MenuReplay" x:Uid="MenuReplay" Click="OnReplayEntrance" />
-                      </MenuFlyout>
-                    </Button.Flyout>
-                  </Button>
-                </StackPanel>
-              </Grid>
-
-              <!-- ======================== headline ======================== -->
-              <Grid ColumnSpacing="12">
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="*" />
-                  <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <StackPanel VerticalAlignment="Center">
-                  <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Style="{StaticResource CardTitle}"
-                               VerticalAlignment="Center"
-                               Text="{Binding Data.Title}" />
-                    <Viewbox Width="22" Height="22" VerticalAlignment="Center" Margin="0,3,0,0">
-                      <Canvas Width="24" Height="24">
-                        <Path Stroke="{ThemeResource Ink2Brush}"
-                              StrokeThickness="2.2"
-                              StrokeLineJoin="Round"
-                              StrokeStartLineCap="Round"
-                              StrokeEndLineCap="Round"
-                              Data="M9 6l6 6-6 6" />
-                      </Canvas>
-                    </Viewbox>
-                  </StackPanel>
-
-                  <!--
-                    One TextBlock, three Runs. Only the middle one takes the accent colour, which is
-                    how the design puts the duration in blue without splitting the sentence into
-                    separate blocks that would not share a baseline.
-                  -->
-                  <TextBlock Style="{StaticResource CardLead}"
-                             Margin="0,4,0,0"
-                             TextWrapping="Wrap"
-                             Foreground="{Binding Data.Tone, Converter={StaticResource ToneBrush}}"><Run Text="{Binding Data.HeadlineLead}" /><Run Text="{Binding Data.HeadlineAccent}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" Foreground="{Binding Data.Tone, Converter={StaticResource AccentTone}}" /><Run Text="{Binding Data.HeadlineTail}" /></TextBlock>
-
-
-                </StackPanel>
-
-                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6">
-                  <!-- No tile behind it: the car reads as a photograph of the car, and a panel
-                       under it only added a second container inside the card. -->
-                  <Image Source="ms-appx:///Assets/Car/xc60.png" Width="135" Stretch="Uniform" />
-                  <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
-                    <Viewbox Width="13" Height="13" VerticalAlignment="Center">
-                      <Canvas Width="24" Height="24">
-                        <Path Stroke="{ThemeResource Ink2Brush}"
-                              StrokeThickness="2.1"
-                              StrokeLineJoin="Round"
-                              StrokeStartLineCap="Round"
-                              StrokeEndLineCap="Round"
-                              Data="M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM8 11V8a4 4 0 0 1 8 0v3" />
-                      </Canvas>
-                    </Viewbox>
-                    <TextBlock Style="{StaticResource CardCaption}"
-                               VerticalAlignment="Center"
-                               Text="{Binding Data.LockText}" />
-                  </StackPanel>
-                </StackPanel>
-              </Grid>
-
-
-            </StackPanel>
+                  <Button.Flyout>
+                    <MenuFlyout Placement="BottomEdgeAlignedRight">
+                      <MenuFlyoutItem x:Name="MenuRefresh" x:Uid="MenuRefresh" Command="{Binding Parent.Retry}" />
+                      <MenuFlyoutItem x:Name="MenuOpenMaps" x:Uid="MenuOpenMaps" Click="OnOpenInMaps" />
+                      <MenuFlyoutSeparator />
+                      <MenuFlyoutItem x:Name="MenuReplay" x:Uid="MenuReplay" Click="OnReplayEntrance" />
+                    </MenuFlyout>
+                  </Button.Flyout>
+                </Button>
+              </StackPanel>
+            </Grid>
           </DataTemplate>
         </mvux:FeedView.ValueTemplate>
+      </mvux:FeedView>
 
-        <!--
-          Without this the whole header vanished while the feeds were still in progress and the card
-          collapsed to a bare map. The skeleton carries the same footprint, so nothing jumps when
-          the data lands.
-        -->
+      <!--
+        The inner card.
+
+        Declared before the rows it backs so it renders underneath them, and spanning them rather
+        than wrapping them: wrapping would have meant re-parenting four blocks and renumbering
+        every row inside them. The negative margin bleeds it out past the content box, which is
+        what gives it padding without each row having to carry its own.
+      -->
+      <Border Grid.Row="1"
+              Grid.RowSpan="4"
+              Margin="-12,-10,-12,-12"
+              Background="{ThemeResource CardSurfaceBrush}"
+              BorderBrush="{ThemeResource GlassEdgeBrush}"
+              BorderThickness="1"
+              CornerRadius="{StaticResource CardInnerCornerRadius}" />
+
+      <mvux:FeedView Grid.Row="1" Source="{Binding Header}">
+        <mvux:FeedView.ValueTemplate>
+          <DataTemplate>
+            <!-- ======================== headline ======================== -->
+            <Grid ColumnSpacing="12">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <StackPanel VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <TextBlock Style="{StaticResource CardTitle}"
+                             VerticalAlignment="Center"
+                             Text="{Binding Data.Title}" />
+                  <Viewbox Width="22" Height="22" VerticalAlignment="Center" Margin="0,3,0,0">
+                    <Canvas Width="24" Height="24">
+                      <Path Stroke="{ThemeResource Ink2Brush}"
+                            StrokeThickness="2.2"
+                            StrokeLineJoin="Round"
+                            StrokeStartLineCap="Round"
+                            StrokeEndLineCap="Round"
+                            Data="M9 6l6 6-6 6" />
+                    </Canvas>
+                  </Viewbox>
+                </StackPanel>
+                <!--
+                  One TextBlock, three Runs. Only the middle one takes the accent colour, which is
+                  how the design puts the duration in blue without splitting the sentence into
+                  separate blocks that would not share a baseline.
+                -->
+                <TextBlock Style="{StaticResource CardLead}"
+                           Margin="0,4,0,0"
+                           TextWrapping="Wrap"
+                           Foreground="{Binding Data.Tone, Converter={StaticResource ToneBrush}}"><Run Text="{Binding Data.HeadlineLead}" /><Run Text="{Binding Data.HeadlineAccent}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" Foreground="{Binding Data.Tone, Converter={StaticResource AccentTone}}" /><Run Text="{Binding Data.HeadlineTail}" /></TextBlock>
+              </StackPanel>
+              <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6">
+                <!-- No tile behind it: the car reads as a photograph of the car, and a panel
+                     under it only added a second container inside the card. -->
+                <Image Source="ms-appx:///Assets/Car/xc60.png" Width="135" Stretch="Uniform" />
+                <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
+                  <Viewbox Width="13" Height="13" VerticalAlignment="Center">
+                    <Canvas Width="24" Height="24">
+                      <Path Stroke="{ThemeResource Ink2Brush}"
+                            StrokeThickness="2.1"
+                            StrokeLineJoin="Round"
+                            StrokeStartLineCap="Round"
+                            StrokeEndLineCap="Round"
+                            Data="M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM8 11V8a4 4 0 0 1 8 0v3" />
+                    </Canvas>
+                  </Viewbox>
+                  <TextBlock Style="{StaticResource CardCaption}"
+                             VerticalAlignment="Center"
+                             Text="{Binding Data.LockText}" />
+                </StackPanel>
+              </StackPanel>
+            </Grid>
+          </DataTemplate>
+        </mvux:FeedView.ValueTemplate>
       </mvux:FeedView>
 
       <!-- ============================ timeline ============================ -->
@@ -177,7 +188,7 @@
         Bound to the ETA feed, so it is simply absent on a no-trip morning or a failed lookup
         instead of asserting times the card cannot stand behind.
       -->
-      <mvux:FeedView Grid.Row="1" Source="{Binding Eta}">
+      <mvux:FeedView Grid.Row="2" Source="{Binding Eta}">
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
             <StackPanel Spacing="9"
@@ -264,7 +275,7 @@
 
       <!-- ============================ map panel ============================ -->
       <Border x:Name="MapPanel"
-              Grid.Row="2"
+              Grid.Row="3"
               Height="{StaticResource MapPanelHeight}"
               CornerRadius="{StaticResource MapCornerRadius}"
               Background="{ThemeResource MapBrush}">
@@ -410,7 +421,7 @@
       </Border>
 
       <!-- ========================= before you go ========================= -->
-      <mvux:FeedView Grid.Row="3" Source="{Binding Stats}">
+      <mvux:FeedView Grid.Row="4" Source="{Binding Stats}">
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
             <StackPanel Opacity="{Binding Data.IsStale, Converter={StaticResource StaleOpacity}}">
@@ -606,7 +617,7 @@
       </mvux:FeedView>
 
       <!-- ============================ bottom bar ============================ -->
-      <mvux:FeedView Grid.Row="4" Source="{Binding Header}">
+      <mvux:FeedView Grid.Row="5" Source="{Binding Header}">
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
             <Grid Margin="0,6,0,0" ColumnSpacing="10">

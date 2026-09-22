@@ -79,11 +79,6 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
         Vehicle = state.Vehicle with { IsLocked = locked },
     });
 
-    public void SetTireFrontLeft(int psi) => Mutate(state => state with
-    {
-        Vehicle = state.Vehicle with { TireFrontLeftPsi = psi },
-    });
-
     public void SetPluggedIn(bool pluggedIn) => Mutate(state => state with
     {
         Vehicle = state.Vehicle with { IsPluggedIn = pluggedIn },

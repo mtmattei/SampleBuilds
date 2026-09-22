@@ -293,12 +293,8 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
             HasRoute = eta is not null,
             IsLate = eta?.IsLate ?? false,
             Projection = Project(eta),
-            NowLabel = eta?.NowLabel ?? string.Empty,
             LeaveLabel = eta?.LeaveLabel ?? string.Empty,
-            SlackLabel = eta?.SlackLabel ?? string.Empty,
-            DriveLabel = eta?.DriveLabel ?? string.Empty,
             ArriveLabel = eta?.ArriveLabel ?? string.Empty,
-            WalkLabel = eta?.WalkLabel ?? string.Empty,
             BellLabel = eta?.BellLabel ?? string.Empty,
             Progress = Progress,
             // Cached: only a theme or hue change can invalidate it.

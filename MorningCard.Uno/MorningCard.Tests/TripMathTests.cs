@@ -101,29 +101,6 @@ public class TripMathTests
         Assert.Equal(expected, TripMath.RangeLevel(rangeKm));
 
     [Theory]
-    [InlineData(33, StatLevel.Normal)]
-    [InlineData(30, StatLevel.Normal)]
-    [InlineData(29, StatLevel.Warn)]
-    [InlineData(26, StatLevel.Warn)]
-    [InlineData(25, StatLevel.Bad)]
-    public void Tire_thresholds(int psi, StatLevel expected) =>
-        Assert.Equal(expected, TripMath.TireLevel(psi));
-
-    [Theory]
-    [InlineData(320, 400, 80d)]
-    [InlineData(400, 400, 100d)]
-    [InlineData(0, 400, 2d)]    // floored so the bar never disappears
-    [InlineData(4, 400, 2d)]    // 1% would round to nothing visible
-    public void Range_bar_percentage_is_floored(int rangeMi, int rangeMaxMi, double expected) =>
-        Assert.Equal(expected, TripMath.RangeBarPercent(rangeMi, rangeMaxMi), 3);
-
-    [Fact]
-    public void Range_bar_survives_a_zero_maximum()
-    {
-        Assert.Equal(TripMath.RangeBarFloorPercent, TripMath.RangeBarPercent(0, 0), 3);
-    }
-
-    [Theory]
     [InlineData(0, 0, 0)]
     [InlineData(444, 7, 24)]
     [InlineData(1439, 23, 59)]
