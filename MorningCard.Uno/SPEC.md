@@ -1417,3 +1417,27 @@ None blocking. Accepted substitutions and omissions, listed so they stay visible
 - **Open in Maps sits 30 px from the bottom (artboard: 12)** so it does not cover the OSM attribution.
 - **The now dot on the map** follows the artboard (back along the first drive heading) but fans out
   to stay on the panel, off the route and clear of the pin and callouts on real geography.
+
+## v7 Android heads as built (2026-09-23)
+
+The user asked to ship the TV, Wear and Auto heads directly. Three things came out differently from
+the v5 plan; each one is listed here so it gets a decision.
+
+- **One APK, not the B5 split.** There is no `MorningCard.UI` library and no `MorningCard.Watch` app. The
+  heads are the `AndroidTV;AndroidWear;AndroidAuto` UnoFeatures in `MorningCard`, and `FormFactors.Current`
+  (`UiModeManager`) picks the route `Main`, `Tv` or `Watch`. The card is split into parts
+  (`Controls/Parts/*`), and TV and Wear compose those parts. Tradeoff: the watch installs the phone APK,
+  and a Play listing for a standalone Wear app would still need the split.
+- **In the car, the host draws the map (a K6 deviation).** `Platforms/Android/Car/DropoffCarAppService.cs`
+  is a POI app using a `PlaceListMapTemplate`. The host draws the map with the school marker. The rows show
+  the headline, drive, cabin and parking, and Start drive calls `ACTION_NAVIGATE`. Our route, the callouts
+  and the ETA overlay are **omitted** in the car, because template apps cannot draw their own map surface.
+  Getting them back needs the navigation category with a `SurfaceCallback`.
+- **`HostValidator.AllowAllHostsValidator`** is a development setting. A store build needs the host allow-list.
+- **The Auto head has not been run in the DHU.** The emulators here have no Android Auto host. Verified:
+  the build, the merged manifest, and that `cmd package query-services -a androidx.car.app.CarAppService`
+  resolves `DropoffCarAppService`. The hub is `SharedHub.Instance`, so the car session and the phone UI
+  read the same state.
+- **The car screen's hub watchers live as long as the process** (they are cancelled only on Dispose). A
+  Screen lifecycle observer would stop them when the host leaves; this was left out because the hub is
+  process-wide anyway.

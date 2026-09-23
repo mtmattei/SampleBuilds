@@ -1,24 +1,19 @@
-# HANDOFF — MorningCard v6 phone redesign (steps 1-9 done)
+# HANDOFF — MorningCard Android heads (TV, Wear, Auto)
 Updated: 2026-09-23
 
 ## Where we are
-The v6 plan in SPEC.md is complete for the phone card, steps 1 to 9. That covers the spikes, the removal
-of dark mode and the hue dial, the v6 tokens and Geist, the slack ruler (Core layout plus UI), the header,
-footer and map, the checklist accordion with `CabinChoice`, all four states, and the desktop and Android
-parity pass. Every state scores at least 89% against `docs/design/v6/png/phone_*.png` on both heads
-(SPEC.md "v6 parity results"). The work is in the worktree `C:\Users\Platform006\UnoProjects\SampleBuilds-android`
-on branch `feat/android-form-factors`. **Step 10 (resume v5 with the v6 part list) has not started.**
-It stops on project restructuring and emulator downloads (see Open questions).
+The v6 phone card is done (steps 1-9, parity of at least 89%). All three extra Android heads are now built into **one APK**:
+TV (`TvPage`, 1280x720 in a Viewbox, D-pad focus, leanback banner), Wear (`WatchPage`, 454-unit Viewbox,
+static card template) and Auto (`Platforms/Android/Car`, POI `PlaceListMapTemplate`). The single APK and
+the host-drawn car map both depart from v5; see SPEC.md "v7 Android heads as built".
 
 ## Last verified state
-- Build: `net10.0-desktop` and `net10.0-android` Debug, 0 warnings, 0 errors. Tests 74/74 (dead-code tests removed with the code).
-- Runtime: the `uno-app` MCP disconnected mid-session, so runtime checks used the Debug exe with
-  `APP_NO_HOTDESIGN=1`, `scripts/Capture-Tall.ps1` and DEBUG probes. Confirmed: the cabin flow
-  (`MC_PROBE_CABIN`), Retry from ETA unavailable (`MC_PROBE_RETRY`: PASSED), the ruler grow-in, the
-  live-dot pulse, and all 7 states on desktop plus 5 on the `chefs36` emulator.
-- Git: `ac27715` (uno-audit) plus this handoff. The only uncommitted files are the pre-v6 `captures/android/*`
-  files from an earlier session, left alone on purpose.
-- Lint (after uno-audit): all gating rules 0 (exit 0); TEMPLATE 4 info, each with its reason.
+- Build: `net10.0-desktop` and `net10.0-android` Debug, 0 warnings, 0 errors. Tests 74/74.
+- Runtime: TV verified on the `mc_tv` AVD (layout, D-pad, focus ring, initial focus). Wear verified on `mc_wear`
+  (every section, the swipe fade fixed). Auto: the service resolves on-device through `query-services`, and
+  the app still runs on the shared hub. **The Auto head has not been run in the DHU** (no Android Auto host on these emulators).
+- Git: `edc4b32` feat: Android Auto head (after `e484baa` Wear and `165c47b` TV). The only uncommitted files are the old `captures/android/*` files.
+- Lint: last run at the uno-audit, all gating rules 0. Not re-run after the heads.
 
 ## Guidance applied
 | Skill / rule / decision | Applied at (file:line) |
@@ -35,16 +30,13 @@ It stops on project restructuring and emulator downloads (see Open questions).
 Read, not applied: none.
 
 ## Next actions (in order)
-1. The user decides on v5 step 2: split the card into a `MorningCard.UI` library (project restructure).
-2. Install the TV, Wear and Automotive system images once approved (1-2 GB each), then run v5 steps 5-9
-   against the v6 surface artboards (`docs/design/v6/png/android_tv.png`, `wear_os.png`, `android_auto.png`).
-3. Optionally: tune `MutedTileSource.PaperMatrix`, whose first pass is busier than the artboard.
+1. Run the Auto head in the DHU with a Pixel (steps in Relaunch).
+2. Re-run the semantic lint over `Controls/Parts`, `TvPage` and `WatchPage`.
+3. Decide on the v7 open points: whether to split, getting our route drawn in the car, and the host allow-list.
 
 ## Open questions
-- Should v5 go ahead (library split plus TV, Wear and Auto), and may it download the system images?
-- uno-audit done 2026-09-23: test packages bumped, TimeRulerLayout and the route time machinery deleted (H6),
-  dead converters/styles/strings removed, Start drive now really opens Maps, status pills are Toolkit Chips.
-- Accepted v6 deviations are listed in SPEC.md under v6 Unresolved Questions (pills, pill offset, now-dot fan-out).
+- Is one APK acceptable, or should the Wear app be standalone (the v5 B5 split)?
+- Should the car get our route overlay (the navigation category plus a `SurfaceCallback`) or keep the host map?
 
 ## Relaunch
 ```powershell
@@ -53,5 +45,8 @@ dotnet build MorningCard/MorningCard.csproj -f net10.0-desktop
 $env:APP_NO_HOTDESIGN="1"; $env:MC_STATE="loading"   # or error | empty | offline; MC_CLOCK=457 for late
 Start-Process MorningCard\bin\Debug\net10.0-desktop\MorningCard.exe -WorkingDirectory MorningCard\bin\Debug\net10.0-desktop
 pwsh -File scripts\Capture-Tall.ps1 -ProcessId <pid> -Out captures\x.png -Width 640 -Height 1200
+# Auto (DHU): Pixel -> Android Auto settings -> tap version 10x -> Start head unit server
+#   adb forward tcp:5277 tcp:5277; & "$env:LOCALAPPDATA\Android\Sdk\extras\googleuto\desktop-head-unit.exe"
+# TV/Wear: emulator -avd mc_tv | mc_wear; dotnet build -f net10.0-android -t:Run -p:AdbTarget="-s emulator-XXXX"
 # Android: boot chefs36, dotnet build -f net10.0-android -t:Run, adb -e shell setprop debug.mono.env "MC_STATE=offline"
 ```
