@@ -46,7 +46,7 @@ $env:APP_NO_HOTDESIGN="1"; $env:MC_STATE="loading"   # or error | empty | offlin
 Start-Process MorningCard\bin\Debug\net10.0-desktop\MorningCard.exe -WorkingDirectory MorningCard\bin\Debug\net10.0-desktop
 pwsh -File scripts\Capture-Tall.ps1 -ProcessId <pid> -Out captures\x.png -Width 640 -Height 1200
 # Auto (DHU): Pixel -> Android Auto settings -> tap version 10x -> Start head unit server
-#   adb forward tcp:5277 tcp:5277; & "$env:LOCALAPPDATA\Android\Sdk\extras\googleuto\desktop-head-unit.exe"
+#   adb forward tcp:5277 tcp:5277; & "$env:LOCALAPPDATA\Android\Sdk\extras\google\auto\desktop-head-unit.exe"
 # TV/Wear: emulator -avd mc_tv | mc_wear; dotnet build -f net10.0-android -t:Run -p:AdbTarget="-s emulator-XXXX"
 # Android: boot chefs36, dotnet build -f net10.0-android -t:Run, adb -e shell setprop debug.mono.env "MC_STATE=offline"
 ```
