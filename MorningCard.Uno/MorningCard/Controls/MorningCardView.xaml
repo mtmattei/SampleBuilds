@@ -687,7 +687,14 @@
                             Glyph="{StaticResource IconDrive}"
                             FontSize="15"
                             Foreground="{ThemeResource GlassInkBrush}"
-                            VerticalAlignment="Center" />
+                            VerticalAlignment="Center"
+                            RenderTransformOrigin="0.5,0.5">
+                    <!-- The glyph points up-left; a quarter turn points it up-right, toward the
+                         label and the way the drive goes. -->
+                    <FontIcon.RenderTransform>
+                      <RotateTransform Angle="90" />
+                    </FontIcon.RenderTransform>
+                  </FontIcon>
                   <TextBlock Text="{Binding Parent.DriveLabel}"
                              FontFamily="{StaticResource CardFontMedium}"
                              FontSize="13"

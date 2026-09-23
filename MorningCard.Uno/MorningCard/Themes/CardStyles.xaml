@@ -188,20 +188,23 @@
   </Style>
 
   <!--
-    Secondary: same height and radius, outline instead of fill. The ring is ink, not the glass edge
-    the rest of the card uses - this one sits on the shell beside a filled primary, and a near-white
-    hairline there read as an unfinished button rather than a quiet one.
+    Secondary: same height, outline instead of fill. The ring is dark grey (Ink2), not full ink and
+    not the hairline the rest of the card uses: it sits beside the ink-filled primary, where a full
+    ink ring competed with it and a hairline read as an unfinished button. The corner is the small
+    8 rather than the primary's 12, so the icon-only square reads as the lesser control.
   -->
   <Style x:Key="GhostPillStyle" TargetType="Button" BasedOn="{StaticResource PrimaryPillStyle}">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource Ink2Brush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource SmallCornerRadius}" />
     <Setter Property="Padding" Value="11,8" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
           <Border x:Name="Shell"
                   Background="{TemplateBinding Background}"
-                  BorderBrush="{ThemeResource InkBrush}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
                   BorderThickness="1"
                   CornerRadius="{TemplateBinding CornerRadius}"
                   Padding="{TemplateBinding Padding}"
