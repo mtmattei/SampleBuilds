@@ -291,9 +291,6 @@
   <data name="Fuel_RangeWord" xml:space="preserve">
     <value>range</value>
   </data>
-  <data name="FuelRangeWord.Text" xml:space="preserve">
-    <value>range</value>
-  </data>
   <data name="Status_Now" xml:space="preserve"><value>Now {0}</value></data>
   <data name="Badge_Ok" xml:space="preserve"><value>On time</value></data>
   <data name="Badge_LeaveNow" xml:space="preserve"><value>Leave now</value></data>
@@ -307,10 +304,7 @@
   <data name="Checks_Ready" xml:space="preserve"><value>{0} of {1} ready</value></data>
   <data name="Checks_ParkingChip" xml:space="preserve"><value>Until 9:30</value><comment>{0} is the full note; the chip shows only the deadline.</comment></data>
   <data name="ChecksTitle.Text" xml:space="preserve"><value>Before you go</value></data>
-  <data name="ChecksFuelTitle.Text" xml:space="preserve"><value>Enough for today</value></data>
   <data name="ChecksCabinTitle.Text" xml:space="preserve"><value>Warm the cabin</value></data>
-  <data name="ChecksCabinSuggested.Text" xml:space="preserve"><value>Suggested</value></data>
-  <data name="StartWarming.Content" xml:space="preserve"><value>Start warming</value></data>
   <data name="StopWarming.Content" xml:space="preserve"><value>Stop warming</value></data>
   <data name="StartDrive.Content" xml:space="preserve"><value>Start drive</value></data>
   <data name="DriveSent.Content" xml:space="preserve"><value>Sent to car</value></data>
@@ -379,6 +373,75 @@
   </data>
   <data name="OpenInMapsLabel.Text" xml:space="preserve">
     <value>Open in Maps</value>
+  </data>
+  <data name="Fuel_Title" xml:space="preserve">
+    <value>{0} km of range</value>
+  </data>
+  <data name="Fuel_PillFine" xml:space="preserve">
+    <value>Full enough</value>
+  </data>
+  <data name="Fuel_PillWeek" xml:space="preserve">
+    <value>Fuel this week</value>
+  </data>
+  <data name="Fuel_PillNow" xml:space="preserve">
+    <value>Fuel now</value>
+  </data>
+  <data name="Fuel_DetailFine" xml:space="preserve">
+    <value>Enough for today’s drive and the rest of the week.</value>
+  </data>
+  <data name="Fuel_DetailSoon" xml:space="preserve">
+    <value>Enough for today’s drive. Next fill-up within the week.</value>
+  </data>
+  <data name="Cabin_PillSuggested" xml:space="preserve">
+    <value>Suggested</value>
+  </data>
+  <data name="Cabin_PillWarming" xml:space="preserve">
+    <value>● Warming</value>
+  </data>
+  <data name="Cabin_PillSkipped" xml:space="preserve">
+    <value>Skipped</value>
+  </data>
+  <data name="Cabin_MetaPending" xml:space="preserve">
+    <value>Outside is {0}</value>
+  </data>
+  <data name="Cabin_MetaWarmingBy" xml:space="preserve">
+    <value>{0} → {1} by {2}</value>
+  </data>
+  <data name="Cabin_MetaHeatingNow" xml:space="preserve">
+    <value>{0} → {1}, heating now</value>
+  </data>
+  <data name="Cabin_MetaSkipped" xml:space="preserve">
+    <value>Cabin stays at {0}</value>
+  </data>
+  <data name="Cabin_DetailPendingBy" xml:space="preserve">
+    <value>Warm to {0}° so the car is ready when you leave at {1}.</value>
+  </data>
+  <data name="Cabin_DetailWarming" xml:space="preserve">
+    <value>Remote start is on. The cabin will reach {0} before you leave.</value>
+  </data>
+  <data name="Cabin_DetailSkipped" xml:space="preserve">
+    <value>Remote start skipped for this trip.</value>
+  </data>
+  <data name="Parking_Detail" xml:space="preserve">
+    <value>Street parking on {0}. {1}, so drop-off only.</value>
+  </data>
+  <data name="ChecksRemoteStart.Text" xml:space="preserve">
+    <value>Remote start</value>
+  </data>
+  <data name="SkipWarming.Content" xml:space="preserve">
+    <value>Skip</value>
+  </data>
+  <data name="UndoWarming.Content" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="StartWarmingLabel.Text" xml:space="preserve">
+    <value>Start warming</value>
+  </data>
+  <data name="Row_Name" xml:space="preserve">
+    <value>{0}, {1}, {2}</value>
+  </data>
+  <data name="Cabin_Title" xml:space="preserve">
+    <value>Warm the cabin</value>
   </data>
 </root>
 

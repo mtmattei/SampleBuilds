@@ -123,6 +123,11 @@ public partial class App : Application
         {
             _ = DebugHooks.OpenAsync(openRoot, openTarget);
         }
+
+        if (DebugHooks.ProbeCabin && MainWindow.Content is { } cabinRoot)
+        {
+            _ = DebugHooks.ProbeCabinAsync(cabinRoot);
+        }
 #endif
     }
 

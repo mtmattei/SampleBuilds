@@ -24,6 +24,12 @@
   <mp:BoolToOpacityConverter x:Key="BoolToOpacity" />
   <mp:NullToVisibilityConverter x:Key="NullToVisibility" />
   <mp:PercentToStarConverter x:Key="PercentToStar" />
+  <mp:CabinPillBrushConverter x:Key="CabinPillBrush" />
+  <mp:CabinPillInkConverter x:Key="CabinPillInk" />
+  <mp:CabinIconBrushConverter x:Key="CabinIconBrush" />
+  <mp:FuelPillBrushConverter x:Key="FuelPillBrush" />
+  <mp:FuelPillInkConverter x:Key="FuelPillInk" />
+  <mp:BoolToStrikeConverter x:Key="BoolToStrike" />
 
 </ResourceDictionary>
 

@@ -313,27 +313,23 @@ public sealed partial class MorningCardView : UserControl
         }
     }
 
-    // Three 6px dots, two 4px gaps and the 5px margin before the "ready" line.
-    private const double ChecksDotsWidth = 31d;
-
     private double _checksChipWidth;
 
     /// <summary>
     /// Lets the closed checklist header give way on a short row instead of clipping.
     /// </summary>
     /// <remarks>
-    /// The status sits in the star column, so when the row ran out of room it was the status that
-    /// vanished: on a 411 epx phone the header needed about 348 and had 297, and "3 of 3 ready"
-    /// was cut off entirely. The dots go first, then the count chip, since the "ready" line says
-    /// both in words. Every part but the chip measures unconstrained (Auto columns, a horizontal
-    /// StackPanel), so their DesiredSize is already their natural width, margins included.
+    /// On a 411 epx phone the v6 header needs about 334 epx and has about 295, so the "3 checks"
+    /// chip steps aside and the "2 of 3 ready" line, which says the same in words, stays. A content
+    /// fit rather than a breakpoint: it depends on the measured text, not on the window width.
+    /// Children: icon, title, chip, ready line, chevron.
     /// </remarks>
+    // xaml-lint: allow codebehind - content-fit on measured text widths, no Responsive equivalent
     private void OnChecksHeaderSizeChanged(object sender, SizeChangedEventArgs e)
     {
         if (sender is not Grid row
             || row.Children.Count < 5
-            || row.Children[2] is not FrameworkElement chip
-            || row.Children[3] is not StackPanel { Children: [FrameworkElement dots, FrameworkElement ready] })
+            || row.Children[2] is not FrameworkElement chip)
         {
             return;
         }
@@ -346,13 +342,11 @@ public sealed partial class MorningCardView : UserControl
 
         var fixedWidth = row.Children[0].DesiredSize.Width
             + row.Children[1].DesiredSize.Width
-            + ready.DesiredSize.Width
-            + row.Children[4].DesiredSize.Width;
+            + row.Children[3].DesiredSize.Width
+            + row.Children[4].DesiredSize.Width
+            + (row.ColumnSpacing * 5);
 
-        var room = e.NewSize.Width - fixedWidth;
-
-        chip.Visibility = room >= _checksChipWidth ? Visibility.Visible : Visibility.Collapsed;
-        dots.Visibility = room >= _checksChipWidth + ChecksDotsWidth ? Visibility.Visible : Visibility.Collapsed;
+        chip.Visibility = e.NewSize.Width - fixedWidth >= _checksChipWidth ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private static void DebugTrace(string message)

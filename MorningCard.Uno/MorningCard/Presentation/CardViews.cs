@@ -127,44 +127,60 @@ public record ModeOption(ConnectionMode Value, string Label)
     public override string ToString() => Label;
 }
 
+/// <summary>The driver's decision on warming the cabin (v6): the row is ready once it is not Pending.</summary>
+public enum CabinChoice
+{
+    Pending,
+    Warming,
+    Skipped,
+}
+
+/// <summary>Which checklist row is open. The phone accordion opens one at a time.</summary>
+public enum ChecklistRow
+{
+    None,
+    Fuel,
+    Cabin,
+    Parking,
+}
+
 /// <summary>
-/// The three list rows under the map: Fuel, Cabin, and the destination.
+/// The checklist under the map: fuel, cabin and parking, each a row with a title, a meta line, a
+/// status pill and a detail that opens in place.
 ///
 /// Flat strings on purpose. MVUX generates a bindable proxy for every type a feed carries,
 /// recursively, so a list of row records would pull the generator into exactly the shapes it fails
-/// on. Three rows is a fixed number the design sets, not a collection.
+/// on. Three rows is a fixed number the design sets, not a collection. The open flags ride this
+/// feed because a FeedView template resolves commands through Parent, but not state.
 /// </summary>
-/// <param name="CabinFrom">Bolded in the row, so it is its own Run: "-3°".</param>
-/// <param name="CabinTo">The other bolded Run: "20°".</param>
-/// <param name="FuelNoteAccent">The half of the note that takes the severity colour, " · Fuel soon".</param>
-/// <param name="FuelChip">The same state as a standalone chip label, without the separator.</param>
 public record CarView(
-    string FuelValue,
-    string FuelUnit,
-    string FuelNote,
-    string FuelNoteAccent,
-    string FuelChip,
-    StatLevel FuelLevel,
-    string CabinLabel,
-    string CabinLead,
-    string CabinFrom,
-    string CabinMid,
-    string CabinTo,
-    string CabinAccent,
-    // The checklist header: how many checks there are and how many are ready.
     string ChecksCount,
     string ChecksReady,
-    bool CabinNeedsWarming,
     bool ChecksExpanded,
-    string ParkingChip,
-    string DestinationLabel,
-    string ParkingStreet,
-    string ParkingNote,
+    string FuelTitle,
+    string FuelMeta,
+    string FuelPill,
+    StatLevel FuelLevel,
+    string FuelDetail,
+    bool FuelOpen,
+    CabinChoice Cabin,
+    string CabinMeta,
+    string CabinPill,
+    string CabinDetail,
+    bool CabinOpen,
+    bool CabinPending,
+    bool CabinDecided,
+    bool CabinSkipped,
+    string ParkingTitle,
+    string ParkingMeta,
+    string ParkingPill,
+    string ParkingDetail,
+    bool ParkingOpen,
     bool HasDestination,
     bool IsStale,
-    // The card's one state label, moved down here from the header's pill. It rides this feed
-    // because a FeedView template resolves commands through Parent but not state, so the bar has
-    // to be handed what it reports rather than reach up for it.
     string StatusBadge,
-    CardTone Tone);
-
+    CardTone Tone,
+    // One accessible name per row: title, meta and pill, since the pill is not its own stop.
+    string FuelRowName,
+    string CabinRowName,
+    string ParkingRowName);

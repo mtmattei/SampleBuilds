@@ -63,7 +63,13 @@ public partial record MainModel
     /// The three list rows. Takes the trip as well as the car, because the destination row is a
     /// property of where this trip ends rather than of the vehicle.
     /// </summary>
-    public IFeed<CarView> Stats => Feed.Combine(Car, Slot, ChecksExpanded, Now).Select(BuildCar);
+    public IFeed<CarView> Stats => Feed.Combine(Car, Slot, ChecksExpanded, Now, Cabin, OpenRow).Select(BuildCar);
+
+    /// <summary>The cabin decision (v6): Start warming, Skip, or neither yet.</summary>
+    public IState<CabinChoice> Cabin => State.Value(this, () => CabinChoice.Pending);
+
+    /// <summary>The open checklist row. Cabin by default: it is the one the driver can act on.</summary>
+    public IState<ChecklistRow> OpenRow => State.Value(this, () => ChecklistRow.Cabin);
 
     public string EtaUnitLabel => Text("Eta_Unit");
 
@@ -176,16 +182,39 @@ public partial record MainModel
         await _vehicle.SetLockedAsync(!car.IsLocked, ct);
     }
 
-    /// <summary>The checklist's "Start warming", and its stop.</summary>
-    public async ValueTask ToggleClimate(CancellationToken ct)
+    /// <summary>Start warming: records the decision and asks the car for climate.</summary>
+    public async ValueTask StartWarming(CancellationToken ct)
     {
-        if (await Car is not { } car)
-        {
-            return;
-        }
-
-        await _vehicle.SetClimateAsync(!car.ClimateOn, ct);
+        await Cabin.SetAsync(CabinChoice.Warming, ct);
+        await _vehicle.SetClimateAsync(true, ct);
     }
+
+    /// <summary>Skip: the cabin stays cold, and the row counts as settled.</summary>
+    public async ValueTask SkipWarming(CancellationToken ct) =>
+        await Cabin.SetAsync(CabinChoice.Skipped, ct);
+
+    /// <summary>Undo either decision; stops climate if this card started it.</summary>
+    public async ValueTask UndoWarming(CancellationToken ct)
+    {
+        await Cabin.SetAsync(CabinChoice.Pending, ct);
+
+        if (await Car is { ClimateOn: true })
+        {
+            await _vehicle.SetClimateAsync(false, ct);
+        }
+    }
+
+    // One command per row: parameters bound from inside a FeedView template do not arrive
+    // reliably, so each row names its own.
+    public async ValueTask ToggleFuel(CancellationToken ct) => await ToggleRow(ChecklistRow.Fuel, ct);
+
+    public async ValueTask ToggleCabin(CancellationToken ct) => await ToggleRow(ChecklistRow.Cabin, ct);
+
+    public async ValueTask ToggleParking(CancellationToken ct) => await ToggleRow(ChecklistRow.Parking, ct);
+
+    /// <summary>Opening a row closes the other; tapping the open one closes it.</summary>
+    private async ValueTask ToggleRow(ChecklistRow row, CancellationToken ct) =>
+        await OpenRow.UpdateAsync(open => open == row ? ChecklistRow.None : row, ct);
 
     /// <summary>
     /// The bottom bar's primary. Sends the drop-off to the car, then hands the driver off to the
@@ -381,62 +410,87 @@ public partial record MainModel
         _ => Text("VsUsual_Same"),
     };
 
-    private CarView BuildCar((VehicleSnapshot Car, TripSlot Slot, bool Expanded, TimeOnly Now) input)
+    private CarView BuildCar((VehicleSnapshot Car, TripSlot Slot, bool Expanded, TimeOnly Now, CabinChoice Cabin, ChecklistRow Open) input)
     {
-        var (car, slot, expanded, now) = input;
+        var (car, slot, expanded, now, choice, open) = input;
+        var plan = slot.Plan;
+        var timeline = plan is null ? null : TripMath.Derive(plan, now);
         var fuelLevel = TripMath.RangeLevel(car.Range);
-        var timeline = slot.Plan is null ? null : TripMath.Derive(slot.Plan, now);
 
-        // Two clauses: whether today's driving fits, and whether it needs attention soon. The
-        // second half is the one that carries the colour, so it travels separately.
-        var fuelNote = fuelLevel switch
+        // Climate turned on elsewhere (the Simulator) reads as warming too: the row reports the car.
+        var cabin = choice == CabinChoice.Pending && car.ClimateOn ? CabinChoice.Warming : choice;
+        var leaveIsNow = timeline is null || timeline.SlackMin <= 0;
+        var leave = timeline is null ? string.Empty : Clock(timeline.LeaveBy);
+        var cabinFrom = Degrees(car.CabinTemp);
+        var cabinTo = Degrees(car.CabinTarget);
+
+        var (cabinMeta, cabinPill, cabinDetail) = cabin switch
         {
-            StatLevel.Bad => Text("Fuel_NoteLowAccent"),
-            StatLevel.Warn => Text("Fuel_NoteSoonAccent"),
-            _ => string.Empty,
+            CabinChoice.Warming => (
+                leaveIsNow ? Format("Cabin_MetaHeatingNow", cabinFrom, cabinTo) : Format("Cabin_MetaWarmingBy", cabinFrom, cabinTo, leave),
+                Text("Cabin_PillWarming"),
+                Format("Cabin_DetailWarming", cabinTo)),
+            CabinChoice.Skipped => (
+                Format("Cabin_MetaSkipped", cabinFrom),
+                Text("Cabin_PillSkipped"),
+                Text("Cabin_DetailSkipped")),
+            _ => (
+                Format("Cabin_MetaPending", Degrees(car.OutsideTemp)),
+                Text("Cabin_PillSuggested"),
+                leaveIsNow ? Format("Cabin_WarmDetail", car.CabinTarget) : Format("Cabin_DetailPendingBy", car.CabinTarget, leave)),
         };
 
-        // Climate off means the cabin is not going anywhere, so the row states the temperature
-        // rather than inventing a target it is not heading for.
-        var cabinLead = car.ClimateOn ? Text("Cabin_WarmingLead") : Text("Cabin_RestingLead");
+        var fuelPill = fuelLevel switch
+        {
+            StatLevel.Bad => Text("Fuel_PillNow"),
+            StatLevel.Warn => Text("Fuel_PillWeek"),
+            _ => Text("Fuel_PillFine"),
+        };
+
+        // Fuel and parking are informational, so they are ready by definition; the cabin is ready
+        // once the driver has decided either way.
+        var ready = 2 + (cabin == CabinChoice.Pending ? 0 : 1);
 
         return new CarView(
-            FuelValue: car.Range.ToString(CultureInfo.CurrentCulture),
-            FuelUnit: Text("Fuel_Unit"),
-            FuelNote: Text("Fuel_NoteFine"),
-            FuelNoteAccent: fuelNote,
-            FuelChip: fuelNote.TrimStart(' ', '\u00b7', ' '),
-            FuelLevel: fuelLevel,
-            CabinLabel: Text("Cabin_Label"),
-            CabinLead: cabinLead,
-            CabinFrom: Format("Temp_Degrees", car.CabinTemp),
-            CabinMid: car.ClimateOn ? Text("Cabin_To") : string.Empty,
-            CabinTo: car.ClimateOn ? Format("Temp_Degrees", car.CabinTarget) : string.Empty,
-            // Reports the climate command the Simulator holds; the card can no longer send one.
-            CabinAccent: car.ClimateOn ? Text("Cabin_RemoteOn") : string.Empty,
             ChecksCount: Format("Checks_Count", 3),
-            // Fuel and parking are informational, so they are ready by definition; the cabin is the
-            // one the driver can still act on, which is what "2 of 3" is counting.
-            ChecksReady: Format("Checks_Ready", car.ClimateOn ? 3 : 2, 3),
-            CabinNeedsWarming: !car.ClimateOn,
+            ChecksReady: Format("Checks_Ready", ready, 3),
             ChecksExpanded: expanded,
-            ParkingChip: slot.Plan is null ? string.Empty : Format("Checks_ParkingChip", slot.Plan.ParkingNote),
-            DestinationLabel: slot.Plan?.DestinationLabel ?? string.Empty,
-            ParkingStreet: slot.Plan?.ParkingStreet ?? string.Empty,
-            ParkingNote: slot.Plan?.ParkingNote ?? string.Empty,
-            // The row leaves entirely on a no-trip morning. Kept, it rendered a wrapped label, an
-            // empty value column and a chevron pointing at nothing.
-            HasDestination: slot.Plan is not null,
+            FuelTitle: Format("Fuel_Title", car.Range.ToString(CultureInfo.CurrentCulture)),
+            FuelMeta: Text("Fuel_NoteFine"),
+            FuelPill: fuelPill,
+            FuelLevel: fuelLevel,
+            FuelDetail: Text(fuelLevel == StatLevel.Normal ? "Fuel_DetailFine" : "Fuel_DetailSoon"),
+            FuelOpen: open == ChecklistRow.Fuel,
+            Cabin: cabin,
+            CabinMeta: cabinMeta,
+            CabinPill: cabinPill,
+            CabinDetail: cabinDetail,
+            CabinOpen: open == ChecklistRow.Cabin,
+            CabinPending: cabin == CabinChoice.Pending,
+            CabinDecided: cabin != CabinChoice.Pending,
+            CabinSkipped: cabin == CabinChoice.Skipped,
+            ParkingTitle: plan?.ParkingStreet ?? string.Empty,
+            ParkingMeta: plan?.ParkingNote ?? string.Empty,
+            ParkingPill: plan is null ? string.Empty : Text("Checks_ParkingChip"),
+            ParkingDetail: plan is null ? string.Empty : Format("Parking_Detail", plan.ParkingStreet, plan.ParkingNote),
+            ParkingOpen: open == ChecklistRow.Parking,
+            // The row leaves entirely on a no-trip morning rather than being drawn empty.
+            HasDestination: plan is not null,
             IsStale: car.IsStale,
-            // Named, not left to the dot's colour alone - which is also what keeps the three states
-            // of the design apart for someone who cannot tell those colours apart.
             StatusBadge: car.IsStale
                 ? Text("Badge_Offline")
                 : timeline is null
                     ? Text("Badge_NoTrip")
                     : Text($"Badge_{timeline.Tone}"),
-            Tone: timeline?.Tone ?? CardTone.Ok);
+            Tone: timeline?.Tone ?? CardTone.Ok,
+            FuelRowName: Format("Row_Name", Format("Fuel_Title", car.Range.ToString(CultureInfo.CurrentCulture)), Text("Fuel_NoteFine"), fuelPill),
+            CabinRowName: Format("Row_Name", Text("Cabin_Title"), cabinMeta, cabinPill),
+            ParkingRowName: plan is null ? string.Empty : Format("Row_Name", plan.ParkingStreet, plan.ParkingNote, Text("Checks_ParkingChip")));
     }
+
+    /// <summary>"−3°", with a true minus sign as the design sets it.</summary>
+    private string Degrees(int value) =>
+        Format("Temp_Degrees", value.ToString(CultureInfo.CurrentCulture).Replace('-', '\u2212'));
 
     /// <summary>A blank view to build a failure on, so every member stays non-null.</summary>
     private static EtaView Empty { get; } = new(

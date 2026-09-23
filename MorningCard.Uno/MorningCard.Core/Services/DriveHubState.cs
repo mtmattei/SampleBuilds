@@ -40,8 +40,8 @@ public record DriveHubState(
         Vehicle: new VehicleSnapshot(
             Name: "XC60",
             IsLocked: true,
-            // On, so the Cabin row says what it is doing rather than only where it is.
-            ClimateOn: true,
+            // Off (v6): the cabin row starts as a suggestion the driver answers with Start or Skip.
+            ClimateOn: false,
             // A cold Montreal morning: the cabin sits at the outside temperature and climate is
             // heading for 20. This is what makes the Cabin row say something worth reading.
             CabinTemp: -3,

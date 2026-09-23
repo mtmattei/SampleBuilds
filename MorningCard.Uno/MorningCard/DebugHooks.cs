@@ -1,5 +1,6 @@
 #if DEBUG
 using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using MorningCard.Core;
@@ -117,6 +118,58 @@ internal static class DebugHooks
     /// its text and its rect in the group's own coordinates, which settles directly whether a label
     /// is drawn twice, trimmed, or overlapped by something else.
     /// </summary>
+    /// <summary>MC_PROBE_CABIN=1 drives Start warming, Undo, Skip, Undo and traces the row after each.</summary>
+    public static bool ProbeCabin => Read("MC_PROBE_CABIN") == "1";
+
+    /// <summary>
+    /// The v6 cabin flow without a pointer: opens the checklist, then runs each action through its
+    /// button's own command and traces what the checklist says afterwards (pill, meta, ready count).
+    /// </summary>
+    public static async Task ProbeCabinAsync(DependencyObject root)
+    {
+        await Task.Delay(TimeSpan.FromSeconds(5));
+        await Press(root, "ChecksHeader");
+        TraceChecks(root, "open");
+
+        foreach (var step in new[] { "StartWarmingButton", "UndoWarmingButton", "SkipWarmingButton", "UndoWarmingButton" })
+        {
+            await Press(root, step);
+            TraceChecks(root, step);
+        }
+    }
+
+    private static async Task Press(DependencyObject root, string name)
+    {
+        if (FindByName<ButtonBase>(root, name) is { Command: { } command } && command.CanExecute(null))
+        {
+            command.Execute(null);
+        }
+        else
+        {
+            Trace($"PROBE cabin: {name} missing or not executable");
+        }
+
+        // Past the generated command's round trip and the feed update.
+        await Task.Delay(TimeSpan.FromMilliseconds(1500));
+    }
+
+    private static void TraceChecks(DependencyObject root, string after)
+    {
+        if (FindByName<FrameworkElement>(root, "ChecksBody")?.Parent is not DependencyObject list)
+        {
+            Trace($"PROBE cabin after {after}: checklist not in the tree");
+            return;
+        }
+
+        var lines = new List<string>();
+        CollectText(list, (UIElement)list, 0, lines);
+        var texts = lines
+            .Select(line => System.Text.RegularExpressions.Regex.Match(line, "\"([^\"]*)\"").Groups[1].Value)
+            .Where(text => text.Length > 0);
+
+        Trace($"PROBE cabin after {after}: {string.Join(" | ", texts)}");
+    }
+
     public static async Task ProbeChipsAsync(DependencyObject root)
     {
         await Task.Delay(TimeSpan.FromSeconds(4));

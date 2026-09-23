@@ -11,6 +11,7 @@
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:utu="using:Uno.Toolkit.UI"
                     xmlns:mc="using:MorningCard.Controls">
 
   <Style x:Key="CardActionButtonStyle" TargetType="Button">
@@ -443,15 +444,15 @@
     </Setter>
   </Style>
 
-  <!-- The card's one primary action: strong ink, 40 tall, radius 12 (v6). -->
+  <!-- The card's one primary action: strong ink, 40 tall, radius 12 (v6 .btn-dark). -->
   <Style x:Key="StartDriveStyle" TargetType="Button" BasedOn="{StaticResource PrimaryPillStyle}">
     <Setter Property="Background" Value="{ThemeResource InkStrongBrush}" />
     <Setter Property="Foreground" Value="{ThemeResource OnInkStrongBrush}" />
     <Setter Property="Height" Value="40" />
-    <Setter Property="Padding" Value="14,0,16,0" />
+    <Setter Property="Padding" Value="16,0,18,0" />
     <Setter Property="CornerRadius" Value="12" />
     <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
-    <Setter Property="FontSize" Value="13.5" />
+    <Setter Property="FontSize" Value="14" />
   </Style>
 
 
@@ -514,5 +515,47 @@
 
   <!-- 28x28: under the 44px touch minimum, which is recorded as a desktop-only trade-off. -->
 
+
+  <!-- A checklist row's primary action (Start warming): slate, 32 tall, radius 10 (v6 .btn-primary). -->
+  <Style x:Key="RowActionPrimaryStyle" TargetType="Button" BasedOn="{StaticResource PrimaryPillStyle}">
+    <Setter Property="Background" Value="{ThemeResource AccentBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource OnAccentBrush}" />
+    <Setter Property="Height" Value="32" />
+    <Setter Property="Padding" Value="12,0,14,0" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
+    <Setter Property="FontSize" Value="13.5" />
+  </Style>
+
+  <!-- A checklist row's secondary action (Skip): ghost wash, 32 tall, radius 10 (v6 .btn-ghost). -->
+  <Style x:Key="RowActionGhostStyle" TargetType="Button" BasedOn="{StaticResource GhostPillStyle}">
+    <Setter Property="Height" Value="32" />
+    <Setter Property="Padding" Value="12,0,14,0" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Foreground" Value="{ThemeResource PinBrush}" />
+  </Style>
+
+  <!-- Undo: a text link in the slate ink (v6 .btn-link). -->
+  <Style x:Key="RowLinkStyle" TargetType="HyperlinkButton">
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="FontFamily" Value="{StaticResource CardFontMedium}" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Foreground" Value="{ThemeResource AccentInkBrush}" />
+  </Style>
+
+  <!--
+    A status pill (v6 .pill-s / .chip): 22 tall, radius 7, text in PillText.
+    WORKAROUND(Chip clips below 32 px): spec S6 names utu:Chip for these, but at the design's 22 px
+    the Material Chip template pushes its content down and clips the text (Toolkit 9.1.3, desktop
+    Skia, 2026-09-23; ChipContentMinHeight 0 did not help). A non-interactive label needs no Chip
+    behaviour, so a Border carries it. Local to status pills; the Simulator keeps its ChipGroup.
+  -->
+  <!-- xaml-lint: allow card - see WORKAROUND above: a 22 px status label, not a card -->
+  <Style x:Key="StatusPillStyle" TargetType="Border">
+    <Setter Property="Height" Value="22" />
+    <Setter Property="Padding" Value="9,0" />
+    <Setter Property="CornerRadius" Value="7" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
 </ResourceDictionary>
 
