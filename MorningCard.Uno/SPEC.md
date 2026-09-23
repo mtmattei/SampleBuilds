@@ -1405,11 +1405,10 @@ None blocking. Accepted substitutions and omissions, listed so they stay visible
 - In the car: slack ruler, car image and inline Start/Skip omitted (K6).
 - Muted map keeps OSM's street labels and building outlines, muted by the tint (decision T6). The artboard map has none.
 - Start drive stays enabled when the car is offline, against the artboard (J6).
-- **Status pills are Borders, not `utu:Chip` (S6 substitution, 2026-09-23).** At the design's 22 px the
-  Material Chip template (Toolkit 9.1.3) pushes its content down and clips the text; local
-  Height/Padding/MinHeight and an app-wide `ChipContentMinHeight` of 0 did not fix it (two cycles, then
-  the fallback). Marked `WORKAROUND(Chip clips below 32 px)` in `CardStyles.xaml`. Upstream report not
-  filed yet.
+- **Status pills are `utu:Chip` (S6), sized by Chip lightweight keys scoped to the card.** A first attempt
+  set local Height/Padding, which the template ignores, and fell back to Borders; the scoped keys
+  (`ChipHeight` 22, `ChipCornerRadius` 7, `ChipPadding` 9,0, content margin and min height 0) in
+  `MorningCardView` resources resolved it, so the substitution is withdrawn.
 - **Checklist rows are command-driven Buttons, not WinUI `Expander` (S6 evaluation).** Expander toggles
   its own `IsExpanded`, which would fight the model's single `OpenRow` state, and its template would need
   rebuilding for the row anatomy.

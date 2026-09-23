@@ -12,6 +12,21 @@
 
   <UserControl.Resources>
     <!--
+      Toolkit Chip lightweight keys, scoped to the card (v6 status pills: 22 tall, radius 7,
+      padding 0 9, no border or elevation). Scoped here rather than app-wide so the Simulator's
+      ChipGroup keeps its Material 32 px touch size. The template reads these keys through
+      ThemeResource, which is why local Height/Padding on the control did not size it.
+    -->
+    <x:Double x:Key="ChipHeight">22</x:Double>
+    <x:Double x:Key="ChipContentMinHeight">0</x:Double>
+    <Thickness x:Key="ChipContentMargin">0</Thickness>
+    <Thickness x:Key="ChipPadding">9,0</Thickness>
+    <CornerRadius x:Key="ChipCornerRadius">7</CornerRadius>
+    <Thickness x:Key="ChipBorderThickness">0</Thickness>
+    <x:Double x:Key="ChipElevation">0</x:Double>
+    <Thickness x:Key="ChipElevationMargin">0</Thickness>
+
+    <!--
       Loading templates, shared by ProgressTemplate and UndefinedTemplate. A feed over a push
       stream sits in Undefined (not Progress) until its first value arrives, which is exactly the
       first-load case these skeletons exist for (measured 2026-09-23: Progress alone left the card
@@ -67,9 +82,7 @@
           </Grid.ColumnDefinitions>
           <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconListChecks}" FontSize="18" VerticalAlignment="Center" />
           <TextBlock Grid.Column="1" x:Uid="ChecksTitle" Style="{StaticResource SectionTitle}" VerticalAlignment="Center" />
-          <Border Grid.Column="2" Style="{StaticResource StatusPillStyle}" HorizontalAlignment="Left" Background="{ThemeResource ChipBrush}">
-            <TextBlock x:Uid="ChecksLoadingCount" Style="{StaticResource PillText}" VerticalAlignment="Center" Foreground="{ThemeResource Ink2Brush}" />
-          </Border>
+          <utu:Chip x:Uid="ChecksLoadingCount" Style="{StaticResource StatusPillStyle}" Grid.Column="2" HorizontalAlignment="Left" Background="{ThemeResource ChipBrush}" Foreground="{ThemeResource Ink2Brush}" />
           <TextBlock Grid.Column="4" x:Uid="ChecksChecking" Style="{StaticResource HeaderMeta}" VerticalAlignment="Center" />
           <FontIcon Grid.Column="5" Style="{StaticResource CardIcon}" Glyph="{StaticResource IconChevronDown}" FontSize="16"
                     Foreground="{ThemeResource FaintBrush}" VerticalAlignment="Center" />
@@ -426,9 +439,7 @@
                         </Grid.ColumnDefinitions>
                         <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconListChecks}" FontSize="18" Foreground="{ThemeResource Ink2Brush}" VerticalAlignment="Center" />
                         <TextBlock Grid.Column="1" x:Uid="ChecksTitle" Style="{StaticResource SectionTitle}" VerticalAlignment="Center" />
-                        <Border Grid.Column="2" Style="{StaticResource StatusPillStyle}" Background="{ThemeResource ChipBrush}">
-                            <TextBlock Style="{StaticResource PillText}" VerticalAlignment="Center" Foreground="{ThemeResource Ink2Brush}" Text="{Binding Data.ChecksCount}" />
-                          </Border>
+                        <utu:Chip Style="{StaticResource StatusPillStyle}" Grid.Column="2" Background="{ThemeResource ChipBrush}" Foreground="{ThemeResource Ink2Brush}" Content="{Binding Data.ChecksCount}" />
                         <TextBlock Grid.Column="4" Style="{StaticResource HeaderMeta}" VerticalAlignment="Center" Text="{Binding Data.ChecksReady}" />
                         <FontIcon Grid.Column="5" Style="{StaticResource CardIcon}" Glyph="{StaticResource IconChevronDown}" FontSize="16" Foreground="{ThemeResource FaintBrush}"
                                   VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
@@ -465,14 +476,9 @@
                             <TextBlock Style="{StaticResource RowTitle}" Text="{Binding Data.FuelTitle}" TextTrimming="CharacterEllipsis" />
                             <TextBlock Style="{StaticResource RowMeta}" Text="{Binding Data.FuelMeta}" />
                           </StackPanel>
-                          <Border Grid.Column="2" Style="{StaticResource StatusPillStyle}" Visibility="{Binding Data.FuelOffline, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}" Background="{Binding Data.FuelLevel, Converter={StaticResource FuelPillBrush}}">
-                            <TextBlock Style="{StaticResource PillText}" VerticalAlignment="Center" Foreground="{Binding Data.FuelLevel, Converter={StaticResource FuelPillInk}}" Text="{Binding Data.FuelPill}" />
-                          </Border>
+                          <utu:Chip Style="{StaticResource StatusPillStyle}" Grid.Column="2" Visibility="{Binding Data.FuelOffline, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}" Background="{Binding Data.FuelLevel, Converter={StaticResource FuelPillBrush}}" Foreground="{Binding Data.FuelLevel, Converter={StaticResource FuelPillInk}}" Content="{Binding Data.FuelPill}" />
                           <!-- Car offline: what the card last read, with no live signal. -->
-                          <Border Grid.Column="2" Style="{StaticResource StatusPillStyle}" Background="{ThemeResource NeutralChipBrush}"
-                                  Visibility="{Binding Data.FuelOffline, Converter={StaticResource BoolToVisibility}}">
-                            <TextBlock Style="{StaticResource PillText}" VerticalAlignment="Center" Foreground="{ThemeResource CapsBrush}" Text="{Binding Data.FuelNoSignal}" />
-                          </Border>
+                          <utu:Chip Style="{StaticResource StatusPillStyle}" Grid.Column="2" Background="{ThemeResource NeutralChipBrush}" Visibility="{Binding Data.FuelOffline, Converter={StaticResource BoolToVisibility}}" Foreground="{ThemeResource CapsBrush}" Content="{Binding Data.FuelNoSignal}" />
                           <FontIcon Grid.Column="3" Style="{StaticResource CardIcon}" Glyph="{StaticResource IconChevronRight}" FontSize="16" Foreground="{ThemeResource FaintBrush}"
                                     VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
                             <FontIcon.RenderTransform>
@@ -502,9 +508,7 @@
                                        TextDecorations="{Binding Data.CabinSkipped, Converter={StaticResource BoolToStrike}}" />
                             <TextBlock Style="{StaticResource RowMeta}" Text="{Binding Data.CabinMeta}" />
                           </StackPanel>
-                          <Border Grid.Column="2" Style="{StaticResource StatusPillStyle}" Background="{Binding Data.Cabin, Converter={StaticResource CabinPillBrush}}">
-                            <TextBlock Style="{StaticResource PillText}" VerticalAlignment="Center" Foreground="{Binding Data.Cabin, Converter={StaticResource CabinPillInk}}" Text="{Binding Data.CabinPill}" />
-                          </Border>
+                          <utu:Chip Style="{StaticResource StatusPillStyle}" Grid.Column="2" Background="{Binding Data.Cabin, Converter={StaticResource CabinPillBrush}}" Foreground="{Binding Data.Cabin, Converter={StaticResource CabinPillInk}}" Content="{Binding Data.CabinPill}" />
                           <FontIcon Grid.Column="3" Style="{StaticResource CardIcon}" Glyph="{StaticResource IconChevronRight}" FontSize="16" Foreground="{ThemeResource FaintBrush}"
                                     VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
                             <FontIcon.RenderTransform>
@@ -515,9 +519,7 @@
                       </Button>
                       <StackPanel Margin="38,0,0,16" Visibility="{Binding Data.CabinOpen, Converter={StaticResource BoolToVisibility}}">
                         <TextBlock Style="{StaticResource RowDetail}" Text="{Binding Data.CabinDetail}" />
-                        <Border Style="{StaticResource StatusPillStyle}" Margin="0,10,0,0" HorizontalAlignment="Left" Background="{ThemeResource ChipBrush}">
-                          <TextBlock x:Uid="ChecksRemoteStart" Style="{StaticResource PillText}" VerticalAlignment="Center" Foreground="{ThemeResource Ink2Brush}" />
-                        </Border>
+                        <utu:Chip x:Uid="ChecksRemoteStart" Style="{StaticResource StatusPillStyle}" Margin="0,10,0,0" HorizontalAlignment="Left" Background="{ThemeResource ChipBrush}" Foreground="{ThemeResource Ink2Brush}" />
                         <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,14,0,0"
                                     Visibility="{Binding Data.CabinPending, Converter={StaticResource BoolToVisibility}}">
                           <Button x:Name="StartWarmingButton" Style="{StaticResource RowActionPrimaryStyle}" Command="{Binding Parent.StartWarming}"
@@ -552,9 +554,7 @@
                             <TextBlock Style="{StaticResource RowTitle}" Text="{Binding Data.ParkingTitle}" TextTrimming="CharacterEllipsis" />
                             <TextBlock Style="{StaticResource RowMeta}" Text="{Binding Data.ParkingMeta}" TextTrimming="CharacterEllipsis" />
                           </StackPanel>
-                          <Border Grid.Column="2" Style="{StaticResource StatusPillStyle}" Background="{ThemeResource GoodChipBrush}">
-                            <TextBlock Style="{StaticResource PillText}" VerticalAlignment="Center" Foreground="{ThemeResource GoodInkBrush}" Text="{Binding Data.ParkingPill}" />
-                          </Border>
+                          <utu:Chip Style="{StaticResource StatusPillStyle}" Grid.Column="2" Background="{ThemeResource GoodChipBrush}" Foreground="{ThemeResource GoodInkBrush}" Content="{Binding Data.ParkingPill}" />
                           <FontIcon Grid.Column="3" Style="{StaticResource CardIcon}" Glyph="{StaticResource IconChevronRight}" FontSize="16" Foreground="{ThemeResource FaintBrush}"
                                     VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
                             <FontIcon.RenderTransform>

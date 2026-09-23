@@ -410,7 +410,7 @@
   <data name="Parking_Detail" xml:space="preserve">
     <value>Street parking on {0}. {1}, so drop-off only.</value>
   </data>
-  <data name="ChecksRemoteStart.Text" xml:space="preserve">
+  <data name="ChecksRemoteStart.Content" xml:space="preserve">
     <value>Remote start</value>
   </data>
   <data name="SkipWarming.Content" xml:space="preserve">
@@ -485,7 +485,7 @@
   <data name="FooterStartDrive.Text" xml:space="preserve">
     <value>Start drive</value>
   </data>
-  <data name="ChecksLoadingCount.Text" xml:space="preserve">
+  <data name="ChecksLoadingCount.Content" xml:space="preserve">
     <value>3 checks</value>
   </data>
 </root>
