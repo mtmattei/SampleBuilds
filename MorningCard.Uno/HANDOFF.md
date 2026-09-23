@@ -1,126 +1,59 @@
-# HANDOFF — MorningCard v5 Android form factors (step 0, baseline)
-Updated: 2026-09-22 15:05
-
-## UPDATE 2026-09-23, v6 steps 2-7 done (supersedes everything below)
-
-Running under `/loop` ("continue through completion"). Commits on `feat/android-form-factors`:
-`f11bfbf` drop dark + hue dial · `c591fe4` tokens and type · `b393a87` slack ruler layout ·
-`572fb4d` header, ruler, footer (Lucide icon font, user choice) · `29faa0f` route map ·
-`f99c544` checklist accordion and cabin choice. 102/102 tests pass, desktop 0 warnings.
-
-- **Next action:** v6 step 8 (states: loading skeleton, ETA unavailable, no drop-off, car offline;
-  remove the whole-card error), then step 9 (parity on desktop and Android against `png/phone_*.png`).
-- App MCP (`uno-app`) disconnected mid-session. Verification uses the Debug exe with
-  `APP_NO_HOTDESIGN=1`, `scripts/Capture-Tall.ps1`, and DEBUG probe hooks (`MC_OPEN=checks`,
-  `MC_PROBE_CABIN=1` with `MC_TRACE=<file>`).
-- New v6 substitutions are listed in SPEC.md v6 Unresolved Questions (Chip pills, pill offset, climate default).
-
-## UPDATE 2026-09-23, v6 step 1 done
-
-- Spikes R7, R8 and R9 **all pass**. Results are in SPEC.md under "v6 spike results".
-  - R7: Geist static TTFs (from Google css2) are in `Assets/Fonts`. Fragments are `#Geist`, `#Geist Medium`
-    and `#Geist SemiBold`. A wrong fragment does not fall back, so check font URIs by filename.
-  - R8: `Controls/MutedTileSource.cs` tints OSM tiles through a colour matrix on both heads. Tune
-    `PaperMatrix` at step 6. OSM labels stay, muted (user decision T6).
-  - R9: hatched ruler blocks are drawn in Skia. The repeating gradient works, but its line weight is uneven.
-- The spike harness (`MC_SPIKE`, `Spikes/SpikeView.cs`) is deleted; it is still in `f61ac1b` if needed.
-- Android: the Pixel 8 (`3C090DLJH000V4`) is locked with a fingerprint, so use `chefs36` (`adb -e`).
-  Its `debug.mono.env` is cleared.
-- **Next action:** v6 plan step 2, `refactor: drop dark mode and the hue dial`.
-
-## UPDATE 2026-09-23 (earlier)
-
-- The ruler and title-clip defects are **fixed** in `c658b2b` (`captures/android/fix-d420.png`).
-- The user added `docs/design/v6/`, which is **the new target**. The diff against v5 is in
-  `docs/design/v6/v6-vs-v5.md` (rev 2): one new design language (Geist, muted slate and paper, slack ruler)
-  on the phone, TV, Wear and Auto, plus a phone state set. The source of truth is
-  `school_dropoff_card_v6_bundle.html` (it renders in a browser); the artboards are in `png/`.
-- User decisions 2026-09-23 are recorded as A6–G6 in the new **SPEC.md v6 section**: drop dark, keep
-  the XC60, Refresh/Replay in the Simulator, drop the whole-card error and device offline, "Josh" is
-  mock data, colours match the design.
-- All remaining questions (v6 and v5) were decided by Claude on the user's instruction; they are H6–S6 in
-  SPEC.md. Nothing is blocking.
-- **Next action:** run v6 plan step 1 (spikes R7–R9) in a fresh session rooted here. v6 runs before
-  v5 step 2.
-- (superseded) Get answers to D2, D3, D5–D10, D12 and D13, then write the v6 section in SPEC.md
-  (`write-spec`), then implement v6 step A (phone redesign) before the v5 split.
+# HANDOFF — MorningCard v6 phone redesign (steps 1-9 done)
+Updated: 2026-09-23
 
 ## Where we are
-
-v5 (SPEC.md, last section) has started. The work lives in a **git worktree** so the card-polish
-work on `spec/morningcard-uno` stays undisturbed:
-`C:\Users\Platform006\UnoProjects\SampleBuilds-android` on branch `feat/android-form-factors`,
-branched from `691c52f`. Step 0 (phone emulator baseline) is **half done**. The Android build
-deploys and runs, and the light live capture is in `captures/android/live.png`. The first Android
-run since v1 showed two defects:
-
-1. **The route ruler is missing on Android.** There are no ticks, rings or now-cursor, and the map
-   is not fitted to the route (it shows all of Montreal). `route.json` is packaged
-   (`obj/.../assets/Assets/route.json`), so the fault is at runtime and not yet diagnosed. v4 plan
-   step 6 (Android verification) was therefore never done.
-2. **The title is clipped** to "School dro|": the car image overlaps it at 1080 px width.
-
-Map tiles, fonts, the strip, the checks row and the action bar render correctly.
+The v6 plan in SPEC.md is complete for the phone card, steps 1 to 9. That covers the spikes, the removal
+of dark mode and the hue dial, the v6 tokens and Geist, the slack ruler (Core layout plus UI), the header,
+footer and map, the checklist accordion with `CabinChoice`, all four states, and the desktop and Android
+parity pass. Every state scores at least 89% against `docs/design/v6/png/phone_*.png` on both heads
+(SPEC.md "v6 parity results"). The work is in the worktree `C:\Users\Platform006\UnoProjects\SampleBuilds-android`
+on branch `feat/android-form-factors`. **Step 10 (resume v5 with the v6 part list) has not started.**
+It stops on project restructuring and emulator downloads (see Open questions).
 
 ## Last verified state
+- Build: `net10.0-desktop` and `net10.0-android` Debug, 0 warnings, 0 errors. Tests 102/102.
+- Runtime: the `uno-app` MCP disconnected mid-session, so runtime checks used the Debug exe with
+  `APP_NO_HOTDESIGN=1`, `scripts/Capture-Tall.ps1` and DEBUG probes. Confirmed: the cabin flow
+  (`MC_PROBE_CABIN`), Retry from ETA unavailable (`MC_PROBE_RETRY`: PASSED), the ruler grow-in, the
+  live-dot pulse, and all 7 states on desktop plus 5 on the `chefs36` emulator.
+- Git: `db9eab8` plus this handoff. The only uncommitted files are the pre-v6 `captures/android/*`
+  files from an earlier session, left alone on purpose.
+- Lint: CARD 1 · HEX 0 · TOKENTHEME 10 · BACKBAR 0 · CODEBEHIND 8 · OVERLAY 0 · RESPONSIVE 0 · BUILTIN 1 · WORKAROUND 1.
 
-- Build: `net10.0-android` Debug, 0 warnings, 0 errors (worktree). Desktop not rebuilt this session.
-- Runtime: the phone card rendered on `chefs36` (API 36, 1080x2400); `live.png` shows it. Dark and
-  the state set are not captured yet.
-- Git: `feat/android-form-factors`, with this handoff and `captures/android/live.png` committed.
-  The **main tree** (`SampleBuilds`, `spec/morningcard-uno`) holds another session's uncommitted
-  edits to `MorningCardView.xaml`, `RouteRulerRenderer.cs` and `CardTokens.xaml`. Leave them alone;
-  they belong to the card-polish work.
+## Guidance applied
+| Skill / rule / decision | Applied at (file:line) |
+|---|---|
+| uno-toolkit: CardContentControl for shell, panel and checklist | MorningCard/Controls/MorningCardView.xaml:56 |
+| uno-component-states: skeleton loading via Undefined and Progress | MorningCard/Controls/MorningCardView.xaml:15, SkeletonBar :34 |
+| mvux: Retry through Parent in the ValueTemplate, proven at runtime | MorningCard/Controls/MorningCardView.xaml:289 |
+| skiasharp-uno: cached-paint SKCanvasElement hatch | MorningCard/Controls/HatchFill.cs:25 |
+| Spike R8: tinted tiles | MorningCard/Controls/MorningCardView.xaml.cs:154 |
+| Icon memory: Lucide font (user choice) | MorningCard/Themes/Icons.xaml:13 |
+| Rules file: timer pulse, not a Forever storyboard | MorningCard/Controls/MorningCardView.xaml:595 (LivePulse) |
+| Workaround protocol: Chip clips at 22 px | MorningCard/Themes/CardStyles.xaml:563 |
+Read, not applied: none.
 
 ## Next actions (in order)
-
-1. Boot `chefs36` and **finish the baseline**: dark, loading, empty, error, offline, leave-now and
-   late. Drive the states with `debug.mono.env` (see the gotcha below), one short hook per launch.
-2. **Diagnose the missing ruler.** `MC_TRACE` needs a full path, which is too long for
-   `debug.mono.env`. Add a short hook (e.g. `MC_TRACE=1`, which resolves to
-   `ApplicationData.Current.LocalFolder` in code), then read the file with `adb shell run-as
-   com.companyname.morningcard cat files/...`. Suspects: `RouteGeometryLoader` asset read on
-   Android, and the fit running before `MapControl` has a size (Mapsui navigator rule).
-3. Fix the ruler and the title clip in their own `fix:` commits, then commit the full baseline
-   (`chore: android baseline captures`). The plan's step 2 split needs a correct phone card to
-   compare against.
-4. v5 step 1 spikes R3, R4, R5, R6.
+1. The user decides on v5 step 2: split the card into a `MorningCard.UI` library (project restructure).
+2. Install the TV, Wear and Automotive system images once approved (1-2 GB each), then run v5 steps 5-9
+   against the v6 surface artboards (`docs/design/v6/png/android_tv.png`, `wear_os.png`, `android_auto.png`).
+3. Optionally: tune `MutedTileSource.PaperMatrix`, whose first pass is busier than the artboard, and
+   file the Toolkit Chip issue upstream.
 
 ## Open questions
-
-- Should the ruler and title fixes happen before step 1? Proposed: yes (see action 3). The user has
-  not answered.
-- TV, Wear and Automotive system images are not installed; steps 5, 6 and 8 need them. Ask before
-  running `sdkmanager` (1–2 GB each).
-- The `pixel_9_pro_xl_-_api_36_1` AVD cannot boot because its `android-36.1` Play Store image is
-  missing. Use `chefs36`.
-- Worktree tradeoff: the App MCP only registers in a session rooted in the folder with the `.sln`.
-  Start sessions in `SampleBuilds-android\MorningCard.Uno`, or merge back before desktop parity
-  (steps 5–6).
-- v5 Unresolved Questions 1–7 in SPEC.md are still open.
-
-## Gotchas found this session
-
-- **A `debug.mono.env` value of 50 characters or more aborts the app at startup** (monodroid
-  `string_base<50>`: `Attempt to store too much data in a buffer (capacity: N; exceeded by: 1)`,
-  SIGABRT). It looks like an app crash. Keep each value short; `MC_THEME=dark` is fine.
-- In Git Bash, set `MSYS_NO_PATHCONV=1` before `adb shell setprop ... /data/...`, or the path is
-  mangled and `setprop` prints its usage text.
-- `adb`/`emulator` are not on PATH: `$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe`.
+- Should v5 go ahead (library split plus TV, Wear and Auto), and may it download the system images?
+- Lint: TOKENTHEME 10 are single-value converter brushes, correct now that the app is light only (B6).
+  CARD 1 is the Simulator panel, CODEBEHIND 8 is the card's lifecycle and fit handlers, and BUILTIN 1 is
+  `CardShadowCanvas`, which is deliberate (see the ShadowContainer gotcha in the rules file). Clean these
+  up, or add allow notes?
+- Accepted v6 deviations are listed in SPEC.md under v6 Unresolved Questions (pills, pill offset, now-dot fan-out).
 
 ## Relaunch
-
 ```powershell
-cd C:\Users\Platform006\UnoProjects\SampleBuilds-android\MorningCard.Uno
-& "$env:LOCALAPPDATA\Android\Sdk\emulator\emulator.exe" -avd chefs36 -no-snapshot-save -no-boot-anim
-dotnet build MorningCard/MorningCard.csproj -f net10.0-android -t:Run
-
-$adb = "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe"
-& $adb shell setprop debug.mono.env "MC_THEME=dark"   # '' to clear; under 50 chars
-& $adb shell am force-stop com.companyname.morningcard
-& $adb shell am start -n com.companyname.morningcard/crc649f50cfeacb723221.MainActivity
-Start-Sleep 16; & $adb exec-out screencap -p > captures/android/dark.png
+cd C:\Users\Platform006\UnoProjects\SampleBuilds-android\MorningCard.Uno   # root the session here for uno-app
+dotnet build MorningCard/MorningCard.csproj -f net10.0-desktop
+$env:APP_NO_HOTDESIGN="1"; $env:MC_STATE="loading"   # or error | empty | offline; MC_CLOCK=457 for late
+Start-Process MorningCard\bin\Debug\net10.0-desktop\MorningCard.exe -WorkingDirectory MorningCard\bin\Debug\net10.0-desktop
+pwsh -File scripts\Capture-Tall.ps1 -ProcessId <pid> -Out captures\x.png -Width 640 -Height 1200
+# Android: boot chefs36, dotnet build -f net10.0-android -t:Run, adb -e shell setprop debug.mono.env "MC_STATE=offline"
 ```
-
-Never run `pm clear` on the Debug build: it deletes the Fast Deployment assemblies (see the rules
-file).
