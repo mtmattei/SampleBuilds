@@ -1,3 +1,4 @@
+using Microsoft.UI;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Shapes;
@@ -7,7 +8,6 @@ using MorningCard.Presentation;
 using MorningCard.Themes;
 using SkiaSharp;
 using Uno.WinUI.Graphics2DSK;
-using Microsoft.UI;
 using Windows.UI;
 
 namespace MorningCard.Controls;

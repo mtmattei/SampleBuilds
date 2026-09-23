@@ -14,193 +14,11 @@
                     xmlns:utu="using:Uno.Toolkit.UI"
                     xmlns:mc="using:MorningCard.Controls">
 
-  <Style x:Key="CardActionButtonStyle" TargetType="Button">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="Padding" Value="0" />
-    <Setter Property="HorizontalAlignment" Value="Stretch" />
-    <Setter Property="VerticalAlignment" Value="Top" />
-    <Setter Property="UseSystemFocusVisuals" Value="True" />
-    <Setter Property="FocusVisualPrimaryBrush" Value="{ThemeResource AccentBrush}" />
-    <Setter Property="FocusVisualPrimaryThickness" Value="2" />
-    <Setter Property="FocusVisualSecondaryThickness" Value="0" />
-    <Setter Property="FocusVisualMargin" Value="-3" />
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate TargetType="Button">
-          <Grid Background="Transparent" RowSpacing="8">
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <Border x:Name="Circle"
-                    Width="56"
-                    Height="56"
-                    CornerRadius="28"
-                    HorizontalAlignment="Center"
-                    Background="{ThemeResource ChipBrush}"
-                    RenderTransformOrigin="0.5,0.5">
-              <Border.RenderTransform>
-                <ScaleTransform x:Name="CircleScale" />
-              </Border.RenderTransform>
-              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-            </Border>
-
-            <StackPanel Grid.Row="1" HorizontalAlignment="Center">
-              <TextBlock Style="{StaticResource ActionLabel}"
-                         TextAlignment="Center"
-                         Text="{Binding Path=(mc:CardAction.Label), RelativeSource={RelativeSource TemplatedParent}}" />
-              <TextBlock Style="{StaticResource CardCaption}"
-                         TextAlignment="Center"
-                         Visibility="{Binding Path=(mc:CardAction.SubLabel), RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToVisibility}}"
-                         Text="{Binding Path=(mc:CardAction.SubLabel), RelativeSource={RelativeSource TemplatedParent}}" />
-            </StackPanel>
-
-            <VisualStateManager.VisualStateGroups>
-              <VisualStateGroup x:Name="CommonStates">
-                <VisualState x:Name="Normal" />
-                <VisualState x:Name="PointerOver" />
-                <VisualState x:Name="Pressed">
-                  <VisualState.Setters>
-                    <Setter Target="CircleScale.ScaleX" Value="{StaticResource PressScale}" />
-                    <Setter Target="CircleScale.ScaleY" Value="{StaticResource PressScale}" />
-                  </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="Disabled">
-                  <VisualState.Setters>
-                    <Setter Target="Circle.Opacity" Value="0.4" />
-                  </VisualState.Setters>
-                </VisualState>
-              </VisualStateGroup>
-            </VisualStateManager.VisualStateGroups>
-          </Grid>
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
-  </Style>
-
-  <!-- Same shape, plus the checked fill. Lock and Climate are the two that hold a state. -->
-  <Style x:Key="CardActionToggleStyle" TargetType="ToggleButton">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="Padding" Value="0" />
-    <Setter Property="HorizontalAlignment" Value="Stretch" />
-    <Setter Property="VerticalAlignment" Value="Top" />
-    <Setter Property="UseSystemFocusVisuals" Value="True" />
-    <Setter Property="FocusVisualPrimaryBrush" Value="{ThemeResource AccentBrush}" />
-    <Setter Property="FocusVisualPrimaryThickness" Value="2" />
-    <Setter Property="FocusVisualSecondaryThickness" Value="0" />
-    <Setter Property="FocusVisualMargin" Value="-3" />
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate TargetType="ToggleButton">
-          <Grid Background="Transparent" RowSpacing="8">
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <Border x:Name="Circle"
-                    Width="56"
-                    Height="56"
-                    CornerRadius="28"
-                    HorizontalAlignment="Center"
-                    Background="{ThemeResource ChipBrush}"
-                    RenderTransformOrigin="0.5,0.5">
-              <Border.RenderTransform>
-                <ScaleTransform x:Name="CircleScale" />
-              </Border.RenderTransform>
-              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-            </Border>
-
-            <StackPanel Grid.Row="1" HorizontalAlignment="Center">
-              <TextBlock Style="{StaticResource ActionLabel}"
-                         TextAlignment="Center"
-                         Text="{Binding Path=(mc:CardAction.Label), RelativeSource={RelativeSource TemplatedParent}}" />
-              <TextBlock Style="{StaticResource CardCaption}"
-                         TextAlignment="Center"
-                         Visibility="{Binding Path=(mc:CardAction.SubLabel), RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToVisibility}}"
-                         Text="{Binding Path=(mc:CardAction.SubLabel), RelativeSource={RelativeSource TemplatedParent}}" />
-            </StackPanel>
-
-            <VisualStateManager.VisualStateGroups>
-              <VisualStateGroup x:Name="CommonStates">
-                <VisualState x:Name="Normal" />
-                <VisualState x:Name="PointerOver" />
-                <VisualState x:Name="Pressed">
-                  <VisualState.Setters>
-                    <Setter Target="CircleScale.ScaleX" Value="{StaticResource PressScale}" />
-                    <Setter Target="CircleScale.ScaleY" Value="{StaticResource PressScale}" />
-                  </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="Disabled">
-                  <VisualState.Setters>
-                    <Setter Target="Circle.Opacity" Value="0.4" />
-                  </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="Checked">
-                  <VisualState.Setters>
-                    <Setter Target="Circle.Background" Value="{ThemeResource AccentBrush}" />
-                  </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="CheckedPointerOver">
-                  <VisualState.Setters>
-                    <Setter Target="Circle.Background" Value="{ThemeResource AccentBrush}" />
-                  </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="CheckedPressed">
-                  <VisualState.Setters>
-                    <Setter Target="Circle.Background" Value="{ThemeResource AccentBrush}" />
-                    <Setter Target="CircleScale.ScaleX" Value="{StaticResource PressScale}" />
-                    <Setter Target="CircleScale.ScaleY" Value="{StaticResource PressScale}" />
-                  </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="CheckedDisabled">
-                  <VisualState.Setters>
-                    <Setter Target="Circle.Background" Value="{ThemeResource AccentBrush}" />
-                    <Setter Target="Circle.Opacity" Value="0.4" />
-                  </VisualState.Setters>
-                </VisualState>
-              </VisualStateGroup>
-            </VisualStateManager.VisualStateGroups>
-          </Grid>
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
-  </Style>
-
-  <!-- The trip title reads as a heading and behaves as a link into the trip page. -->
-  <Style x:Key="CardTitleButtonStyle" TargetType="Button">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="Padding" Value="0" />
-    <Setter Property="HorizontalAlignment" Value="Left" />
-    <Setter Property="UseSystemFocusVisuals" Value="True" />
-    <Setter Property="FocusVisualPrimaryBrush" Value="{ThemeResource AccentBrush}" />
-    <Setter Property="FocusVisualPrimaryThickness" Value="2" />
-    <Setter Property="FocusVisualSecondaryThickness" Value="0" />
-    <Setter Property="FocusVisualMargin" Value="-3" />
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate TargetType="Button">
-          <Grid Background="Transparent">
-            <ContentPresenter />
-          </Grid>
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
-  </Style>
 
 
 
-  <!-- One row of the list under the map. Fixed height keeps the three rules evenly spaced. -->
-  <Style x:Key="ListRowStyle" TargetType="Grid">
-    <!-- 14 on the sides as well as top and bottom, matching the header's own padding, so the row
-         icons line up with the header's icon instead of sitting against the container's edge. -->
-    <Setter Property="Padding" Value="14" />
-    <Setter Property="ColumnSpacing" Value="14" />
-  </Style>
+
+
 
   <!-- The hairline between rows. A Rectangle rather than a Border: one job, one element. -->
   <Style x:Key="RowRule" TargetType="Rectangle">
@@ -225,6 +43,7 @@
     <Setter Property="FocusVisualPrimaryBrush" Value="{ThemeResource AccentBrush}" />
     <Setter Property="FocusVisualPrimaryThickness" Value="2" />
     <Setter Property="FocusVisualSecondaryThickness" Value="0" />
+    <!-- Template, not lightweight keys: Material Button has no key for the press scale or for the 8 px hit area outside the drawn pill. -->
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
@@ -312,6 +131,7 @@
     <Setter Property="FocusVisualPrimaryThickness" Value="2" />
     <Setter Property="FocusVisualSecondaryThickness" Value="0" />
     <Setter Property="FocusVisualMargin" Value="-3" />
+    <!-- Template, not lightweight keys: Material Button has no key for the 0.98 press scale or for the 4 px hit area outside the shell. -->
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
@@ -392,6 +212,7 @@
     <Setter Property="Padding" Value="13,0,16,0" />
     <Setter Property="CornerRadius" Value="12" />
     <Setter Property="FontSize" Value="13.5" />
+    <!-- Own template: the ghost shell has no outline and a hover wash; BasedOn alone keeps the primary template. -->
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
@@ -491,6 +312,7 @@
     <Setter Property="FocusVisualPrimaryThickness" Value="2" />
     <Setter Property="FocusVisualSecondaryThickness" Value="0" />
     <Setter Property="FocusVisualMargin" Value="-2" />
+    <!-- Template: a whole-row target with no chrome until hover, which no Material button style provides. -->
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">

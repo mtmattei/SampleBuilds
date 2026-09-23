@@ -24,9 +24,7 @@ public readonly record struct RoutePoint(double X, double Y);
 /// One mode of travel: the drive from home to the parking spot, or the walk from there to the door.
 /// </summary>
 /// <remarks>
-/// Points has exactly one more entry than Edges, and the cumulative arrays match Points. Holding
-/// the cumulatives rather than recomputing them is what lets a tick find its edge by binary search
-/// instead of walking the polyline.
+/// Points has exactly one more entry than Edges, and the cumulative arrays match Points.
 /// </remarks>
 public sealed class RouteLeg
 {
@@ -76,110 +74,16 @@ public sealed class RouteLeg
     public double TotalMeters => CumulativeMeters[^1];
 
     /// <summary>
-    /// True when the leg covers no ground. A curbside drop-off has no walk, and the layout has to
-    /// place no ticks on it rather than divide by its zero length.
+    /// True when the leg covers no ground. A curbside drop-off has no walk, and nothing is drawn
+    /// for it.
     /// </summary>
     public bool IsEmpty => Edges.Count == 0 || TotalMeters <= 0d;
-
-    /// <summary>
-    /// The point reached at <paramref name="seconds"/> into the leg, interpolated along whichever
-    /// edge that falls in, with the local bearing there.
-    /// </summary>
-    /// <remarks>
-    /// Clamped at both ends: a tick landing exactly on the final vertex must not run off the array,
-    /// and reconciliation can leave a requested time a hair past the total.
-    /// </remarks>
-    public (RoutePoint Point, double BearingRadians) PointAtSeconds(double seconds)
-    {
-        if (Points.Count == 0)
-        {
-            return (default, 0d);
-        }
-
-        if (Edges.Count == 0)
-        {
-            return (Points[0], 0d);
-        }
-
-        var index = FindEdge(seconds);
-        var start = Points[index];
-        var end = Points[index + 1];
-        var span = Edges[index].DurationSeconds;
-
-        // A zero-duration edge has no interior to interpolate; its start point is the whole answer.
-        var fraction = span > 0d
-            ? Math.Clamp((seconds - CumulativeSeconds[index]) / span, 0d, 1d)
-            : 0d;
-
-        var point = new RoutePoint(
-            start.X + ((end.X - start.X) * fraction),
-            start.Y + ((end.Y - start.Y) * fraction));
-
-        return (point, Math.Atan2(end.Y - start.Y, end.X - start.X));
-    }
-
-    /// <summary>
-    /// The index of the edge containing <paramref name="seconds"/>, by binary search over the
-    /// cumulative times.
-    /// </summary>
-    private int FindEdge(double seconds)
-    {
-        if (seconds <= 0d)
-        {
-            return 0;
-        }
-
-        if (seconds >= TotalSeconds)
-        {
-            return Edges.Count - 1;
-        }
-
-        var low = 0;
-        var high = Edges.Count - 1;
-
-        while (low < high)
-        {
-            var mid = (low + high + 1) / 2;
-
-            if (CumulativeSeconds[mid] <= seconds)
-            {
-                low = mid;
-            }
-            else
-            {
-                high = mid - 1;
-            }
-        }
-
-        return low;
-    }
-
-    /// <summary>
-    /// This leg with every edge duration multiplied by <paramref name="factor"/>, so the speed
-    /// profile survives while the total matches what the card says.
-    /// </summary>
-    public RouteLeg ScaleDurations(double factor)
-    {
-        if (Edges.Count == 0)
-        {
-            return this;
-        }
-
-        var scaled = new RouteEdge[Edges.Count];
-
-        for (var i = 0; i < Edges.Count; i++)
-        {
-            scaled[i] = Edges[i] with { DurationSeconds = Edges[i].DurationSeconds * factor };
-        }
-
-        return new RouteLeg(Mode, Points, scaled);
-    }
 }
 
 /// <summary>
 /// The whole trip's shape: the drive, then the walk. Built once from the committed route asset and
 /// never refetched - the sample has no routing service, and the geometry does not change with the
-/// clock. Only the times laid over it do.
+/// clock.
 /// </summary>
 public sealed class RouteGeometry
 {
@@ -205,27 +109,4 @@ public sealed class RouteGeometry
 
     /// <summary>The door. Same as the parking spot when there is no walk.</summary>
     public RoutePoint Destination => Walk.Points.Count > 0 ? Walk.Points[^1] : Parking;
-
-    /// <summary>
-    /// Both legs rescaled so their totals match the minutes the card is showing. The asset's
-    /// free-flow durations set the shape of the speed profile; the routine sets its length.
-    /// </summary>
-    /// <remarks>
-    /// A leg whose asset total is zero cannot be scaled into one that is not - there is no profile
-    /// to stretch - so it is left alone and the layout places no ticks on it.
-    /// </remarks>
-    public RouteGeometry Reconcile(double driveMinutes, double walkMinutes) =>
-        new(ScaleLeg(Drive, driveMinutes), ScaleLeg(Walk, walkMinutes));
-
-    private static RouteLeg ScaleLeg(RouteLeg leg, double targetMinutes)
-    {
-        var target = targetMinutes * 60d;
-
-        if (leg.TotalSeconds <= 0d || target <= 0d)
-        {
-            return leg;
-        }
-
-        return leg.ScaleDurations(target / leg.TotalSeconds);
-    }
 }

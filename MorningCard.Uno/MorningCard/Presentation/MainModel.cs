@@ -236,16 +236,15 @@ public partial record MainModel
         }
 
         await DriveSent.SetAsync(true, ct);
-
-        DriveStarted?.Invoke(this, EventArgs.Empty);
+        await Destination.OpenInMapsAsync();
 
         // Outside the command on purpose: a generated command holds its button disabled for as long
         // as the method runs, and the confirmation is not something to wait on.
         _ = ResetDriveConfirmationAsync();
     }
 
-    /// <summary>Raised once the destination is away, so the view can open the maps app.</summary>
-    public event EventHandler? DriveStarted;
+    /// <summary>The map pill: the platform maps app at the school, with or without a trip (L6).</summary>
+    public async ValueTask OpenInMaps(CancellationToken ct) => await Destination.OpenInMapsAsync();
 
     private async Task ResetDriveConfirmationAsync()
     {
@@ -340,15 +339,8 @@ public partial record MainModel
             HeadlineAccentSize: timeline is null ? 17d : 27d,
             // E6: a failed live lookup still shows the saved schedule, and says so.
             ScheduleNote: unreachable && plan is not null ? Text("Headline_ScheduleNote") : string.Empty,
-            Tone: timeline?.Tone ?? CardTone.Ok,
             IsStale: car.IsStale,
             CarName: car.Name,
-            // Names the state rather than leaving it to colour alone.
-            StatusBadge: car.IsStale
-                ? Text("Badge_Offline")
-                : timeline is null
-                    ? Text("Badge_NoTrip")
-                    : Text($"Badge_{timeline.Tone}"),
             LockState: car.IsStale
                 ? Format("Lock_Offline", Clock(car.LastSeen))
                 : Text(car.IsLocked ? "Lock_Locked" : "Lock_Unlocked"),
@@ -370,8 +362,8 @@ public partial record MainModel
             // E6: the live lookup failed. The saved schedule (no traffic) still places the ruler and
             // the route; only the live ETA block reports the failure.
             return slot.Plan is { } saved
-                ? BuildEta((TripResult.Ok(saved with { DelayMin = 0 }), now, slot)) with { Failed = true, FailureMessage = result.FailureMessage }
-                : Empty with { Failed = true, FailureMessage = result.FailureMessage };
+                ? BuildEta((TripResult.Ok(saved with { DelayMin = 0 }), now, slot)) with { Failed = true }
+                : Empty with { Failed = true };
         }
 
         var timeline = TripMath.Derive(plan, now);
@@ -394,15 +386,11 @@ public partial record MainModel
 
         return new EtaView(
             Failed: false,
-            FailureMessage: string.Empty,
             TotalMinutes: timeline.DriveMin,
-            ArrivalText: Format("Eta_Arrive", ClockWithPeriod(timeline.Arrive)),
             Traffic: timeline.Traffic,
             TrafficText: Text($"Traffic_{timeline.Traffic}"),
             VsUsualText: vsUsual,
             IsLate: timeline.IsLate,
-            RouteLeave: route.Leave,
-            RouteArrive: route.Arrive,
             Tone: timeline.Tone,
             // Once the answer is "Now" the caption loses its "BY": "LEAVE BY Now" reads wrong.
             LeaveCaption: Text(slack.LeaveIsNow ? "Timeline_Leave" : "Timeline_LeaveBy"),
@@ -418,9 +406,6 @@ public partial record MainModel
             DriveSegmentShort: Text("Ruler_DriveShort"),
             WalkSegment: Text("Ruler_Walk"),
             RulerDescription: rulerName,
-            LeaveLabel: Format("Route_Leave", Clock(timeline.LeaveBy)),
-            ArriveLabel: Format("Route_Arrive", Clock(timeline.Arrive)),
-            BellLabel: Format("Route_Bell", Clock(plan.Bell)),
             RouteDescription: description,
             MapNowLabel: Format("Status_Now", Clock(now)),
             MapWalkLabel: Format("Map_Walk", plan.WalkMin),
@@ -513,12 +498,7 @@ public partial record MainModel
             // The row leaves entirely on a no-trip morning rather than being drawn empty.
             HasDestination: plan is not null,
             IsStale: car.IsStale,
-            StatusBadge: car.IsStale
-                ? Text("Badge_Offline")
-                : timeline is null
-                    ? Text("Badge_NoTrip")
-                    : Text($"Badge_{timeline.Tone}"),
-            Tone: timeline?.Tone ?? CardTone.Ok,
+            CabinTitleInk: cabin == CabinChoice.Skipped ? "SkippedTitleBrush" : "InkStrongBrush",
             FuelRowName: Format("Row_Name", Format("Fuel_Title", car.Range.ToString(CultureInfo.CurrentCulture)), Text("Fuel_NoteFine"), fuelPill),
             CabinRowName: Format("Row_Name", Text("Cabin_Title"), cabinMeta, cabinPill),
             ParkingRowName: plan is null ? string.Empty : Format("Row_Name", plan.ParkingStreet, plan.ParkingNote, Text("Checks_ParkingChip")));
@@ -531,15 +511,11 @@ public partial record MainModel
     /// <summary>A blank view to build a failure on, so every member stays non-null.</summary>
     private static EtaView Empty { get; } = new(
         Failed: false,
-        FailureMessage: string.Empty,
         TotalMinutes: 0,
-        ArrivalText: string.Empty,
         Traffic: TrafficLevel.Light,
         TrafficText: string.Empty,
         VsUsualText: string.Empty,
         IsLate: false,
-        RouteLeave: 0d,
-        RouteArrive: 1d,
         Tone: CardTone.Ok,
         LeaveCaption: string.Empty,
         LeaveValue: string.Empty,
@@ -554,9 +530,6 @@ public partial record MainModel
         DriveSegmentShort: string.Empty,
         WalkSegment: string.Empty,
         RulerDescription: string.Empty,
-        LeaveLabel: string.Empty,
-        ArriveLabel: string.Empty,
-        BellLabel: string.Empty,
         RouteDescription: string.Empty,
         MapNowLabel: string.Empty,
         MapWalkLabel: string.Empty);

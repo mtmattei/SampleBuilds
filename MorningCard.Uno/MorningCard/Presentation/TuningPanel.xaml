@@ -25,11 +25,13 @@
     second column of equal weight, and on a wide window it set the height of the row the card sat
     in. A low row under the card keeps the card the only thing at eye level.
   -->
-  <Border Background="{ThemeResource GlassSecondaryBrush}"
-          BorderBrush="{ThemeResource GlassEdgeBrush}"
-          BorderThickness="1"
-          CornerRadius="{ThemeResource MapCornerRadius}"
-          Padding="16,12,16,14">
+  <utu:CardContentControl Style="{StaticResource OutlinedCardContentControlStyle}"
+                          Margin="0"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch"
+                          BorderThickness="1"
+                          CornerRadius="{StaticResource MapCornerRadius}"
+                          Padding="16,12,16,14">
     <Grid RowSpacing="10">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
@@ -169,5 +171,5 @@
         </StackPanel>
       </ScrollViewer>
     </Grid>
-  </Border>
+  </utu:CardContentControl>
 </UserControl>

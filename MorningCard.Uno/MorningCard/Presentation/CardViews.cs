@@ -28,10 +28,8 @@ public record HeaderView(
     string HeadlineAccentInk,
     double HeadlineAccentSize,
     string ScheduleNote,
-    CardTone Tone,
     bool IsStale,
     string CarName,
-    string StatusBadge,
     string LockState,
     string LockAction,
     bool IsLocked,
@@ -44,8 +42,6 @@ public record GreetingView(string Greeting, string WeatherLine, string NowText);
 /// The ETA block and the route ruler. Reached only when there is a trip: no trip means the feed is
 /// none, which is what draws the empty state.
 /// </summary>
-/// <param name="RouteLeave">Where the drive starts along the path, 0 to 1.</param>
-/// <param name="RouteArrive">Where the walk starts along the path, 0 to 1.</param>
 /// <param name="Slack">The v6 slack ruler's layout; null on a failed lookup.</param>
 /// <param name="LeaveCaption">"LEAVE BY", or "LEAVE" once the answer is "Now".</param>
 /// <param name="LeaveValue">"7:33", or "Now".</param>
@@ -54,15 +50,11 @@ public record GreetingView(string Greeting, string WeatherLine, string NowText);
 /// <param name="RulerDescription">The ruler's one accessible name.</param>
 public record EtaView(
     bool Failed,
-    string FailureMessage,
     int TotalMinutes,
-    string ArrivalText,
     TrafficLevel Traffic,
     string TrafficText,
     string VsUsualText,
     bool IsLate,
-    double RouteLeave,
-    double RouteArrive,
     CardTone Tone,
     string LeaveCaption,
     string LeaveValue,
@@ -77,9 +69,6 @@ public record EtaView(
     string DriveSegmentShort,
     string WalkSegment,
     string RulerDescription,
-    string LeaveLabel,
-    string ArriveLabel,
-    string BellLabel,
     string RouteDescription,
     // The map's two callouts: "Now 7:24" and "3 min walk".
     string MapNowLabel,
@@ -89,10 +78,8 @@ public record EtaView(
     SlackRulerPlan? Slack = null);
 
 /// <summary>
-/// What the route ruler needs from the morning, handed over whole rather than pre-computed.
-///
-/// The layout cannot be built here: the tick interval depends on the resolution the map is fitted
-/// at, which only the view knows. So the model supplies the times and the view supplies the map.
+/// What the map overlay needs from the morning: the timeline (for the slack that places the now
+/// dot) and the times it was derived from. The model supplies the times; the view supplies the map.
 /// </summary>
 public record RulerPlan(TripTimeline Timeline, int WalkMin, TimeOnly Bell, TimeOnly Now);
 
@@ -183,8 +170,8 @@ public record CarView(
     bool ParkingOpen,
     bool HasDestination,
     bool IsStale,
-    string StatusBadge,
-    CardTone Tone,
+    // The cabin title greys out once skipped, as well as being struck through.
+    string CabinTitleInk,
     // One accessible name per row: title, meta and pill, since the pill is not its own stop.
     string FuelRowName,
     string CabinRowName,

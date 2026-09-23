@@ -11,14 +11,14 @@ on branch `feat/android-form-factors`. **Step 10 (resume v5 with the v6 part lis
 It stops on project restructuring and emulator downloads (see Open questions).
 
 ## Last verified state
-- Build: `net10.0-desktop` and `net10.0-android` Debug, 0 warnings, 0 errors. Tests 102/102.
+- Build: `net10.0-desktop` and `net10.0-android` Debug, 0 warnings, 0 errors. Tests 74/74 (dead-code tests removed with the code).
 - Runtime: the `uno-app` MCP disconnected mid-session, so runtime checks used the Debug exe with
   `APP_NO_HOTDESIGN=1`, `scripts/Capture-Tall.ps1` and DEBUG probes. Confirmed: the cabin flow
   (`MC_PROBE_CABIN`), Retry from ETA unavailable (`MC_PROBE_RETRY`: PASSED), the ruler grow-in, the
   live-dot pulse, and all 7 states on desktop plus 5 on the `chefs36` emulator.
 - Git: `db9eab8` plus this handoff. The only uncommitted files are the pre-v6 `captures/android/*`
   files from an earlier session, left alone on purpose.
-- Lint: CARD 1 · HEX 0 · TOKENTHEME 10 · BACKBAR 0 · CODEBEHIND 8 · OVERLAY 0 · RESPONSIVE 0 · BUILTIN 1 · WORKAROUND 1.
+- Lint (after uno-audit): all gating rules 0 (exit 0); TEMPLATE 4 info, each with its reason.
 
 ## Guidance applied
 | Skill / rule / decision | Applied at (file:line) |
@@ -42,10 +42,8 @@ Read, not applied: none.
 
 ## Open questions
 - Should v5 go ahead (library split plus TV, Wear and Auto), and may it download the system images?
-- Lint: TOKENTHEME 10 are single-value converter brushes, correct now that the app is light only (B6).
-  CARD 1 is the Simulator panel, CODEBEHIND 8 is the card's lifecycle and fit handlers, and BUILTIN 1 is
-  `CardShadowCanvas`, which is deliberate (see the ShadowContainer gotcha in the rules file). Clean these
-  up, or add allow notes?
+- uno-audit done 2026-09-23: test packages bumped, TimeRulerLayout and the route time machinery deleted (H6),
+  dead converters/styles/strings removed, Start drive now really opens Maps, status pills are Toolkit Chips.
 - Accepted v6 deviations are listed in SPEC.md under v6 Unresolved Questions (pills, pill offset, now-dot fan-out).
 
 ## Relaunch

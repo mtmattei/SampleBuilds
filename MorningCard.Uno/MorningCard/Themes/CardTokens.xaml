@@ -72,8 +72,6 @@
       <Color x:Key="CardShadowNearColor">#0F2A2C2F</Color>
       <Color x:Key="CardShadowFarColor">#612A2C2F</Color>
       <Color x:Key="SunInkColor">#B5824F</Color>
-      <!-- Covers the tiles when the map has no route to show. -->
-      <Color x:Key="MapScrimColor">#E6EFEEE9</Color>
       <Color x:Key="MapPillColor">#FBFAF7</Color>
       <Color x:Key="AccentChipColor">#1F4A6B8A</Color>
       <Color x:Key="AmberChipColor">#F0EADF</Color>
@@ -84,9 +82,6 @@
       <Color x:Key="EtaScrimFadeColor">#00FFFFFF</Color>
       <Color x:Key="EtaScrimStop1Color">#E6FFFFFF</Color>
       <Color x:Key="EtaScrimStop2Color">#73FFFFFF</Color>
-      <Color x:Key="EtaScrimStop3Color">#40FFFFFF</Color>
-      <Color x:Key="EtaScrimStop4Color">#1AFFFFFF</Color>
-      <Color x:Key="EtaScrimStop5Color">#08FFFFFF</Color>
       <!-- Ground for controls sitting on top of map tiles. -->
       <!-- Checklist pills (v6): neutral for suggested and skipped, slate-tinted while warming. -->
       <Color x:Key="NeutralChipColor">#EAE7E0</Color>
@@ -139,7 +134,6 @@
       <SolidColorBrush x:Key="MapWaterBrush" Color="{StaticResource MapWaterColor}" />
       <SolidColorBrush x:Key="PinBrush" Color="{StaticResource PinColor}" />
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
-      <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
       <SolidColorBrush x:Key="MapPillBrush" Color="{StaticResource MapPillColor}" />
       <SolidColorBrush x:Key="AccentChipBrush" Color="{StaticResource AccentChipColor}" />
       <SolidColorBrush x:Key="AmberChipBrush" Color="{StaticResource AmberChipColor}" />
@@ -184,7 +178,6 @@
   <Thickness x:Key="CardPadding">8</Thickness>
 
   <!-- What the top padding gave up, so the row still ends where it did. -->
-  <Thickness x:Key="StatusStripMargin">0,0,0,11</Thickness>
 
   <!--
     The same problem at the other end, mirrored. The bottom band runs from the inner card's edge to
@@ -192,7 +185,6 @@
     its band this time. The bottom padding gives up 12 and this takes it back, so again the band
     and the card height are unchanged.
   -->
-  <Thickness x:Key="BottomBarMargin">0,10,0,0</Thickness>
   <!-- 529: the original 400 plus 15% twice. The two-column stage is two of these plus the 24 gap and
        the stage's own 16 of side padding each way. -->
   <x:Double x:Key="CardMaxWidth">552</x:Double>

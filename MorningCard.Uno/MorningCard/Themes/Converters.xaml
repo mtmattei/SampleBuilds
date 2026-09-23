@@ -6,32 +6,29 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:mp="using:MorningCard.Presentation">
 
-  <mp:StatLevelBrushConverter x:Key="StatLevelBrush" />
-  <mp:StatLevelFillConverter x:Key="StatLevelFill" />
-  <mp:TrafficBrushConverter x:Key="TrafficBrush" />
-  <mp:ToneBrushConverter x:Key="ToneBrush" />
-  <mp:ChecksHeaderRadiusConverter x:Key="ChecksHeaderRadius" />
-  <mp:CheckDotBrushConverter x:Key="CheckDotBrush" />
-  <mp:AccentToneConverter x:Key="AccentTone" />
-  <mp:ToneChipBrushConverter x:Key="ToneChipBrush" />
-  <mp:ToneChipInkConverter x:Key="ToneChipInk" />
-  <mp:ToneTrackBrushConverter x:Key="ToneTrackBrush" />
   <mp:BoolToAngleConverter x:Key="BoolToAngle" />
-  <mp:LateInkConverter x:Key="LateInk" />
-  <mp:StaleOpacityConverter x:Key="StaleOpacity" />
   <mp:BoolToVisibilityConverter x:Key="BoolToVisibility" />
   <mp:InverseBoolConverter x:Key="InverseBool" />
-  <mp:BoolToOpacityConverter x:Key="BoolToOpacity" />
   <mp:NullToVisibilityConverter x:Key="NullToVisibility" />
-  <mp:PercentToStarConverter x:Key="PercentToStar" />
-  <mp:CabinPillBrushConverter x:Key="CabinPillBrush" />
-  <mp:CabinPillInkConverter x:Key="CabinPillInk" />
-  <mp:CabinIconBrushConverter x:Key="CabinIconBrush" />
-  <mp:FuelPillBrushConverter x:Key="FuelPillBrush" />
-  <mp:FuelPillInkConverter x:Key="FuelPillInk" />
   <mp:BoolToStrikeConverter x:Key="BoolToStrike" />
+
+  <!--
+    Brush converters. Each returns one card token per state; the app is light only (v6 decision B6),
+    so a single value per token is the design, not a missing dark variant.
+  -->
+  <!-- xaml-lint: allow tokentheme - light-only app (B6) -->
+  <mp:TrafficBrushConverter x:Key="TrafficBrush" />
+  <!-- xaml-lint: allow tokentheme - light-only app (B6) -->
+  <mp:CabinPillBrushConverter x:Key="CabinPillBrush" />
+  <!-- xaml-lint: allow tokentheme - light-only app (B6) -->
+  <mp:CabinPillInkConverter x:Key="CabinPillInk" />
+  <!-- xaml-lint: allow tokentheme - light-only app (B6) -->
+  <mp:CabinIconBrushConverter x:Key="CabinIconBrush" />
+  <!-- xaml-lint: allow tokentheme - light-only app (B6) -->
+  <mp:FuelPillBrushConverter x:Key="FuelPillBrush" />
+  <!-- xaml-lint: allow tokentheme - light-only app (B6) -->
+  <mp:FuelPillInkConverter x:Key="FuelPillInk" />
+  <!-- xaml-lint: allow tokentheme - light-only app (B6) -->
   <mp:TokenBrushConverter x:Key="TokenBrush" />
 
 </ResourceDictionary>
-
-

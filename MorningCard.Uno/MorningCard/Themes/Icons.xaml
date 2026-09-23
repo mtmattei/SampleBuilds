@@ -22,11 +22,8 @@
   <x:String x:Key="IconFuel">&#xE2AF;</x:String>
   <x:String x:Key="IconThermometer">&#xE186;</x:String>
   <x:String x:Key="IconParking">&#xE3C9;</x:String>
-  <x:String x:Key="IconRefresh">&#xE149;</x:String>
   <x:String x:Key="IconArrowUpRight">&#xE04D;</x:String>
   <x:String x:Key="IconSchool">&#xE234;</x:String>
-  <x:String x:Key="IconWifiOff">&#xE1AF;</x:String>
-  <x:String x:Key="IconUndo">&#xE2A1;</x:String>
 
   <!-- An icon beside card text. Size and colour are set per use. -->
   <Style x:Key="CardIcon" TargetType="FontIcon">

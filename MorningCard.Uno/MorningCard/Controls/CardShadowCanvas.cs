@@ -16,6 +16,7 @@ namespace MorningCard.Controls;
 ///
 /// Drawing is clipped to the element, so this sits at a negative margin to leave room for the blur.
 /// </summary>
+// xaml-lint: allow builtin - ShadowContainer paints under a translucent shell and tints it (rules file); this draws the v6 ring and two shadows outside it
 public sealed partial class CardShadowCanvas : SKCanvasElement
 {
     /// <summary>How far the element extends past the card on every side, in effective pixels.</summary>

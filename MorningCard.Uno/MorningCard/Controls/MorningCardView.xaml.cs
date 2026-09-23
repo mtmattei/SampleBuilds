@@ -1,8 +1,7 @@
 using Microsoft.UI.Xaml.Media.Animation;
+using MorningCard.Core.Route;
 using MorningCard.Themes;
 using Windows.Foundation;
-using MorningCard.Core.Route;
-using Windows.System;
 
 namespace MorningCard.Controls;
 
@@ -12,15 +11,6 @@ namespace MorningCard.Controls;
 /// </summary>
 public sealed partial class MorningCardView : UserControl
 {
-    /// <summary>
-    /// The drop-off, in Montreal's Plateau. A fixed point because the trip itself is simulated:
-    /// the sample has no routing service and no location capability, so inventing a moving origin
-    /// would be impersonating one.
-    /// </summary>
-    private const double DestinationLatitude = 45.5250;
-
-    private const double DestinationLongitude = -73.5795;
-
     public MorningCardView()
     {
         InitializeComponent();
@@ -29,6 +19,7 @@ public sealed partial class MorningCardView : UserControl
         Unloaded += OnUnloaded;
     }
 
+    // xaml-lint: allow codebehind - lifecycle: starts the Mapsui map and the radius dial subscription, no XAML surface
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         CardChrome.Changed += OnChromeChanged;
@@ -122,6 +113,7 @@ public sealed partial class MorningCardView : UserControl
         return rise;
     }
 
+    // xaml-lint: allow codebehind - lifecycle: releases the static CardChrome subscription
     private void OnUnloaded(object sender, RoutedEventArgs e) => CardChrome.Changed -= OnChromeChanged;
 
     private void OnChromeChanged(object? sender, EventArgs e) => ApplyChrome();
@@ -130,9 +122,8 @@ public sealed partial class MorningCardView : UserControl
     /// Puts OSM tiles under the route, then fits and locks the map to the route it has to carry.
     ///
     /// Since v4 the route is real geometry rather than a schematic path, so the map is no longer a
-    /// textured backdrop: the two have to agree. The map is pan- and zoom-locked because the card
-    /// shows one fixed trip and the ruler's tick interval is chosen once, for the resolution the
-    /// route is fitted at.
+    /// textured backdrop: the two have to agree. The map is pan- and zoom-locked (B4, I6) because
+    /// the card shows one fixed trip; Open in Maps is the way out to a live map.
     /// </summary>
     private async Task ShowMapAsync()
     {
@@ -164,18 +155,18 @@ public sealed partial class MorningCardView : UserControl
                 // No asset means no route to fit to, so the map keeps a plain view of the school
                 // and the ruler draws nothing. The card's other rows still have something to say.
                 var fallback = Mapsui.Projections.SphericalMercator.FromLonLat(
-                    DestinationLongitude, DestinationLatitude);
+                    Destination.Longitude, Destination.Latitude);
 
                 map.Navigator.CenterOnAndZoomTo(new Mapsui.MPoint(fallback.x, fallback.y), 4);
                 return;
             }
 
             // The fit waits for the viewport to have a size: on a slow start (the emulator) the route
-            // arrived first, the navigator ignored the fit, the ruler found no viewport to choose an
-            // interval for, and the route never drew. The viewport reporting a size is the signal.
+            // arrived first, the navigator ignored the fit, and the route never drew. The viewport
+            // reporting a size is the signal.
             _route = geometry;
             _fittedSize = default;
-            _intervalChosen = false;
+            _viewportReady = false;
             Ruler.Geometry = geometry;
             map.Navigator.ViewportChanged += OnViewportChanged;
             FitToRoute();
@@ -207,6 +198,7 @@ public sealed partial class MorningCardView : UserControl
     /// Moves the route's left edge to wherever the ETA text actually ends, so the fit keeps the
     /// route clear of it. The scrim is a fixed ramp since v6.
     /// </summary>
+    // xaml-lint: allow codebehind - measured ETA text edge bounds the Mapsui route fit (map-control API)
     private void OnEtaBlockSizeChanged(object sender, SizeChangedEventArgs e)
     {
         if (sender is not FrameworkElement block)
@@ -233,8 +225,9 @@ public sealed partial class MorningCardView : UserControl
     private RouteGeometry? _route;
     private Size _fittedSize;
 
-    private bool _intervalChosen;
+    private bool _viewportReady;
 
+    // xaml-lint: allow codebehind - Mapsui navigator event: refits the locked map on resize (map-control API)
     private void OnViewportChanged(object? sender, EventArgs e) => FitToRoute();
 
     /// <summary>
@@ -283,33 +276,11 @@ public sealed partial class MorningCardView : UserControl
         map.Navigator.ZoomLock = true;
         map.Navigator.RotationLock = true;
 
-        // The tick interval is chosen once, for the resolution the route is first fitted at; it
-        // also plays the route's entrance, which a later resize should not replay.
-        if (!_intervalChosen)
+        // The route's entrance plays once, when it is first fitted; a later resize should not replay it.
+        if (!_viewportReady)
         {
-            _intervalChosen = true;
-            Ruler.ChooseInterval();
-        }
-    }
-
-    /// <summary>
-    /// Opens the platform maps app at the drop-off.
-    ///
-    /// Wired to a real launch rather than left as a decorative pill: a control that looks tappable
-    /// and does nothing is the failure mode the capability rule exists to prevent.
-    /// </summary>
-    private async void OnOpenInMaps(object sender, RoutedEventArgs e)
-    {
-        var uri = new Uri(FormattableString.Invariant(
-            $"geo:{DestinationLatitude},{DestinationLongitude}?q={DestinationLatitude},{DestinationLongitude}"));
-
-        try
-        {
-            await Launcher.LaunchUriAsync(uri);
-        }
-        catch (Exception error)
-        {
-            DebugTrace($"Open in Maps failed for {uri}: {error.GetType().Name}: {error.Message}");
+            _viewportReady = true;
+            Ruler.OnViewportReady();
         }
     }
 
@@ -335,6 +306,7 @@ public sealed partial class MorningCardView : UserControl
         }
 
         // A collapsed chip measures to zero, so its width is remembered while it is showing.
+        // xaml-lint: allow codebehind - content-fit reads the chip state, see OnChecksHeaderSizeChanged
         if (chip.Visibility == Visibility.Visible)
         {
             _checksChipWidth = chip.DesiredSize.Width;
@@ -346,6 +318,7 @@ public sealed partial class MorningCardView : UserControl
             + row.Children[4].DesiredSize.Width
             + (row.ColumnSpacing * 5);
 
+        // xaml-lint: allow codebehind - content-fit on measured text widths, see OnChecksHeaderSizeChanged
         chip.Visibility = e.NewSize.Width - fixedWidth >= _checksChipWidth ? Visibility.Visible : Visibility.Collapsed;
     }
 

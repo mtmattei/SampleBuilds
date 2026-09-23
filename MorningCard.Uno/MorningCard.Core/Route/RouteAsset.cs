@@ -49,7 +49,7 @@ public static class RouteAsset
 {
     /// <summary>
     /// Parses the asset. Returns null when it is missing, malformed, or describes a drive with no
-    /// shape - the caller falls back to pins and the strip rather than taking the card down.
+    /// shape - the caller falls back to the tiles alone rather than taking the card down.
     /// </summary>
     public static RouteGeometry? TryParse(string json)
     {
@@ -94,8 +94,8 @@ public static class RouteAsset
     /// </summary>
     /// <remarks>
     /// Zero-length edges come out of OSRM wherever it repeats a coordinate at a junction. They
-    /// carry no ground and would sit in the cumulative arrays as points a tick can never usefully
-    /// land on, so they go here rather than being special-cased in the layout.
+    /// carry no ground and only add zero-length segments to the drawn path, so they go here rather
+    /// than being special-cased later.
     /// </remarks>
     private static RouteLeg? BuildLeg(RouteMode mode, RouteLegAsset? asset)
     {

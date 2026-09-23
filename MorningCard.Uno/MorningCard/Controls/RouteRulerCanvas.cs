@@ -1,6 +1,5 @@
 // Uno ships its own MapControl in Microsoft.UI.Xaml.Controls, which has no desktop support and is
 // not the one here. Aliased rather than fully qualified, which would read the same eight times.
-using MapControl = Mapsui.UI.WinUI.MapControl;
 using Microsoft.UI.Xaml.Automation;
 using MorningCard.Core.Models;
 using MorningCard.Core.Route;
@@ -10,6 +9,7 @@ using Uno.WinUI.Graphics2DSK;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.UI.ViewManagement;
+using MapControl = Mapsui.UI.WinUI.MapControl;
 
 namespace MorningCard.Controls;
 
@@ -120,12 +120,6 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         get => (MapControl?)GetValue(MapProperty);
         set => SetValue(MapProperty, value);
     }
-
-    /// <summary>
-    /// The tick interval, chosen once from the resolution the map was fitted at. The map is pan-
-    /// and zoom-locked, so that is the only resolution the route is ever drawn at.
-    /// </summary>
-    private int _interval = 1;
 
     protected override void RenderOverride(SKCanvas canvas, Size area)
     {
@@ -302,7 +296,7 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
     }
 
     /// <summary>
-    /// Lays the morning's times onto the route and projects the result into this canvas's pixels.
+    /// Projects the route into this canvas's pixels.
     /// </summary>
     /// <remarks>
     /// Returns null until all three parts are present - the trip, the asset and a sized map. Any
@@ -311,7 +305,7 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
     /// </remarks>
     private RulerProjection? Project(EtaView? eta)
     {
-        if (eta?.Ruler is not { } plan || Geometry is not { } geometry)
+        if (eta?.Ruler is null || Geometry is not { } geometry)
         {
             return null;
         }
@@ -321,29 +315,23 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
             return null;
         }
 
-        var layout = TimeRulerLayout.Compute(
-            geometry, plan.Timeline, plan.WalkMin, plan.Bell, plan.Now, _interval);
-
-        return RulerProjection.Create(layout, viewport);
+        return RulerProjection.Create(geometry, viewport);
     }
 
     /// <summary>
-    /// Picks the tick interval for the resolution the map has settled at. Called once per viewport,
-    /// not per refresh: the answer only changes when the map is resized.
+    /// Called once the map has been fitted: the first moment there is a route on screen. The asset
+    /// loads after the trip does, so the entrance that played when the ETA arrived had nothing to
+    /// draw; it plays here instead.
     /// </summary>
-    public void ChooseInterval()
+    public void OnViewportReady()
     {
-        if (Geometry is not { } geometry ||
-            Map?.Map?.Navigator.Viewport is not { Width: > 0 } viewport)
+        if (Geometry is null || Map?.Map?.Navigator.Viewport is not { Width: > 0 })
         {
             return;
         }
 
-        _interval = TimeRulerLayout.ChooseInterval(geometry, viewport.Resolution);
         Refresh();
 
-        // The asset loads after the trip does, so the entrance that played when the ETA arrived had
-        // nothing to draw. This is the first moment there is a route on screen, so it plays here.
         if (_snapshot.Projection is not null)
         {
             PlayEntrance();

@@ -313,7 +313,7 @@
                       HorizontalAlignment="Right"
                       VerticalAlignment="Bottom"
                       Margin="0,0,12,30"
-                      Click="OnOpenInMaps">
+                      Command="{Binding OpenInMaps}">
                 <StackPanel Orientation="Horizontal" Spacing="5">
                   <TextBlock x:Uid="OpenInMapsLabel" VerticalAlignment="Center" />
                   <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconArrowUpRight}" FontSize="12" Foreground="{ThemeResource InkStrongBrush}" VerticalAlignment="Center" />
@@ -505,7 +505,8 @@
                                     Foreground="{Binding Data.Cabin, Converter={StaticResource CabinIconBrush}}" />
                           <StackPanel Grid.Column="1" Spacing="1" VerticalAlignment="Center">
                             <TextBlock x:Uid="ChecksCabinTitle" Style="{StaticResource RowTitle}"
-                                       TextDecorations="{Binding Data.CabinSkipped, Converter={StaticResource BoolToStrike}}" />
+                                       TextDecorations="{Binding Data.CabinSkipped, Converter={StaticResource BoolToStrike}}"
+                                       Foreground="{Binding Data.CabinTitleInk, Converter={StaticResource TokenBrush}}" />
                             <TextBlock Style="{StaticResource RowMeta}" Text="{Binding Data.CabinMeta}" />
                           </StackPanel>
                           <utu:Chip Style="{StaticResource StatusPillStyle}" Grid.Column="2" Background="{Binding Data.Cabin, Converter={StaticResource CabinPillBrush}}" Foreground="{Binding Data.Cabin, Converter={StaticResource CabinPillInk}}" Content="{Binding Data.CabinPill}" />
