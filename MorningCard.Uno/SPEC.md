@@ -1347,6 +1347,34 @@ dropped). Each step ends in a build, a runtime check and one commit.
 10. Continue with v5 step 2 (split) using the v6 part list; v5 steps 5-9 target the v6 surface
     artboards.
 
+### v6 parity results (step 9, 2026-09-23)
+
+Captures: `captures/v6/desktop-*.png` (7 states, 552 epx card) and `captures/android/v6/*.png`
+(`chefs36`, 1080x2400, 411 epx wide). Scored as an element checklist against `png/phone_*.png`:
+each element the artboard draws is present and matches its token, type and placement, or it is
+counted as a miss. Deviations already decided (C6 XC60, M6 letter-spacing, T6 OSM labels) are not
+counted; the omitted Recenter (I6) is.
+
+| State | Elements | Desktop | Android | Misses |
+|---|---|---|---|---|
+| On time | 24 | 23 (96%) | 22 (92%) | Recenter (I6); Android: "Walk" label dropped by the width rule at 411 epx |
+| Leave now | 23 | 22 (96%) | 22 (96%) | Recenter |
+| Running late | 24 | 23 (96%) | 23 (96%) | Recenter |
+| Loading | 18 | 17 (94%) | 16 (89%) | Recenter; Android: "3 checks" chip steps aside at 411 epx |
+| ETA unavailable | 24 | 23 (96%) | 23 (96%) | Recenter |
+| No drop-off | 14 | 13 (93%) | 13 (93%) | Recenter |
+| Car offline | 27 | 25 (93%) | 25 (93%) | Recenter; Start drive enabled (J6, deliberate) |
+
+All states pass the 85% bar on both heads. Runtime checks: the cabin flow (Start, Undo, Skip, Undo)
+traced correct pills, meta lines and ready counts (`MC_PROBE_CABIN`); Retry from ETA unavailable
+recovers the live ETA (`MC_PROBE_RETRY`: PASSED). Geist, the Lucide glyphs, the muted XC60 and the
+tinted tiles load on Android.
+
+Spec items **not built yet** (raise, do not absorb):
+- The footer live dot's opacity pulse on the shared ~30 fps timer (v6 Animations).
+- The ruler blocks' ScaleX grow-in inside the entrance (v6 Animations).
+- Invisible 4-8 px hit extensions to bring the 32 px map pill and 40 px footer buttons to 48 px (v6 Accessibility).
+
 ## v6 Delegated Decisions (Claude, on the user's instruction to decide by best practice, 2026-09-23)
 
 | # | Question | Decision | Reason |
@@ -1387,3 +1415,6 @@ None blocking. Accepted substitutions and omissions, listed so they stay visible
 - **The simulated car now starts with climate off**, so the cabin row opens as the design's Suggested
   state ("2 of 3 ready").
 - **Open in Maps sits 30 px from the bottom (artboard: 12)** so it does not cover the OSM attribution.
+- **Not built yet:** live-dot pulse, ruler grow-in, 48 px hit extensions (see v6 parity results).
+- **The now dot on the map** follows the artboard (back along the first drive heading) but fans out
+  to stay on the panel, off the route and clear of the pin and callouts on real geography.

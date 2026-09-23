@@ -143,8 +143,8 @@ internal sealed class RouteRulerRenderer : IDisposable
         if (labelT > 0f)
         {
             var alpha = (byte)(255 * Math.Clamp(labelT, 0f, 1f));
-            DrawNowCallout(canvas, snapshot.NowLabel, now, snapshot.SlackMin > 0, palette, alpha, area);
-            DrawWalkCallout(canvas, snapshot.WalkLabel, projection.Destination, palette, alpha, area);
+            var walkBox = DrawWalkCallout(canvas, snapshot.WalkLabel, projection.Destination, palette, alpha, area);
+            DrawNowCallout(canvas, snapshot.NowLabel, now, snapshot.SlackMin > 0, projection.Destination, walkBox, palette, alpha, area);
         }
     }
 
@@ -374,10 +374,21 @@ internal sealed class RouteRulerRenderer : IDisposable
     // ---- callouts ------------------------------------------------------------------------------
 
     /// <summary>
-    /// "Now 7:24": above the dot while there is slack, to its left once leaving is now, where the
-    /// route would otherwise run through it.
+    /// "Now 7:24": above the dot while there is slack, to its left once leaving is now (the
+    /// artboard's two places). On a small phone map the route is compact enough for either to land
+    /// on the school pin or the walk callout, so below and right are tried next, and the first slot
+    /// that is clear and inside the panel wins.
     /// </summary>
-    private void DrawNowCallout(SKCanvas canvas, string text, SKPoint at, bool hasSlack, RouteRulerPalette palette, byte alpha, SKSize area)
+    private void DrawNowCallout(
+        SKCanvas canvas,
+        string text,
+        SKPoint at,
+        bool hasSlack,
+        SKPoint school,
+        SKRect walkBox,
+        RouteRulerPalette palette,
+        byte alpha,
+        SKSize area)
     {
         if (string.IsNullOrEmpty(text))
         {
@@ -385,29 +396,47 @@ internal sealed class RouteRulerRenderer : IDisposable
         }
 
         var (width, height) = CalloutSize(text);
-        var (left, top) = hasSlack
-            ? (at.X - (width / 2f), at.Y - 14f - height)
-            : (at.X - 16f - width, at.Y - (height / 2f));
+        var above = (at.X - (width / 2f), at.Y - 14f - height);
+        var left = (at.X - 16f - width, at.Y - (height / 2f));
+        var below = (at.X - (width / 2f), at.Y + 14f);
+        var right = (at.X + 16f, at.Y - (height / 2f));
 
-        Callout(canvas, text, left, top, width, height, palette.Surface, palette.CalloutInk, palette, alpha, area);
+        var pin = new SKRect(school.X - PinRadius - 4f, school.Y - PinRadius - 4f, school.X + PinRadius + 4f, school.Y + PinRadius + 4f);
+        var candidates = hasSlack ? new[] { above, below, left, right } : new[] { left, right, above, below };
+        var chosen = candidates[0];
+
+        foreach (var (x, y) in candidates)
+        {
+            var box = SKRect.Create(x, y, width, height);
+            var inside = box.Left >= CalloutMargin && box.Top >= CalloutMargin
+                && box.Right <= area.Width - CalloutMargin && box.Bottom <= area.Height - CalloutMargin;
+
+            if (inside && !box.IntersectsWith(pin) && !box.IntersectsWith(walkBox))
+            {
+                chosen = (x, y);
+                break;
+            }
+        }
+
+        Callout(canvas, text, chosen.Item1, chosen.Item2, width, height, palette.Surface, palette.CalloutInk, palette, alpha, area);
     }
 
     /// <summary>"3 min walk": up and to the right of the school pin, as the artboard places it.</summary>
-    private void DrawWalkCallout(SKCanvas canvas, string text, SKPoint school, RouteRulerPalette palette, byte alpha, SKSize area)
+    private SKRect DrawWalkCallout(SKCanvas canvas, string text, SKPoint school, RouteRulerPalette palette, byte alpha, SKSize area)
     {
         if (string.IsNullOrEmpty(text))
         {
-            return;
+            return SKRect.Empty;
         }
 
         var (width, height) = CalloutSize(text);
-        Callout(canvas, text, school.X - 5f, school.Y - PinRadius - 12f - height, width, height, palette.WalkPlate, palette.AmberInk, palette, alpha, area);
+        return Callout(canvas, text, school.X - 5f, school.Y - PinRadius - 12f - height, width, height, palette.WalkPlate, palette.AmberInk, palette, alpha, area);
     }
 
     private (float Width, float Height) CalloutSize(string text) =>
         (_calloutFont.MeasureText(text) + (CalloutPadX * 2f), CalloutLineHeight + (CalloutPadY * 2f));
 
-    private void Callout(
+    private SKRect Callout(
         SKCanvas canvas,
         string text,
         float left,
@@ -436,6 +465,8 @@ internal sealed class RouteRulerRenderer : IDisposable
         _fill.Color = ink.WithAlpha(alpha);
         _calloutFont.MeasureText(text, out var bounds);
         canvas.DrawText(text, box.Left + CalloutPadX, box.MidY - bounds.MidY, _calloutFont, _fill);
+
+        return box;
     }
 
     // ---- helpers ------------------------------------------------------------------------------

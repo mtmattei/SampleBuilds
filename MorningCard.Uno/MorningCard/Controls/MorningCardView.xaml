@@ -55,8 +55,9 @@
       <utu:CardContentControl Style="{StaticResource OutlinedCardContentControlStyle}" Margin="0" Padding="14,0"
                               HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                               CornerRadius="16" BorderThickness="1" BorderBrush="{ThemeResource LineBrush}">
-        <Grid Height="52" ColumnSpacing="10">
+        <Grid Height="52" ColumnSpacing="10" SizeChanged="OnChecksHeaderSizeChanged">
           <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -68,8 +69,8 @@
           <Border Grid.Column="2" Style="{StaticResource StatusPillStyle}" HorizontalAlignment="Left" Background="{ThemeResource ChipBrush}">
             <TextBlock x:Uid="ChecksLoadingCount" Style="{StaticResource PillText}" VerticalAlignment="Center" Foreground="{ThemeResource Ink2Brush}" />
           </Border>
-          <TextBlock Grid.Column="3" x:Uid="ChecksChecking" Style="{StaticResource HeaderMeta}" VerticalAlignment="Center" />
-          <FontIcon Grid.Column="4" Style="{StaticResource CardIcon}" Glyph="{StaticResource IconChevronDown}" FontSize="16"
+          <TextBlock Grid.Column="4" x:Uid="ChecksChecking" Style="{StaticResource HeaderMeta}" VerticalAlignment="Center" />
+          <FontIcon Grid.Column="5" Style="{StaticResource CardIcon}" Glyph="{StaticResource IconChevronDown}" FontSize="16"
                     Foreground="{ThemeResource FaintBrush}" VerticalAlignment="Center" />
         </Grid>
       </utu:CardContentControl>
