@@ -45,16 +45,6 @@ internal static class DebugHooks
         if (Read("MC_TIRE") is { } tire && int.TryParse(tire, out var psi))
         {
         }
-        if (Read("MC_REDUCEDMOTION") == "1")
-        {
-            Themes.CardChrome.ReducedMotion = true;
-        }
-
-        if (Read("MC_MOTION") is { } motion && double.TryParse(motion, CultureInfo.InvariantCulture, out var speed))
-        {
-            Themes.CardChrome.MotionSpeed = speed;
-        }
-
 
         switch (Read("MC_STATE")?.ToLowerInvariant())
         {

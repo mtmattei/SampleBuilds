@@ -28,8 +28,8 @@ public sealed record RouteRulerSnapshot
 
     public string BellLabel { get; init; } = string.Empty;
 
-    /// <summary>0 to 1 across the whole entrance; 1 means settled.</summary>
-    public double Progress { get; init; } = 1d;
+    /// <summary>The map panel's corner, so the map's tone is clipped to the panel's shape.</summary>
+    public float MapCornerRadius { get; init; } = 20f;
 
     public RouteRulerPalette Palette { get; init; } = RouteRulerPalette.Fallback;
 
@@ -53,15 +53,14 @@ public sealed record RouteRulerPalette(
 {
     /// <summary>Light-theme values, used until the control has read the live resources.</summary>
     public static RouteRulerPalette Fallback { get; } = new(
-        Map: new SKColor(0xEC, 0xEF, 0xEC),
-        Ink3: new SKColor(0x98, 0xA1, 0xAB),
-        Accent: new SKColor(0x21, 0x69, 0xE9),
+        Map: new SKColor(0xEE, 0xEC, 0xE6),
+        Ink3: new SKColor(0x6E, 0x78, 0x85),
+        Accent: new SKColor(0x4A, 0x6B, 0x8A),
         OnAccent: SKColors.White,
-        Amber: new SKColor(0xE8, 0x93, 0x1C),
-        AmberInk: new SKColor(0xB8, 0x69, 0x0A),
-        Danger: new SKColor(0xD9, 0x45, 0x3A),
-        DangerInk: new SKColor(0xB7, 0x35, 0x2C),
-        Pin: new SKColor(0x3A, 0x42, 0x4B),
+        Amber: new SKColor(0xB5, 0x82, 0x4F),
+        AmberInk: new SKColor(0x85, 0x59, 0x2D),
+        Danger: new SKColor(0xA8, 0x5A, 0x45),
+        DangerInk: new SKColor(0x8E, 0x45, 0x33),
+        Pin: new SKColor(0x3D, 0x3A, 0x35),
         NodeStroke: SKColors.White);
 }
-

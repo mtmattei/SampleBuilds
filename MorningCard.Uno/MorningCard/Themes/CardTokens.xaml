@@ -1,14 +1,16 @@
 <!--
-  The card's palette. Light is the base and dark redefines the same names, matching the prototype's
-  CSS custom properties one for one.
+  The card's palette. Light is the base and dark redefines the same names.
 
   Colours and their brushes both live inside the theme dictionaries. Brushes at the root would be a
   single shared instance resolved against the application's theme, and the theme service switches
   the root element's theme instead - which left the map panel drawing its light palette on a dark
   card. Per-theme brushes resolve against the element that uses them.
 
-  The hue dial mutates the accent brushes in place, in both dictionaries. That is the only way to
-  hit the design's exact hsl() values: Material's seed derives HCT tones, which do not match.
+  The hue dial mutates the accent brushes in place, in both dictionaries (see AccentPalette).
+
+  Matte, not glass: the frame and the panels are opaque paper, each with one hairline and, for the
+  frame only, one soft ambient shadow. One muted slate-blue carries every route and time meaning;
+  the other hues are quiet states - clay for walking, sage for ready, tan for "soon", brick for late.
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -16,68 +18,62 @@
   <ResourceDictionary.ThemeDictionaries>
 
     <ResourceDictionary x:Key="Light">
-      <Color x:Key="GroundColor">#D9D6D0</Color>
+      <Color x:Key="GroundColor">#E3E0D9</Color>
 
-      <Color x:Key="GlassColor">#9EFFFFFF</Color>
-      <Color x:Key="GlassEdgeColor">#C7FFFFFF</Color>
-      <Color x:Key="GlassSecondaryColor">#8CFFFFFF</Color>
-      <!-- The white card nested inside the shell. Opaque, unlike the shell: the mockup reads as
-           paper on frosted glass, and a translucent inner card let the backdrop through it. -->
-      <Color x:Key="CardSurfaceColor">#FFFFFFFF</Color>
+      <!-- The outer frame: flat warm paper grey. -->
+      <Color x:Key="FrameColor">#F1EFE9</Color>
+      <!-- The panels inside it: warm off-white. -->
+      <Color x:Key="CardSurfaceColor">#FBFAF7</Color>
 
       <Color x:Key="InkColor">#1B2430</Color>
       <Color x:Key="Ink2Color">#4C555F</Color>
-      <!-- 3.05:1 on the glass composite as an informational graphic; #98A1AB was 1.84:1. -->
       <Color x:Key="Ink3Color">#6E7885</Color>
-      <Color x:Key="LineColor">#1A1B2430</Color>
-      <Color x:Key="ChipColor">#0F1B2430</Color>
+      <!-- The one hairline every surface carries. Warm, so it sits in the paper rather than on it. -->
+      <Color x:Key="LineColor">#243A342A</Color>
+      <Color x:Key="ChipColor">#123A342A</Color>
 
-      <!-- hsl(218 82% 52%) and hsl(218 70% 42%): the default route accent. -->
-      <Color x:Key="AccentColor">#2169E9</Color>
-      <Color x:Key="AccentInkColor">#2057B6</Color>
+      <!-- hsl(209 30% 41.5%) and hsl(209 30% 36%): the route accent. 5.3:1 on the panel. -->
+      <Color x:Key="AccentColor">#4A6B8A</Color>
+      <Color x:Key="AccentInkColor">#405D77</Color>
       <Color x:Key="OnAccentColor">#FFFFFF</Color>
 
-      <Color x:Key="GoodColor">#1F8A5B</Color>
-      <Color x:Key="GoodInkColor">#1B7A51</Color>
-      <!-- The walk leg, on the map ground: 3.16:1. #E8931C was 2.10:1. -->
-      <Color x:Key="AmberColor">#B5700D</Color>
-      <!-- 4.65:1 on the 62% glass composite; #B8690A was 2.92:1, under the 4.5 minimum. -->
-      <Color x:Key="AmberInkColor">#8A4E06</Color>
-      <Color x:Key="DangerColor">#D9453A</Color>
-      <!-- 5.02:1 on the same composite; #B7352C was 4.15:1. -->
-      <Color x:Key="DangerInkColor">#A32C24</Color>
+      <!-- Sage: ready. The ink is 5.4:1 on the panel. -->
+      <Color x:Key="GoodColor">#7E9C82</Color>
+      <Color x:Key="GoodInkColor">#4F6E53</Color>
+      <!-- Clay: the walk leg, and anything that is "soon". The ink is 5.8:1 on the panel. -->
+      <Color x:Key="AmberColor">#B5824F</Color>
+      <Color x:Key="AmberInkColor">#85592D</Color>
+      <!-- Muted brick: running late. The ink is 6.6:1 on the panel. -->
+      <Color x:Key="DangerColor">#A85A45</Color>
+      <Color x:Key="DangerInkColor">#8E4533</Color>
 
-      <Color x:Key="MapColor">#ECEFEC</Color>
-      <Color x:Key="PinColor">#3A424B</Color>
+      <Color x:Key="MapColor">#EEECE6</Color>
+      <Color x:Key="PinColor">#3D3A35</Color>
 
-      <Color x:Key="CardShadowNearColor">#14141C28</Color>
-      <Color x:Key="CardShadowFarColor">#73141C28</Color>
-            <Color x:Key="SunInkColor">#E8912B</Color>  <!-- The sun glyph in the status strip. Warm, and the only orange up there. -->
-      <Color x:Key="MapScrimColor">#E8F2F3F5</Color>  <!-- Covers the tiles when the map has no route to show. -->
-      <Color x:Key="MapPillColor">#D6FFFFFF</Color>
-      <Color x:Key="AccentChipColor">#1F2169E9</Color>
-      <Color x:Key="AmberChipColor">#242F8A4E</Color>
-      <Color x:Key="DangerChipColor">#1FA32C24</Color>
-      <Color x:Key="GoodChipColor">#1F1F8A5B</Color>
-      <Color x:Key="EtaScrimColor">#FFFFFFFF</Color>
-      <Color x:Key="EtaScrimFadeColor">#00FFFFFF</Color>
+      <!-- The frame's single ambient shadow. -->
+      <Color x:Key="CardShadowColor">#1C2A2419</Color>
+      <Color x:Key="SunInkColor">#B5824F</Color>
+      <Color x:Key="MapScrimColor">#EBFBFAF7</Color>  <!-- Covers the tiles when the map has no route to show. -->
+      <Color x:Key="MapPillColor">#F2FBFAF7</Color>
+      <Color x:Key="AccentChipColor">#1F4A6B8A</Color>
+      <!-- Soft tan: "Fuel soon". -->
+      <Color x:Key="AmberChipColor">#2EB5824F</Color>
+      <Color x:Key="DangerChipColor">#1F8E4533</Color>
+      <Color x:Key="GoodChipColor">#247E9C82</Color>
       <!--
-        Intermediate stops for the scrim ramp, taken off the mockup rather than invented.
-
-        Measured across the reference's map panel: 94% washed at a fifth across, 83% at two fifths,
-        still 77% at the midpoint, then a fast release - 63%, 40%, 15% - and fully clear by about
-        0.73. It HOLDS and then lets go, which is the opposite of what was here before: a steep
-        early drop and a weak tail trailing to 0.95. That shape was why no amount of tuning the
-        tail made it look right; the tail was never the problem.
+        The scrim ramp under the ETA block, in the panel colour. The alphas are the ones measured off
+        the mockup: it holds, then lets go, and is fully clear by about 0.74.
       -->
-      <Color x:Key="EtaScrimStop1Color">#F2FFFFFF</Color>
-      <Color x:Key="EtaScrimStop2Color">#DCFFFFFF</Color>
-      <Color x:Key="EtaScrimStop3Color">#C0FFFFFF</Color>
-      <Color x:Key="EtaScrimStop4Color">#96FFFFFF</Color>
-      <Color x:Key="EtaScrimStop5Color">#56FFFFFF</Color>
-      <Color x:Key="EtaScrimStop6Color">#1EFFFFFF</Color>
-      <Color x:Key="EtaScrimStop7Color">#0AFFFFFF</Color>
-      <Color x:Key="GlassInkColor">#FFFFFF</Color>  <!-- Ground for controls sitting on top of map tiles. -->
+      <Color x:Key="EtaScrimColor">#FFFBFAF7</Color>
+      <Color x:Key="EtaScrimFadeColor">#00FBFAF7</Color>
+      <Color x:Key="EtaScrimStop1Color">#F2FBFAF7</Color>
+      <Color x:Key="EtaScrimStop2Color">#DCFBFAF7</Color>
+      <Color x:Key="EtaScrimStop3Color">#C0FBFAF7</Color>
+      <Color x:Key="EtaScrimStop4Color">#96FBFAF7</Color>
+      <Color x:Key="EtaScrimStop5Color">#56FBFAF7</Color>
+      <Color x:Key="EtaScrimStop6Color">#1EFBFAF7</Color>
+      <Color x:Key="EtaScrimStop7Color">#0AFBFAF7</Color>
+      <Color x:Key="GlassInkColor">#FBFAF7</Color>  <!-- Ink on an ink-filled control (Start drive). -->
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
       <SolidColorBrush x:Key="MapPillBrush" Color="{StaticResource MapPillColor}" />
@@ -88,9 +84,7 @@
       <SolidColorBrush x:Key="GlassInkBrush" Color="{StaticResource GlassInkColor}" />
       <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
       <SolidColorBrush x:Key="GroundBrush" Color="{StaticResource GroundColor}" />
-      <SolidColorBrush x:Key="GlassBrush" Color="{StaticResource GlassColor}" />
-      <SolidColorBrush x:Key="GlassEdgeBrush" Color="{StaticResource GlassEdgeColor}" />
-      <SolidColorBrush x:Key="GlassSecondaryBrush" Color="{StaticResource GlassSecondaryColor}" />
+      <SolidColorBrush x:Key="FrameBrush" Color="{StaticResource FrameColor}" />
       <SolidColorBrush x:Key="CardSurfaceBrush" Color="{StaticResource CardSurfaceColor}" />
       <SolidColorBrush x:Key="InkBrush" Color="{StaticResource InkColor}" />
       <SolidColorBrush x:Key="Ink2Brush" Color="{StaticResource Ink2Color}" />
@@ -108,60 +102,50 @@
     </ResourceDictionary>
 
     <ResourceDictionary x:Key="Dark">
-      <Color x:Key="GroundColor">#10151C</Color>
+      <Color x:Key="GroundColor">#141311</Color>
 
-      <Color x:Key="GlassColor">#9E181E26</Color>
-      <Color x:Key="GlassEdgeColor">#2EFFFFFF</Color>
-      <!--
-        Tinted dark at 85%, not a 6% white wash. A wash is only legible where the ground behind it
-        happens to be dark, and the backdrop glow sits directly behind this panel on a phone: the
-        note text and the mode chips measured about 1.5:1 there on Android, against 7:1 on the same
-        build where the glow missed them. At 85% over #141A23 the panel carries its own ground, so
-        Ink2 body text holds 5.5:1 over the brightest part of the glow and 8.3:1 over bare ground.
-      -->
-      <Color x:Key="GlassSecondaryColor">#D9141A23</Color>
-      <Color x:Key="CardSurfaceColor">#FF1B212B</Color>
+      <Color x:Key="FrameColor">#1D1C1A</Color>
+      <Color x:Key="CardSurfaceColor">#252421</Color>
 
-      <Color x:Key="InkColor">#F0F3F6</Color>
-      <Color x:Key="Ink2Color">#A9B3BD</Color>
-      <Color x:Key="Ink3Color">#6F7A86</Color>
-      <Color x:Key="LineColor">#1AFFFFFF</Color>
+      <Color x:Key="InkColor">#F0EEE9</Color>
+      <Color x:Key="Ink2Color">#B3AFA7</Color>
+      <Color x:Key="Ink3Color">#8A857C</Color>
+      <Color x:Key="LineColor">#1FFFFFFF</Color>
       <Color x:Key="ChipColor">#14FFFFFF</Color>
 
-      <!-- hsl(218 90% 66%) and hsl(218 90% 72%). -->
-      <Color x:Key="AccentColor">#5A93F6</Color>
-      <Color x:Key="AccentInkColor">#77A6F8</Color>
-      <Color x:Key="OnAccentColor">#0F151C</Color>
+      <!-- hsl(209 32% 64%) and hsl(209 36% 72%). -->
+      <Color x:Key="AccentColor">#86A4C1</Color>
+      <Color x:Key="AccentInkColor">#9EB8D1</Color>
+      <Color x:Key="OnAccentColor">#141311</Color>
 
-      <Color x:Key="GoodColor">#3CCF8A</Color>
-      <Color x:Key="GoodInkColor">#5FDC9E</Color>
-      <Color x:Key="AmberColor">#F0A63A</Color>
-      <Color x:Key="AmberInkColor">#F5BD66</Color>
-      <Color x:Key="DangerColor">#EF6A5F</Color>
-      <Color x:Key="DangerInkColor">#F58A80</Color>
+      <Color x:Key="GoodColor">#93B297</Color>
+      <Color x:Key="GoodInkColor">#A9C5AC</Color>
+      <Color x:Key="AmberColor">#CFA274</Color>
+      <Color x:Key="AmberInkColor">#DDB88F</Color>
+      <Color x:Key="DangerColor">#C98370</Color>
+      <Color x:Key="DangerInkColor">#D99A89</Color>
 
-      <Color x:Key="MapColor">#1A222B</Color>
-      <Color x:Key="PinColor">#E6EBF0</Color>
+      <Color x:Key="MapColor">#1F1E1C</Color>
+      <Color x:Key="PinColor">#E6E3DC</Color>
 
-      <Color x:Key="CardShadowNearColor">#4D000000</Color>
-      <Color x:Key="CardShadowFarColor">#CC000000</Color>
-            <Color x:Key="SunInkColor">#F0A64A</Color>
-      <Color x:Key="MapScrimColor">#E011161E</Color>
-      <Color x:Key="MapPillColor">#D61C2430</Color>
-      <Color x:Key="AccentChipColor">#2E5A93F6</Color>
-      <Color x:Key="AmberChipColor">#2EF0A63A</Color>
-      <Color x:Key="DangerChipColor">#2EEF6A5F</Color>
-      <Color x:Key="GoodChipColor">#2E3CCF8A</Color>
-      <Color x:Key="EtaScrimColor">#FF181E26</Color>
-      <Color x:Key="EtaScrimFadeColor">#00181E26</Color>
-      <Color x:Key="EtaScrimStop1Color">#F2181E26</Color>
-      <Color x:Key="EtaScrimStop2Color">#DC181E26</Color>
-      <Color x:Key="EtaScrimStop3Color">#C0181E26</Color>
-      <Color x:Key="EtaScrimStop4Color">#96181E26</Color>
-      <Color x:Key="EtaScrimStop5Color">#56181E26</Color>
-      <Color x:Key="EtaScrimStop6Color">#1E181E26</Color>
-      <Color x:Key="EtaScrimStop7Color">#0A181E26</Color>
-      <Color x:Key="GlassInkColor">#10151C</Color>
+      <Color x:Key="CardShadowColor">#59000000</Color>
+      <Color x:Key="SunInkColor">#CFA274</Color>
+      <Color x:Key="MapScrimColor">#E0252421</Color>
+      <Color x:Key="MapPillColor">#F2252421</Color>
+      <Color x:Key="AccentChipColor">#2E86A4C1</Color>
+      <Color x:Key="AmberChipColor">#2ECFA274</Color>
+      <Color x:Key="DangerChipColor">#2EC98370</Color>
+      <Color x:Key="GoodChipColor">#2E93B297</Color>
+      <Color x:Key="EtaScrimColor">#FF252421</Color>
+      <Color x:Key="EtaScrimFadeColor">#00252421</Color>
+      <Color x:Key="EtaScrimStop1Color">#F2252421</Color>
+      <Color x:Key="EtaScrimStop2Color">#DC252421</Color>
+      <Color x:Key="EtaScrimStop3Color">#C0252421</Color>
+      <Color x:Key="EtaScrimStop4Color">#96252421</Color>
+      <Color x:Key="EtaScrimStop5Color">#56252421</Color>
+      <Color x:Key="EtaScrimStop6Color">#1E252421</Color>
+      <Color x:Key="EtaScrimStop7Color">#0A252421</Color>
+      <Color x:Key="GlassInkColor">#141311</Color>
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
       <SolidColorBrush x:Key="MapPillBrush" Color="{StaticResource MapPillColor}" />
@@ -172,9 +156,7 @@
       <SolidColorBrush x:Key="GlassInkBrush" Color="{StaticResource GlassInkColor}" />
       <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
       <SolidColorBrush x:Key="GroundBrush" Color="{StaticResource GroundColor}" />
-      <SolidColorBrush x:Key="GlassBrush" Color="{StaticResource GlassColor}" />
-      <SolidColorBrush x:Key="GlassEdgeBrush" Color="{StaticResource GlassEdgeColor}" />
-      <SolidColorBrush x:Key="GlassSecondaryBrush" Color="{StaticResource GlassSecondaryColor}" />
+      <SolidColorBrush x:Key="FrameBrush" Color="{StaticResource FrameColor}" />
       <SolidColorBrush x:Key="CardSurfaceBrush" Color="{StaticResource CardSurfaceColor}" />
       <SolidColorBrush x:Key="InkBrush" Color="{StaticResource InkColor}" />
       <SolidColorBrush x:Key="Ink2Brush" Color="{StaticResource Ink2Color}" />
@@ -195,16 +177,17 @@
 
 
   <!-- Geometry the card and its canvases share. CardCornerRadius is what the radius dial writes. -->
-  <CornerRadius x:Key="CardCornerRadius">34</CornerRadius>
-  <!-- Sits between the map panel inside it and the shell around it, so three nested surfaces
-       read as nested rather than as three unrelated rounded boxes. -->
-  <CornerRadius x:Key="CardInnerCornerRadius">24</CornerRadius>
-  <!-- The same radius as the card it sits in, by request: the two edges are close enough
-       together that a 20-against-24 difference read as a mistake rather than as nesting. -->
-  <CornerRadius x:Key="MapCornerRadius">24</CornerRadius>
-  <!-- Skeleton bars, the map pin and other small rounded shapes share one value. 6, 9 and 10 were
-       three separately invented values within 4px of each other. -->
+  <CornerRadius x:Key="CardCornerRadius">26</CornerRadius>
+  <!-- The inner card, the map and the checklist container: one panel radius. -->
+  <CornerRadius x:Key="CardInnerCornerRadius">20</CornerRadius>
+  <CornerRadius x:Key="MapCornerRadius">20</CornerRadius>
+  <!-- Skeleton bars, the map pin and other small rounded shapes share one value. -->
   <CornerRadius x:Key="SmallCornerRadius">8</CornerRadius>
+  <!-- Chips and status labels: soft rounded rectangles, not pills. -->
+  <CornerRadius x:Key="ChipCornerRadius">7</CornerRadius>
+  <!-- Buttons on the card. Map buttons sit at the low end of the 10 to 12 range. -->
+  <CornerRadius x:Key="ButtonCornerRadius">12</CornerRadius>
+  <CornerRadius x:Key="MapButtonCornerRadius">10</CornerRadius>
   <!--
     Uneven at the top on purpose. The shell's top band runs from the card's edge to the inner
     card's, and the strip has to sit centred in it - at a flat 27 the strip was 27 from the card
@@ -241,11 +224,3 @@
   <x:Double x:Key="MapPanelHeight">264</x:Double>
 
 </ResourceDictionary>
-
-
-
-
-
-
-
-

@@ -12,8 +12,8 @@ namespace MorningCard.Themes;
 /// </summary>
 public static class AccentPalette
 {
-    /// <summary>The hue the design ships with.</summary>
-    public const double DefaultHue = 218d;
+    /// <summary>The hue the design ships with: the muted slate-blue, #4A6B8A.</summary>
+    public const double DefaultHue = 209d;
 
     /// <summary>
     /// The element whose theme the card is drawn in. Converters have no element of their own to
@@ -91,7 +91,8 @@ public static class AccentPalette
 
     /// <summary>
     /// Applies <paramref name="hue"/> to the accent brushes in both theme dictionaries, so a later
-    /// theme switch keeps the dialled hue. Saturation and lightness are fixed by the design.
+    /// theme switch keeps the dialled hue. Saturation and lightness are fixed by the design, and
+    /// kept low: the route accent is the only saturated mark on the card.
     /// </summary>
     public static void Apply(double hue)
     {
@@ -106,12 +107,12 @@ public static class AccentPalette
     }
 
     public static Color Accent(double hue, ElementTheme theme) => theme == ElementTheme.Dark
-        ? FromHsl(hue, 0.90, 0.66)
-        : FromHsl(hue, 0.82, 0.52);
+        ? FromHsl(hue, 0.32, 0.64)
+        : FromHsl(hue, 0.30, 0.415);
 
     public static Color AccentInk(double hue, ElementTheme theme) => theme == ElementTheme.Dark
-        ? FromHsl(hue, 0.90, 0.72)
-        : FromHsl(hue, 0.70, 0.42);
+        ? FromHsl(hue, 0.36, 0.72)
+        : FromHsl(hue, 0.30, 0.36);
 
     /// <summary>
     /// Looks a key up in the theme dictionary for <paramref name="theme"/>, walking the merged

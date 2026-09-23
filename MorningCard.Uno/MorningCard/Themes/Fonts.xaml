@@ -20,7 +20,6 @@
   <FontFamily x:Key="CardFontRegular">ms-appx:///Assets/Fonts/InstrumentSans_Regular.ttf#Instrument Sans</FontFamily>
   <FontFamily x:Key="CardFontMedium">ms-appx:///Assets/Fonts/InstrumentSans_Medium.ttf#Instrument Sans Medium</FontFamily>
   <FontFamily x:Key="CardFontSemiBold">ms-appx:///Assets/Fonts/InstrumentSans_SemiBold.ttf#Instrument Sans SemiBold</FontFamily>
-  <FontFamily x:Key="CardFontBold">ms-appx:///Assets/Fonts/InstrumentSans_Bold.ttf#Instrument Sans</FontFamily>
 
 </ResourceDictionary>
 

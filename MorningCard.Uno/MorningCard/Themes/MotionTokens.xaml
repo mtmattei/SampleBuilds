@@ -21,12 +21,11 @@
     There is deliberately no spring curve here. A KeySpline clamps its control points to 0..1 on
     both axes, unlike a CSS cubic-bezier, so an easing curve cannot overshoot at all. A pop comes
     from overshooting the animated VALUE - scale 1 to 1.05 to 1, rising on EaseOut and settling on
-    EaseSmooth - which is how the route ruler's markers already land. Never encode a bounce in the
+    EaseSmooth. Never encode a bounce in the
     curve; it silently clamps and you get a flat move that looks like a mistake.
   -->
 
 
-  <x:Double x:Key="DurationSlowMs">280</x:Double>
 
   <!--
     A firm press, not a collapse. The card shipped with 0.94, which on a 44 epx circle is a 2.6 epx

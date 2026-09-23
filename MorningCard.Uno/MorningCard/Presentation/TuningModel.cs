@@ -35,8 +35,6 @@ public partial record TuningModel
 
         Hue = Forward(CardChrome.Hue, value => CardChrome.Hue = value);
         CornerRadius = Forward(CardChrome.CornerRadius, value => CardChrome.CornerRadius = value);
-        MotionSpeed = Forward(CardChrome.MotionSpeed, value => CardChrome.MotionSpeed = value);
-        ReducedMotion = Forward(CardChrome.ReducedMotion, value => CardChrome.ReducedMotion = value);
     }
 
     /// <summary>A two-way state whose every change is pushed to <paramref name="apply"/>.</summary>
@@ -87,10 +85,6 @@ public partial record TuningModel
 
     public IState<double> CornerRadius { get; }
 
-    public IState<double> MotionSpeed { get; }
-
-    public IState<bool> ReducedMotion { get; }
-
     /// <summary>The four connection modes, in the order the design lists them.</summary>
     private static readonly IImmutableList<ModeOption> Options = ImmutableList.Create(
         new ModeOption(ConnectionMode.Live, "Live"),
@@ -105,12 +99,6 @@ public partial record TuningModel
 
     /// <summary>Reads back as the clock, so the label under the slider is the time, not a count.</summary>
     public IFeed<string> ClockText => Clock.Select(value => TripMath.FromMinutes((int)value).ToString("H:mm", CultureInfo.InvariantCulture));
-
-    public async ValueTask ReplayEntrance(CancellationToken ct)
-    {
-        CardMotion.RequestReplay();
-        await ValueTask.CompletedTask;
-    }
 
     public async ValueTask ToggleTheme(CancellationToken ct) =>
         await _theme.SetThemeAsync(_theme.Theme == AppTheme.Dark ? AppTheme.Light : AppTheme.Dark);

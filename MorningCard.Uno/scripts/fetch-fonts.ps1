@@ -27,7 +27,6 @@ $Requests = @(
     @{ File = 'InstrumentSans_Regular.ttf';  Css = 'family=Instrument+Sans:wght@400' }
     @{ File = 'InstrumentSans_Medium.ttf';   Css = 'family=Instrument+Sans:wght@500' }
     @{ File = 'InstrumentSans_SemiBold.ttf'; Css = 'family=Instrument+Sans:wght@600' }
-    @{ File = 'InstrumentSans_Bold.ttf';     Css = 'family=Instrument+Sans:wght@700' }
 )
 
 if (-not (Test-Path $OutputDirectory)) {

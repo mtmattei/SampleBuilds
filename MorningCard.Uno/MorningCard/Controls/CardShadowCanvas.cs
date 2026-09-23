@@ -6,39 +6,39 @@ using Windows.Foundation;
 namespace MorningCard.Controls;
 
 /// <summary>
-/// The card's two shadow layers, with the card's own shape clipped out.
+/// The card's one soft ambient shadow, with the card's own shape clipped out.
 ///
-/// ShadowContainer was the first choice and cannot do this design: it draws each shadow as a full
-/// blurred round rect, clips to the content, then paints the background over it. Under a 74 percent
-/// alpha glass the wide layer therefore darkens the card's own interior, which a CSS box-shadow
-/// never does. Clipping the card's rect out with SKClipOperation.Difference puts the light back
-/// where it belongs. ShadowContainer remains the right control for an opaque surface.
+/// ShadowContainer draws each shadow as a full blurred round rect, clips to the content, then paints
+/// the background over it, so a shadow ends up under the surface as well as around it. Clipping the
+/// card's rect out with SKClipOperation.Difference keeps it strictly outside, the way a CSS
+/// box-shadow behaves.
 ///
 /// Drawing is clipped to the element, so this sits at a negative margin to leave room for the blur.
 /// </summary>
 public sealed partial class CardShadowCanvas : SKCanvasElement
 {
     /// <summary>How far the element extends past the card on every side, in effective pixels.</summary>
-    public const double Bleed = 60d;
+    public const double Bleed = 48d;
 
-    // Ported from the prototype: 0 30 60 -30 at 45%, and 0 2 6 at 8%.
-    private const float FarOffsetY = 30f;
-    private const float FarBlur = 60f;
-    private const float FarSpread = -30f;
-    private const float NearOffsetY = 2f;
-    private const float NearBlur = 6f;
+    // 0 8px 32px -8px: low, wide and faint. It lifts the frame off the ground without reading as
+    // a drop shadow, which is what keeps the surface matte.
+    private const float OffsetY = 8f;
+    private const float Blur = 32f;
+    private const float Spread = -8f;
 
     private readonly SKPaint _paint = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
 
     // Snapshotted on the UI thread. RenderOverride runs on the render thread, where reading
     // ActualTheme or walking Application.Current.Resources is a cross-thread touch of the XAML
     // object graph - which is exactly what the sibling ruler canvas avoids and documents.
-    private SKColor _far = new(0x14, 0x1C, 0x28, 0x73);
-    private SKColor _near = new(0x14, 0x1C, 0x28, 0x14);
-    private float _radius = 34f;
+    private SKColor _color = new(0x2A, 0x24, 0x19, 0x1C);
+    private float _radius = 26f;
 
     private readonly SKRoundRect _hole = new();
-    private readonly Dictionary<float, SKMaskFilter> _blurs = new();
+
+    // A CSS blur radius is about twice the Gaussian sigma. Built once: this was a native allocation
+    // per frame.
+    private readonly SKMaskFilter _blur = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, Blur / 2f);
 
     public CardShadowCanvas()
     {
@@ -65,8 +65,9 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
 
     private void Snapshot()
     {
-        _far = ReadColor("CardShadowFarColor", _far);
-        _near = ReadColor("CardShadowNearColor", _near);
+        _color = AccentPalette.Lookup("CardShadowColor", ActualTheme) is Windows.UI.Color color
+            ? new SKColor(color.R, color.G, color.B, color.A)
+            : _color;
         _radius = (float)CardChrome.CornerRadius;
         Invalidate();
     }
@@ -87,64 +88,27 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
             return;
         }
 
-        var far = _far;
-        var near = _near;
+        var shadow = card;
+        shadow.Inflate(Spread, Spread);
+        shadow.Offset(0f, OffsetY);
 
-        canvas.Save();
-
-        // Everything inside the card is the card's business: without this the wide layer tints the
-        // glass from underneath.
-        _hole.SetRect(card, radius, radius);
-        canvas.ClipRoundRect(_hole, SKClipOperation.Difference, antialias: true);
-
-        DrawLayer(canvas, card, radius, far, FarOffsetY, FarBlur, FarSpread);
-        DrawLayer(canvas, card, radius, near, NearOffsetY, NearBlur, spread: 0f);
-
-        canvas.Restore();
-    }
-
-    private void DrawLayer(
-        SKCanvas canvas,
-        SKRect card,
-        float radius,
-        SKColor color,
-        float offsetY,
-        float blur,
-        float spread)
-    {
-        var rect = card;
-        rect.Inflate(spread, spread);
-        rect.Offset(0f, offsetY);
-
-        if (rect.Width <= 0 || rect.Height <= 0)
+        if (shadow.Width <= 0 || shadow.Height <= 0)
         {
             return;
         }
 
-        _paint.Color = color;
+        canvas.Save();
 
-        // A CSS blur radius is about twice the Gaussian sigma. Cached per layer: these were two
-        // native allocations every frame.
-        var sigma = blur / 2f;
+        _hole.SetRect(card, radius, radius);
+        canvas.ClipRoundRect(_hole, SKClipOperation.Difference, antialias: true);
 
-        if (!_blurs.TryGetValue(sigma, out var mask))
-        {
-            mask = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, sigma);
-            _blurs[sigma] = mask;
-        }
+        _paint.Color = _color;
+        _paint.MaskFilter = _blur;
 
-        _paint.MaskFilter = mask;
-
-        var layerRadius = Math.Max(0f, radius + spread);
-        canvas.DrawRoundRect(rect, layerRadius, layerRadius, _paint);
+        var shadowRadius = Math.Max(0f, radius + Spread);
+        canvas.DrawRoundRect(shadow, shadowRadius, shadowRadius, _paint);
 
         _paint.MaskFilter = null;
+        canvas.Restore();
     }
-
-    private SKColor ReadColor(string key, SKColor fallback) =>
-        AccentPalette.Lookup(key, ActualTheme) is Windows.UI.Color color
-            ? new SKColor(color.R, color.G, color.B, color.A)
-            : fallback;
 }
-
-

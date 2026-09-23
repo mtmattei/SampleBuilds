@@ -9,17 +9,16 @@
              VerticalAlignment="Top">
 
   <!--
-    The card is a Border over a childless glass sibling. Keeping the translucent fill on its own
-    element leaves the content free of the backdrop, which is also what the Skia acrylic path wants
-    on Android.
+    The card is matte paper: an opaque frame with one hairline and one soft ambient shadow, and
+    opaque panels inside it with a hairline each. No blur and no layered shadows.
   -->
   <Grid>
-    <!-- Sits at a negative margin so the wide blur has room; hit-test transparent. -->
+    <!-- Sits at a negative margin so the shadow's blur has room; hit-test transparent. -->
     <mc:CardShadowCanvas />
 
-    <Border x:Name="Glass"
-            Background="{ThemeResource GlassBrush}"
-            BorderBrush="{ThemeResource GlassEdgeBrush}"
+    <Border x:Name="Frame"
+            Background="{ThemeResource FrameBrush}"
+            BorderBrush="{ThemeResource LineBrush}"
             BorderThickness="1"
             CornerRadius="{StaticResource CardCornerRadius}" />
 
@@ -62,7 +61,7 @@
                            Text="{Binding Data.Greeting}" />
               </StackPanel>
               <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Border Background="{ThemeResource ChipBrush}" CornerRadius="10" Padding="9,3">
+                <Border Background="{ThemeResource ChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="9,3">
                   <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                     <TextBlock Style="{StaticResource StatusLineStrong}" VerticalAlignment="Center" Text="{Binding Data.OutsideTemp}" />
                     <TextBlock Style="{StaticResource StatusLine}" VerticalAlignment="Center" Text="{Binding Data.WeatherSummary}" />
@@ -85,8 +84,6 @@
                     <MenuFlyout Placement="BottomEdgeAlignedRight">
                       <MenuFlyoutItem x:Name="MenuRefresh" x:Uid="MenuRefresh" Command="{Binding Parent.Retry}" />
                       <MenuFlyoutItem x:Name="MenuOpenMaps" x:Uid="MenuOpenMaps" Click="OnOpenInMaps" />
-                      <MenuFlyoutSeparator />
-                      <MenuFlyoutItem x:Name="MenuReplay" x:Uid="MenuReplay" Click="OnReplayEntrance" />
                     </MenuFlyout>
                   </Button.Flyout>
                 </Button>
@@ -108,7 +105,7 @@
               Grid.RowSpan="4"
               Margin="-14,-12,-14,-14"
               Background="{ThemeResource CardSurfaceBrush}"
-              BorderBrush="{ThemeResource GlassEdgeBrush}"
+              BorderBrush="{ThemeResource LineBrush}"
               BorderThickness="1"
               CornerRadius="{StaticResource CardInnerCornerRadius}" />
 
@@ -144,9 +141,9 @@
                            Foreground="{Binding Data.Tone, Converter={StaticResource ToneBrush}}"><Run Text="{Binding Data.HeadlineLead}" /><Run Text="{Binding Data.HeadlineAccent}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" Foreground="{Binding Data.Tone, Converter={StaticResource AccentTone}}" /><Run Text="{Binding Data.HeadlineTail}" /></TextBlock>
               </StackPanel>
               <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6">
-                <!-- No tile behind it: the car reads as a photograph of the car, and a panel
-                     under it only added a second container inside the card. -->
-                <Image Source="ms-appx:///Assets/Car/xc60.png" Width="135" Stretch="Uniform" />
+                <!-- Desaturated to 30% (scripts/Mute-Car.ps1), so it reads as a grey object on the
+                     paper rather than as a product shot competing with the route accent. -->
+                <Image Source="ms-appx:///Assets/Car/xc60_muted.png" Width="135" Stretch="Uniform" />
                 <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
                   <FontIcon FontFamily="{StaticResource IconFont}"
                             Glyph="{StaticResource IconLock}"
@@ -463,7 +460,7 @@
 
                     <TextBlock Grid.Column="1" x:Uid="ChecksTitle" Style="{StaticResource RowValueStrong}" VerticalAlignment="Center" Margin="4,0,0,0" />
 
-                    <Border Grid.Column="2" Margin="9,0,0,0" Background="{ThemeResource ChipBrush}" CornerRadius="9" Padding="8,2" VerticalAlignment="Center">
+                    <Border Grid.Column="2" Margin="9,0,0,0" Background="{ThemeResource ChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="8,2" VerticalAlignment="Center">
                       <TextBlock Style="{StaticResource CardCaption}" Text="{Binding Data.ChecksCount}" />
                     </Border>
 
@@ -509,16 +506,11 @@
                 </Button>
 
                 <!--
-                  Everything below the header collapses together. The reveal fades and rises rather
-                  than animating height: measuring a growing panel every frame is the expensive way,
-                  and the job here is continuity, not spectacle.
+                  Everything below the header collapses together, and appears at once: the matte
+                  design keeps motion to press and hover, so there is no reveal.
                 -->
                 <StackPanel x:Name="ChecksBody"
-                            Visibility="{Binding Data.ChecksExpanded, Converter={StaticResource BoolToVisibility}}"
-                            RenderTransformOrigin="0.5,0">
-                  <StackPanel.RenderTransform>
-                    <TranslateTransform x:Name="ChecksBodyShift" />
-                  </StackPanel.RenderTransform>
+                            Visibility="{Binding Data.ChecksExpanded, Converter={StaticResource BoolToVisibility}}">
                 <Rectangle Style="{StaticResource RowRule}" />
 
                 <!-- Fuel: informational, so it carries a status chip and no action. -->
@@ -541,7 +533,7 @@
                     <TextBlock x:Uid="ChecksFuelTitle" Style="{StaticResource CardCaption}" />
                   </StackPanel>
 
-                  <Border Grid.Column="2" Background="{ThemeResource AmberChipBrush}" CornerRadius="9" Padding="9,3" VerticalAlignment="Center"
+                  <Border Grid.Column="2" Background="{ThemeResource AmberChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="9,3" VerticalAlignment="Center"
                           Visibility="{Binding Data.FuelNoteAccent, Converter={StaticResource NullToVisibility}}">
                     <TextBlock Style="{StaticResource CardCaption}" Foreground="{ThemeResource AmberInkBrush}" Text="{Binding Data.FuelChip}" />
                   </Border>
@@ -583,7 +575,7 @@
                     </StackPanel>
 
                     <StackPanel Spacing="9" Visibility="{Binding Data.CabinNeedsWarming, Converter={StaticResource BoolToVisibility}}">
-                      <Border Background="{ThemeResource ChipBrush}" CornerRadius="9" Padding="9,4" HorizontalAlignment="Left">
+                      <Border Background="{ThemeResource ChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="9,4" HorizontalAlignment="Left">
                         <TextBlock Style="{StaticResource CardCaption}"><Run Text="{Binding Data.CabinFrom}" /><Run Text="{Binding Data.CabinMid}" /><Run Text="{Binding Data.CabinTo}" /></TextBlock>
                       </Border>
 
@@ -596,7 +588,7 @@
                     </StackPanel>
                   </StackPanel>
 
-                  <Border Grid.Column="2" Background="{ThemeResource AccentChipBrush}" CornerRadius="9" Padding="9,3" VerticalAlignment="Top" Margin="0,2,0,0"
+                  <Border Grid.Column="2" Background="{ThemeResource AccentChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="9,3" VerticalAlignment="Top" Margin="0,2,0,0"
                           Visibility="{Binding Data.CabinNeedsWarming, Converter={StaticResource BoolToVisibility}}">
                     <TextBlock x:Uid="ChecksCabinSuggested" Style="{StaticResource CardCaption}" Foreground="{ThemeResource AccentInkBrush}" />
                   </Border>
@@ -626,7 +618,7 @@
                     <TextBlock Style="{StaticResource CardCaption}" TextWrapping="Wrap" Text="{Binding Data.ParkingNote}" />
                   </StackPanel>
 
-                  <Border Grid.Column="2" Background="{ThemeResource GoodChipBrush}" CornerRadius="9" Padding="9,3" VerticalAlignment="Center">
+                  <Border Grid.Column="2" Background="{ThemeResource GoodChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="9,3" VerticalAlignment="Center">
                     <TextBlock Style="{StaticResource CardCaption}" Foreground="{ThemeResource GoodInkBrush}" Text="{Binding Data.ParkingChip}" />
                   </Border>
 

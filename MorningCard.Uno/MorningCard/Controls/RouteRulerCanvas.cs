@@ -8,18 +8,15 @@ using SkiaSharp;
 using Uno.WinUI.Graphics2DSK;
 using Windows.Foundation;
 using Windows.Storage;
-using Windows.UI.ViewManagement;
 
 namespace MorningCard.Controls;
 
 /// <summary>
 /// The route ruler, drawn with Skia.
 ///
-/// Three things here have no XAML or Composition equivalent: positions along a path (every node,
-/// dot, pill and label is placed by distance, not by coordinates), label text with a halo, and one
-/// timeline driving forty elements. Partial path segments alone would not need Skia -
-/// CompositionGeometry.TrimStart is implemented on this renderer - but the positions would still
-/// have to come from SKPathMeasure, which would split one drawing across two systems.
+/// Two things here have no XAML or Composition equivalent: forty-odd ticks, pins and labels placed
+/// from projected route geometry, and a backdrop colour filter that takes the map tiles underneath
+/// close to monochrome without changing the tile source.
 ///
 /// The cost is that the labels are invisible to the automation tree, so the element carries one
 /// composed description of the whole route instead.
@@ -32,28 +29,11 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
     private RouteRulerSnapshot _snapshot = new();
     private RouteRulerPalette? _palette;
 
-    /// <summary>
-    /// How long the whole entrance runs at speed 1: dots, then the drive drawing along the path,
-    /// then the walk, then the markers popping in, then the labels.
-    /// </summary>
-    private static readonly TimeSpan EntranceDuration = TimeSpan.FromMilliseconds(1700);
-
-    /// <summary>
-    /// 30fps. A DispatcherTimer produces exactly one frame per invalidation, where a held
-    /// CompositionTarget.Rendering subscription would pin the compositor to display refresh for the
-    /// life of the app - measured at 50 to 70 percent of a core, whatever is on screen.
-    /// </summary>
-    private static readonly TimeSpan FrameInterval = TimeSpan.FromMilliseconds(33);
-
-    private readonly DispatcherTimer _entrance = new() { Interval = FrameInterval };
-    private DateTimeOffset _entranceStarted;
-
     public RouteRulerCanvas()
     {
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
         ActualThemeChanged += OnActualThemeChanged;
-        _entrance.Tick += OnEntranceTick;
     }
 
     public static readonly DependencyProperty EtaProperty =
@@ -68,23 +48,6 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
     {
         get => (EtaView?)GetValue(EtaProperty);
         set => SetValue(EtaProperty, value);
-    }
-
-    public static readonly DependencyProperty ProgressProperty =
-        DependencyProperty.Register(
-            nameof(Progress),
-            typeof(double),
-            typeof(RouteRulerCanvas),
-            // Progress alone does not rebuild the snapshot. A full Refresh performs 15 resource
-            // lookups, each walking the whole merged dictionary tree, and this fires 30 times a
-            // second through the entrance - about 450 tree walks per second on the UI thread.
-            new PropertyMetadata(1d, (d, _) => ((RouteRulerCanvas)d).AdvanceProgress()));
-
-    /// <summary>0 to 1 across the entrance. The motion step drives this; 1 is settled.</summary>
-    public double Progress
-    {
-        get => (double)GetValue(ProgressProperty);
-        set => SetValue(ProgressProperty, value);
     }
 
     public static readonly DependencyProperty GeometryProperty =
@@ -135,7 +98,6 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        CardMotion.ReplayRequested += OnReplayRequested;
         CardChrome.Changed += OnChromeChanged;
 
         Refresh();
@@ -144,18 +106,14 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
-        CardMotion.ReplayRequested -= OnReplayRequested;
         CardChrome.Changed -= OnChromeChanged;
 
+        // The renderer is NOT disposed here: a re-parent fires Unloaded then Loaded, and
+        // RenderOverride would then be drawing with freed native handles.
         if (Map?.Map is { } map)
         {
             map.Navigator.ViewportChanged -= OnViewportChanged;
         }
-
-        // A timer left running would keep asking for frames after the card is gone. The renderer
-        // is NOT disposed here: a re-parent fires Unloaded then Loaded, and RenderOverride would
-        // then be drawing with freed native handles.
-        _entrance.Stop();
     }
 
     private void OnChromeChanged(object? sender, EventArgs e)
@@ -190,88 +148,8 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
     private void OnViewportChanged(object? sender, EventArgs e) =>
         DispatcherQueue.TryEnqueue(Refresh);
 
-    /// <summary>Cheap path for the entrance: one field write and one frame, no resource lookups.</summary>
-    private void AdvanceProgress()
-    {
-        _snapshot = _snapshot with { Progress = Progress };
-        Invalidate();
-    }
-
-    private void OnReplayRequested(object? sender, EventArgs e) => PlayEntrance();
-
-    /// <summary>
-    /// The entrance plays when a route first arrives, and again on an explicit replay. It does not
-    /// replay for every clock tick or dial move, which would make the card twitch.
-    /// </summary>
-    private void OnEtaChanged(DependencyPropertyChangedEventArgs e)
-    {
-        var hadRoute = e.OldValue is EtaView { Failed: false };
-        var hasRoute = e.NewValue is EtaView { Failed: false };
-
-        // Refresh first, always. PlayEntrance only moves Progress, and since a Progress change no
-        // longer rebuilds the snapshot, returning straight into it left the route undrawn - the ETA
-        // text was present while the map showed bare ground.
-        Refresh();
-
-        if (hasRoute && !hadRoute)
-        {
-            PlayEntrance();
-        }
-    }
-
-    private void PlayEntrance()
-    {
-        if (ReducedMotion)
-        {
-            _entrance.Stop();
-            Progress = 1d;
-            Refresh();
-            return;
-        }
-
-        _entranceStarted = DateTimeOffset.UtcNow;
-        Progress = 0d;
-        _entrance.Start();
-    }
-
-    private void OnEntranceTick(object? sender, object e)
-    {
-        var scaled = EntranceDuration / Math.Max(0.25d, CardChrome.MotionSpeed);
-        var elapsed = DateTimeOffset.UtcNow - _entranceStarted;
-        var progress = Math.Clamp(elapsed / scaled, 0d, 1d);
-
-        Progress = progress;
-
-        if (progress >= 1d)
-        {
-            // One-shot: the timer stops rather than idling at 30fps for the rest of the session.
-            _entrance.Stop();
-        }
-    }
-
-    /// <summary>
-    /// On desktop <c>UISettings.AnimationsEnabled</c> is hardcoded true, so the Simulator's switch
-    /// is the only signal there. On Android the two are combined.
-    /// </summary>
-    private static bool ReducedMotion
-    {
-        get
-        {
-            if (CardChrome.ReducedMotion)
-            {
-                return true;
-            }
-
-            try
-            {
-                return !new UISettings().AnimationsEnabled;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-    }
+    /// <summary>A new trip redraws the route. There is no entrance: it is simply there.</summary>
+    private void OnEtaChanged(DependencyPropertyChangedEventArgs e) => Refresh();
 
     private void OnActualThemeChanged(FrameworkElement sender, object args)
     {
@@ -296,7 +174,7 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
             LeaveLabel = eta?.LeaveLabel ?? string.Empty,
             ArriveLabel = eta?.ArriveLabel ?? string.Empty,
             BellLabel = eta?.BellLabel ?? string.Empty,
-            Progress = Progress,
+            MapCornerRadius = MapCornerRadius(),
             // Cached: only a theme or hue change can invalidate it.
             Palette = _palette ??= ReadPalette(),
         };
@@ -346,14 +224,14 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
 
         _interval = TimeRulerLayout.ChooseInterval(geometry, viewport.Resolution);
         Refresh();
-
-        // The asset loads after the trip does, so the entrance that played when the ETA arrived had
-        // nothing to draw. This is the first moment there is a route on screen, so it plays here.
-        if (_snapshot.Projection is not null)
-        {
-            PlayEntrance();
-        }
     }
+
+    /// <summary>The panel radius the map's tone is clipped to, from the shared geometry tokens.</summary>
+    private static float MapCornerRadius() =>
+        Application.Current?.Resources.TryGetValue("MapCornerRadius", out var value) == true
+            && value is CornerRadius radius
+                ? (float)radius.TopLeft
+                : 20f;
 
     /// <summary>
     /// Reads the tokens for the theme this element is actually drawn in. Application-level lookup
