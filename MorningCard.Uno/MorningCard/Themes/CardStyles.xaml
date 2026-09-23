@@ -413,5 +413,37 @@
     <Setter Property="HorizontalAlignment" Value="Left" />
     <Setter Property="AutomationProperties.AccessibilityView" Value="Raw" />
   </Style>
-</ResourceDictionary>
+  <!--
+    Static cards. WORKAROUND(Card hover overlay sticks on touch scroll): the Material
+    CardContentControl templates carry hover/pressed state overlays for clickable cards. On touch,
+    a swipe that starts on the card hands the pointer to the ScrollViewer, the card never sees the
+    pointer leave, and the overlay stays up, washing the whole card out (measured on the Wear
+    emulator, Toolkit 9.1.3, 2026-09-23). Every card here is a static container, so these keep the
+    Toolkit control and its Filled/Outlined colours but template out the state overlays.
+  -->
+  <!-- xaml-lint: allow card - template for the static card styles below, see WORKAROUND above -->
+  <ControlTemplate x:Key="StaticCardTemplate" TargetType="utu:CardContentControl">
+    <Border Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            CornerRadius="{TemplateBinding CornerRadius}"
+            Padding="{TemplateBinding Padding}">
+      <ContentPresenter Content="{TemplateBinding Content}"
+                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+    </Border>
+  </ControlTemplate>
 
+  <Style x:Key="StaticFilledCardStyle" TargetType="utu:CardContentControl" BasedOn="{StaticResource FilledCardContentControlStyle}">
+    <Setter Property="Background" Value="{ThemeResource FilledCardContentBackground}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource FilledCardContentBorderBrush}" />
+    <Setter Property="Template" Value="{StaticResource StaticCardTemplate}" />
+  </Style>
+
+  <Style x:Key="StaticOutlinedCardStyle" TargetType="utu:CardContentControl" BasedOn="{StaticResource OutlinedCardContentControlStyle}">
+    <Setter Property="Background" Value="{ThemeResource OutlinedCardContentBackground}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource OutlinedCardContentBorderBrush}" />
+    <Setter Property="Template" Value="{StaticResource StaticCardTemplate}" />
+  </Style>
+</ResourceDictionary>

@@ -23,7 +23,7 @@
          radius dial writes Glass.CornerRadius in code-behind. BorderThickness is the 1 px inset
          top highlight. -->
     <utu:CardContentControl x:Name="Glass"
-                            Style="{StaticResource FilledCardContentControlStyle}"
+                            Style="{StaticResource StaticFilledCardStyle}"
                             Margin="0"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
@@ -47,7 +47,7 @@
            and padding are local because the shared CardCornerRadius/CardPadding keys hold the
            shell's values. -->
       <utu:CardContentControl Grid.Row="1"
-                              Style="{StaticResource OutlinedCardContentControlStyle}"
+                              Style="{StaticResource StaticOutlinedCardStyle}"
                               Margin="0"
                               HorizontalAlignment="Stretch"
                               CornerRadius="{StaticResource CardInnerCornerRadius}"

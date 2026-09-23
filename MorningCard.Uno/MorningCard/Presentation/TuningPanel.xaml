@@ -25,7 +25,7 @@
     second column of equal weight, and on a wide window it set the height of the row the card sat
     in. A low row under the card keeps the card the only thing at eye level.
   -->
-  <utu:CardContentControl Style="{StaticResource OutlinedCardContentControlStyle}"
+  <utu:CardContentControl Style="{StaticResource StaticOutlinedCardStyle}"
                           Margin="0"
                           HorizontalAlignment="Stretch"
                           HorizontalContentAlignment="Stretch"

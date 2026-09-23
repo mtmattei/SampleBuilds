@@ -16,7 +16,7 @@
     <Grid Width="1280" Height="720" Padding="64,36">
       <mc:CardShadowCanvas />
 
-      <utu:CardContentControl Style="{StaticResource FilledCardContentControlStyle}"
+      <utu:CardContentControl Style="{StaticResource StaticFilledCardStyle}"
                               Margin="0"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
@@ -40,7 +40,7 @@
 
           <!-- Left: the trip and the checklist, open. -->
           <utu:CardContentControl Grid.Row="1"
-                                  Style="{StaticResource OutlinedCardContentControlStyle}"
+                                  Style="{StaticResource StaticOutlinedCardStyle}"
                                   Margin="0"
                                   HorizontalAlignment="Stretch"
                                   VerticalAlignment="Stretch"
@@ -60,7 +60,7 @@
           <!-- Right: the map, full height. -->
           <utu:CardContentControl Grid.Row="1"
                                   Grid.Column="1"
-                                  Style="{StaticResource OutlinedCardContentControlStyle}"
+                                  Style="{StaticResource StaticOutlinedCardStyle}"
                                   Margin="0"
                                   HorizontalAlignment="Stretch"
                                   VerticalAlignment="Stretch"
