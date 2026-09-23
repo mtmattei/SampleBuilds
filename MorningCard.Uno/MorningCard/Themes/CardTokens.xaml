@@ -1,14 +1,8 @@
 <!--
-  The card's palette. Light is the base and dark redefines the same names, matching the prototype's
-  CSS custom properties one for one.
+  The card's palette. The app is light only (v6 decision B6), so there is one theme dictionary.
 
-  Colours and their brushes both live inside the theme dictionaries. Brushes at the root would be a
-  single shared instance resolved against the application's theme, and the theme service switches
-  the root element's theme instead - which left the map panel drawing its light palette on a dark
-  card. Per-theme brushes resolve against the element that uses them.
-
-  The hue dial mutates the accent brushes in place, in both dictionaries. That is the only way to
-  hit the design's exact hsl() values: Material's seed derives HCT tones, which do not match.
+  Colours and their brushes stay inside the Light theme dictionary so {ThemeResource} lookups and
+  CardPalette.Lookup keep resolving the same way they always have.
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -109,96 +103,6 @@
       <SolidColorBrush x:Key="MapBrush" Color="{StaticResource MapColor}" />
     </ResourceDictionary>
 
-    <ResourceDictionary x:Key="Dark">
-      <Color x:Key="GroundColor">#10151C</Color>
-
-      <Color x:Key="BlobAColor">#5A4322</Color>
-      <Color x:Key="BlobBColor">#23405A</Color>
-      <Color x:Key="BlobCColor">#2C3540</Color>
-      <Color x:Key="BlobDColor">#3A3126</Color>
-
-      <Color x:Key="GlassColor">#9E181E26</Color>
-      <Color x:Key="GlassEdgeColor">#2EFFFFFF</Color>
-      <!--
-        Tinted dark at 85%, not a 6% white wash. A wash is only legible where the ground behind it
-        happens to be dark, and the backdrop glow sits directly behind this panel on a phone: the
-        note text and the mode chips measured about 1.5:1 there on Android, against 7:1 on the same
-        build where the glow missed them. At 85% over #141A23 the panel carries its own ground, so
-        Ink2 body text holds 5.5:1 over the brightest part of the glow and 8.3:1 over bare ground.
-      -->
-      <Color x:Key="GlassSecondaryColor">#D9141A23</Color>
-      <Color x:Key="CardSurfaceColor">#FF1B212B</Color>
-
-      <Color x:Key="InkColor">#F0F3F6</Color>
-      <Color x:Key="Ink2Color">#A9B3BD</Color>
-      <Color x:Key="Ink3Color">#6F7A86</Color>
-      <Color x:Key="LineColor">#1AFFFFFF</Color>
-      <Color x:Key="ChipColor">#14FFFFFF</Color>
-
-      <!-- hsl(218 90% 66%) and hsl(218 90% 72%). -->
-      <Color x:Key="AccentColor">#5A93F6</Color>
-      <Color x:Key="AccentInkColor">#77A6F8</Color>
-      <Color x:Key="OnAccentColor">#0F151C</Color>
-
-      <Color x:Key="GoodColor">#3CCF8A</Color>
-      <Color x:Key="GoodInkColor">#5FDC9E</Color>
-      <Color x:Key="AmberColor">#F0A63A</Color>
-      <Color x:Key="AmberInkColor">#F5BD66</Color>
-      <Color x:Key="DangerColor">#EF6A5F</Color>
-      <Color x:Key="DangerInkColor">#F58A80</Color>
-
-      <Color x:Key="MapColor">#1A222B</Color>
-      <Color x:Key="MapRoadColor">#26303B</Color>
-      <Color x:Key="MapParkColor">#1F3328</Color>
-      <Color x:Key="MapWaterColor">#223D5C</Color>
-      <Color x:Key="PinColor">#E6EBF0</Color>
-
-      <Color x:Key="CardShadowNearColor">#4D000000</Color>
-      <Color x:Key="CardShadowFarColor">#CC000000</Color>
-            <Color x:Key="SunInkColor">#F0A64A</Color>
-      <Color x:Key="MapScrimColor">#E011161E</Color>
-      <Color x:Key="MapPillColor">#D61C2430</Color>
-      <Color x:Key="AccentChipColor">#2E5A93F6</Color>
-      <Color x:Key="AmberChipColor">#2EF0A63A</Color>
-      <Color x:Key="DangerChipColor">#2EEF6A5F</Color>
-      <Color x:Key="GoodChipColor">#2E3CCF8A</Color>
-      <Color x:Key="EtaScrimColor">#FF181E26</Color>
-      <Color x:Key="EtaScrimFadeColor">#00181E26</Color>
-      <Color x:Key="EtaScrimStop1Color">#A0181E26</Color>
-      <Color x:Key="EtaScrimStop2Color">#5A181E26</Color>
-      <Color x:Key="EtaScrimStop3Color">#2E181E26</Color>
-      <Color x:Key="EtaScrimStop4Color">#16181E26</Color>
-      <Color x:Key="EtaScrimStop5Color">#08181E26</Color>
-      <Color x:Key="GlassInkColor">#10151C</Color>
-      <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
-      <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
-      <SolidColorBrush x:Key="MapPillBrush" Color="{StaticResource MapPillColor}" />
-      <SolidColorBrush x:Key="AccentChipBrush" Color="{StaticResource AccentChipColor}" />
-      <SolidColorBrush x:Key="AmberChipBrush" Color="{StaticResource AmberChipColor}" />
-      <SolidColorBrush x:Key="DangerChipBrush" Color="{StaticResource DangerChipColor}" />
-      <SolidColorBrush x:Key="GoodChipBrush" Color="{StaticResource GoodChipColor}" />
-      <SolidColorBrush x:Key="GlassInkBrush" Color="{StaticResource GlassInkColor}" />
-      <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
-      <SolidColorBrush x:Key="GroundBrush" Color="{StaticResource GroundColor}" />
-      <SolidColorBrush x:Key="GlassBrush" Color="{StaticResource GlassColor}" />
-      <SolidColorBrush x:Key="GlassEdgeBrush" Color="{StaticResource GlassEdgeColor}" />
-      <SolidColorBrush x:Key="GlassSecondaryBrush" Color="{StaticResource GlassSecondaryColor}" />
-      <SolidColorBrush x:Key="CardSurfaceBrush" Color="{StaticResource CardSurfaceColor}" />
-      <SolidColorBrush x:Key="InkBrush" Color="{StaticResource InkColor}" />
-      <SolidColorBrush x:Key="Ink2Brush" Color="{StaticResource Ink2Color}" />
-      <SolidColorBrush x:Key="Ink3Brush" Color="{StaticResource Ink3Color}" />
-      <SolidColorBrush x:Key="LineBrush" Color="{StaticResource LineColor}" />
-      <SolidColorBrush x:Key="ChipBrush" Color="{StaticResource ChipColor}" />
-      <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
-      <SolidColorBrush x:Key="AccentInkBrush" Color="{StaticResource AccentInkColor}" />
-      <SolidColorBrush x:Key="GoodBrush" Color="{StaticResource GoodColor}" />
-      <SolidColorBrush x:Key="GoodInkBrush" Color="{StaticResource GoodInkColor}" />
-      <SolidColorBrush x:Key="AmberBrush" Color="{StaticResource AmberColor}" />
-      <SolidColorBrush x:Key="AmberInkBrush" Color="{StaticResource AmberInkColor}" />
-      <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
-      <SolidColorBrush x:Key="DangerInkBrush" Color="{StaticResource DangerInkColor}" />
-      <SolidColorBrush x:Key="MapBrush" Color="{StaticResource MapColor}" />
-    </ResourceDictionary>
 
   </ResourceDictionary.ThemeDictionaries>
 

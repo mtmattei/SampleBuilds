@@ -17,7 +17,6 @@ namespace MorningCard;
 /// <item><c>MC_CLOCK</c>: minutes since midnight, e.g. 460 for 7:40.</item>
 /// <item><c>MC_DELAY</c>: traffic delay in minutes.</item>
 /// <item><c>MC_RANGE</c>, <c>MC_TIRE</c>: stat values, for the warning thresholds.</item>
-/// <item><c>MC_THEME</c>: light or dark. Applied after navigation, so it beats the saved choice.</item>
 /// <item><c>MC_PROBE_RETRY</c>: invokes the error template's Retry command and traces the result.</item>
 /// <item><c>MC_TRACE</c>: file to append traces to. A desktop app is windowed, so redirected
 /// stdout captures nothing.</item>
@@ -70,13 +69,6 @@ internal static class DebugHooks
                 break;
         }
     }
-
-    public static ElementTheme? Theme => Read("MC_THEME")?.ToLowerInvariant() switch
-    {
-        "dark" => ElementTheme.Dark,
-        "light" => ElementTheme.Light,
-        _ => null,
-    };
 
     public static bool ProbeRetry => Read("MC_PROBE_RETRY") == "1";
 

@@ -2,7 +2,6 @@ using MorningCard.Core;
 using MorningCard.Core.Models;
 using MorningCard.Core.Services;
 using MorningCard.Themes;
-using Uno.Extensions.Toolkit;
 
 namespace MorningCard.Presentation;
 
@@ -17,12 +16,8 @@ namespace MorningCard.Presentation;
 /// </summary>
 public partial record TuningModel
 {
-    private readonly IThemeService _theme;
-
-    public TuningModel(SimulatedDriveHub hub, IThemeService theme)
+    public TuningModel(SimulatedDriveHub hub)
     {
-        _theme = theme;
-
         var state = hub.State;
 
         Mode = Forward(Options.First(option => option.Value == state.Mode), option => hub.SetMode(option.Value));
@@ -33,7 +28,6 @@ public partial record TuningModel
         ChargePercent = Forward(state.Vehicle.ChargePercent, hub.SetChargePercent);
         PluggedIn = Forward(state.Vehicle.IsPluggedIn, hub.SetPluggedIn);
 
-        Hue = Forward(CardChrome.Hue, value => CardChrome.Hue = value);
         CornerRadius = Forward(CardChrome.CornerRadius, value => CardChrome.CornerRadius = value);
         MotionSpeed = Forward(CardChrome.MotionSpeed, value => CardChrome.MotionSpeed = value);
         ReducedMotion = Forward(CardChrome.ReducedMotion, value => CardChrome.ReducedMotion = value);
@@ -83,8 +77,6 @@ public partial record TuningModel
 
     public IState<double> ChargePercent { get; }
 
-    public IState<double> Hue { get; }
-
     public IState<double> CornerRadius { get; }
 
     public IState<double> MotionSpeed { get; }
@@ -111,8 +103,5 @@ public partial record TuningModel
         CardMotion.RequestReplay();
         await ValueTask.CompletedTask;
     }
-
-    public async ValueTask ToggleTheme(CancellationToken ct) =>
-        await _theme.SetThemeAsync(_theme.Theme == AppTheme.Dark ? AppTheme.Light : AppTheme.Dark);
 }
 

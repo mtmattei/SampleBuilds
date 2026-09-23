@@ -127,16 +127,6 @@
             <Slider AutomationProperties.LabeledBy="{Binding ElementName=LabelCharge}" Minimum="0" Maximum="100" StepFrequency="1" Value="{Binding ChargePercent, Mode=TwoWay}" />
           </StackPanel>
 
-          <StackPanel Style="{StaticResource DialStack}">
-            <Grid>
-              <TextBlock x:Name="LabelHue" x:Uid="DialHue" Style="{StaticResource ActionLabel}" />
-              <TextBlock Style="{StaticResource ActionLabel}"
-                         HorizontalAlignment="Right"
-                         Foreground="{ThemeResource Ink2Brush}"
-                         Text="{Binding Hue}" />
-            </Grid>
-            <Slider AutomationProperties.LabeledBy="{Binding ElementName=LabelHue}" Minimum="0" Maximum="360" StepFrequency="1" Value="{Binding Hue, Mode=TwoWay}" />
-          </StackPanel>
 
           <StackPanel Style="{StaticResource DialStack}">
             <Grid>
@@ -173,7 +163,6 @@
 
           <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
             <Button x:Uid="ButtonReplay" Style="{StaticResource OutlinedButtonStyle}" Command="{Binding ReplayEntrance}" />
-            <Button x:Uid="ButtonTheme" Style="{StaticResource OutlinedButtonStyle}" Command="{Binding ToggleTheme}" />
           </StackPanel>
 
         </StackPanel>

@@ -42,36 +42,6 @@
       <Color x:Key="SurfaceTintColor">#2169E9</Color>
     </ResourceDictionary>
 
-    <ResourceDictionary x:Key="Dark">
-      <Color x:Key="PrimaryColor">#5A93F6</Color>
-      <Color x:Key="OnPrimaryColor">#0F151C</Color>
-      <Color x:Key="PrimaryContainerColor">#1B3A5C</Color>
-      <Color x:Key="OnPrimaryContainerColor">#D8E6FF</Color>
-      <Color x:Key="SecondaryColor">#A9B3BD</Color>
-      <Color x:Key="OnSecondaryColor">#10151C</Color>
-      <Color x:Key="SecondaryContainerColor">#2C3540</Color>
-      <Color x:Key="OnSecondaryContainerColor">#F0F3F6</Color>
-      <Color x:Key="TertiaryColor">#77A6F8</Color>
-      <Color x:Key="OnTertiaryColor">#0F151C</Color>
-      <Color x:Key="TertiaryContainerColor">#23405A</Color>
-      <Color x:Key="OnTertiaryContainerColor">#D8E6FF</Color>
-      <Color x:Key="ErrorColor">#EF6A5F</Color>
-      <Color x:Key="OnErrorColor">#10151C</Color>
-      <Color x:Key="ErrorContainerColor">#5C231F</Color>
-      <Color x:Key="OnErrorContainerColor">#FFDAD6</Color>
-      <Color x:Key="BackgroundColor">#10151C</Color>
-      <Color x:Key="OnBackgroundColor">#F0F3F6</Color>
-      <Color x:Key="SurfaceColor">#10151C</Color>
-      <Color x:Key="OnSurfaceColor">#F0F3F6</Color>
-      <Color x:Key="SurfaceVariantColor">#222932</Color>
-      <Color x:Key="OnSurfaceVariantColor">#A9B3BD</Color>
-      <Color x:Key="OutlineColor">#6F7A86</Color>
-      <Color x:Key="OutlineVariantColor">#39414B</Color>
-      <Color x:Key="SurfaceInverseColor">#F0F3F6</Color>
-      <Color x:Key="OnSurfaceInverseColor">#10151C</Color>
-      <Color x:Key="PrimaryInverseColor">#2169E9</Color>
-      <Color x:Key="SurfaceTintColor">#5A93F6</Color>
-    </ResourceDictionary>
 
   </ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>

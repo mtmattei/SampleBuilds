@@ -52,7 +52,6 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
     {
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
-        ActualThemeChanged += OnActualThemeChanged;
         _entrance.Tick += OnEntranceTick;
     }
 
@@ -273,12 +272,6 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         }
     }
 
-    private void OnActualThemeChanged(FrameworkElement sender, object args)
-    {
-        _palette = null;
-        Refresh();
-    }
-
     /// <summary>
     /// Rebuilds the snapshot on the UI thread, where theme resources and DependencyProperties are
     /// safe to read, then asks for one frame.
@@ -297,7 +290,7 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
             ArriveLabel = eta?.ArriveLabel ?? string.Empty,
             BellLabel = eta?.BellLabel ?? string.Empty,
             Progress = Progress,
-            // Cached: only a theme or hue change can invalidate it.
+            // Cached: the tokens are fixed for the life of the app.
             Palette = _palette ??= ReadPalette(),
         };
 
@@ -356,47 +349,38 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
     }
 
     /// <summary>
-    /// Reads the tokens for the theme this element is actually drawn in. Application-level lookup
-    /// resolves against the application's theme, which is not the same thing once the theme service
-    /// has switched the root element - that mismatch left the map drawing its light palette on a
-    /// dark card.
+    /// Reads the card tokens once. The map is light, and so is the app (v6 decision B6).
     /// </summary>
-    private RouteRulerPalette ReadPalette()
+    private static RouteRulerPalette ReadPalette()
     {
-        // Pinned to Light, not ActualTheme. Since v2 the route is drawn over real OSM tiles, and
-        // OSM has no dark style - the map stays light in both themes. Following the app theme put
-        // the dark palette's near-white label ink on a light map, so "Now 7:24" and "9 min slack"
-        // were white on pale grey. The ink has to follow what it is drawn on, which is the map.
-        const ElementTheme theme = ElementTheme.Light;
         var fallback = RouteRulerPalette.Fallback;
 
         return new RouteRulerPalette(
-            Map: Read("MapColor", theme, fallback.Map),
-            Road: Read("MapRoadColor", theme, fallback.Road),
-            Park: Read("MapParkColor", theme, fallback.Park),
-            Water: Read("MapWaterColor", theme, fallback.Water),
-            Ink: Read("InkColor", theme, fallback.Ink),
-            Ink2: Read("Ink2Color", theme, fallback.Ink2),
-            Ink3: Read("Ink3Color", theme, fallback.Ink3),
-            // Read from the brush, not the colour: the hue dial writes the brush.
-            Accent: ReadBrush("AccentBrush", theme, fallback.Accent),
-            OnAccent: Read("OnAccentColor", theme, fallback.OnAccent),
-            Amber: Read("AmberColor", theme, fallback.Amber),
-            AmberInk: Read("AmberInkColor", theme, fallback.AmberInk),
-            Danger: Read("DangerColor", theme, fallback.Danger),
-            DangerInk: Read("DangerInkColor", theme, fallback.DangerInk),
-            Pin: Read("PinColor", theme, fallback.Pin),
-            // Nodes keep a white ring in both themes: it reads as a cut-out, not as ink.
+            Map: Read("MapColor", fallback.Map),
+            Road: Read("MapRoadColor", fallback.Road),
+            Park: Read("MapParkColor", fallback.Park),
+            Water: Read("MapWaterColor", fallback.Water),
+            Ink: Read("InkColor", fallback.Ink),
+            Ink2: Read("Ink2Color", fallback.Ink2),
+            Ink3: Read("Ink3Color", fallback.Ink3),
+            Accent: ReadBrush("AccentBrush", fallback.Accent),
+            OnAccent: Read("OnAccentColor", fallback.OnAccent),
+            Amber: Read("AmberColor", fallback.Amber),
+            AmberInk: Read("AmberInkColor", fallback.AmberInk),
+            Danger: Read("DangerColor", fallback.Danger),
+            DangerInk: Read("DangerInkColor", fallback.DangerInk),
+            Pin: Read("PinColor", fallback.Pin),
+            // Nodes keep a white ring: it reads as a cut-out, not as ink.
             NodeStroke: fallback.NodeStroke);
     }
 
-    private static SKColor Read(string key, ElementTheme theme, SKColor fallback) =>
-        AccentPalette.Lookup(key, theme) is Windows.UI.Color color
+    private static SKColor Read(string key, SKColor fallback) =>
+        CardPalette.Lookup(key) is Windows.UI.Color color
             ? new SKColor(color.R, color.G, color.B, color.A)
             : fallback;
 
-    private static SKColor ReadBrush(string key, ElementTheme theme, SKColor fallback) =>
-        AccentPalette.Lookup(key, theme) is SolidColorBrush brush
+    private static SKColor ReadBrush(string key, SKColor fallback) =>
+        CardPalette.Lookup(key) is SolidColorBrush brush
             ? new SKColor(brush.Color.R, brush.Color.G, brush.Color.B, brush.Color.A)
             : fallback;
 

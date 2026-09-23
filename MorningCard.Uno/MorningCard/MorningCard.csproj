@@ -37,7 +37,6 @@
       Configuration;
       Localization;
       Navigation;
-      ThemeService;
       SkiaRenderer;
     </UnoFeatures>
   </PropertyGroup>

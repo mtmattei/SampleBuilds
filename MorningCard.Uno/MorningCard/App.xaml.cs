@@ -21,9 +21,6 @@ public partial class App : Application
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         var builder = this.CreateBuilder(args)
-            // Kept even though no Toolkit control navigates: removing it changed the window's root
-            // content, and AccentPalette.Track then captured the wrong theme - dark mode lost the
-            // ETA number and dimmed the stats, because the converters resolve through that.
             .UseToolkitNavigation()
             .Configure(host => host
 #if DEBUG
@@ -76,7 +73,6 @@ public partial class App : Application
                         .AddSingleton<ITripService>(sp => sp.GetRequiredService<SimulatedDriveHub>())
                         .AddSingleton<IVehicleService>(sp => sp.GetRequiredService<SimulatedDriveHub>());
                 })
-                .UseThemeSwitching()
                 .UseNavigation(ReactiveViewModelMappings.ViewModelMappings, RegisterRoutes)
             );
         MainWindow = builder.Window;
@@ -105,23 +101,6 @@ public partial class App : Application
             () => Task.FromResult(host),
             initialRoute: "Main"
         );
-
-#if DEBUG
-        // The theme hook stays after navigation: there is no window root before it, and it has to
-        // beat the theme service's saved choice.
-
-        if (DebugHooks.Theme is { } theme && MainWindow.Content is FrameworkElement themeRoot)
-        {
-            themeRoot.RequestedTheme = theme;
-        }
-#endif
-
-        // Converters resolve brushes through this, because they have no element of their own to
-        // ask. Tracked after the theme hook so it starts on the theme actually in use.
-        if (MainWindow.Content is FrameworkElement resourceRoot)
-        {
-            Themes.AccentPalette.Track(resourceRoot);
-        }
 
 #if DEBUG
 

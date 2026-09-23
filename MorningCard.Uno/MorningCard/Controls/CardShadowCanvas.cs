@@ -31,7 +31,7 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
     private readonly SKPaint _paint = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
 
     // Snapshotted on the UI thread. RenderOverride runs on the render thread, where reading
-    // ActualTheme or walking Application.Current.Resources is a cross-thread touch of the XAML
+    // walking Application.Current.Resources is a cross-thread touch of the XAML
     // object graph - which is exactly what the sibling ruler canvas avoids and documents.
     private SKColor _far = new(0x14, 0x1C, 0x28, 0x73);
     private SKColor _near = new(0x14, 0x1C, 0x28, 0x14);
@@ -47,7 +47,6 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
 
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
-        ActualThemeChanged += (_, _) => Snapshot();
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
@@ -142,7 +141,7 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
     }
 
     private SKColor ReadColor(string key, SKColor fallback) =>
-        AccentPalette.Lookup(key, ActualTheme) is Windows.UI.Color color
+        CardPalette.Lookup(key) is Windows.UI.Color color
             ? new SKColor(color.R, color.G, color.B, color.A)
             : fallback;
 }

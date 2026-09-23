@@ -5,15 +5,11 @@ using MorningCard.Themes;
 namespace MorningCard.Presentation;
 
 /// <summary>
-/// A brush from the theme the card is actually drawn in.
-///
-/// A converter has no element to resolve a ThemeResource against, and reading
-/// Application.Current.Resources answers for the application's theme, not the root element's - so
-/// in dark mode these all returned light ink and the stats row and ETA number disappeared.
+/// A card token's brush. A converter has no element to resolve a ThemeResource against.
 /// </summary>
 internal static class Tokens
 {
-    public static object Of(string key) => AccentPalette.Brush(key)!;
+    public static object Of(string key) => CardPalette.Brush(key)!;
 }
 
 /// <summary>Maps a stat's severity onto the ink it is drawn in.</summary>

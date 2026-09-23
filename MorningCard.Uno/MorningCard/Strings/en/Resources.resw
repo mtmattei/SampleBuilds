@@ -163,9 +163,6 @@
   <data name="DialCharge.Text" xml:space="preserve">
     <value>Charge</value>
   </data>
-  <data name="DialHue.Text" xml:space="preserve">
-    <value>Route hue</value>
-  </data>
   <data name="DialRadius.Text" xml:space="preserve">
     <value>Corner radius</value>
   </data>
@@ -177,9 +174,6 @@
   </data>
   <data name="ButtonReplay.Content" xml:space="preserve">
     <value>Replay entrance</value>
-  </data>
-  <data name="ButtonTheme.Content" xml:space="preserve">
-    <value>Toggle theme</value>
   </data>
 
   <data name="Header_Times" xml:space="preserve">

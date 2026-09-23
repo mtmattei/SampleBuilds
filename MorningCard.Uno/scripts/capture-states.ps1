@@ -27,8 +27,6 @@ $states = @(
     @{ Name = 'heavy';      Env = @{ MC_DELAY = '9' } }
     @{ Name = 'warn';       Env = @{ MC_RANGE = '60'; MC_TIRE = '29' } }
     @{ Name = 'bad';        Env = @{ MC_RANGE = '20'; MC_TIRE = '25' } }
-    @{ Name = 'dark';       Env = @{ MC_THEME = 'dark' } }
-    @{ Name = 'dark-late';  Env = @{ MC_THEME = 'dark'; MC_CLOCK = '460' } }
 )
 
 if (-not (Test-Path $OutputDirectory)) {
@@ -36,7 +34,7 @@ if (-not (Test-Path $OutputDirectory)) {
 }
 $OutputDirectory = (Resolve-Path $OutputDirectory).Path
 
-$hooks = 'MC_STATE', 'MC_CLOCK', 'MC_DELAY', 'MC_RANGE', 'MC_TIRE', 'MC_THEME', 'MC_PROBE_RETRY', 'MC_TRACE'
+$hooks = 'MC_STATE', 'MC_CLOCK', 'MC_DELAY', 'MC_RANGE', 'MC_TIRE', 'MC_PROBE_RETRY', 'MC_TRACE'
 
 foreach ($state in $states) {
     Get-Process MorningCard -ErrorAction SilentlyContinue | Stop-Process -Force -Confirm:$false
