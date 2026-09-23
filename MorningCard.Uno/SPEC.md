@@ -1069,3 +1069,284 @@ Each step ends in a build or runtime check and one conventional commit.
 5. **Wear Start drive:** open Maps on the watch, or hand off to the paired phone?
 6. **Application ids:** `com.companyname.morningcard[.watch]` are placeholders.
 7. **Wear rotary crown** support in Uno is undocumented; verify at step 6 before promising it.
+
+# v6 — Design refresh on every surface (2026-09-23)
+
+Target: `docs/design/v6/`. The bundle `school_dropoff_card_v6_bundle.html` renders in a browser and
+is the source of truth; `png/` holds the @1x artboards for all ten pages (seven phone states, TV,
+Wear, Auto). `docs/design/v6/v6-vs-v5.md` is the full element-by-element diff and the source of
+every number below. v6 replaces the v5 artboards (`docs/artboards/*`) as the parity target for the
+v5 surface steps; the v5 architecture (part split, `MorningCard.UI`, watch app, car service) stands.
+
+## v6 Resolved Decisions (user, 2026-09-23)
+
+| # | Question | Decision |
+|---|---|---|
+| A6 | Palette | **Colours match the design exactly**, one palette on every surface (the v6 tokens). The Simulator's Hue dial goes; it moved the accent off the design. |
+| B6 | Dark mode | **Dropped.** Light only on phone, TV and Wear. `ThemeService`, the theme toggle, `MC_THEME` and the dark dictionaries are removed. The car's night treatment remains a host requirement (v5 UQ1, car only). |
+| C6 | Car | **Keep the Volvo XC60** (decision C stands). The artboards' Outback is ignored: image, name and alt text stay XC60. |
+| D6 | Refresh and Replay | **Outside the widget**, in the Simulator. The card has no overflow menu. |
+| E6 | Whole-card error, device offline | **Dropped.** A failed trip lookup renders as the drawn *ETA unavailable* state; a car that cannot be reached renders as the drawn *car offline* state. |
+| F6 | Greeting name | "Josh" is **hard-coded mock data** in the simulated profile (`Greeting_Named` resource with `{0}`), not a feature. |
+| G6 | Travel time | 14 min **drive only**, captioned DRIVE TO SCHOOL, on every surface (from the design). |
+
+## v6 Architecture Brief
+
+### Structure
+
+Unchanged from v5: `MorningCard.Core` → `MorningCard.UI` → `MorningCard` / `MorningCard.Watch`.
+v6 lands **before** the v5 split (v5 step 2), so the card is split once, already in its v6 shape.
+The v5 part list changes:
+
+| Part | v6 content |
+|---|---|
+| `CardHeader` | sun, greeting over the weather line, "Now 7:24" |
+| `TripPanel` | title + chevron, headline, (sub-note), car image |
+| `SlackRuler` (**new**) | the minute-scale ruler; four ramps: phone, TV, Auto, Wear-compact (no segment labels) |
+| `RouteMapPanel` | Mapsui map, route overlay, ETA block, Open in Maps |
+| `ChecksPanel` | header + three rows; `Mode = Accordion` (phone), `Expanded` (TV, Auto), `Pills` (Wear) |
+| `ActionBar` | vehicle line, Unlock (labelled), primary action |
+
+### State model (MVUX stays)
+
+MVUX remains: the card is durable async state from push streams with FeedView-driven states, and
+the v6 changes are new states on the same model. Changes to `MainModel`:
+
+- `Cabin` becomes `IState<CabinChoice>` with `CabinChoice { Pending, Warming, Skipped }`, replacing
+  the climate bool as far as the card is concerned. `StartWarming` sets Warming and calls
+  `SetClimateAsync(true)`; `SkipWarming` sets Skipped; `UndoWarming` returns to Pending and stops
+  climate if it was on. Ready count: fuel + parking + (cabin != Pending). This resolves v5 UQ4 (Skip).
+- `OpenRow` becomes `IState<ChecklistRow>` (`None, Fuel, Cabin, Parking`, default Cabin) for the
+  phone accordion, next to the existing `ChecksExpanded`.
+- `EtaView` gains the slack-ruler plan and loses the strip weights (`TrackSlack/Drive/Walk`).
+  `EtaView.Failed` now means *ETA unavailable*: schedule times still present, live ETA absent. A
+  failed lookup therefore needs the saved schedule: a `TripPlan` from the schedule with no traffic
+  (`SimulatedDriveHub` already has the base drive time).
+- `CarView` gains `LastSeenText` ("Last read 6:10") and the offline flags that disable Unlock,
+  Start warming and Skip.
+- Flags are carried on the feed each template binds to (project rule: `Parent.X` resolves commands
+  only).
+
+Slack-ruler geometry is pure and goes to Core: `SlackRulerLayout.Compute(TripTimeline, walkMin,
+bell, now, windowStart = 7:20, windowMinutes = 36)` returns segments (past, slack, drive, walk,
+after, overrun) as minute ranges, key-time anchors with their alignment (centre, left, right; ARRIVE
+moves right of BELL when late), and a label level per segment (≥7 min full, ≥3 short, else none).
+Unit-tested like `TimeRulerLayout`.
+
+### Map overlay
+
+The v6 map draws **no ticks on the route**: route legs (drive slate, walk ochre, both on a paper
+casing), a dotted slack line from now to the leave point, rings at leave and walk start, the now dot
+(tone-coloured, white halo), the school pin, and two callouts ("Now 7:24", "3 min walk"). The minute
+scale lives on the slack ruler. `RouteRulerRenderer` keeps its projection and leg drawing; tick,
+interval and label drawing is removed. `TimeRulerLayout` interval selection becomes unused on the
+map; delete it with its tests once nothing references it. To be confirmed (v6 UQ1).
+
+### Services and data flow
+
+Unchanged. Refresh moves to the Simulator (calls the existing `Retry` path); Replay already lives
+there. The greeting name comes from a mock profile constant.
+
+### Platform constraints
+
+- **Geist** ships as static TTFs per weight (400, 500, 600) with underscore filenames
+  (`Geist_Regular.ttf`); Skia ignores woff2 and variable-font weights (rules file). Source: the
+  upstream OFL release (vercel/geist-font), checked by `name` table and absence of `fvar`.
+- The XC60 image is desaturated to the design's `saturate(.3) contrast(.95)` **offline** into a new
+  asset (`xc60_muted.png`); XAML has no image filter and no multiply blend.
+- Muted map: OSM tiles tinted toward the design's paper map (risk R8).
+
+Pinned: unchanged (Uno.Sdk 6.7.30, Mapsui.Uno.WinUI 5.1.0). No new packages.
+
+### Testing and validation
+
+- New `SlackRulerLayoutTests`: on time, leave now, late (overrun, ARRIVE after BELL), no slack,
+  label levels at 2, 3 and 7 minutes.
+- Phone parity against `png/phone_*.png` at a 552 epx card width (the artboard card), element score
+  ≥85% per state, via App MCP on desktop, then the Android emulator.
+- Existing tests stay green; `TimeRulerLayoutTests` go with `TimeRulerLayout` if it is deleted.
+
+## v6 Design Brief
+
+### Visual direction
+
+Quiet paper and slate: a warm off-white card on a flat warm ground, charcoal ink, one muted slate
+accent, sage for good, ochre for walking, brick for late. No glass, no bokeh, no pills.
+
+### Tokens (replace the `CardTokens.xaml` light values; delete the dark dictionary)
+
+| Token | Value | Token | Value |
+|---|---|---|---|
+| Ground | `#E9E6DF` | Shell | `#F1EFE9` + 1 px inset top `#E6FFFFFF` |
+| Panel | `#FBFAF7`, ring `#0D2A2C2F` | Ink | `#2A2C2F` |
+| Ink2 / Ink3 / Caps / Faint | `#55585C` / `#76787B` / `#94918A` / `#ADA9A1` | Line | `#142A2C2F` |
+| OnTime / ink | `#4A6B8A` / `#3F5C78` | LeaveNow / ink | `#A6703F` / `#8A5A2E` |
+| Late / ink | `#9C4A3E` / `#8C4236` | Good / ink / fill | `#7E947A` / `#4F6B4C` / `#E4EBE1` |
+| Walk / ink / fill | `#B5824F` / `#8A6236` / `#F1E7DA` | Drive fill | `#E1E8EF` |
+| Hatch | `#1A2A2C2F` 1 px at 135°, 6 px pitch on `#F1EFEA` | Overrun | `#4D9C4A3E` hatch + `#739C4A3E` ring |
+| Primary | `#2B2D30` on `#FBFAF7` | Ghost | `#0F2A2C2F` |
+| Chip | `#0D2A2C2F`, radius 7, h22 | Map scrim | white 97% → 90% at 24% → 45% at 44% → 0 at 62% |
+
+Card shadow (phone): 0.5 px ring `#1A2A2C2F`, `0 2 6 #0F2A2C2F`, `0 32 64 -24 #612A2C2F`
+(`CardShadowCanvas` keeps drawing it; only the values change).
+
+### Typography (Geist; px = epx)
+
+| Role | Phone | TV | Wear | Auto |
+|---|---|---|---|---|
+| Greeting / weather | 15 w600 / 16 w500 | 20 / 15 | 16 / 13 | 18 / 14 |
+| Title | 34/40 w600 | 36/42 | 26 | 30 |
+| Headline / emphasis | 17 w500 / 27 w600 | 19 / 30 | 17 / 38 | 18 / 28 |
+| Ruler caps / values | 10 w600 / 19 w600 | 11 / 21 | 11 / 17 | 10 / 20 |
+| Segment label | 11.5 w600 | 11.5 | none | 10.8 |
+| ETA number / unit / caption | 30 / 15 / 10.5 | 58 / 24 / 18 | 34 / 15 / 10 | 44 / 18 / 11 |
+| Row title / meta / pill | 15.5 w550 / 13 / 12 w550 | 19 / 14 / 13 | 19 / 15 | 19 / 14 / 13 |
+| Primary action h / radius | 40 / 12 | 48 / 12 | 100 edge / 50 top | 60 / 14 |
+
+Letter-spacing is not achievable on Skia text (`CharacterSpacing` is a no-op, rules file): the caps
+tracking (+0.08em) and the title's −0.02em are dropped. Recorded as a substitution (inventory 51).
+w550 renders as w500 (static instances only).
+
+### Layout (phone, 552 epx card, padding 8, gaps 8)
+
+1. Header, min h52, padding 6/12/0/14: sun 18 · greeting stack · spacer · "Now 7:24" (13 w500).
+2. Panel, radius 20, padding 20: title row (title + chevron 20, car 156x82 at the right, −4/−8
+   margins), headline 8 below; ETA unavailable adds "Times from your saved schedule." at 13.5.
+3. Slack ruler, 16 below, h104: key times at top 0, ticks at 46 (major 7 tall, minor 4), blocks
+   56-86 radius 6, drop lines 40-90, now dot at 41, now caption at 91.
+4. Map, 18 below, h280, radius 16: ETA block at 18,16; Open in Maps pill h32 radius 16, 12 from the
+   bottom-right corner.
+5. Checklist, 12 below: 1 px `#142A2C2F` outline, radius 16; header h52; rows min h56, columns
+   28 / 1fr / auto / 16; detail indented 38.
+6. Footer h56, padding 0/4/0/14: vehicle line, Unlock ghost h40, Start drive h40.
+
+Narrow phones (411 epx, the emulator): the card fills the width inside the 16 epx gutter; the ruler
+scales horizontally (minute positions are proportional); segment labels degrade by width through
+the label-level rule; the title keeps the `c658b2b` fit rule.
+
+TV, Wear and Auto: as the artboards and the surface sections of the diff. The v5 layout text stands
+with the v6 content changes: ruler instead of strip, no status badge, XC60 instead of Outback, no
+range in the footer, Wear weather on screen 1.
+
+## v6 Interaction Brief
+
+### Flows
+
+1. Glance: headline sentence plus ruler answer "when do I leave, and how much room is there".
+2. Warm the cabin: open the cabin row → Start warming → pill "● Warming", sub "−3° → 20° by 7:33",
+   Undo. Skip → "Skipped", title struck through, Undo. Either decision makes the row ready.
+3. Start drive: unchanged hand-off to Maps (Send to car on TV).
+4. Unlock: labelled ghost button (was icon-only).
+5. Refresh / Replay: Simulator only.
+
+### Input
+
+- Phone accordion: tapping a row toggles it; opening one closes the other. The header toggles the
+  whole checklist. Chevrons rotate 90° (rows) / 180° (header), 200 ms, `(.2,0,0,1)`.
+- Detail reveal: opacity 0 → 1 and y −4 → 0, 220 ms, `(.2,0,0,1)`.
+- Press: scale 0.99 (rows), 0.98 (title), 0.96 (buttons), 160 ms.
+- TV: slate double focus ring per the artboard; v5 initial-focus rule unchanged.
+
+### States (phone; the surfaces show them inside their panels, as in v5)
+
+| State | Trigger (`MC_STATE`) | Rendering |
+|---|---|---|
+| On time / Leave now / Late | `live` + clock | per artboards; tone switches slate / brown / brick |
+| Loading | first value pending | skeleton bars `#142A2C2F` radius 8 at the artboard sizes; map tiles without route; "Checking…", "Updating…"; Start drive disabled at 40% |
+| ETA unavailable | `error` (was the whole-card error) | schedule times, ruler and route drawn; ETA slot: "Live ETA unavailable" 17 w600, "Traffic data didn't load" 13, Retry ghost h34 |
+| No drop-off | `empty` | "No drop-off today", "School is closed. Next run tomorrow, leave by **7:33**."; no ruler, no route; "Route shows tomorrow"; "Ready for tomorrow"; Start drive disabled |
+| Car offline | `offline` | fuel "Last read 6:10" + "No signal"; cabin "Car offline" + "Remote start needs a connection to the car. It will retry on its own."; Start warming/Skip at 35%, Unlock at 40%; footer "Offline · last seen 6:10", grey dot |
+
+### Animations
+
+v4 motion tokens stay. The ruler blocks grow in from the left (`ScaleX` 0 → 1) inside the existing
+entrance. The now dot does not pulse (the artboard hides the halo). The footer live dot pulses
+opacity 1 → .35 on the shared ~30 fps timer, never a Forever storyboard (rules file), and stops in
+the offline state.
+
+### Accessibility
+
+- The ruler has one accessible name built from the layout, e.g. "Now 7:24. 9 minutes of slack,
+  leave at 7:33, drive 14 minutes, walk 3 minutes, bell at 7:50."
+- Touch targets ≥48: the 32 px map pill and the 40 px footer buttons get invisible 4-8 px hit
+  extensions (the artboard's `inset:-4px`).
+- Status is never colour alone: the headline names it in every state.
+- Disabled buttons are disabled for automation, not only faded.
+
+### Runtime verification
+
+1. Desktop via App MCP, window sized twice (resize gotcha): each `MC_STATE` × clock at 7:24 / 7:33 /
+   7:37, captured and compared to `png/phone_*.png`.
+2. Drive the cabin flow: Start warming → Undo → Skip → Undo, asserting pill, sub and ready count.
+3. Drive Retry from ETA unavailable with the source healthy again; assert the ETA returns.
+4. Android emulator `chefs36`, all states; verify Geist renders (underscore asset names) and the
+   muted car image loads.
+
+## v6 Capability Inventory (delta)
+
+| # | Capability | Status | Note |
+|---|---|---|---|
+| 38 | Slack ruler | to implement | Core layout + XAML part |
+| 39 | Muted map | to implement if R8 passes | tint real OSM tiles; fallback: a paper wash over the tiles, raised as a substitution |
+| 40 | Phone Recenter | **omitted (proposed)** | the map is locked (B4); a recenter on a map that cannot move would impersonate a capability. v6 UQ2 |
+| 41 | Cabin Skip / Undo | to implement | `CabinChoice` |
+| 42 | Checklist accordion | to implement | `OpenRow` |
+| 43 | ETA unavailable (partial error) | to implement | replaces the whole-card error |
+| 44 | Skeleton loading | to implement | `uno-component-states` |
+| 45 | Car-offline degradation | to implement | per row |
+| 46 | Geist | to implement | static TTFs, R7 |
+| 47 | Dark theme | **removed by decision B6** | |
+| 48 | Whole-card error, device offline | **removed by decision E6** | |
+| 49 | Overflow menu | **moved by decision D6** | Refresh and Replay in the Simulator |
+| 50 | On-map minute ticks | **removed by the design** | moved to the slack ruler; v6 UQ1 |
+| 51 | Letter-spacing (caps, title) | **substituted** | Skia `CharacterSpacing` no-op |
+| 52 | Accent hue dial | **removed by decision A6** | |
+
+## v6 Risks (time-boxed spikes)
+
+| # | Risk | Box | Pass condition |
+|---|---|---|---|
+| R7 | Geist static TTFs render at 400/500/600 on desktop and Android Skia | 10 min | three weights visibly distinct on both heads; family name matches the `#fragment` |
+| R8 | Mapsui 5.1 tile tint (colour filter on the tile layer's rendering) | 15 min | tiles render desaturated toward `#EFEEE9` on desktop and Android; else the fallback wash |
+| R9 | Hatched fills (`LinearGradientBrush` with `SpreadMethod=Repeat`, or a Skia tile) | 10 min | a 1 px 135° hatch at 6 px pitch renders crisp on both heads |
+
+Two failed cycles on any spike: Debug Checkpoint, then take the listed fallback.
+
+## v6 Implementation Plan
+
+Runs **before v5 step 2**. v5 step 0 finishes with light captures of the pre-v6 card only (dark is
+dropped). Each step ends in a build, a runtime check and one commit.
+
+1. Spikes R7, R8, R9; record the results here.
+2. Remove dark: ThemeService, toggle, `MC_THEME`, dark dictionaries; delete the Hue dial and the
+   `AccentPalette` hue derivation. `refactor: drop dark mode and the hue dial`
+3. v6 tokens + Geist + muted XC60 asset. `feat: v6 tokens and type`
+4. `SlackRulerLayout` in Core + tests. `feat: slack ruler layout`
+5. Header, title block, `SlackRuler` part, footer; remove the overflow menu, add Refresh to the
+   Simulator. `feat: v6 header, ruler and footer`
+6. Map: full width, v6 overlay (no ticks), ETA block, tile tint. `feat: v6 route map`
+7. Checklist: accordion, `CabinChoice` with Skip/Undo, row details.
+   `feat: checklist accordion and cabin choice`
+8. States: loading skeleton, ETA unavailable, no drop-off, car offline; remove the whole-card error.
+   `feat: v6 states`
+9. Parity pass on desktop and Android against `png/phone_*.png`. `chore: v6 phone captures`
+10. Continue with v5 step 2 (split) using the v6 part list; v5 steps 5-9 target the v6 surface
+    artboards.
+
+## v6 Unresolved Questions
+
+1. **On-map ticks.** v6 removes the minute ticks from the route (moved to the slack ruler), which
+   retires the v4 route ruler on the map. Confirm.
+2. **Phone Recenter.** Proposed: omit it (the map stays locked, B4). The alternative is to unlock pan
+   and zoom on the phone and implement recenter.
+3. **Start drive while the car is offline.** The design disables it; navigation does not need the
+   car. Proposed: follow the design.
+4. **Auto panel.** The v6 Auto artboard is a custom panel; a POI app gets host-drawn rows only.
+   Proposed: keep the v5 mapping (inventory 36) and record the ruler, car image and inline buttons
+   as omissions in the car.
+5. **No drop-off map controls.** The artboard keeps Recenter and Open in Maps on a map with no route.
+   Proposed: keep Open in Maps (opens the school), no Recenter (see 2).
+6. **Letter-spacing.** Accept dropping the caps and title tracking (Skia no-op), or lay caps out per
+   glyph (the BillCal workaround, costly for every caps label)? Proposed: accept.
+7. v5 UQ1 (car night treatment), UQ3 (car zoom/recenter) and UQ5-7 remain open; v5 UQ2 (Wear theme)
+   is answered by B6 (light); v5 UQ4 (Skip) is answered by `CabinChoice`.
