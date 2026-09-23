@@ -1287,7 +1287,7 @@ the offline state.
 | # | Capability | Status | Note |
 |---|---|---|---|
 | 38 | Slack ruler | to implement | Core layout + XAML part |
-| 39 | Muted map | to implement (R8 passed) | `MutedTileSource` tints real OSM tiles; the baked-in labels are an open question |
+| 39 | Muted map | to implement (R8 passed) | `MutedTileSource` tints real OSM tiles; OSM labels stay, muted (T6) |
 | 40 | Phone Recenter | **omitted (I6)** | the map is locked (B4); a recenter on a map that cannot move would impersonate a capability |
 | 41 | Cabin Skip / Undo | to implement | `CabinChoice` |
 | 42 | Checklist accordion | to implement | `OpenRow` |
@@ -1323,7 +1323,7 @@ and the `chefs36` emulator (API 36, 1080x2400). Captures: `captures/spikes-deskt
 | R7 | **Pass.** Geist 400/500/600 render visibly distinct in XAML and in Skia text on both heads. | Google css2 static slices (Android 2.2 UA), magic `00010000`, no `fvar`. Internal family names: `Geist`, `Geist Medium`, `Geist SemiBold` (id 16 = `Geist`). `SKTypeface.FromStream` reports `FamilyName = Geist` for all three. | Assets `Geist_Regular/Medium/SemiBold.ttf` are in `Assets/Fonts`. Fragments `#Geist`, `#Geist Medium`, `#Geist SemiBold`. Source is Google Fonts (same OFL release), which replaces "upstream vercel release" in Platform constraints. |
 | R7 note | A **wrong `#fragment` does not fall back** on either head: `Geist_Medium.ttf#Geist Mediumx` still renders Medium. | Fourth XAML row in both captures. | The file path picks the face; the fragment is not a guard. Review font URIs by filename. |
 | R8 | **Pass.** A `MutedTileSource : IHttpTileSource` wrapper re-renders each OSM tile once through an `SKColorFilter` colour matrix (luma × paper colour). It renders on both heads, Mapsui caches the tinted bytes, and nothing runs per frame. | Bottom map in both captures. `Controls/MutedTileSource.cs`. | Step 6 uses it. Tune `PaperMatrix(floor, gain)` against `phone_on_time.png` there: the first pass (0.35/0.68) is darker and busier than the artboard. N6 night = a second matrix. |
-| R8 gap | The OSM labels and building outlines are baked into the tiles, and a tint cannot remove them. The artboard map has no labels. | Compare `captures/spikes-*.png` with `png/phone_on_time.png`. | Raised under Unresolved Questions. |
+| R8 gap | The OSM labels and building outlines are baked into the tiles, and a tint cannot remove them. The artboard map has no labels. | Compare `captures/spikes-*.png` with `png/phone_on_time.png`. | Decided T6: keep them, muted. |
 | R9 | **Pass, Skia path.** `LinearGradientBrush` with `SpreadMethod=Repeat` and `MappingMode=Absolute` **does work** on Uno Skia (both heads), but its hard stops are not antialiased, so lines step thick/thin (clear at 100% ink on desktop, still visible on Android). Skia lines (`x + y = c`, 6√2 px apart on x, 1 px AA stroke, clipped to the round rect) keep an even weight. At the design ink (`#1A2A2C2F`) the two are nearly indistinguishable. | `captures/spikes-desktop-hatch-x4.png`, `spikes-android-hatch-*-x3.png`. | Hatched ruler blocks (past, after, overrun) draw through a small cached-paint `SKCanvasElement`. Tradeoff: up to three canvas elements per ruler, all static. |
 
 ## v6 Implementation Plan
@@ -1363,6 +1363,7 @@ dropped). Each step ends in a build, a runtime check and one commit.
 | Q6 | Application ids (v5 UQ6) | **`com.mtmattei.morningcard` for both APKs** (phone/TV/Auto and watch). | Wear guidance: the watch and phone apps share one package name so Play links them and the Data Layer can pair them later. |
 | R6 | Wear rotary crown (v5 UQ7) | **Verify at v5 step 6.** If Uno does not route rotary input to the `ScrollViewer`, handle `GenericMotionEvent` `AXIS_SCROLL` in the watch activity and call `ChangeView`. Time box 15 min. | Crown scrolling is a Wear quality requirement. |
 | S6 | Controls the design draws | Chips and status pills → `utu:Chip` (non-interactive style); the checklist accordion → evaluate WinUI `Expander` at step 7 before hand-rolling; skeleton → `uno-component-states`. | Capability-coverage *Controls* row: a hand-built equivalent needs a written reason. |
+| T6 | OSM labels in the muted map (user, 2026-09-23) | **Keep them, muted** by `MutedTileSource`. No no-labels basemap, no vector-drawn paper map. | Real tiles with one provider and a working tint; the labels are a known parity delta against the artboard. |
 
 v5 UQ2 (Wear theme) is answered by B6 (light), and v5 UQ4 (Skip) by `CabinChoice`.
 
@@ -1373,10 +1374,5 @@ None blocking. Accepted substitutions and omissions, listed so they stay visible
 - Phone Recenter omitted (I6); map stays locked.
 - Letter-spacing on caps and title lost (M6).
 - In the car: slack ruler, car image and inline Start/Skip omitted (K6).
-- Muted map: R8 passed (tinted real OSM tiles). **Open:** the tiles keep OSM's street labels and
-  building outlines, and the artboard map has none. Options: (1) accept them, muted (current
-  plan); (2) switch to a no-labels basemap such as CARTO `light_nolabels`, which is a new tile
-  provider with its own terms and attribution; (3) render the design's paper map from vector
-  data, which is much more work. Recommendation: (1) for v6, and revisit if parity scoring
-  penalises it.
+- Muted map keeps OSM's street labels and building outlines, muted by the tint (decision T6). The artboard map has none.
 - Start drive stays enabled when the car is offline, against the artboard (J6).

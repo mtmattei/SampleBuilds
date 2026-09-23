@@ -7,7 +7,7 @@ Updated: 2026-09-22 15:05
   - R7: Geist static TTFs (from Google css2) are in `Assets/Fonts`. Fragments are `#Geist`, `#Geist Medium`
     and `#Geist SemiBold`. A wrong fragment does not fall back, so check font URIs by filename.
   - R8: `Controls/MutedTileSource.cs` tints OSM tiles through a colour matrix on both heads. Tune
-    `PaperMatrix` at step 6. OSM labels stay in the tiles (open question in SPEC).
+    `PaperMatrix` at step 6. OSM labels stay, muted (user decision T6).
   - R9: hatched ruler blocks are drawn in Skia. The repeating gradient works, but its line weight is uneven.
 - Harness: `MC_SPIKE=1` (DEBUG) shows `Spikes/SpikeView.cs`. Delete it once step 6 has ported the tint.
 - Android: the Pixel 8 (`3C090DLJH000V4`) is locked with a fingerprint, so use `chefs36` (`adb -e`).
