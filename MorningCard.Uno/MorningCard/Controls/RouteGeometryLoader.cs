@@ -47,7 +47,7 @@ internal static class RouteGeometryLoader
         }
     }
 
-    /// <summary>The whole trip's extent, for fitting the map to it.</summary>
+    /// <summary>The whole trip's extent, unpadded, for fitting the map to it.</summary>
     public static Mapsui.MRect Bounds(RouteGeometry geometry)
     {
         ArgumentNullException.ThrowIfNull(geometry);
@@ -68,30 +68,10 @@ internal static class RouteGeometryLoader
             }
         }
 
-        var width = Math.Max(maxX - minX, 1d);
-        var height = Math.Max(maxY - minY, 1d);
-
-        // Room for the furniture that hangs off the end pins - a dwell ring at 22px radius and a
-        // callout about 70px wide. All of it is screen-constant while this box is in metres, and
-        // the resolution is not known until the fit happens, so the padding is expressed as the
-        // fraction of the route's width that lands roughly 60px at the width the panel fits. Six
-        // percent was not enough and clipped the origin's callout against the right edge.
-        var pad = width * 0.13d;
-
-        // A little top padding, to keep the route off the attribution line along the bottom. It used
-        // to be four times this, pushing the route into the lower band to dodge the ETA text - but
-        // the scrim is opaque now and the gutter below clears that text horizontally, so the extra
-        // drop only served to park the origin pin underneath the Open in Maps button.
-        var headroom = width * 0.10d;
-
-        // A small left gutter as well, since the ETA block reaches furthest on that side.
-        var etaGutter = width * 1.05d;
-
-        return new Mapsui.MRect(
-            minX - pad - etaGutter,
-            minY - pad,
-            maxX + pad,
-            maxY + pad + headroom);
+        // Unpadded. The room around the route is screen-constant (a ring, callouts, the ETA
+        // block), so the fit adds it in screen units; padding this box in metres made the room
+        // shrink with the panel.
+        return new Mapsui.MRect(minX, minY, Math.Max(maxX, minX + 1d), Math.Max(maxY, minY + 1d));
     }
 
     private static void DebugTrace(string message)

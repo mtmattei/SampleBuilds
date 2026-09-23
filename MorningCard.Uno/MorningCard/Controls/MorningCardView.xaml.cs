@@ -162,10 +162,15 @@ public sealed partial class MorningCardView : UserControl
                 return;
             }
 
-            FitToRoute(map, geometry);
-
+            // The fit waits for the viewport to have a size: on a slow start (the emulator) the route
+            // arrived first, the navigator ignored the fit, the ruler found no viewport to choose an
+            // interval for, and the route never drew. The viewport reporting a size is the signal.
+            _route = geometry;
+            _fittedSize = default;
+            _intervalChosen = false;
             Ruler.Geometry = geometry;
-            Ruler.ChooseInterval();
+            map.Navigator.ViewportChanged += OnViewportChanged;
+            FitToRoute();
         }
         catch (Exception error)
         {
@@ -175,23 +180,124 @@ public sealed partial class MorningCardView : UserControl
         }
     }
 
+    // Screen-space room around the route, in viewport units. The ETA block and its fade own the
+    // left of the panel, the dwell ring (22 radius) hangs off the right end, the callouts sit above
+    // the pins and the Open in Maps pill and attribution take the bottom band. These used to be
+    // fractions of the route's width, which shrank with the panel: at 411 epx the ring clipped on
+    // the right and the route slid under the fade.
+    private const double FitLeftShare = 0.40d;
+
+    // Clear map between the ETA text and the first pin: the Bell callout is centred on its pin and
+    // reaches about this far left of it.
+    private const double FitEtaGap = 40d;
+
+    // The scrim's fade after the ETA text, and the ramp across it (fractions of the fade, stops 2-8):
+    // a steep first drop, then an ease-out, kept from the ramp the tokens were tuned against.
+    private const double ScrimFade = 72d;
+
+    private static readonly double[] ScrimRamp = [0d, 0.16d, 0.29d, 0.45d, 0.65d, 0.84d, 1d];
+
+    private double _etaEdge;
+
     /// <summary>
-    /// Frames the whole trip, then stops the map moving.
+    /// Moves the scrim and the route's left edge to wherever the ETA text actually ends.
+    /// </summary>
+    private void OnEtaBlockSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (sender is not FrameworkElement block)
+        {
+            return;
+        }
+
+        var edge = block.Margin.Left + e.NewSize.Width;
+
+        if (Math.Abs(edge - _etaEdge) < 0.5d)
+        {
+            return;
+        }
+
+        _etaEdge = edge;
+
+        if (EtaScrim.Background is LinearGradientBrush { GradientStops.Count: 8 } brush)
+        {
+            var width = edge + ScrimFade;
+            var opaque = edge / width;
+
+            EtaScrim.Width = width;
+
+            for (var i = 0; i < ScrimRamp.Length; i++)
+            {
+                brush.GradientStops[i + 1].Offset = opaque + (ScrimRamp[i] * (1d - opaque));
+            }
+        }
+
+        _fittedSize = default;
+        FitToRoute();
+    }
+    private const double FitRight = 30d;
+    private const double FitTop = 34d;
+    private const double FitBottom = 50d;
+
+    private RouteGeometry? _route;
+    private Size _fittedSize;
+
+    private bool _intervalChosen;
+
+    private void OnViewportChanged(object? sender, EventArgs e) => FitToRoute();
+
+    /// <summary>
+    /// Frames the whole trip inside the part of the panel nothing covers, then stops the map moving.
     /// </summary>
     /// <remarks>
-    /// The padding is asymmetric on purpose: the ETA block sits over the left of the panel behind
-    /// its scrim, so the route is pushed clear of it rather than drawn underneath and then covered.
+    /// Runs again whenever the viewport changes size (first sizing, rotation, a window resize), and
+    /// only then: the fit itself raises ViewportChanged, which the size check turns into a no-op.
     /// </remarks>
-    private static void FitToRoute(Mapsui.Map map, RouteGeometry geometry)
+    private void FitToRoute()
     {
-        var bounds = RouteGeometryLoader.Bounds(geometry);
+        if (_route is not { } route
+            || Map.Map is not { } map
+            || map.Navigator.Viewport is not { Width: > 0, Height: > 0 } viewport)
+        {
+            return;
+        }
 
-        map.Navigator.ZoomToBox(bounds, Mapsui.MBoxFit.Fit);
+        var size = new Size(viewport.Width, viewport.Height);
 
-        // Locked after the fit, never before: a locked navigator ignores the fit as well.
+        if (size == _fittedSize)
+        {
+            return;
+        }
+
+        _fittedSize = size;
+
+        var bounds = RouteGeometryLoader.Bounds(route);
+        // The ETA block's edge once it is measured; a share of the panel until then.
+        var left = _etaEdge > 0d ? _etaEdge + FitEtaGap : viewport.Width * FitLeftShare;
+        var innerWidth = Math.Max(viewport.Width - left - FitRight, 1d);
+        var innerHeight = Math.Max(viewport.Height - FitTop - FitBottom, 1d);
+        var resolution = Math.Max(bounds.Width / innerWidth, bounds.Height / innerHeight);
+
+        // The viewport centre sits off the route's centre by half the difference between opposite
+        // insets. World Y points north and screen Y points down, hence the opposite signs.
+        var center = new Mapsui.MPoint(
+            bounds.Centroid.X - ((left - FitRight) / 2d * resolution),
+            bounds.Centroid.Y + ((FitTop - FitBottom) / 2d * resolution));
+
+        // A locked navigator ignores the fit as well, so unlock around it.
+        map.Navigator.PanLock = false;
+        map.Navigator.ZoomLock = false;
+        map.Navigator.CenterOnAndZoomTo(center, resolution);
         map.Navigator.PanLock = true;
         map.Navigator.ZoomLock = true;
         map.Navigator.RotationLock = true;
+
+        // The tick interval is chosen once, for the resolution the route is first fitted at; it
+        // also plays the route's entrance, which a later resize should not replay.
+        if (!_intervalChosen)
+        {
+            _intervalChosen = true;
+            Ruler.ChooseInterval();
+        }
     }
 
     /// <summary>
@@ -220,6 +326,48 @@ public sealed partial class MorningCardView : UserControl
     /// the model's - the Simulator raises the same signal.
     /// </summary>
     private void OnReplayEntrance(object sender, RoutedEventArgs e) => CardMotion.RequestReplay();
+
+    // Three 6px dots, two 4px gaps and the 5px margin before the "ready" line.
+    private const double ChecksDotsWidth = 31d;
+
+    private double _checksChipWidth;
+
+    /// <summary>
+    /// Lets the closed checklist header give way on a short row instead of clipping.
+    /// </summary>
+    /// <remarks>
+    /// The status sits in the star column, so when the row ran out of room it was the status that
+    /// vanished: on a 411 epx phone the header needed about 348 and had 297, and "3 of 3 ready"
+    /// was cut off entirely. The dots go first, then the count chip, since the "ready" line says
+    /// both in words. Every part but the chip measures unconstrained (Auto columns, a horizontal
+    /// StackPanel), so their DesiredSize is already their natural width, margins included.
+    /// </remarks>
+    private void OnChecksHeaderSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (sender is not Grid row
+            || row.Children.Count < 5
+            || row.Children[2] is not FrameworkElement chip
+            || row.Children[3] is not StackPanel { Children: [FrameworkElement dots, FrameworkElement ready] })
+        {
+            return;
+        }
+
+        // A collapsed chip measures to zero, so its width is remembered while it is showing.
+        if (chip.Visibility == Visibility.Visible)
+        {
+            _checksChipWidth = chip.DesiredSize.Width;
+        }
+
+        var fixedWidth = row.Children[0].DesiredSize.Width
+            + row.Children[1].DesiredSize.Width
+            + ready.DesiredSize.Width
+            + row.Children[4].DesiredSize.Width;
+
+        var room = e.NewSize.Width - fixedWidth;
+
+        chip.Visibility = room >= _checksChipWidth ? Visibility.Visible : Visibility.Collapsed;
+        dots.Visibility = room >= _checksChipWidth + ChecksDotsWidth ? Visibility.Visible : Visibility.Collapsed;
+    }
 
     private static void DebugTrace(string message)
     {

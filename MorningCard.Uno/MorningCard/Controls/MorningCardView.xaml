@@ -124,12 +124,24 @@
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
             <!-- ======================== headline ======================== -->
+            <!--
+              The car column is a share of the row, not a fixed 135: on a 411 epx phone a fixed car
+              left the title 216 of the 290 it needs and clipped it to "School dro". At that width
+              the share lands the car near the reference's 30%, and the image caps at 135 on wider
+              cards so desktop is unchanged.
+            -->
             <Grid ColumnSpacing="12">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="0.45*" />
               </Grid.ColumnDefinitions>
               <StackPanel VerticalAlignment="Center">
+                <!--
+                  DownOnly: the title keeps its 34 wherever it fits and scales down, uniformly and
+                  with its chevron still beside it, where it does not. The reference keeps it on one
+                  line at phone width; wrapping split "drop-off" from the chevron.
+                -->
+                <Viewbox Stretch="Uniform" StretchDirection="DownOnly" HorizontalAlignment="Left">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                   <TextBlock Style="{StaticResource CardTitle}"
                              VerticalAlignment="Center"
@@ -145,6 +157,7 @@
                     </Canvas>
                   </Viewbox>
                 </StackPanel>
+                </Viewbox>
                 <!--
                   One TextBlock, three Runs. Only the middle one takes the accent colour, which is
                   how the design puts the duration in blue without splitting the sentence into
@@ -155,10 +168,10 @@
                            TextWrapping="Wrap"
                            Foreground="{Binding Data.Tone, Converter={StaticResource ToneBrush}}"><Run Text="{Binding Data.HeadlineLead}" /><Run Text="{Binding Data.HeadlineAccent}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" Foreground="{Binding Data.Tone, Converter={StaticResource AccentTone}}" /><Run Text="{Binding Data.HeadlineTail}" /></TextBlock>
               </StackPanel>
-              <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6">
+              <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Spacing="6">
                 <!-- No tile behind it: the car reads as a photograph of the car, and a panel
                      under it only added a second container inside the card. -->
-                <Image Source="ms-appx:///Assets/Car/xc60.png" Width="135" Stretch="Uniform" />
+                <Image Source="ms-appx:///Assets/Car/xc60.png" MaxWidth="135" Stretch="Uniform" />
                 <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
                   <Viewbox Width="13" Height="13" VerticalAlignment="Center">
                     <Canvas Width="24" Height="24">
@@ -297,7 +310,12 @@
 
           <!-- No CornerRadius of its own: the panel Border already clips to the radius, and a
                second rounding inside it cut a notch that exposed the panel's ground at the corner. -->
-          <Border Visibility="{Binding State.Data.Failed, ElementName=EtaFeed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert, FallbackValue=Collapsed}">
+          <!-- Sized from the ETA block's right edge (OnEtaBlockSizeChanged): opaque under the text,
+               a fixed fade after it, and clear map beyond. A share of the panel either covered the
+               map far past the text on a wide card or left text on bare streets on a phone. -->
+          <Border x:Name="EtaScrim"
+                  HorizontalAlignment="Left"
+                  Visibility="{Binding State.Data.Failed, ElementName=EtaFeed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert, FallbackValue=Collapsed}">
             <Border.Background>
               <!--
                 Opaque, not a wash. The left of the panel is the ETA block's ground, so the map is
@@ -306,13 +324,15 @@
               -->
               <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                 <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0" />
-                <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0.30" />
-                <GradientStop Color="{ThemeResource EtaScrimStop1Color}" Offset="0.40" />
-                <GradientStop Color="{ThemeResource EtaScrimStop2Color}" Offset="0.48" />
-                <GradientStop Color="{ThemeResource EtaScrimStop3Color}" Offset="0.58" />
-                <GradientStop Color="{ThemeResource EtaScrimStop4Color}" Offset="0.70" />
-                <GradientStop Color="{ThemeResource EtaScrimStop5Color}" Offset="0.82" />
-                <GradientStop Color="{ThemeResource EtaScrimFadeColor}" Offset="0.92" />
+                <!-- Offsets are placeholders until the ETA block is measured; the ramp's shape
+                     (ScrimRamp in code-behind) is what these approximate. -->
+                <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0.22" />
+                <GradientStop Color="{ThemeResource EtaScrimStop1Color}" Offset="0.28" />
+                <GradientStop Color="{ThemeResource EtaScrimStop2Color}" Offset="0.33" />
+                <GradientStop Color="{ThemeResource EtaScrimStop3Color}" Offset="0.39" />
+                <GradientStop Color="{ThemeResource EtaScrimStop4Color}" Offset="0.46" />
+                <GradientStop Color="{ThemeResource EtaScrimStop5Color}" Offset="0.54" />
+                <GradientStop Color="{ThemeResource EtaScrimFadeColor}" Offset="0.60" />
               </LinearGradientBrush>
             </Border.Background>
           </Border>
@@ -355,6 +375,7 @@
                   read, which the timeline strip above deliberately does not repeat.
                 -->
                 <StackPanel Margin="16,14,0,0"
+                            SizeChanged="OnEtaBlockSizeChanged"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
                             MaxWidth="200"
@@ -462,7 +483,7 @@
                         AutomationProperties.Name="{Binding Data.ChecksReady}">
                   <!-- Padding zeroed: the row style's own 14pt top and bottom stacked on the
                        button's and made the closed checklist half again the reference's height. -->
-                  <Grid Style="{StaticResource ListRowStyle}" Padding="0">
+                  <Grid Style="{StaticResource ListRowStyle}" Padding="0" SizeChanged="OnChecksHeaderSizeChanged">
                     <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="Auto" />
                       <ColumnDefinition Width="Auto" />
@@ -496,15 +517,19 @@
                                 Spacing="4"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center">
-                      <Ellipse Width="6" Height="6" VerticalAlignment="Center"
-                               Fill="{Binding Data.FuelLevel, Converter={StaticResource StatLevelBrush}}" />
-                      <Ellipse Width="6" Height="6" VerticalAlignment="Center"
-                               Fill="{Binding Data.CabinNeedsWarming, Converter={StaticResource CheckDotBrush}}" />
-                      <Ellipse Width="6" Height="6" VerticalAlignment="Center"
-                               Fill="{ThemeResource GoodBrush}" />
+                      <!-- The dots give way first when the row is short (OnChecksHeaderSizeChanged):
+                           the reference drops them at phone width and keeps the count and the
+                           "ready" line, which say the same thing in words. -->
+                      <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,0,5,0" VerticalAlignment="Center">
+                        <Ellipse Width="6" Height="6" VerticalAlignment="Center"
+                                 Fill="{Binding Data.FuelLevel, Converter={StaticResource StatLevelBrush}}" />
+                        <Ellipse Width="6" Height="6" VerticalAlignment="Center"
+                                 Fill="{Binding Data.CabinNeedsWarming, Converter={StaticResource CheckDotBrush}}" />
+                        <Ellipse Width="6" Height="6" VerticalAlignment="Center"
+                                 Fill="{ThemeResource GoodBrush}" />
+                      </StackPanel>
                       <TextBlock Style="{StaticResource CardCaption}"
                                  VerticalAlignment="Center"
-                                 Margin="5,0,0,0"
                                  Text="{Binding Data.ChecksReady}" />
                     </StackPanel>
 
