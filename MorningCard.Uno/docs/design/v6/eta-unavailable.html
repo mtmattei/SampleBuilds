@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>School drop-off — ETA unavailable</title>
+<script src="eaef2cb8-a01c-4eac-b9e3-fab26c730720"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<!-- Geist @font-face blocks (400/500/600/700) removed -->
+<style>
+body{margin:0;font-family:"Geist",-apple-system,"SF Pro Text","Segoe UI Variable Text",system-ui,sans-serif;background:#E6E3DC;-webkit-font-smoothing:antialiased}
+a{color:#4A6B8A}a:hover{color:#33506B}
+.scene{background:#E9E6DF}
+.num{font-variant-numeric:tabular-nums}
+.mono,.chip{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.cap{font-size:10.5px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#94918A}
+.chip{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:7px;background:rgba(42,44,47,0.05);font-size:12px;font-weight:500;letter-spacing:0.005em;color:#55585C;white-space:nowrap}
+.pill-s{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:7px;font-size:12px;font-weight:550;white-space:nowrap}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hit{position:relative;transition-property:background-color,transform,box-shadow,opacity;transition-duration:160ms;transition-timing-function:cubic-bezier(.2,0,0,1)}
+.hit:focus-visible{outline:2px solid #4A6B8A;outline-offset:2px}
+.row:hover{background-color:rgba(42,44,47,0.04)}
+.dd:hover{background-color:rgba(42,44,47,0.03)}
+.dd:hover .chev{color:#6A6C6F}
+.dd:active{transform:scale(0.99)}
+.row:active{transform:scale(0.99)}
+.chev{color:#ADA9A1;transition:transform 200ms cubic-bezier(.2,0,0,1),color 160ms}
+.row:hover .chev{color:#6A6C6F}
+.title:hover .tchev{transform:translateX(3px)}
+.tchev{transition:transform 180ms cubic-bezier(.2,0,0,1)}
+.title:active{transform:scale(0.98)}
+.fab:hover{background-color:#FFFFFF}
+.fab:active,.btn-primary:active,.btn-ghost:active,.btn-dark:active,.btn-icon:active{transform:scale(0.96)}
+.pill::after,.btn-primary::after,.btn-ghost::after,.btn-icon::after,.btn-link::after{content:"";position:absolute;inset:-4px}
+.btn-primary{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px 0 12px;border-radius:10px;color:#FBFAF7;font-size:13.5px;font-weight:600}
+.btn-primary:hover{filter:brightness(1.06)}
+.btn-ghost{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px 0 12px;border-radius:10px;background:rgba(42,44,47,0.06);color:#3A3C3F;font-size:13.5px;font-weight:550}
+.btn-ghost:hover{background:rgba(42,44,47,0.09)}
+.btn-link{font-size:13px;font-weight:550;color:#3F5C78;border-radius:6px}
+.btn-link:hover{color:#33506B}
+.btn-dark{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px 0 16px;border-radius:12px;background:#2B2D30;color:#FBFAF7;font-size:14px;font-weight:600}
+.btn-dark:hover{background:#3A3C3F}
+.btn-icon{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:12px;background:#FBFAF7;color:#3A3C3F;box-shadow:inset 0 0 0 1px rgba(42,44,47,0.10)}
+.btn-icon:hover{background:#FFFFFF}
+.lbl{position:absolute;transform:translate(-50%,-100%);background:#FBFAF7;border-radius:6px;padding:4px 8px;font-size:12.5px;font-weight:550;line-height:16px;color:#2B2D30;white-space:nowrap;box-shadow:0 0 0 1px rgba(42,44,47,.08)}
+@keyframes halo{0%{r:7;opacity:.45}100%{r:22;opacity:0}}
+.halo{display:none}
+@keyframes draw{from{stroke-dashoffset:420}to{stroke-dashoffset:0}}
+.route{}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.meter{}
+@keyframes blink{0%,100%{opacity:.25}40%{opacity:1}}
+.dots{display:none}
+.dots i{display:none}
+.dots i:nth-child(2){animation-delay:.18s}.dots i:nth-child(3){animation-delay:.36s}
+@keyframes livedot{0%,100%{opacity:1}50%{opacity:.35}}
+.live{}
+@keyframes reveal{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.reveal{animation:reveal 220ms cubic-bezier(.2,0,0,1)}
+p{text-wrap:pretty}
+@media (prefers-reduced-motion:reduce){.halo,.route,.meter,.dots i,.live,.reveal{animation:none}.hit,.chev,.tchev{transition:none}}
+</style>
+</helmet>
+<div class="scene" style="width: 640px; height: 880px; position: relative; overflow: hidden; display: flex; align-items: flex-start; justify-content: center; padding-top: 48px; box-sizing: border-box;">
+<div style="position: absolute; inset: 0; background: rgba(236,238,241,0.18);"></div>
+
+<main style="position: relative; width: 552px; box-sizing: border-box; padding: 8px; border-radius: 26px; background: #F1EFE9; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 0 0 0.5px rgba(42,44,47,0.10), 0 2px 6px rgba(42,44,47,0.06), 0 32px 64px -24px rgba(42,44,47,0.38); display: flex; flex-direction: column; gap: 8px; color: #2A2C2F;">
+
+<header style="display: flex; align-items: flex-start; justify-content: space-between; min-height: 52px; padding: 6px 12px 0 14px;">
+<div style="display: flex; align-items: flex-start; gap: 10px;">
+<svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B5824F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="#B5824F"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg>
+<span style="display: flex; flex-direction: column; gap: 2px; font-size: 18px"><span style="font-size: 15px; line-height: 19px; font-weight: 600; letter-spacing: -0.01em; color: rgb(43, 45, 48)">Good morning, Josh</span><span class="mono" style="font-size: 13px; line-height: 17px; font-weight: 500; color: rgb(118, 120, 123)">, −3° · Clear · High 9°</span></span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; margin-top: 1px;">
+<span class="mono" style="font-size: 13px; font-weight: 500; color: #76787B;">Now {{now}}</span>
+</div>
+</header>
+
+<section style="background: #FBFAF7; border-radius: 20px; padding: 20px; box-shadow: 0 0 0 1px rgba(42,44,47,0.05);">
+<div style="display: flex; align-items: flex-start; gap: 16px;">
+<div style="flex-grow: 1; min-width: 0;">
+<button class="title hit" aria-label="Open school drop-off trip" style="display: inline-flex; align-items: center; gap: 6px; border-radius: 10px; margin-left: -2px; padding: 0 2px; text-align: left;">
+<h1 style="margin: 0; white-space: nowrap; font-size: 34px; line-height: 40px; font-weight: 600; letter-spacing: -0.02em; color: #2A2C2F;">School drop-off</h1>
+<svg class="tchev" width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="#A5A199" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-top: 4px;"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+<p class="num" style="margin: 8px 0 0; font-size: 17px; line-height: 30px; font-weight: 500; letter-spacing: -0.01em; color: #55585C;">{{lead}}<span style="font-size: 27px; font-weight: 600; letter-spacing: -0.02em; color: {{toneText}};">{{emph}}</span>{{tail}}</p>
+<p class="num" style="margin: 4px 0 0; font-size: 13.5px; line-height: 18px; color: #76787B;">Times from your saved schedule.</p>
+</div>
+<figure style="position: relative; margin: -4px -8px 0 0; width: 156px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center;">
+<div aria-hidden="true" style="position: absolute; left: 14px; right: 14px; top: 70px; height: 12px; border-radius: 50%; background: radial-gradient(closest-side, rgba(42,44,47,0.28), rgba(42,44,47,0)); filter: blur(1.5px);"></div>
+<img src="63128bc0-3f9a-4ea4-b737-1042b78311f4" alt="Silver Outback" width="156" height="82" style="position: relative; width: 156px; height: 82px; object-fit: contain; mix-blend-mode: multiply; filter: saturate(0.3) contrast(0.95);">
+</figure>
+</div>
+
+<div style="margin-top: 16px;">
+<div class="ruler num" role="img" aria-label="{{rAria}}" style="position: relative; margin-top: 2px; height: 104px;">
+<div style="{{rKLeave}}"><span style="{{rKCap}}">{{leaveLabel}}</span><span style="{{rKLeaveVal}}">{{leave}}</span></div>
+<div style="{{rKArrive}}"><span style="{{rKCap}}">Arrive</span><span style="{{rKArriveVal}}">{{arrive}}</span></div>
+<div style="{{rKBell}}"><span style="{{rKCap}}">Bell</span><span style="{{rKBellVal}}">7:50</span></div>
+<sc-for list="{{rTicks}}" as="t" hint-placeholder-count="37"><span style="{{t.style}}"></span></sc-for>
+<div style="position: absolute; left: 0; right: 0; top: 56px; height: 30px;">
+<div style="{{rPast}}"></div>
+<div style="{{rSlack}}">{{rSlackLabel}}</div>
+<div style="{{rDrive}}">{{rDriveLabel}}</div>
+<div style="{{rWalk}}">{{rWalkLabel}}</div>
+<div style="{{rAfter}}"></div>
+<div style="{{rOver}}"></div>
+</div>
+<div style="{{rLeaveLine}}"></div>
+<div style="{{rArriveLine}}"></div>
+<div style="{{rBellLine}}"></div>
+<div style="{{rNowLine}}"></div>
+<div style="{{rNowDot}}"></div>
+<span style="{{rNowCap}}">{{rNowCapText}}</span>
+</div>
+</div>
+
+<section aria-label="Route map" style="position: relative; margin-top: 18px; height: 280px; border-radius: 16px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(42,44,47,0.06);">
+<svg width="496" height="280" sc-camel-view-box="0 0 496 280" aria-hidden="true" style="position: absolute; inset: 0; display: block;">
+<rect width="496" height="280" fill="#EFEEE9"></rect>
+<g transform="rotate(-28 248 124)">
+<g fill="#E3E5DB"><rect x="-20" y="40" width="74" height="62" rx="3"></rect><rect x="150" y="-40" width="100" height="64" rx="3"></rect><rect x="300" y="130" width="78" height="64" rx="3"></rect><rect x="420" y="-6" width="52" height="96" rx="3"></rect><rect x="64" y="146" width="48" height="30" rx="3"></rect><rect x="210" y="240" width="110" height="70" rx="3"></rect><rect x="-160" y="180" width="90" height="54" rx="3"></rect><rect x="480" y="150" width="70" height="50" rx="3"></rect></g>
+<g stroke="#F8F7F3" stroke-width="2" opacity="0.9"><line x1="-320" y1="-300" x2="-320" y2="560"></line><line x1="-288" y1="-300" x2="-288" y2="560"></line><line x1="-256" y1="-300" x2="-256" y2="560"></line><line x1="-224" y1="-300" x2="-224" y2="560"></line><line x1="-192" y1="-300" x2="-192" y2="560"></line><line x1="-160" y1="-300" x2="-160" y2="560"></line><line x1="-128" y1="-300" x2="-128" y2="560"></line><line x1="-96" y1="-300" x2="-96" y2="560"></line><line x1="-64" y1="-300" x2="-64" y2="560"></line><line x1="-32" y1="-300" x2="-32" y2="560"></line><line x1="0" y1="-300" x2="0" y2="560"></line><line x1="32" y1="-300" x2="32" y2="560"></line><line x1="64" y1="-300" x2="64" y2="560"></line><line x1="96" y1="-300" x2="96" y2="560"></line><line x1="128" y1="-300" x2="128" y2="560"></line><line x1="160" y1="-300" x2="160" y2="560"></line><line x1="192" y1="-300" x2="192" y2="560"></line><line x1="224" y1="-300" x2="224" y2="560"></line><line x1="256" y1="-300" x2="256" y2="560"></line><line x1="288" y1="-300" x2="288" y2="560"></line><line x1="320" y1="-300" x2="320" y2="560"></line><line x1="352" y1="-300" x2="352" y2="560"></line><line x1="384" y1="-300" x2="384" y2="560"></line><line x1="416" y1="-300" x2="416" y2="560"></line><line x1="448" y1="-300" x2="448" y2="560"></line><line x1="480" y1="-300" x2="480" y2="560"></line><line x1="512" y1="-300" x2="512" y2="560"></line><line x1="544" y1="-300" x2="544" y2="560"></line><line x1="576" y1="-300" x2="576" y2="560"></line><line x1="608" y1="-300" x2="608" y2="560"></line><line x1="640" y1="-300" x2="640" y2="560"></line><line x1="672" y1="-300" x2="672" y2="560"></line><line x1="704" y1="-300" x2="704" y2="560"></line><line x1="736" y1="-300" x2="736" y2="560"></line><line x1="768" y1="-300" x2="768" y2="560"></line><line x1="800" y1="-300" x2="800" y2="560"></line><line x1="-320" y1="-300" x2="820" y2="-300"></line><line x1="-320" y1="-260" x2="820" y2="-260"></line><line x1="-320" y1="-220" x2="820" y2="-220"></line><line x1="-320" y1="-180" x2="820" y2="-180"></line><line x1="-320" y1="-140" x2="820" y2="-140"></line><line x1="-320" y1="-100" x2="820" y2="-100"></line><line x1="-320" y1="-60" x2="820" y2="-60"></line><line x1="-320" y1="-20" x2="820" y2="-20"></line><line x1="-320" y1="20" x2="820" y2="20"></line><line x1="-320" y1="60" x2="820" y2="60"></line><line x1="-320" y1="100" x2="820" y2="100"></line><line x1="-320" y1="140" x2="820" y2="140"></line><line x1="-320" y1="180" x2="820" y2="180"></line><line x1="-320" y1="220" x2="820" y2="220"></line><line x1="-320" y1="260" x2="820" y2="260"></line><line x1="-320" y1="300" x2="820" y2="300"></line><line x1="-320" y1="340" x2="820" y2="340"></line><line x1="-320" y1="380" x2="820" y2="380"></line><line x1="-320" y1="420" x2="820" y2="420"></line><line x1="-320" y1="460" x2="820" y2="460"></line><line x1="-320" y1="500" x2="820" y2="500"></line><line x1="-320" y1="540" x2="820" y2="540"></line></g>
+<g stroke="#F8F7F3" stroke-width="6"><line x1="-60" y1="-300" x2="-60" y2="560"></line><line x1="120" y1="-300" x2="120" y2="560"></line><line x1="276" y1="-300" x2="276" y2="560"></line><line x1="430" y1="-300" x2="430" y2="560"></line><line x1="-320" y1="-26" x2="820" y2="-26"></line><line x1="-320" y1="110" x2="820" y2="110"></line><line x1="-320" y1="212" x2="820" y2="212"></line></g>
+</g>
+<path d="M292,-12 C308,40 286,72 318,104 C348,134 362,146 382,184 C398,214 440,250 510,300" fill="none" stroke="#DBE1E3" stroke-width="15" stroke-linecap="round"></path>
+<path d="M318,104 C300,120 262,128 236,160" fill="none" stroke="#DBE1E3" stroke-width="7" stroke-linecap="round"></path>
+</svg>
+<div aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.9) 24%, rgba(255,255,255,0.45) 44%, rgba(255,255,255,0) 62%);"></div>
+<svg width="496" height="280" sc-camel-view-box="0 0 496 280" aria-hidden="true" style="position: absolute; inset: 0; display: block;">
+<g transform="rotate(-28 248 124)">
+<path d="M32,140 L120,140" fill="none" stroke="#A8A49C" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="0.1 8" style="{{slackShow}}"></path>
+</g>
+<path class="route" d="M142.5,198.2 L131.2,177 Q128.4,171.7 133.7,168.9 L333.3,62.8" fill="none" stroke="#EFEEE9" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></path>
+<path class="route" d="M142.5,198.2 L131.2,177 Q128.4,171.7 133.7,168.9 L333.3,62.8" fill="none" stroke="#4A6B8A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M333.3,62.8 L357.1,50.2 Q361.5,47.8 363.8,52.2 L375.6,74.3" fill="none" stroke="#EFEEE9" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M333.3,62.8 L357.1,50.2 Q361.5,47.8 363.8,52.2 L375.6,74.3" fill="none" stroke="#B5824F" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
+<circle cx="142.5" cy="198.2" r="6" fill="#FBFAF7" stroke="#4A6B8A" stroke-width="3" style="{{slackShow}}"></circle>
+<circle cx="333.3" cy="62.8" r="6" fill="#FBFAF7" stroke="#4A6B8A" stroke-width="3"></circle>
+<circle cx="{{nowX}}" cy="{{nowY}}" r="7" fill="{{tone}}" class="halo"></circle>
+<circle cx="{{nowX}}" cy="{{nowY}}" r="9" fill="#FFFFFF"></circle>
+<circle cx="{{nowX}}" cy="{{nowY}}" r="6.5" fill="{{tone}}"></circle>
+<circle cx="377" cy="77" r="15" fill="#3A3C3F" stroke="#FFFFFF" stroke-width="2.5"></circle>
+<path d="M368,75 L377,70.5 L386,75 L377,79.5 Z" fill="#FFFFFF"></path>
+<path d="M371.5,77.2 V81.5 Q377,84.5 382.5,81.5 V77.2" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"></path>
+</svg>
+<div style="position: absolute; left: 18px; top: 16px; display: flex; flex-direction: column;">
+<div class="num" style="display: flex; align-items: baseline; gap: 4px; color: #2A2C2F;">
+<span style="font-size: 17px; line-height: 23px; font-weight: 600; color: #2A2C2F;">Live ETA unavailable</span>
+</div>
+<span style="margin-top: 4px; font-size: 13px; line-height: 18px; color: #76787B;">Traffic data didn’t load</span>
+<button class="btn-ghost hit" style="margin-top: 12px; align-self: flex-start; height: 34px; padding: 0 14px; border-radius: 10px; font-size: 13.5px;">Retry</button>
+</div>
+<div class="lbl num" style="{{nowLabel}}">Now {{now}}</div>
+<div class="lbl num" style="left: 372px; top: 26px; transform: none; background: #F0EADF; color: #8A6236;">3 min walk</div>
+<div style="position: absolute; right: 12px; bottom: 12px; display: flex; gap: 8px;">
+<button class="fab pill hit" aria-label="Recenter map" style="width: 32px; height: 32px; border-radius: 16px; background: #FBFAF7; box-shadow: 0 0 0 1px rgba(42,44,47,.08); display: flex; align-items: center; justify-content: center; color: #2A2C2F;">
+<svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true" style="margin: 1px 1px 0 0;"><path d="M20 4L3.5 10.8l7.2 2.5 2.5 7.2z"></path></svg>
+</button>
+<button class="fab pill hit" style="height: 32px; padding: 0 12px; border-radius: 16px; background: #FBFAF7; box-shadow: 0 0 0 1px rgba(42,44,47,.08); display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: #2B2D30;">
+<span>Open in Maps</span>
+<svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"></path></svg>
+</button>
+</div>
+</section>
+
+<div style="margin-top: 12px; border-radius: 16px; background: transparent; box-shadow: inset 0 0 0 1px rgba(42,44,47,0.08);">
+<button class="dd hit" sc-camel-on-click="{{toggleChecklist}}" aria-expanded="{{checklistOpen}}" style="width: 100%; display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 14px; border-radius: 16px; text-align: left;">
+<svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#55585C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7l2 2 3.5-3.5M4 15l2 2 3.5-3.5M13 8h7M13 16h7"></path></svg>
+<span style="font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: #2B2D30;">Before you go</span>
+<span class="chip">3 checks</span>
+<span style="flex-grow: 1;"></span>
+<span class="mono" style="font-size: 13px; font-weight: 500; color: #76787B;">{{readyCount}} of 3 ready</span>
+<svg class="chev" width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="{{ddChev}}"><path d="M6 9l6 6 6-6"></path></svg>
+</button>
+<sc-if value="{{checklistOpen}}" hint-placeholder-val="{{ false }}">
+<div class="reveal" style="padding: 0 14px 2px; border-top: 1px solid rgba(42,44,47,0.08);">
+<div style="">
+<button class="row hit" sc-camel-on-click="{{toggle_fuel}}" aria-expanded="{{fuelOpen}}" style="width: 100%; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto 16px; align-items: center; column-gap: 10px; min-height: 56px; padding: 8px 10px; margin: 0 -10px; box-sizing: content-box; border-radius: 12px; text-align: left;">
+<svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="#8A6236" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M3 21h12M4 10h10"></path><path d="M14 8h1.5a2 2 0 0 1 2 2v6.5a1.5 1.5 0 0 0 3 0V9l-3-3"></path></svg>
+<span style="display: flex; flex-direction: column; gap: 1px; min-width: 0;">
+<span style="font-size: 15.5px; line-height: 21px; font-weight: 550; letter-spacing: -0.01em; color: #2B2D30; ">62 km of range</span>
+<span class="num" style="font-size: 13px; line-height: 17px; color: #76787B;">Enough for today</span>
+</span>
+<span class="pill-s" style="background: #F0EADF; color: #8A6236;">Fuel this week</span>
+<svg class="chev" width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="{{fuelChev}}"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+<sc-if value="{{fuelOpen}}" hint-placeholder-val="{{ false }}">
+<div class="reveal" style="padding: 0 0 16px 38px;">
+<p style="margin: 0; font-size: 14px; line-height: 20px; color: #55585C;">Enough for today’s drive. Next fill-up within the week.</p>
+</div>
+</sc-if>
+</div>
+<div style="border-top: 1px solid rgba(42,44,47,0.08);">
+<button class="row hit" sc-camel-on-click="{{toggle_cabin}}" aria-expanded="{{cabinOpen}}" style="width: 100%; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto 16px; align-items: center; column-gap: 10px; min-height: 56px; padding: 8px 10px; margin: 0 -10px; box-sizing: content-box; border-radius: 12px; text-align: left;">
+<svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="{{cabinIcon}}" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M10 13.5V5a2 2 0 0 1 4 0v8.5a4 4 0 1 1-4 0z"></path><path d="M12 16V9"></path></svg>
+<span style="display: flex; flex-direction: column; gap: 1px; min-width: 0;">
+<span style="font-size: 15.5px; line-height: 21px; font-weight: 550; letter-spacing: -0.01em; color: #2B2D30; {{cabinTitleStyle}}">Warm the cabin</span>
+<span class="num" style="font-size: 13px; line-height: 17px; color: #76787B;">{{cabinSub}}</span>
+</span>
+<span class="pill-s" style="{{cabinPillStyle}}">{{cabinPill}}</span>
+<svg class="chev" width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="{{cabinChev}}"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+<sc-if value="{{cabinOpen}}" hint-placeholder-val="{{ false }}">
+<div class="reveal" style="padding: 0 0 16px 38px;">
+<p class="num" style="margin: 0; font-size: 14px; line-height: 20px; color: #55585C;">{{cabinDesc}}</p>
+<div style="margin-top: 10px;"><span class="chip">Remote start</span></div>
+<sc-if value="{{cabinPending}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; gap: 8px; margin-top: 14px;">
+<button class="btn-primary hit" sc-camel-on-click="{{startWarm}}" style="background: #4A6B8A;">
+<svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+<span>Start warming</span>
+</button>
+<button class="btn-ghost hit" sc-camel-on-click="{{skipWarm}}">
+<svg width="13" height="13" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+<span>Skip</span>
+</button>
+</div>
+</sc-if>
+<sc-if value="{{cabinDecided}}" hint-placeholder-val="{{ false }}">
+<div style="margin-top: 12px;"><button class="btn-link hit" sc-camel-on-click="{{undoWarm}}">Undo</button></div>
+</sc-if>
+</div>
+</sc-if>
+</div>
+<div style="border-top: 1px solid rgba(42,44,47,0.08);">
+<button class="row hit" sc-camel-on-click="{{toggle_park}}" aria-expanded="{{parkOpen}}" style="width: 100%; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto 16px; align-items: center; column-gap: 10px; min-height: 56px; padding: 8px 10px; margin: 0 -10px; box-sizing: content-box; border-radius: 12px; text-align: left;">
+<svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="#4F6B4C" stroke-width="1.9" aria-hidden="true"><circle cx="12" cy="12" r="9.5"></circle><path d="M10 17V7.5h3a3 3 0 0 1 0 6h-3" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span style="display: flex; flex-direction: column; gap: 1px; min-width: 0;">
+<span style="font-size: 15.5px; line-height: 21px; font-weight: 550; letter-spacing: -0.01em; color: #2B2D30; ">Rue Rachel Est</span>
+<span class="num" style="font-size: 13px; line-height: 17px; color: #76787B;">No parking from 9:30</span>
+</span>
+<span class="pill-s" style="background: #E8ECE3; color: #4F6B4C;">Until 9:30</span>
+<svg class="chev" width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="{{parkChev}}"><path d="M9 5l7 7-7 7"></path></svg>
+</button>
+<sc-if value="{{parkOpen}}" hint-placeholder-val="{{ false }}">
+<div class="reveal" style="padding: 0 0 16px 38px;">
+<p class="num" style="margin: 0; font-size: 14px; line-height: 20px; color: #55585C;">Street parking on Rue Rachel Est. No parking from 9:30, so drop-off only.</p>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+</div>
+</section>
+
+<footer style="display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 4px 0 14px;">
+<div class="mono" style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: #2A2D33;">
+<span class="live" style="width: 6px; height: 6px; border-radius: 3px; background: #7E947A;"></span>
+<span>Outback</span>
+<span style="color: #ADA9A1;">·</span>
+<span style="color: #76787B;">Locked</span>
+</div>
+<div style="display: flex; align-items: center; gap: 8px;">
+<button class="btn-ghost hit" style="height: 40px; padding: 0 16px 0 13px; border-radius: 12px; gap: 7px; font-size: 13.5px;">
+<svg width="15" height="15" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"></rect><path d="M8 11V8a4 4 0 0 1 7.6-1.7"></path></svg>
+<span>Unlock</span>
+</button>
+<button class="btn-dark hit">
+<svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><path d="M20 4L3.5 10.8l7.2 2.5 2.5 7.2z"></path></svg>
+<span>Start drive</span>
+</button>
+</div>
+</footer>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;status&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;onTime&quot;,&quot;leaveNow&quot;,&quot;late&quot;],&quot;default&quot;:&quot;onTime&quot;},&quot;checklist&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false},&quot;$preview&quot;:{&quot;width&quot;:640,&quot;height&quot;:880}}">
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { open: 'cabin', cabin: 'pending' }; }
+  renderVals() {
+    const s = this.props.status ?? 'onTime';
+    const V = {
+      onTime:   { tone: '#4A6B8A', toneText: '#3F5C78', statusText: 'On time', lead: 'Leave in ', emph: '9 min', tail: ' to arrive on time.', leaveLabel: 'Leave by', leave: '7:33', arrive: '7:47', arriveColor: '#2A2C2F', now: '7:24', slack: 9, total: 26, bell: 26, eta: 23, nowX: 64.8, nowY: 239.5, trafficText: 'Light traffic', trafficSub: '2 min faster than usual' },
+      leaveNow: { tone: '#A6703F', toneText: '#8A5A2E', statusText: 'Leave now', lead: 'Leave ', emph: 'now', tail: ' to make the bell.', leaveLabel: 'Leave', leave: 'Now', arrive: '7:47', arriveColor: '#2A2C2F', now: '7:33', slack: 0, total: 17, bell: 17, eta: 14, nowX: 142.5, nowY: 198.2, trafficText: 'Traffic is clear', trafficSub: 'Leaving now still makes the bell' },
+      late:     { tone: '#9C4A3E', toneText: '#8C4236', statusText: 'Running late', lead: 'Running ', emph: '4 min late', tail: ' for the bell.', leaveLabel: 'Leave', leave: 'Now', arrive: '7:51', arriveColor: '#8C4236', now: '7:37', slack: 0, total: 17, bell: 13, eta: 14, nowX: 142.5, nowY: 198.2, trafficText: 'Traffic is clear', trafficSub: 'The delay is the 7:37 start' }
+    };
+    const v = V[s] || V.onTime;
+
+    // --- slack ruler: fixed 7:20–7:56 window, one tick per minute ---
+    const RW = 36, RP = (m) => (m / RW * 100).toFixed(3) + '%';
+    const RS = {
+      onTime:   { now: 4,  slack: [4, 13], drive: [13, 27], walk: [27, 30], after: [30, 36], over: null,     aria: 'Now 7:24. 9 minutes of slack, leave at 7:33, drive 14 minutes, walk 3 minutes, bell at 7:50.' },
+      leaveNow: { now: 13, slack: null,    drive: [13, 27], walk: [27, 30], after: [30, 36], over: null,     aria: 'Now 7:33. No slack left. Drive 14 minutes, walk 3 minutes, bell at 7:50.' },
+      late:     { now: 17, slack: null,    drive: [17, 31], walk: [31, 34], after: [34, 36], over: [30, 34], aria: 'Now 7:37. Drive 14 minutes, walk 3 minutes, arriving 4 minutes after the 7:50 bell.' }
+    }[s] || null;
+    const rs = RS || { now: 4, slack: [4, 13], drive: [13, 27], walk: [27, 30], after: [30, 36], over: null, aria: '' };
+    const HATCH = 'background: #F1EFEA repeating-linear-gradient(135deg, rgba(42,44,47,0.10) 0 1px, rgba(0,0,0,0) 1px 6px);';
+    const block = (r, extra) => r
+      ? 'position: absolute; top: 0; bottom: 0; left: calc(' + RP(r[0]) + ' + 1px); width: calc(' + RP(r[1] - r[0]) + ' - 2px); border-radius: 6px; box-sizing: border-box; display: flex; align-items: center; padding: 0 8px; overflow: hidden; white-space: nowrap; font-size: 11.5px; line-height: 14px; font-weight: 600; letter-spacing: 0.01em; ' + extra
+      : 'display: none;';
+    const lab = (r, full, short) => !r ? '' : ((r[1] - r[0]) >= 7 ? full : ((r[1] - r[0]) >= 3 ? short : ''));
+    const R = {
+      rAria: rs.aria,
+      rLabels: [5, 10, 15, 20, 25, 30, 35].map((m) => ({ text: '7:' + String(20 + m).padStart(2, '0'),
+        style: 'position: absolute; top: 0; left: ' + RP(m) + '; transform: translateX(-50%); font-size: 10.5px; line-height: 12px; font-weight: 500; color: ' + (m === 30 ? '#2A2C2F' : '#A5A199') + ';' })),
+      rTicks: Array.from({ length: RW + 1 }, (_, m) => ({ style: 'position: absolute; left: ' + RP(m) + '; margin-left: -0.5px; width: 1px; border-radius: 1px; top: ' + (m % 5 === 0 ? 15 : 18) + 'px; height: ' + (m % 5 === 0 ? 7 : 4) + 'px; background: rgba(42,44,47,' + (m % 5 === 0 ? 0.30 : 0.14) + ');' })),
+      rPast:  block([0, rs.now], HATCH),
+      rSlack: block(rs.slack, 'background: #E4EBE1; color: #4F6B4C;'),
+      rDrive: block(rs.drive, 'background: #E1E8EF; color: #3F5C78;'),
+      rWalk:  block(rs.walk,  'background: #F1E7DA; color: #8A6236; padding: 0 6px;'),
+      rAfter: block(rs.after, HATCH),
+      rOver:  rs.over ? 'position: absolute; top: 0; bottom: 0; left: calc(' + RP(rs.over[0]) + ' + 1px); width: calc(' + RP(rs.over[1] - rs.over[0]) + ' - 2px); border-radius: 6px; background: repeating-linear-gradient(135deg, rgba(156,74,62,0.30) 0 1.5px, rgba(0,0,0,0) 1.5px 5px); box-shadow: inset 0 0 0 1px rgba(156,74,62,0.45);' : 'display: none;',
+      rSlackLabel: lab(rs.slack, 'Slack · 9 min', 'Slack'),
+      rDriveLabel: lab(rs.drive, 'Drive · 14 min', 'Drive'),
+      rWalkLabel:  lab(rs.walk,  'Walk', 'Walk'),
+      rBellLine: 'position: absolute; top: 15px; height: 45px; left: ' + RP(30) + '; margin-left: -0.75px; width: 1.5px; border-radius: 1px; background: #2A2C2F;',
+      rNowLine:  'position: absolute; top: 14px; height: 46px; left: ' + RP(rs.now) + '; margin-left: -0.75px; width: 1.5px; border-radius: 1px; background: ' + v.tone + ';',
+      rNowDot:   'position: absolute; top: 9px; left: ' + RP(rs.now) + '; margin-left: -4.5px; width: 9px; height: 9px; border-radius: 50%; background: ' + v.tone + '; box-shadow: 0 0 0 2px #FBFAF7;',
+      rNowCap:   'position: absolute; top: 63px; left: ' + RP(rs.now) + '; transform: translateX(-50%); font-size: 10px; line-height: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: ' + v.toneText + ';',
+      rBellCap:  'position: absolute; top: 63px; left: ' + RP(30) + '; transform: translateX(-50%); font-size: 10px; line-height: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #2A2C2F;'
+    };
+    const hasSlack = v.slack > 0;
+    const open = this.state.open, cabin = this.state.cabin;
+    const ddOpen = this.state.checklist ?? (this.props.checklist ?? false);
+    const toggle = (k) => () => this.setState({ open: open === k ? null : k });
+    const C = {
+      pending: { pill: 'Suggested', pillStyle: 'background: #EAE7E0; color: #6A6C6F;', sub: 'Outside is −3°', desc: v.leave === 'Now' ? 'Warm to 20° while you drive.' : 'Warm to 20° so the car is ready when you leave at ' + v.leave + '.', icon: '#6A6C6F', title: '' },
+      warming: { pill: '● Warming', pillStyle: 'background: #E7EBEF; color: #3F5C78;', sub: v.leave === 'Now' ? '−3° → 20°, heating now' : '−3° → 20° by ' + v.leave, desc: 'Remote start is on. The cabin will reach 20° before you leave.', icon: '#4A6B8A', title: '' },
+      skipped: { pill: 'Skipped', pillStyle: 'background: #EAE7E0; color: #94918A;', sub: 'Cabin stays at −3°', desc: 'Remote start skipped for this trip.', icon: '#ADA9A1', title: 'color: #A5A199; text-decoration: line-through; text-decoration-color: rgba(42,44,47,0.3);' }
+    };
+    const c = C[cabin];
+    const rot = (k) => open === k ? 'transform: rotate(90deg);' : '';
+    // --- key times live on the ruler: Leave by, Arrive, Bell ---
+    const KM = { onTime: { leave: 13, arrive: 27 }, leaveNow: { leave: 13, arrive: 27 }, late: { leave: 17, arrive: 31 } }[s] || { leave: 13, arrive: 27 };
+    const leaveIsNow = KM.leave === rs.now;
+    const LINE = (m, top, h, w, c) => 'position: absolute; top: ' + top + 'px; height: ' + h + 'px; left: ' + RP(m) + '; margin-left: -' + (w / 2) + 'px; width: ' + w + 'px; border-radius: 1px; background: ' + c + ';';
+    const KEY = (m, align) => 'position: absolute; top: 0; left: ' + RP(m) + '; white-space: nowrap; display: flex; flex-direction: column; ' +
+      (align === 'center' ? 'align-items: center; transform: translateX(-50%);' : align === 'right' ? 'align-items: flex-end; transform: translateX(calc(-100% - 6px));' : 'align-items: flex-start; transform: translateX(6px);');
+    const VAL = (c) => 'display: block; font-size: 19px; line-height: 24px; font-weight: 600; letter-spacing: -0.01em; color: ' + c + ';';
+    const arriveFirst = KM.arrive < 30;
+    Object.assign(R, {
+      rKCap: 'display: block; font-size: 10px; line-height: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #94918A;',
+      rKLeave: KEY(KM.leave, 'center'),
+      rKLeaveVal: VAL(v.toneText),
+      rKArrive: KEY(KM.arrive, arriveFirst ? 'right' : 'left'),
+      rKArriveVal: VAL(v.arriveColor),
+      rKBell: KEY(30, arriveFirst ? 'left' : 'right'),
+      rKBellVal: VAL('#2A2C2F'),
+      rTicks: Array.from({ length: RW + 1 }, (_, m) => ({ style: 'position: absolute; left: ' + RP(m) + '; margin-left: -0.5px; width: 1px; border-radius: 1px; top: ' + (m % 5 === 0 ? 46 : 49) + 'px; height: ' + (m % 5 === 0 ? 7 : 4) + 'px; background: rgba(42,44,47,' + (m % 5 === 0 ? 0.28 : 0.13) + ');' })),
+      rLeaveLine: leaveIsNow ? 'display: none;' : LINE(KM.leave, 40, 50, 1, 'rgba(74,107,138,0.55)'),
+      rArriveLine: LINE(KM.arrive, 40, 50, 1, 'rgba(42,44,47,0.35)'),
+      rBellLine: LINE(30, 40, 50, 1.5, '#2A2C2F'),
+      rNowLine: LINE(rs.now, leaveIsNow ? 40 : 46, leaveIsNow ? 50 : 44, 1.5, v.tone),
+      rNowDot: leaveIsNow ? 'display: none;' : 'position: absolute; top: 41px; left: ' + RP(rs.now) + '; margin-left: -4.5px; width: 9px; height: 9px; border-radius: 50%; background: ' + v.tone + '; box-shadow: 0 0 0 2px #FBFAF7;',
+      rNowCap: 'position: absolute; top: 91px; left: ' + RP(rs.now) + '; transform: translateX(-50%); white-space: nowrap; font-size: 10px; line-height: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: ' + v.toneText + ';',
+      rNowCapText: leaveIsNow ? '' : 'Now ' + v.now
+    });
+    return {
+      ...v, ...R,
+      slackSeg: hasSlack
+        ? 'flex-grow: ' + v.slack + '; flex-basis: 0; border-radius: 3px; background: radial-gradient(circle, #A8A49C 1.6px, rgba(0,0,0,0) 2px) 0 50% / 7px 6px repeat-x;'
+        : 'display: none;',
+      slackShow: hasSlack ? '' : 'display: none;',
+      bellPos: 'left: ' + (v.bell / v.total * 100).toFixed(2) + '%;',
+      nowLabel: hasSlack ? 'left: ' + v.nowX + 'px; top: ' + (v.nowY - 14) + 'px;' : 'left: ' + (v.nowX - 16) + 'px; top: ' + v.nowY + 'px; transform: translate(-100%, -50%);',
+      checklistOpen: ddOpen, toggleChecklist: () => this.setState({ checklist: !ddOpen }), ddChev: ddOpen ? 'transform: rotate(180deg);' : '', cabinDot: cabin === 'warming' ? '#4A6B8A' : '#CFCBC2',
+      fuelOpen: open === 'fuel', cabinOpen: open === 'cabin', parkOpen: open === 'park',
+      fuelChev: rot('fuel'), cabinChev: rot('cabin'), parkChev: rot('park'),
+      toggle_fuel: toggle('fuel'), toggle_cabin: toggle('cabin'), toggle_park: toggle('park'),
+      cabinPill: c.pill, cabinPillStyle: c.pillStyle, cabinSub: c.sub, cabinDesc: c.desc, cabinIcon: c.icon, cabinTitleStyle: c.title,
+      cabinPending: cabin === 'pending', cabinDecided: cabin !== 'pending',
+      readyCount: cabin === 'pending' ? 2 : 3,
+      startWarm: () => this.setState({ cabin: 'warming' }),
+      skipWarm: () => this.setState({ cabin: 'skipped' }),
+      undoWarm: () => this.setState({ cabin: 'pending' })
+    };
+  }
+}
+</script>
+
+
+</body></html>
+
+

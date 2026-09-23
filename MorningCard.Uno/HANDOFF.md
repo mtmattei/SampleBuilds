@@ -1,6 +1,15 @@
 # HANDOFF — MorningCard v5 Android form factors (step 0, baseline)
 Updated: 2026-09-22 15:05
 
+## UPDATE 2026-09-23 (supersedes the sections below where they disagree)
+
+- The ruler and title-clip defects are **fixed** in `c658b2b` (`captures/android/fix-d420.png`).
+- The user added `docs/design/v6/`, which is **the new target**. The diff against v5 is in
+  `docs/design/v6/v6-vs-v5.md`: the phone card is redesigned with a full state set, and TV, Wear and
+  Auto are unchanged v5 sources.
+- **Next action:** get answers to D1–D11 in that file, then write the v6 section in SPEC.md
+  (`write-spec`), then implement v6 step A (phone redesign) before the v5 split.
+
 ## Where we are
 
 v5 (SPEC.md, last section) has started. The work lives in a **git worktree** so the card-polish
