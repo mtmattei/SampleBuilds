@@ -1,0 +1,167 @@
+<UserControl x:Class="MorningCard.Controls.MapPart"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="using:MorningCard.Controls"
+             xmlns:mvux="using:Uno.Extensions.Reactive.UI"
+             xmlns:uen="using:Uno.Extensions.Navigation.UI"
+             xmlns:mapsui="using:Mapsui.UI.WinUI"
+             xmlns:utu="using:Uno.Toolkit.UI"
+             xmlns:theme="using:MorningCard.Themes">
+  <!--
+    The route map: muted OSM tiles, the route overlay, the ETA block and Open in Maps. The host sets its height.
+  -->
+  <UserControl.Resources>
+    <!--
+      Loading template, shared by ProgressTemplate and UndefinedTemplate. A feed over a push stream
+      sits in Undefined (not Progress) until its first value arrives, which is exactly the
+      first-load case the skeleton exists for.
+    -->
+    <DataTemplate x:Key="MapLoadingTemplate">
+      <StackPanel Margin="18,16,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                  AutomationProperties.AccessibilityView="Raw">
+        <Rectangle Style="{StaticResource SkeletonBar}" Width="96" Height="30" />
+        <Rectangle Style="{StaticResource SkeletonBar}" Width="120" Height="10" Margin="0,12,0,0" RadiusX="5" RadiusY="5" />
+        <Rectangle Style="{StaticResource SkeletonBar}" Width="150" Height="10" Margin="0,10,0,0" RadiusX="5" RadiusY="5" />
+      </StackPanel>
+    </DataTemplate>
+  </UserControl.Resources>
+
+  <!-- xaml-lint: allow card - clips the map's own drawing surface to the panel radius; the
+       1 px ring is the artboard's inset edge, not card chrome. -->
+  <Border x:Name="MapPanel"
+          CornerRadius="{StaticResource MapCornerRadius}"
+          BorderBrush="{ThemeResource LineBrush}"
+          BorderThickness="1"
+          Background="{ThemeResource MapBrush}">
+    <Grid>
+      <!--
+        Real OSM tiles since v2. The route above it stays schematic - minutes become distance
+        along a path - so the drawn line deliberately does not follow the streets underneath:
+        the map is a textured ground, not the route's geometry. Recorded in SPEC.md v2 as the
+        accepted cost of keeping the time-as-distance device.
+      -->
+      <!--
+        Wrapped in its own rounded Border. The panel's CornerRadius does not reach the map: it
+        draws through its own surface, so the outer Border clipped everything except the tiles
+        and the map showed square corners inside a rounded panel.
+      -->
+      <Border CornerRadius="{StaticResource MapCornerRadius}">
+        <mapsui:MapControl x:Name="Map" />
+      </Border>
+
+      <!-- v6 scrim: a fixed ramp across the whole panel, white 97% to 90% at 24%, 45% at 44%,
+           clear from 62%. The ETA text sits on the opaque part; the route on the clear. -->
+      <Border x:Name="EtaScrim"
+              IsHitTestVisible="False">
+        <Border.Background>
+          <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0" />
+            <GradientStop Color="{ThemeResource EtaScrimStop1Color}" Offset="0.24" />
+            <GradientStop Color="{ThemeResource EtaScrimStop2Color}" Offset="0.44" />
+            <GradientStop Color="{ThemeResource EtaScrimFadeColor}" Offset="0.62" />
+          </LinearGradientBrush>
+        </Border.Background>
+      </Border>
+
+      <mc:RouteRulerCanvas x:Name="Ruler" Eta="{Binding State.Data, ElementName=EtaFeed}" />
+
+      <!-- Real launch, not a decorative pill: it opens the platform maps app at the school. -->
+      <!-- Hidden whenever a scrim covers the map: a pill showing through "Can't reach the
+           car" offers to open a trip the card just said it could not read. -->
+      <!-- No Recenter beside it (I6): the map is locked, so one would impersonate a control.
+           30 from the bottom, not the artboard's 12: the OSM attribution the tile policy
+           requires sits in the bottom-right corner, and the pill must not cover it. -->
+      <Button x:Name="OpenInMaps"
+              x:Uid="OpenInMapsButton"
+              Style="{StaticResource MapPillStyle}"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Bottom"
+              Margin="0,0,12,30"
+              Command="{Binding OpenInMaps}">
+        <StackPanel Orientation="Horizontal" Spacing="5">
+          <TextBlock x:Uid="OpenInMapsLabel" VerticalAlignment="Center" />
+          <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconArrowUpRight}" FontSize="12" Foreground="{ThemeResource InkStrongBrush}" VerticalAlignment="Center" />
+        </StackPanel>
+      </Button>
+
+      <mvux:FeedView x:Name="EtaFeed" Source="{Binding Eta}"
+                     ProgressTemplate="{StaticResource MapLoadingTemplate}" UndefinedTemplate="{StaticResource MapLoadingTemplate}">
+
+        <mvux:FeedView.ValueTemplate>
+          <DataTemplate>
+            <Grid>
+            <!--
+              The failure lives here rather than in ErrorTemplate. Measured 2026-09-21: a feed
+              built on a push stream cannot be recovered by FeedView.Refresh, so a Retry bound
+              to it executes and leaves the card broken. As a value, the stream stays alive and
+              the model's own Retry puts a good trip back through it.
+            -->
+            <!-- v6 ETA block: drive time, caption, traffic. Its right edge also bounds the
+                 route fit (OnEtaBlockSizeChanged). -->
+            <StackPanel Margin="18,16,0,0"
+                        SizeChanged="OnEtaBlockSizeChanged"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        MaxWidth="200"
+                        Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}">
+              <TextBlock Style="{StaticResource EtaNumber}"><Run Text="{Binding Data.TotalMinutes}" /><Run Text=" " /><Run Text="{Binding Parent.EtaUnitLabel}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" FontSize="{StaticResource EtaUnitSize}" /></TextBlock>
+              <TextBlock x:Uid="EtaCaption" Style="{StaticResource CapsCaption}" Margin="0,1,0,0" />
+
+              <StackPanel Orientation="Horizontal" Spacing="7" Margin="0,10,0,0">
+                <Ellipse Width="8" Height="8" VerticalAlignment="Center"
+                         Fill="{Binding Data.Traffic, Converter={StaticResource TrafficBrush}}" />
+                <TextBlock Style="{StaticResource CardLabelStrong}"
+                           VerticalAlignment="Center"
+                           Foreground="{Binding Data.Traffic, Converter={StaticResource TrafficBrush}}"
+                           Text="{Binding Data.TrafficText}" />
+              </StackPanel>
+              <TextBlock Style="{StaticResource CardCaption}"
+                         Margin="15,1,0,0"
+                         Text="{Binding Data.VsUsualText}" />
+            </StackPanel>
+
+            <!--
+              ETA unavailable (E6): only this block reports the failure; the ruler and the
+              route above keep the saved schedule. Retry is the model's own command, bound
+              from the ValueTemplate, where Parent resolves commands.
+            -->
+            <StackPanel x:Name="ErrorPanel"
+                        Margin="18,16,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        MaxWidth="200"
+                        Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}}">
+              <TextBlock x:Uid="EtaUnavailableTitle" Style="{StaticResource CardLead}"
+                         FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold"
+                         Foreground="{ThemeResource InkBrush}" AutomationProperties.LiveSetting="Polite" />
+              <TextBlock x:Uid="EtaUnavailableNote" Style="{StaticResource RowMeta}" Margin="0,2,0,0" />
+              <Button x:Name="RetryButton"
+                      x:Uid="EtaRetry"
+                      Style="{StaticResource RowActionGhostStyle}"
+                      Height="34"
+                      Margin="0,12,0,0"
+                      Command="{Binding Parent.Retry}" />
+            </StackPanel>
+            </Grid>
+          </DataTemplate>
+        </mvux:FeedView.ValueTemplate>
+
+        <!-- Loading: the tiles show, the route waits, the ETA block is three skeleton bars. -->
+
+        <!-- No drop-off: the map stays for Open in Maps (L6); the route shows tomorrow. -->
+        <mvux:FeedView.NoneTemplate>
+          <DataTemplate>
+            <TextBlock x:Uid="RouteTomorrow"
+                       Style="{StaticResource SectionTitle}"
+                       Foreground="{ThemeResource Ink2Brush}"
+                       Margin="18,16,0,0"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       AutomationProperties.LiveSetting="Polite" />
+          </DataTemplate>
+        </mvux:FeedView.NoneTemplate>
+
+      </mvux:FeedView>
+    </Grid>
+  </Border>
+</UserControl>

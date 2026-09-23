@@ -1,0 +1,43 @@
+<UserControl x:Class="MorningCard.Controls.HeaderPart"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="using:MorningCard.Controls"
+             xmlns:mvux="using:Uno.Extensions.Reactive.UI"
+             xmlns:uen="using:Uno.Extensions.Navigation.UI"
+             xmlns:mapsui="using:Mapsui.UI.WinUI"
+             xmlns:utu="using:Uno.Toolkit.UI"
+             xmlns:theme="using:MorningCard.Themes">
+  <!--
+    The shell header: sun, greeting over the weather line, and the time the card is reading.
+  -->
+  <!-- ============================ header ============================ -->
+  <!-- On the shell: sun, greeting over the weather line, and the time the card is reading. -->
+  <mvux:FeedView Source="{Binding Greeting}">
+    <mvux:FeedView.ValueTemplate>
+      <DataTemplate>
+        <Grid MinHeight="52" Padding="14,6,12,0" ColumnSpacing="10">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <FontIcon Style="{StaticResource CardIcon}"
+                    Glyph="{StaticResource IconSun}"
+                    FontSize="18"
+                    Foreground="{ThemeResource SunInkBrush}"
+                    VerticalAlignment="Top"
+                    Margin="0,2,0,0" />
+          <StackPanel Grid.Column="1" VerticalAlignment="Center">
+            <TextBlock Style="{StaticResource GreetingText}" Text="{Binding Data.Greeting}" />
+            <TextBlock Style="{StaticResource HeaderMeta}" Text="{Binding Data.WeatherLine}" />
+          </StackPanel>
+          <TextBlock Grid.Column="2"
+                     Style="{StaticResource HeaderMeta}"
+                     VerticalAlignment="Top"
+                     Margin="0,2,0,0"
+                     Text="{Binding Data.NowText}" />
+        </Grid>
+      </DataTemplate>
+    </mvux:FeedView.ValueTemplate>
+  </mvux:FeedView>
+</UserControl>
