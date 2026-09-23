@@ -11,8 +11,10 @@ Updated: 2026-09-22 15:05
 - User decisions 2026-09-23 are recorded as A6–G6 in the new **SPEC.md v6 section**: drop dark, keep
   the XC60, Refresh/Replay in the Simulator, drop the whole-card error and device offline, "Josh" is
   mock data, colours match the design.
-- **Next action:** confirm v6 UQ1–6 (each has a proposed default), then run v6 plan step 1 (spikes R7–R9)
-  in a fresh session rooted here. v6 runs before v5 step 2.
+- All remaining questions (v6 and v5) were decided by Claude on the user's instruction; they are H6–S6 in
+  SPEC.md. Nothing is blocking.
+- **Next action:** run v6 plan step 1 (spikes R7–R9) in a fresh session rooted here. v6 runs before
+  v5 step 2.
 - (superseded) Get answers to D2, D3, D5–D10, D12 and D13, then write the v6 section in SPEC.md
   (`write-spec`), then implement v6 step A (phone redesign) before the v5 split.
 

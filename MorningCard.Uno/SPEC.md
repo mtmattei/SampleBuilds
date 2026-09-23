@@ -1140,7 +1140,7 @@ casing), a dotted slack line from now to the leave point, rings at leave and wal
 (tone-coloured, white halo), the school pin, and two callouts ("Now 7:24", "3 min walk"). The minute
 scale lives on the slack ruler. `RouteRulerRenderer` keeps its projection and leg drawing; tick,
 interval and label drawing is removed. `TimeRulerLayout` interval selection becomes unused on the
-map; delete it with its tests once nothing references it. To be confirmed (v6 UQ1).
+map; delete it with its tests once nothing references it (decision H6).
 
 ### Services and data flow
 
@@ -1255,7 +1255,7 @@ range in the footer, Wear weather on screen 1.
 | Loading | first value pending | skeleton bars `#142A2C2F` radius 8 at the artboard sizes; map tiles without route; "Checking…", "Updating…"; Start drive disabled at 40% |
 | ETA unavailable | `error` (was the whole-card error) | schedule times, ruler and route drawn; ETA slot: "Live ETA unavailable" 17 w600, "Traffic data didn't load" 13, Retry ghost h34 |
 | No drop-off | `empty` | "No drop-off today", "School is closed. Next run tomorrow, leave by **7:33**."; no ruler, no route; "Route shows tomorrow"; "Ready for tomorrow"; Start drive disabled |
-| Car offline | `offline` | fuel "Last read 6:10" + "No signal"; cabin "Car offline" + "Remote start needs a connection to the car. It will retry on its own."; Start warming/Skip at 35%, Unlock at 40%; footer "Offline · last seen 6:10", grey dot |
+| Car offline | `offline` | fuel "Last read 6:10" + "No signal"; cabin "Car offline" + "Remote start needs a connection to the car. It will retry on its own."; Start warming/Skip at 35%, Unlock at 40%; **Start drive stays enabled** and opens Maps (J6); footer "Offline · last seen 6:10", grey dot |
 
 ### Animations
 
@@ -1288,7 +1288,7 @@ the offline state.
 |---|---|---|---|
 | 38 | Slack ruler | to implement | Core layout + XAML part |
 | 39 | Muted map | to implement if R8 passes | tint real OSM tiles; fallback: a paper wash over the tiles, raised as a substitution |
-| 40 | Phone Recenter | **omitted (proposed)** | the map is locked (B4); a recenter on a map that cannot move would impersonate a capability. v6 UQ2 |
+| 40 | Phone Recenter | **omitted (I6)** | the map is locked (B4); a recenter on a map that cannot move would impersonate a capability |
 | 41 | Cabin Skip / Undo | to implement | `CabinChoice` |
 | 42 | Checklist accordion | to implement | `OpenRow` |
 | 43 | ETA unavailable (partial error) | to implement | replaces the whole-card error |
@@ -1298,7 +1298,7 @@ the offline state.
 | 47 | Dark theme | **removed by decision B6** | |
 | 48 | Whole-card error, device offline | **removed by decision E6** | |
 | 49 | Overflow menu | **moved by decision D6** | Refresh and Replay in the Simulator |
-| 50 | On-map minute ticks | **removed by the design** | moved to the slack ruler; v6 UQ1 |
+| 50 | On-map minute ticks | **removed by the design (H6)** | moved to the slack ruler |
 | 51 | Letter-spacing (caps, title) | **substituted** | Skia `CharacterSpacing` no-op |
 | 52 | Accent hue dial | **removed by decision A6** | |
 
@@ -1333,20 +1333,31 @@ dropped). Each step ends in a build, a runtime check and one commit.
 10. Continue with v5 step 2 (split) using the v6 part list; v5 steps 5-9 target the v6 surface
     artboards.
 
+## v6 Delegated Decisions (Claude, on the user's instruction to decide by best practice, 2026-09-23)
+
+| # | Question | Decision | Reason |
+|---|---|---|---|
+| H6 | On-map minute ticks | **Removed**, as drawn. | One encoding of time per card: the slack ruler owns minutes, the map owns geography. Two scales for one quantity compete for the glance. |
+| I6 | Phone Recenter | **Omitted**; the phone map stays locked (B4). | A card map is a glanceable preview whose escape hatch is Open in Maps. Unlocking pan and zoom inside a scrolling card creates gesture conflicts, and a recenter on a locked map would impersonate a capability. |
+| J6 | Start drive while the car is offline | **Stays enabled** (deviates from the artboard). It opens Maps; the send-to-car step is skipped and the confirmation reads "Opened in Maps". Unlock, Start warming and Skip stay disabled. | Disable only what the failure actually blocks. Navigation does not need the car. |
+| K6 | Auto panel | **v5 mapping stands** (inventory 36): host-drawn pane rows and pane actions; our surface draws the map, route, callouts and ETA. | The Car App Library allows a POI app templates only. The ruler, car image and inline Start/Skip are omissions in the car. |
+| L6 | No drop-off map controls | **Open in Maps stays** (opens the school); no Recenter (I6). | A useful action on a free morning is still checking the route. |
+| M6 | Letter-spacing | **Accepted as lost** (inventory 51). | Per-glyph layout on every caps label costs layout passes and accessibility names for a 0.8 px difference at 10 px. Caps keep weight and colour. |
+| N6 | Car night treatment (v5 UQ1) | **Colour-filter night variant** of the same OSM tiles (dim + desaturate through the R8 filter path) plus a night ruler palette, switched on `CarContext.isDarkMode`. | The host requires dark support. Reusing R8's filter avoids a second tile source and its usage-policy check. |
+| O6 | Car zoom / recenter (v5 UQ3) | **Implemented in the car** through the map template's action strip (`MapController`: zoom in, zoom out, recenter). B4 reopens for the car only. | Map templates are expected to support them, and the car map is our own rendered surface, so the controls are real. |
+| P6 | Wear Start drive (v5 UQ5) | **Opens navigation on the watch** (`google.navigation:` intent); when no handler exists, hands off to the phone with `RemoteActivityHelper`. | A standalone Wear app must work without the phone; the phone is the fallback. |
+| Q6 | Application ids (v5 UQ6) | **`com.mtmattei.morningcard` for both APKs** (phone/TV/Auto and watch). | Wear guidance: the watch and phone apps share one package name so Play links them and the Data Layer can pair them later. |
+| R6 | Wear rotary crown (v5 UQ7) | **Verify at v5 step 6.** If Uno does not route rotary input to the `ScrollViewer`, handle `GenericMotionEvent` `AXIS_SCROLL` in the watch activity and call `ChangeView`. Time box 15 min. | Crown scrolling is a Wear quality requirement. |
+| S6 | Controls the design draws | Chips and status pills → `utu:Chip` (non-interactive style); the checklist accordion → evaluate WinUI `Expander` at step 7 before hand-rolling; skeleton → `uno-component-states`. | Capability-coverage *Controls* row: a hand-built equivalent needs a written reason. |
+
+v5 UQ2 (Wear theme) is answered by B6 (light), and v5 UQ4 (Skip) by `CabinChoice`.
+
 ## v6 Unresolved Questions
 
-1. **On-map ticks.** v6 removes the minute ticks from the route (moved to the slack ruler), which
-   retires the v4 route ruler on the map. Confirm.
-2. **Phone Recenter.** Proposed: omit it (the map stays locked, B4). The alternative is to unlock pan
-   and zoom on the phone and implement recenter.
-3. **Start drive while the car is offline.** The design disables it; navigation does not need the
-   car. Proposed: follow the design.
-4. **Auto panel.** The v6 Auto artboard is a custom panel; a POI app gets host-drawn rows only.
-   Proposed: keep the v5 mapping (inventory 36) and record the ruler, car image and inline buttons
-   as omissions in the car.
-5. **No drop-off map controls.** The artboard keeps Recenter and Open in Maps on a map with no route.
-   Proposed: keep Open in Maps (opens the school), no Recenter (see 2).
-6. **Letter-spacing.** Accept dropping the caps and title tracking (Skia no-op), or lay caps out per
-   glyph (the BillCal workaround, costly for every caps label)? Proposed: accept.
-7. v5 UQ1 (car night treatment), UQ3 (car zoom/recenter) and UQ5-7 remain open; v5 UQ2 (Wear theme)
-   is answered by B6 (light); v5 UQ4 (Skip) is answered by `CabinChoice`.
+None blocking. Accepted substitutions and omissions, listed so they stay visible:
+
+- Phone Recenter omitted (I6); map stays locked.
+- Letter-spacing on caps and title lost (M6).
+- In the car: slack ruler, car image and inline Start/Skip omitted (K6).
+- Muted map depends on R8; the fallback is a paper wash over the tiles (inventory 39).
+- Start drive stays enabled when the car is offline, against the artboard (J6).
