@@ -50,9 +50,14 @@ public sealed partial class SlackRuler : Canvas
     private const double LineHeight = 50;
     private const double KeyGap = 6;
 
+    /// <summary>Set on first data and on Replay; the next rebuild grows the blocks in and clears it.</summary>
+    private bool _playEntrance = true;
+
     public SlackRuler()
     {
         Height = 104;
+        Loaded += (_, _) => CardMotion.ReplayRequested += OnReplayRequested;
+        Unloaded += (_, _) => CardMotion.ReplayRequested -= OnReplayRequested;
         SizeChanged += (_, e) =>
         {
             if (Math.Abs(e.NewSize.Width - e.PreviousSize.Width) > 0.5)
@@ -66,6 +71,12 @@ public sealed partial class SlackRuler : Canvas
     {
         get => (EtaView?)GetValue(ViewProperty);
         set => SetValue(ViewProperty, value);
+    }
+
+    private void OnReplayRequested(object? sender, EventArgs e)
+    {
+        _playEntrance = true;
+        Rebuild();
     }
 
     protected override AutomationPeer OnCreateAutomationPeer() => new FrameworkElementAutomationPeer(this);
@@ -111,11 +122,15 @@ public sealed partial class SlackRuler : Canvas
         }
 
         // Blocks, inset a pixel each side so neighbours read as separate pieces.
+        var blocks = new List<(FrameworkElement Block, double Left)>();
+
         foreach (var segment in plan.Segments.Where(s => s.Kind != RulerSegmentKind.Overrun))
         {
             var left = X(segment.StartMin) + 1;
             var blockWidth = Math.Max(0, X(segment.EndMin) - X(segment.StartMin) - 2);
-            Place(Block(segment, view, blockWidth), left, BlockTop);
+            var block = Block(segment, view, blockWidth);
+            Place(block, left, BlockTop);
+            blocks.Add((block, left));
         }
 
         if (plan.Find(RulerSegmentKind.Overrun) is { } overrun)
@@ -151,6 +166,12 @@ public sealed partial class SlackRuler : Canvas
             Place(new Ellipse { Width = 13, Height = 13, Fill = Brush(Token("CardSurfaceColor")) }, nowX - 6.5, 39);
             Place(new Ellipse { Width = 9, Height = 9, Fill = Brush(tone) }, nowX - 4.5, 41);
             PlaceCentered(Text(view.NowCaption, "TimelineLabel", toneInk), nowX, 91, width);
+        }
+
+        if (_playEntrance)
+        {
+            _playEntrance = false;
+            GrowIn(blocks, width);
         }
 
         // Key times.
@@ -207,6 +228,44 @@ public sealed partial class SlackRuler : Canvas
 
         Place(new Rectangle { Width = width, Height = BlockHeight, RadiusX = BlockRadius, RadiusY = BlockRadius, Fill = Brush(bar) }, 0, BlockTop);
         AutomationProperties.SetName(this, string.Empty);
+    }
+
+    /// <summary>
+    /// The v6 entrance: each block grows in from its left edge (ScaleX 0 to 1), later the further
+    /// right it sits, so the day reads left to right. Skipped under reduced motion.
+    /// </summary>
+    private static void GrowIn(List<(FrameworkElement Block, double Left)> blocks, double width)
+    {
+        if (CardChrome.ReducedMotion)
+        {
+            return;
+        }
+
+        var duration = CardMotion.Number("DurationSlowMs", 280) / Math.Max(CardChrome.MotionSpeed, 0.1);
+        var board = new Microsoft.UI.Xaml.Media.Animation.Storyboard();
+
+        foreach (var (block, left) in blocks)
+        {
+            var scale = new ScaleTransform { ScaleX = 0 };
+            block.RenderTransform = scale;
+            block.RenderTransformOrigin = new Windows.Foundation.Point(0, 0.5);
+
+            var grow = new Microsoft.UI.Xaml.Media.Animation.DoubleAnimationUsingKeyFrames
+            {
+                BeginTime = TimeSpan.FromMilliseconds(left / Math.Max(width, 1) * 160),
+            };
+            grow.KeyFrames.Add(new Microsoft.UI.Xaml.Media.Animation.SplineDoubleKeyFrame
+            {
+                KeyTime = TimeSpan.FromMilliseconds(duration),
+                Value = 1,
+                KeySpline = CardMotion.Ease("EaseSmooth"),
+            });
+            Microsoft.UI.Xaml.Media.Animation.Storyboard.SetTarget(grow, scale);
+            Microsoft.UI.Xaml.Media.Animation.Storyboard.SetTargetProperty(grow, "ScaleX");
+            board.Children.Add(grow);
+        }
+
+        board.Begin();
     }
 
     private FrameworkElement Block(RulerSegment segment, EtaView view, double width)

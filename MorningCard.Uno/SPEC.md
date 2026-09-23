@@ -1370,10 +1370,11 @@ traced correct pills, meta lines and ready counts (`MC_PROBE_CABIN`); Retry from
 recovers the live ETA (`MC_PROBE_RETRY`: PASSED). Geist, the Lucide glyphs, the muted XC60 and the
 tinted tiles load on Android.
 
-Spec items **not built yet** (raise, do not absorb):
-- The footer live dot's opacity pulse on the shared ~30 fps timer (v6 Animations).
-- The ruler blocks' ScaleX grow-in inside the entrance (v6 Animations).
-- Invisible 4-8 px hit extensions to bring the 32 px map pill and 40 px footer buttons to 48 px (v6 Accessibility).
+The three items first listed as not built were added after the parity pass and verified at runtime:
+the footer live dot pulses 1 to 0.35 over 1.8 s on a shared ~30 fps timer (`Themes/LivePulse.cs`,
+sampled pixel cycling sage to near-shell); the ruler blocks grow in from the left on first data and
+on Replay (burst capture with `MC_MOTION=0.25` caught them mid-growth); and the pill templates carry
+a transparent hit area (+4 px, +8 px on the map pill) bringing the targets to 48 px.
 
 ## v6 Delegated Decisions (Claude, on the user's instruction to decide by best practice, 2026-09-23)
 
@@ -1415,6 +1416,5 @@ None blocking. Accepted substitutions and omissions, listed so they stay visible
 - **The simulated car now starts with climate off**, so the cabin row opens as the design's Suggested
   state ("2 of 3 ready").
 - **Open in Maps sits 30 px from the bottom (artboard: 12)** so it does not cover the OSM attribution.
-- **Not built yet:** live-dot pulse, ruler grow-in, 48 px hit extensions (see v6 parity results).
 - **The now dot on the map** follows the artboard (back along the first drive heading) but fans out
   to stay on the panel, off the route and clear of the pin and callouts on real geography.

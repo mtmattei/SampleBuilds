@@ -6,6 +6,7 @@
              xmlns:uen="using:Uno.Extensions.Navigation.UI"
              xmlns:mapsui="using:Mapsui.UI.WinUI"
              xmlns:utu="using:Uno.Toolkit.UI"
+             xmlns:theme="using:MorningCard.Themes"
              HorizontalAlignment="Stretch"
              VerticalAlignment="Top">
 
@@ -589,7 +590,9 @@
               <!-- The live dot, the car, and its lock state. -->
               <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                 <Grid VerticalAlignment="Center">
+                  <!-- Pulses while connected; the grey offline dot beside it stays still. -->
                   <Ellipse Width="6" Height="6" Fill="{ThemeResource GoodBrush}"
+                           theme:LivePulse.IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}"
                            Visibility="{Binding Data.IsStale, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}" />
                   <Ellipse Width="6" Height="6" Fill="{ThemeResource FaintBrush}"
                            Visibility="{Binding Data.IsStale, Converter={StaticResource BoolToVisibility}}" />

@@ -228,7 +228,11 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
+          <!-- A transparent hit area 8 px past the drawn shell brings the target to 48 px
+               without moving layout (the artboard's inset:-8px). -->
+          <Grid Background="Transparent" Margin="-8">
           <Border x:Name="Shell"
+                  Margin="8"
                   Background="{TemplateBinding Background}"
                   CornerRadius="{TemplateBinding CornerRadius}"
                   Padding="{TemplateBinding Padding}"
@@ -237,6 +241,7 @@
               <ScaleTransform x:Name="ShellScale" />
             </Border.RenderTransform>
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
             <VisualStateManager.VisualStateGroups>
               <VisualStateGroup x:Name="CommonStates">
                 <!-- Scoped with To/From: a bare GeneratedDuration here would apply to every
@@ -283,7 +288,7 @@
                 </VisualState>
               </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
-          </Border>
+          </Grid>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
@@ -310,7 +315,11 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
+          <!-- A transparent hit area 4 px past the drawn shell brings the target to 48 px
+               without moving layout (the artboard's inset:-4px). -->
+          <Grid Background="Transparent" Margin="-4">
           <Border x:Name="Shell"
+                  Margin="4"
                   Background="{TemplateBinding Background}"
                   CornerRadius="{TemplateBinding CornerRadius}"
                   Padding="{TemplateBinding Padding}"
@@ -319,6 +328,7 @@
               <ScaleTransform x:Name="ShellScale" />
             </Border.RenderTransform>
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
             <VisualStateManager.VisualStateGroups>
               <VisualStateGroup x:Name="CommonStates">
                 <VisualStateGroup.Transitions>
@@ -363,7 +373,7 @@
                 </VisualState>
               </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
-          </Border>
+          </Grid>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
@@ -385,7 +395,11 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
+          <!-- A transparent hit area 4 px past the drawn shell brings the target to 48 px
+               without moving layout (the artboard's inset:-4px). -->
+          <Grid Background="Transparent" Margin="-4">
           <Border x:Name="Shell"
+                  Margin="4"
                   Background="{TemplateBinding Background}"
                   CornerRadius="{TemplateBinding CornerRadius}"
                   Padding="{TemplateBinding Padding}"
@@ -394,6 +408,7 @@
               <ScaleTransform x:Name="ShellScale" />
             </Border.RenderTransform>
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
             <VisualStateManager.VisualStateGroups>
               <VisualStateGroup x:Name="CommonStates">
                 <VisualStateGroup.Transitions>
@@ -438,7 +453,7 @@
                 </VisualState>
               </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
-          </Border>
+          </Grid>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
