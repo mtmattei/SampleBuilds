@@ -79,7 +79,10 @@ public partial class App : Application
 
 #if DEBUG
         // UseStudio() never creates the window when no DevServer is reachable, so headless runs opt out.
-        if (Environment.GetEnvironmentVariable("APP_NO_HOTDESIGN") != "1")
+        // Phone only: on TV its toolbar is the first D-pad focus stop and opens over the card, and a
+        // watch has no room for it.
+        if (Environment.GetEnvironmentVariable("APP_NO_HOTDESIGN") != "1"
+            && Presentation.FormFactors.Current == Presentation.FormFactor.Phone)
         {
             MainWindow.UseStudio();
         }
@@ -99,7 +102,13 @@ public partial class App : Application
 
         Host = await MainWindow.InitializeNavigationAsync(
             () => Task.FromResult(host),
-            initialRoute: "Main"
+            // One APK, three layouts: the form factor picks the page (Uno AndroidTV / AndroidWear).
+            initialRoute: FormFactors.Current switch
+            {
+                FormFactor.Television => "Tv",
+                FormFactor.Watch => "Watch",
+                _ => "Main",
+            }
         );
 
 #if DEBUG
@@ -135,13 +144,18 @@ public partial class App : Application
     {
         views.Register(
             new ViewMap<MainPage, MainModel>(),
+            new ViewMap<TvPage, MainModel>(),
+            new ViewMap<WatchPage, MainModel>(),
             new ViewMap<TuningPanel, TuningModel>()
         );
 
         routes.Register(
+            // Three views share MainModel, so each route names its view rather than the model.
+            new RouteMap("Tv", View: views.FindByView<TvPage>()),
+            new RouteMap("Watch", View: views.FindByView<WatchPage>()),
             // The Simulator is a nested region rather than a property on the card's model: a model
             // exposed as a property would hand XAML its raw IState objects with no bindable proxy.
-            new RouteMap("Main", View: views.FindByViewModel<MainModel>(), IsDefault: true, Nested:
+            new RouteMap("Main", View: views.FindByView<MainPage>(), IsDefault: true, Nested:
             [
                 new RouteMap("Simulator", View: views.FindByViewModel<TuningModel>(), IsDefault: true)
             ])

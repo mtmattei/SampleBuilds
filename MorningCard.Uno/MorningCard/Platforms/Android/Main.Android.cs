@@ -10,11 +10,17 @@ using Android.Views;
 using Android.Widget;
 using Microsoft.UI.Xaml.Media;
 
+// One APK for phone, TV and watch (Uno AndroidTV / AndroidWear opt-ins): none of these is required.
+[assembly: UsesFeature("android.software.leanback", Required = false)]
+[assembly: UsesFeature("android.hardware.touchscreen", Required = false)]
+[assembly: UsesFeature("android.hardware.type.watch", Required = false)]
+
 namespace MorningCard.Droid;
 
 [global::Android.App.ApplicationAttribute(
     Label = "@string/ApplicationName",
     Icon = "@mipmap/icon",
+    Banner = "@drawable/banner",
     LargeHeap = true,
     HardwareAccelerated = true,
     Theme = "@style/Theme.App.Starting"

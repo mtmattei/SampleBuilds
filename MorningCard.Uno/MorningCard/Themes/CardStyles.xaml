@@ -40,9 +40,11 @@
     <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
     <Setter Property="FontSize" Value="13" />
     <Setter Property="UseSystemFocusVisuals" Value="True" />
+    <!-- D-pad and keyboard focus (v6 TV): 3 px slate outside, 3 px paper inside. Touch never shows it. -->
     <Setter Property="FocusVisualPrimaryBrush" Value="{ThemeResource AccentBrush}" />
-    <Setter Property="FocusVisualPrimaryThickness" Value="2" />
-    <Setter Property="FocusVisualSecondaryThickness" Value="0" />
+    <Setter Property="FocusVisualPrimaryThickness" Value="3" />
+    <Setter Property="FocusVisualSecondaryBrush" Value="{ThemeResource CardSurfaceBrush}" />
+    <Setter Property="FocusVisualSecondaryThickness" Value="3" />
     <!-- Template, not lightweight keys: Material Button has no key for the press scale or for the 8 px hit area outside the drawn pill. -->
     <Setter Property="Template">
       <Setter.Value>
@@ -127,9 +129,11 @@
     <Setter Property="FontFamily" Value="{StaticResource CardFontMedium}" />
     <Setter Property="FontSize" Value="13" />
     <Setter Property="UseSystemFocusVisuals" Value="True" />
-    <Setter Property="FocusVisualPrimaryBrush" Value="{ThemeResource InkBrush}" />
-    <Setter Property="FocusVisualPrimaryThickness" Value="2" />
-    <Setter Property="FocusVisualSecondaryThickness" Value="0" />
+    <!-- D-pad and keyboard focus (v6 TV): 3 px slate outside, 3 px paper inside. Touch never shows it. -->
+    <Setter Property="FocusVisualPrimaryBrush" Value="{ThemeResource AccentBrush}" />
+    <Setter Property="FocusVisualPrimaryThickness" Value="3" />
+    <Setter Property="FocusVisualSecondaryBrush" Value="{ThemeResource CardSurfaceBrush}" />
+    <Setter Property="FocusVisualSecondaryThickness" Value="3" />
     <Setter Property="FocusVisualMargin" Value="-3" />
     <!-- Template, not lightweight keys: Material Button has no key for the 0.98 press scale or for the 4 px hit area outside the shell. -->
     <Setter Property="Template">
@@ -308,9 +312,11 @@
     <Setter Property="HorizontalAlignment" Value="Stretch" />
     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     <Setter Property="UseSystemFocusVisuals" Value="True" />
+    <!-- D-pad and keyboard focus (v6 TV): 3 px slate outside, 3 px paper inside. Touch never shows it. -->
     <Setter Property="FocusVisualPrimaryBrush" Value="{ThemeResource AccentBrush}" />
-    <Setter Property="FocusVisualPrimaryThickness" Value="2" />
-    <Setter Property="FocusVisualSecondaryThickness" Value="0" />
+    <Setter Property="FocusVisualPrimaryThickness" Value="3" />
+    <Setter Property="FocusVisualSecondaryBrush" Value="{ThemeResource CardSurfaceBrush}" />
+    <Setter Property="FocusVisualSecondaryThickness" Value="3" />
     <Setter Property="FocusVisualMargin" Value="-2" />
     <!-- Template: a whole-row target with no chrome until hover, which no Material button style provides. -->
     <Setter Property="Template">

@@ -1,0 +1,80 @@
+<Page x:Class="MorningCard.Presentation.TvPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="using:MorningCard.Controls"
+      xmlns:utu="using:Uno.Toolkit.UI"
+      Background="{ThemeResource GroundBrush}"
+      XYFocusKeyboardNavigation="Enabled">
+
+  <!--
+    Android TV (v6 artboard android_tv.png). Laid out at the artboard's 1280x720 and scaled to the
+    screen by the Viewbox, so every measurement is the artboard's own number. The 64/36 margin keeps
+    the shell inside the 5% overscan-safe area. D-pad focus is XY keyboard navigation (Uno TV docs);
+    the card's buttons and rows are the focus stops. Back leaves the app: there is nowhere to go back to.
+  -->
+  <Viewbox Stretch="Uniform">
+    <Grid Width="1280" Height="720" Padding="64,36">
+      <mc:CardShadowCanvas />
+
+      <utu:CardContentControl Style="{StaticResource FilledCardContentControlStyle}"
+                              Margin="0"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              HorizontalContentAlignment="Stretch"
+                              VerticalContentAlignment="Stretch"
+                              CornerRadius="{StaticResource CardCornerRadius}"
+                              Padding="{StaticResource CardPadding}"
+                              BorderThickness="0,1,0,0">
+        <Grid RowSpacing="8" ColumnSpacing="8">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+
+          <mc:HeaderPart Grid.ColumnSpan="2" />
+
+          <!-- Left: the trip and the checklist, open. -->
+          <utu:CardContentControl Grid.Row="1"
+                                  Style="{StaticResource OutlinedCardContentControlStyle}"
+                                  Margin="0"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  HorizontalContentAlignment="Stretch"
+                                  VerticalContentAlignment="Top"
+                                  CornerRadius="{StaticResource CardInnerCornerRadius}"
+                                  Padding="24,20"
+                                  BorderThickness="1">
+            <ScrollViewer VerticalScrollBarVisibility="Hidden">
+              <StackPanel>
+                <mc:TripPart />
+                <mc:ChecksPart Margin="0,12,0,0" />
+              </StackPanel>
+            </ScrollViewer>
+          </utu:CardContentControl>
+
+          <!-- Right: the map, full height. -->
+          <utu:CardContentControl Grid.Row="1"
+                                  Grid.Column="1"
+                                  Style="{StaticResource OutlinedCardContentControlStyle}"
+                                  Margin="0"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  HorizontalContentAlignment="Stretch"
+                                  VerticalContentAlignment="Stretch"
+                                  CornerRadius="{StaticResource CardInnerCornerRadius}"
+                                  Padding="10"
+                                  BorderThickness="1">
+            <mc:MapPart />
+          </utu:CardContentControl>
+
+          <mc:FooterPart Grid.Row="2" Grid.ColumnSpan="2" />
+        </Grid>
+      </utu:CardContentControl>
+    </Grid>
+  </Viewbox>
+</Page>

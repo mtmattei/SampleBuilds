@@ -72,7 +72,8 @@ public partial record MainModel
     public IState<CabinChoice> Cabin => State.Value(this, () => CabinChoice.Pending);
 
     /// <summary>The open checklist row. Cabin by default: it is the one the driver can act on.</summary>
-    public IState<ChecklistRow> OpenRow => State.Value(this, () => ChecklistRow.Cabin);
+    public IState<ChecklistRow> OpenRow => State.Value(this, () =>
+        FormFactors.Current == FormFactor.Phone ? ChecklistRow.Cabin : ChecklistRow.None);
 
     public string EtaUnitLabel => Text("Eta_Unit");
 
@@ -81,7 +82,10 @@ public partial record MainModel
     /// when the car is offline and the send was skipped (J6).
     /// </summary>
     public IFeed<string> DriveLabel => Feed.Combine(DriveSent, Car).Select(input =>
-        Text(!input.Item1 ? "Drive_Start" : input.Item2.IsStale ? "Drive_Opened" : "Drive_Sent"));
+        Text(!input.Item1
+            // A TV cannot navigate: its primary action sends the drop-off to the car.
+            ? FormFactors.Current == FormFactor.Television ? "Drive_SendToCar" : "Drive_Start"
+            : input.Item2.IsStale ? "Drive_Opened" : "Drive_Sent"));
 
     private IFeed<TripResult> Trip => Feed<TripResult>.AsyncEnumerable(WatchTrip);
 
@@ -170,7 +174,8 @@ public partial record MainModel
     /// there are and how many are settled, which is the whole answer on a morning where nothing
     /// needs doing. Opening it is for the mornings where something does.
     /// </summary>
-    public IState<bool> ChecksExpanded => State.Value(this, () => false);
+    // TV and watch show the checklist open: the TV has the room, and the watch gives it a screen.
+    public IState<bool> ChecksExpanded => State.Value(this, () => FormFactors.Current != FormFactor.Phone);
 
     // ---- commands --------------------------------------------------------------------------
 
@@ -236,7 +241,11 @@ public partial record MainModel
         }
 
         await DriveSent.SetAsync(true, ct);
-        await Destination.OpenInMapsAsync();
+
+        if (FormFactors.Current != FormFactor.Television)
+        {
+            await Destination.OpenInMapsAsync();
+        }
 
         // Outside the command on purpose: a generated command holds its button disabled for as long
         // as the method runs, and the confirmation is not something to wait on.

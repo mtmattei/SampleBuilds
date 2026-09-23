@@ -12,6 +12,11 @@ namespace MorningCard.Droid;
     WindowSoftInputMode = SoftInput.AdjustNothing | SoftInput.StateHidden,
     Exported = true
 )]
+// ActionMain directly after the Activity attribute (Uno docs), with the leanback category so the
+// same APK appears on the Android TV home screen.
+[IntentFilter(
+    new[] { Android.Content.Intent.ActionMain },
+    Categories = new[] { Android.Content.Intent.CategoryLauncher, Android.Content.Intent.CategoryLeanbackLauncher })]
 public class MainActivity : Microsoft.UI.Xaml.ApplicationActivity
 {
     protected override void OnCreate(Bundle? savedInstanceState)

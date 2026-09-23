@@ -380,6 +380,9 @@
   <data name="ChecksLoadingCount.Content" xml:space="preserve">
     <value>3 checks</value>
   </data>
+  <data name="Drive_SendToCar" xml:space="preserve">
+    <value>Send to car</value>
+  </data>
 </root>
 
 

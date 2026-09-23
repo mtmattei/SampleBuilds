@@ -148,7 +148,7 @@
               <!-- Cabin: the one row the driver acts on. -->
               <Rectangle Style="{StaticResource RowRule}" />
               <Button Style="{StaticResource RowButtonStyle}" Margin="-10,0" Padding="10,8" MinHeight="56" CornerRadius="12"
-                      Command="{Binding Parent.ToggleCabin}" AutomationProperties.Name="{Binding Data.CabinRowName}">
+                      x:Name="CabinRowButton" Command="{Binding Parent.ToggleCabin}" AutomationProperties.Name="{Binding Data.CabinRowName}">
                 <Grid ColumnSpacing="10">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="28" />
