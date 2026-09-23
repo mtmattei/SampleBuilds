@@ -13,6 +13,28 @@
 
 
 
+  <!--
+    Skeleton blocks for the Loading state, sized to the text they stand in for: the block is the
+    glyph height and the margin makes up the rest of the line, so a skeleton row is as tall as the
+    row it replaces. Static on purpose - the card has no ambient motion.
+  -->
+  <Style x:Key="SkeletonLabel" TargetType="Border">
+    <Setter Property="Height" Value="9" />
+    <Setter Property="Margin" Value="0,3,0,3" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="CornerRadius" Value="3" />
+    <Setter Property="Background" Value="{ThemeResource ChipBrush}" />
+  </Style>
+
+  <Style x:Key="SkeletonTime" TargetType="Border">
+    <Setter Property="Width" Value="46" />
+    <Setter Property="Height" Value="18" />
+    <Setter Property="Margin" Value="0,4,0,4" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Background" Value="{ThemeResource ChipBrush}" />
+  </Style>
+
   <!-- One row of the list under the map. Fixed height keeps the three rules evenly spaced. -->
   <Style x:Key="ListRowStyle" TargetType="Grid">
     <!-- 14 on the sides as well as top and bottom, matching the header's own padding, so the row

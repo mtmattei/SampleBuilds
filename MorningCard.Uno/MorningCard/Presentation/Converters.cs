@@ -100,13 +100,13 @@ public sealed class ToneBrushConverter : IValueConverter
 }
 
 /// <summary>
-/// The cabin's readiness dot. Amber while it still wants doing, green once it is handled - the one
-/// check on the list the driver can actually act on.
+/// The bottom bar's connection dot: sage while the car is live, grey once its data is stale. The
+/// text beside it always says the same thing in words.
 /// </summary>
-public sealed class CheckDotBrushConverter : IValueConverter
+public sealed class ConnectionDotBrushConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language) =>
-        Tokens.Of(value is true ? "AmberBrush" : "GoodBrush");
+        Tokens.Of(value is true ? "Ink3Brush" : "GoodBrush");
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
         throw new NotSupportedException();
@@ -157,11 +157,14 @@ public sealed class ChecksHeaderRadiusConverter : IValueConverter
         throw new NotSupportedException();
 }
 
-/// <summary>The padlock, open or shut, from one icon set rather than two assets.</summary>
+/// <summary>
+/// The lock button's padlock shows the action it takes, like its label: open while the car is
+/// locked ("Unlock"), shut while it is unlocked ("Lock").
+/// </summary>
 public sealed class LockGlyphConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language) =>
-        Application.Current.Resources[value is true ? "IconLock" : "IconUnlock"];
+        Application.Current.Resources[value is true ? "IconUnlock" : "IconLock"];
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
         throw new NotSupportedException();

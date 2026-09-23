@@ -19,6 +19,7 @@ $ErrorActionPreference = 'Stop'
 
 $states = @(
     @{ Name = 'live';       Env = @{} }
+    @{ Name = 'loading';    Env = @{ MC_STATE = 'loading' } }
     @{ Name = 'empty';      Env = @{ MC_STATE = 'empty' } }
     @{ Name = 'offline';    Env = @{ MC_STATE = 'offline' } }
     @{ Name = 'error';      Env = @{ MC_STATE = 'error' } }

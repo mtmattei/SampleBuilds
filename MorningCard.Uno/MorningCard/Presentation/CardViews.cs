@@ -14,9 +14,9 @@ namespace MorningCard.Presentation;
 /// because the headline is three <c>Run</c>s in one TextBlock and a converter cannot produce Runs.
 /// </param>
 /// <param name="LockText">Sits under the car, e.g. "XC60 · Locked".</param>
-/// <param name="WeatherSummary">Conditions and the day's high, e.g. "Clear · High 9°".</param>
-/// <param name="NowText">"Now 7:24" in the status strip, so the card says what time it is reading.</param>
-/// <param name="StatusBadge">"On time", "Leave now" or "Running late" - the state, named.</param>
+/// <param name="WeatherLine">Under the greeting: "-3° · Clear · High 9°".</param>
+/// <param name="NowText">"Now 7:24", alone at the top right. The status itself is the headline's job.</param>
+/// <param name="LockAction">The lock button's label: the action it takes, "Unlock" or "Lock".</param>
 public record HeaderView(
     string Greeting,
     string Title,
@@ -30,10 +30,9 @@ public record HeaderView(
     // The state itself, not only the sentence about it: the bar's lock button showed a shut
     // padlock while its own label read "Unlocked".
     bool IsLocked,
-    string OutsideTemp,
-    string WeatherSummary,
+    string WeatherLine,
     string NowText,
-    string StatusBadge);
+    string LockAction);
 
 /// <summary>
 /// The ETA block and the route ruler. Reached only when there is a trip: no trip means the feed is
@@ -45,9 +44,16 @@ public record HeaderView(
 /// <param name="LeaveByLabel">"LEAVE BY" normally, "LEAVE" once the answer is "Now".</param>
 public record EtaView(
     bool Failed,
+    // The live ETA has been asked for and has not answered. A value rather than a FeedView
+    // progress state: this feed combines a push stream, which never reports progress before its
+    // first element, so a ProgressTemplate here is unreachable.
+    bool IsLoading,
+    // Neither failed nor loading: the route, the scrim under the ETA block and Open in Maps show.
+    bool ShowsRoute,
     string FailureMessage,
-    int TotalMinutes,
-    string ArrivalText,
+    // The drive alone. The countdown lives in the headline and the slack on the ruler, so each
+    // of the three durations appears once.
+    int DriveMinutes,
     TrafficLevel Traffic,
     string TrafficText,
     string VsUsualText,
@@ -65,8 +71,6 @@ public record EtaView(
     double TrackDrive,
     double TrackWalk,
     string LeaveLabel,
-    string ArriveLabel,
-    string BellLabel,
     string RouteDescription,
     // Null on a failed lookup, which has no trip to lay on the map.
     RulerPlan? Ruler = null);
@@ -94,13 +98,16 @@ internal record TripSlot(TripPlan? Plan);
 /// re-subscribe a stream that has already thrown. Carrying the failure keeps the stream alive, so
 /// the model's own retry can put a good value through it.
 /// </summary>
-internal record TripResult(TripPlan? Plan, string FailureMessage)
+internal record TripResult(TripPlan? Plan, string FailureMessage, bool Pending = false)
 {
-    public bool Failed => Plan is null;
+    public bool Failed => Plan is null && !Pending;
 
     public static TripResult Ok(TripPlan plan) => new(plan, string.Empty);
 
     public static TripResult Failure(string message) => new(null, message);
+
+    /// <summary>Asked for, not yet answered: what the Loading skeleton renders.</summary>
+    public static TripResult Loading { get; } = new(null, string.Empty, Pending: true);
 }
 
 /// <summary>
@@ -120,10 +127,9 @@ public record ModeOption(ConnectionMode Value, string Label)
 /// recursively, so a list of row records would pull the generator into exactly the shapes it fails
 /// on. Three rows is a fixed number the design sets, not a collection.
 /// </summary>
-/// <param name="CabinFrom">Bolded in the row, so it is its own Run: "-3°".</param>
-/// <param name="CabinTo">The other bolded Run: "20°".</param>
 /// <param name="FuelNoteAccent">The half of the note that takes the severity colour, " · Fuel soon".</param>
 /// <param name="FuelChip">The same state as a standalone chip label, without the separator.</param>
+/// <param name="FuelTitle">"Enough for today", or the warning when it is not.</param>
 public record CarView(
     string FuelValue,
     string FuelUnit,
@@ -131,11 +137,9 @@ public record CarView(
     string FuelNoteAccent,
     string FuelChip,
     StatLevel FuelLevel,
+    string FuelTitle,
     string CabinLabel,
     string CabinLead,
-    string CabinFrom,
-    string CabinMid,
-    string CabinTo,
     string CabinAccent,
     // The checklist header: how many checks there are and how many are ready.
     string ChecksCount,
@@ -148,9 +152,5 @@ public record CarView(
     string ParkingNote,
     bool HasDestination,
     bool IsStale,
-    // The card's one state label, moved down here from the header's pill. It rides this feed
-    // because a FeedView template resolves commands through Parent but not state, so the bar has
-    // to be handed what it reports rather than reach up for it.
-    string StatusBadge,
     CardTone Tone);
 

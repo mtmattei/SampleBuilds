@@ -11,7 +11,7 @@
   <mp:ToneBrushConverter x:Key="ToneBrush" />
   <mp:LockGlyphConverter x:Key="LockGlyph" />
   <mp:ChecksHeaderRadiusConverter x:Key="ChecksHeaderRadius" />
-  <mp:CheckDotBrushConverter x:Key="CheckDotBrush" />
+  <mp:ConnectionDotBrushConverter x:Key="ConnectionDotBrush" />
   <mp:AccentToneConverter x:Key="AccentTone" />
   <mp:ToneChipInkConverter x:Key="ToneChipInk" />
   <mp:ToneTrackBrushConverter x:Key="ToneTrackBrush" />

@@ -13,19 +13,22 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <!--
-    48 / 600: the trip duration, still the largest figure on the card. Nothing on the card is bold
-    for emphasis alone, so size carries the hierarchy and weight stops at semibold.
+    30 / 600: the drive time. Deliberately smaller than the countdown in the headline, which is the
+    card's answer and so its largest number. Nothing is bold for emphasis alone.
   -->
   <Style x:Key="EtaNumber" TargetType="TextBlock" BasedOn="{StaticResource DisplayMedium}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
     <Setter Property="FontWeight" Value="SemiBold" />
-    <Setter Property="FontSize" Value="48" />
+    <Setter Property="FontSize" Value="30" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
-  <!-- The ETA's unit, scaled with the number (22 at 52). A Run cannot take a Style, so the size
-       lives here as a token. -->
-  <x:Double x:Key="EtaUnitSize">20</x:Double>
+  <!-- The ETA's unit. A Run cannot take a Style, so the size lives here as a token. -->
+  <x:Double x:Key="EtaUnitSize">15</x:Double>
+
+  <!-- The countdown inside the headline sentence ("Leave in 9 min"): the largest number on the
+       card, because it is the card's answer. A Run token for the same reason as the unit. -->
+  <x:Double x:Key="CountdownSize">27</x:Double>
 
   <!-- 34 / 600: the trip title. The design's tracking change (less negative) is not carried over:
        CharacterSpacing is a no-op on the Skia text stack. -->

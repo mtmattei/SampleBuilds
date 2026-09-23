@@ -22,12 +22,6 @@ public sealed record RouteRulerSnapshot
     public string LeaveLabel { get; init; } = string.Empty;
 
 
-
-    public string ArriveLabel { get; init; } = string.Empty;
-
-
-    public string BellLabel { get; init; } = string.Empty;
-
     /// <summary>The map panel's corner, so the map's tone is clipped to the panel's shape.</summary>
     public float MapCornerRadius { get; init; } = 20f;
 

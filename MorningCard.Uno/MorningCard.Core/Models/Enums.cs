@@ -40,4 +40,11 @@ public enum ConnectionMode
 
     /// <summary>Nothing on the calendar, so there is no trip to plan.</summary>
     NoTrip,
+
+    /// <summary>
+    /// The plan is known but the live ETA has not answered yet. Only meaningful from startup
+    /// (MC_STATE=loading): once an ETA has been shown, a later lookup keeps it on screen rather than
+    /// blanking it, so switching into this mode mid-session would change nothing visible.
+    /// </summary>
+    Loading,
 }

@@ -460,8 +460,8 @@ internal sealed class RouteRulerRenderer : IDisposable
     // ---- callouts -----------------------------------------------------------------------------
 
     /// <summary>
-    /// The three times, anchored to the points they describe. These are the only text on the map
-    /// besides the tick labels, so they carry a filled plate.
+    /// The departure, anchored to where it happens. The only plate on the map: the arrival and the
+    /// bell are already in the timeline strip above, and a second copy here was repetition.
     /// </summary>
     private void DrawCallouts(
         SKCanvas canvas,
@@ -477,22 +477,6 @@ internal sealed class RouteRulerRenderer : IDisposable
         Callout(
             canvas, snapshot.LeaveLabel, projection.Origin, driveColor, palette.OnAccent,
             area, Reach(projection.OriginDwell));
-
-        // The parking spot and the door are a few hundred metres apart, which at the resolution a
-        // whole commute fits into is a few pixels: their two callouts would sit on top of each
-        // other. The bell is the one that matters, so the arrival label stands down rather than
-        // both being drawn illegibly.
-        if (projection.HasWalk && Apart(projection.Parking, projection.Destination) >= CalloutClearance)
-        {
-            Callout(
-                // The darker clay as the plate: white on the line's own clay is only 3.2:1.
-                canvas, snapshot.ArriveLabel, projection.Parking, palette.AmberInk, palette.OnAccent,
-                area, PinRadius);
-        }
-
-        Callout(
-            canvas, snapshot.BellLabel, projection.Destination, palette.Pin, palette.NodeStroke,
-            area, Reach(projection.DestinationDwell));
     }
 
     /// <summary>How far out from a pin its own furniture reaches: the ring when it has one.</summary>

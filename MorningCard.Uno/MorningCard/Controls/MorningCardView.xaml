@@ -43,30 +43,31 @@
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
             <!-- ======================== status strip ======================== -->
-            <!-- Greeting left, weather right. Lock moved under the car: the two halves were
-                 competing for the same row and the weather half needed the room. -->
+            <!-- Greeting with the weather under it on the left; only the time on the right. The
+                 card's status is the headline's job, so the strip does not repeat it. -->
             <Grid ColumnSpacing="10">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
               </Grid.ColumnDefinitions>
-              <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Left" VerticalAlignment="Center">
+              <Grid ColumnSpacing="8" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
                 <FontIcon FontFamily="{StaticResource IconFont}"
                           Glyph="{StaticResource IconGreeting}"
                           FontSize="18"
                           Foreground="{ThemeResource SunInkBrush}"
-                          VerticalAlignment="Center" />
-                <TextBlock Style="{StaticResource StatusLineStrong}"
-                           VerticalAlignment="Center"
-                           Text="{Binding Data.Greeting}" />
-              </StackPanel>
-              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Border Background="{ThemeResource ChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="9,3">
-                  <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource StatusLineStrong}" VerticalAlignment="Center" Text="{Binding Data.OutsideTemp}" />
-                    <TextBlock Style="{StaticResource StatusLine}" VerticalAlignment="Center" Text="{Binding Data.WeatherSummary}" />
-                  </StackPanel>
-                </Border>
+                          VerticalAlignment="Top"
+                          Margin="0,1,0,0" />
+                <StackPanel Grid.Column="1">
+                  <TextBlock Style="{StaticResource StatusLineStrong}" Text="{Binding Data.Greeting}" />
+                  <TextBlock Style="{StaticResource CardCaption}" Text="{Binding Data.WeatherLine}" />
+                </StackPanel>
+              </Grid>
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <TextBlock Style="{StaticResource StatusLine}" VerticalAlignment="Center" Text="{Binding Data.NowText}" />
                 <!--
                   A real MenuFlyout, not a decorative glyph: every item runs a command the model
                   already owns. MenuFlyoutItem invokes correctly under synthesized input on Skia
@@ -138,23 +139,16 @@
                 <TextBlock Style="{StaticResource CardLead}"
                            Margin="0,4,0,0"
                            TextWrapping="Wrap"
-                           Foreground="{Binding Data.Tone, Converter={StaticResource ToneBrush}}"><Run Text="{Binding Data.HeadlineLead}" /><Run Text="{Binding Data.HeadlineAccent}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" Foreground="{Binding Data.Tone, Converter={StaticResource AccentTone}}" /><Run Text="{Binding Data.HeadlineTail}" /></TextBlock>
+                           Foreground="{Binding Data.Tone, Converter={StaticResource ToneBrush}}"><Run Text="{Binding Data.HeadlineLead}" /><Run Text="{Binding Data.HeadlineAccent}" FontFamily="{StaticResource CardFontMedium}" FontWeight="Medium" FontSize="{StaticResource CountdownSize}" Foreground="{Binding Data.Tone, Converter={StaticResource AccentTone}}" /><Run Text="{Binding Data.HeadlineTail}" /></TextBlock>
               </StackPanel>
-              <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6">
-                <!-- Desaturated to 30% (scripts/Mute-Car.ps1), so it reads as a grey object on the
-                     paper rather than as a product shot competing with the route accent. -->
-                <Image Source="ms-appx:///Assets/Car/xc60_muted.png" Width="135" Stretch="Uniform" />
-                <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
-                  <FontIcon FontFamily="{StaticResource IconFont}"
-                            Glyph="{StaticResource IconLock}"
-                            FontSize="14"
-                            Foreground="{ThemeResource Ink2Brush}"
-                            VerticalAlignment="Center" />
-                  <TextBlock Style="{StaticResource CardCaption}"
-                             VerticalAlignment="Center"
-                             Text="{Binding Data.LockText}" />
-                </StackPanel>
-              </StackPanel>
+              <!-- Desaturated to 30% (scripts/Mute-Car.ps1), so it reads as a grey object on the
+                   paper rather than as a product shot competing with the route accent. The car's
+                   name and lock state live in the bottom bar, beside the button that changes it. -->
+              <Image Grid.Column="1"
+                     VerticalAlignment="Center"
+                     Source="ms-appx:///Assets/Car/xc60_muted.png"
+                     Width="135"
+                     Stretch="Uniform" />
             </Grid>
           </DataTemplate>
         </mvux:FeedView.ValueTemplate>
@@ -171,8 +165,38 @@
       <mvux:FeedView Grid.Row="2" Source="{Binding Eta}">
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
+            <Grid>
+            <!--
+              Loading: the strip's own skeleton - three label-and-time columns over the track - in
+              the chip tint, static like the rest of the card. Sized to the populated strip so
+              nothing below it moves when the times arrive.
+            -->
             <StackPanel Spacing="9"
-                        Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}">
+                        AutomationProperties.AccessibilityView="Raw"
+                        Visibility="{Binding Data.IsLoading, Converter={StaticResource BoolToVisibility}}">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Spacing="1">
+                  <Border Style="{StaticResource SkeletonLabel}" Width="52" />
+                  <Border Style="{StaticResource SkeletonTime}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="1">
+                  <Border Style="{StaticResource SkeletonLabel}" Width="44" />
+                  <Border Style="{StaticResource SkeletonTime}" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" Spacing="1">
+                  <Border Style="{StaticResource SkeletonLabel}" Width="32" />
+                  <Border Style="{StaticResource SkeletonTime}" />
+                </StackPanel>
+              </Grid>
+              <Border Height="8" Margin="0,1,0,0" CornerRadius="4" Background="{ThemeResource ChipBrush}" />
+            </StackPanel>
+            <StackPanel Spacing="9"
+                        Visibility="{Binding Data.ShowsRoute, Converter={StaticResource BoolToVisibility}}">
               <Grid>
                 <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="*" />
@@ -237,18 +261,24 @@
                          VerticalAlignment="Center"
                          Fill="{Binding Data.Tone, Converter={StaticResource ToneTrackBrush}}" />
 
+                <!-- The stroke is drawn inside the bounds, so an 8x18 rect with a 2px panel-colour
+                     outline keeps the 4x14 ink tick and cuts it cleanly out of the walk segment. -->
                 <Rectangle Grid.Column="2"
-                           Width="4"
-                           Height="14"
+                           Width="8"
+                           Height="18"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
-                           RadiusX="2"
-                           RadiusY="2"
-                           Fill="{ThemeResource InkBrush}" />
+                           Margin="0,0,-2,0"
+                           RadiusX="3"
+                           RadiusY="3"
+                           Fill="{ThemeResource InkBrush}"
+                           Stroke="{ThemeResource CardSurfaceBrush}"
+                           StrokeThickness="2" />
               </Grid>
 
 
             </StackPanel>
+            </Grid>
           </DataTemplate>
         </mvux:FeedView.ValueTemplate>
       </mvux:FeedView>
@@ -277,7 +307,7 @@
 
           <!-- No CornerRadius of its own: the panel Border already clips to the radius, and a
                second rounding inside it cut a notch that exposed the panel's ground at the corner. -->
-          <Border Visibility="{Binding State.Data.Failed, ElementName=EtaFeed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert, FallbackValue=Collapsed}">
+          <Border Visibility="{Binding State.Data.ShowsRoute, ElementName=EtaFeed, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}">
             <Border.Background>
               <!--
                 Opaque, not a wash. The left of the panel is the ETA block's ground, so the map is
@@ -306,7 +336,7 @@
           <Button x:Name="OpenInMaps"
                   x:Uid="OpenInMapsButton"
                   Style="{StaticResource MapPillStyle}"
-                  Visibility="{Binding State.Data.Failed, ElementName=EtaFeed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert, FallbackValue=Collapsed}"
+                  Visibility="{Binding State.Data.ShowsRoute, ElementName=EtaFeed, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}"
                   HorizontalAlignment="Right"
                   VerticalAlignment="Bottom"
                   Margin="0,0,12,26"
@@ -339,11 +369,14 @@
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
                             MaxWidth="200"
-                            Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}"><StackPanel.Resources><Style TargetType="TextBlock" BasedOn="{StaticResource CardBody}" /></StackPanel.Resources>
+                            Visibility="{Binding Data.ShowsRoute, Converter={StaticResource BoolToVisibility}}"><StackPanel.Resources><Style TargetType="TextBlock" BasedOn="{StaticResource CardBody}" /></StackPanel.Resources>
+                  <!-- The drive alone: the countdown is the headline's and the slack is the
+                       ruler's, so each of the three durations appears once. -->
                   <TextBlock Style="{StaticResource EtaNumber}"
-                             Foreground="{Binding Data.IsLate, Converter={StaticResource LateInk}}"><Run Text="{Binding Data.TotalMinutes}" /><Run Text=" " /><Run Text="{Binding Parent.EtaUnitLabel}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" FontSize="{StaticResource EtaUnitSize}" /></TextBlock>
+                             Foreground="{Binding Data.IsLate, Converter={StaticResource LateInk}}"><Run Text="{Binding Data.DriveMinutes}" /><Run Text=" " /><Run Text="{Binding Parent.EtaUnitLabel}" FontFamily="{StaticResource CardFontMedium}" FontWeight="Medium" FontSize="{StaticResource EtaUnitSize}" /></TextBlock>
+                  <TextBlock x:Uid="EtaDriveLabel" Style="{StaticResource TimelineLabel}" />
 
-                  <StackPanel Margin="0,7,0,0">
+                  <StackPanel Margin="0,10,0,0">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                       <Ellipse Width="8" Height="8" VerticalAlignment="Center"
                                Fill="{Binding Data.Traffic, Converter={StaticResource TrafficBrush}}" />
@@ -357,6 +390,22 @@
                                Text="{Binding Data.VsUsualText}" />
                   </StackPanel>
                 </StackPanel>
+
+                <!--
+                  Loading: the ETA block's skeleton where the block will land - number, label,
+                  traffic line, note - on the same scrim the empty state uses, so the tiles do not
+                  read as a route that forgot to draw. The panel is a fixed height, so no shift.
+                -->
+                <Border Background="{ThemeResource MapScrimBrush}"
+                        AutomationProperties.AccessibilityView="Raw"
+                        Visibility="{Binding Data.IsLoading, Converter={StaticResource BoolToVisibility}}">
+                  <StackPanel Margin="16,14,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Spacing="6">
+                    <Border Width="72" Height="30" Margin="0,4,0,0" HorizontalAlignment="Left" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
+                    <Border Style="{StaticResource SkeletonLabel}" Width="96" />
+                    <Border Width="92" Height="12" Margin="0,8,0,0" HorizontalAlignment="Left" CornerRadius="4" Background="{ThemeResource ChipBrush}" />
+                    <Border Width="140" Height="10" HorizontalAlignment="Left" CornerRadius="4" Background="{ThemeResource ChipBrush}" />
+                  </StackPanel>
+                </Border>
 
                 <Border x:Name="ErrorPanel"
                         Background="{ThemeResource MapScrimBrush}"
@@ -382,6 +431,7 @@
                 </Grid>
               </DataTemplate>
             </mvux:FeedView.ValueTemplate>
+
 
             <!-- Nothing on the calendar: the map stays, the route goes. -->
             <mvux:FeedView.NoneTemplate>
@@ -464,26 +514,14 @@
                       <TextBlock Style="{StaticResource CardCaption}" Text="{Binding Data.ChecksCount}" />
                     </Border>
 
-                    <!--
-                      Three dots, one per check, in the order the rows appear: fuel, cabin, parking.
-                      They are not decoration - each takes the colour of the check it stands for, so
-                      the row says which one needs attention while it is still closed, where the
-                      count alone only says how many.
-                    -->
+                    <!-- The count in words only. Three coloured dots beside it said the same thing
+                         to anyone who could tell the colours apart, and nothing to anyone else. -->
                     <StackPanel Grid.Column="3"
                                 Orientation="Horizontal"
-                                Spacing="4"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center">
-                      <Ellipse Width="6" Height="6" VerticalAlignment="Center"
-                               Fill="{Binding Data.FuelLevel, Converter={StaticResource StatLevelBrush}}" />
-                      <Ellipse Width="6" Height="6" VerticalAlignment="Center"
-                               Fill="{Binding Data.CabinNeedsWarming, Converter={StaticResource CheckDotBrush}}" />
-                      <Ellipse Width="6" Height="6" VerticalAlignment="Center"
-                               Fill="{ThemeResource GoodBrush}" />
                       <TextBlock Style="{StaticResource CardCaption}"
                                  VerticalAlignment="Center"
-                                 Margin="5,0,0,0"
                                  Text="{Binding Data.ChecksReady}" />
                     </StackPanel>
 
@@ -530,7 +568,7 @@
 
                   <StackPanel Grid.Column="1" VerticalAlignment="Center">
                     <TextBlock Style="{StaticResource RowValueStrong}"><Run Text="{Binding Data.FuelValue}" /><Run Text=" " /><Run Text="{Binding Data.FuelUnit}" /><Run Text=" " /><Run x:Uid="FuelRangeWord" /></TextBlock>
-                    <TextBlock x:Uid="ChecksFuelTitle" Style="{StaticResource CardCaption}" />
+                    <TextBlock Style="{StaticResource CardCaption}" Text="{Binding Data.FuelTitle}" />
                   </StackPanel>
 
                   <Border Grid.Column="2" Background="{ThemeResource AmberChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="9,3" VerticalAlignment="Center"
@@ -575,8 +613,9 @@
                     </StackPanel>
 
                     <StackPanel Spacing="9" Visibility="{Binding Data.CabinNeedsWarming, Converter={StaticResource BoolToVisibility}}">
+                      <!-- The method only. The temperatures are already in the row's own line. -->
                       <Border Background="{ThemeResource ChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="9,4" HorizontalAlignment="Left">
-                        <TextBlock Style="{StaticResource CardCaption}"><Run Text="{Binding Data.CabinFrom}" /><Run Text="{Binding Data.CabinMid}" /><Run Text="{Binding Data.CabinTo}" /></TextBlock>
+                        <TextBlock x:Uid="ChecksCabinRemote" Style="{StaticResource CardCaption}" />
                       </Border>
 
                       <StackPanel Orientation="Horizontal" Spacing="8">
@@ -653,29 +692,36 @@
               </Grid.ColumnDefinitions>
 
               <!--
-                The card's state lives here now, not in a pill at the top right. The lock line it
-                replaces was the second copy of a sentence already sitting under the car, and the
-                dot carries the tone that the pill's filled background used to - a signal dot beside
-                a caption, rather than a coloured slab competing with the badge row above it.
+                The car, beside the button that changes its lock. The card's status is the
+                headline's job, so it is not repeated here. The dot is the connection and is never
+                the only signal: offline, the text itself reads "Last seen 7:20".
               -->
               <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
                 <Ellipse Width="7" Height="7" VerticalAlignment="Center"
-                         Fill="{Binding Data.Tone, Converter={StaticResource ToneBrush}}" />
+                         Fill="{Binding Data.IsStale, Converter={StaticResource ConnectionDotBrush}}" />
                 <TextBlock Style="{StaticResource CardCaption}"
                            VerticalAlignment="Center"
-                           Text="{Binding Data.StatusBadge}" />
+                           Text="{Binding Data.LockText}" />
               </StackPanel>
 
-              <!-- Lock is its own control: the one state the bar both reports and changes. -->
+              <!-- Labelled with the action it takes, icon and word, so it is not an unlabelled
+                   padlock that could be read as a state instead of a control. -->
               <Button Grid.Column="1"
                       Style="{StaticResource GhostPillStyle}"
                       Command="{Binding Parent.ToggleLock}"
-                      IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}"
-                      AutomationProperties.Name="{Binding Data.LockText}">
-                <FontIcon FontFamily="{StaticResource IconFont}"
-                          Glyph="{Binding Data.IsLocked, Converter={StaticResource LockGlyph}}"
-                          FontSize="18"
-                          Foreground="{ThemeResource InkBrush}" />
+                      IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <FontIcon FontFamily="{StaticResource IconFont}"
+                            Glyph="{Binding Data.IsLocked, Converter={StaticResource LockGlyph}}"
+                            FontSize="15"
+                            Foreground="{ThemeResource InkBrush}"
+                            VerticalAlignment="Center" />
+                  <TextBlock Text="{Binding Data.LockAction}"
+                             FontFamily="{StaticResource CardFontMedium}"
+                             FontSize="13"
+                             Foreground="{ThemeResource InkBrush}"
+                             VerticalAlignment="Center" />
+                </StackPanel>
               </Button>
 
               <Button Grid.Column="2"

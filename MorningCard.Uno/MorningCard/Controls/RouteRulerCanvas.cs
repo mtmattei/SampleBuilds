@@ -163,8 +163,8 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
     /// </summary>
     private void Refresh()
     {
-        // A failed lookup has no route to draw, so only the ground is left, same as no trip at all.
-        var eta = Eta is { Failed: false } value ? value : null;
+        // A failed or still-loading lookup has no route to draw, so only the ground is left.
+        var eta = Eta is { ShowsRoute: true } value ? value : null;
 
         _snapshot = new RouteRulerSnapshot
         {
@@ -172,8 +172,6 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
             IsLate = eta?.IsLate ?? false,
             Projection = Project(eta),
             LeaveLabel = eta?.LeaveLabel ?? string.Empty,
-            ArriveLabel = eta?.ArriveLabel ?? string.Empty,
-            BellLabel = eta?.BellLabel ?? string.Empty,
             MapCornerRadius = MapCornerRadius(),
             // Cached: only a theme or hue change can invalidate it.
             Palette = _palette ??= ReadPalette(),

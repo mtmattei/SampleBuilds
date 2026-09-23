@@ -66,6 +66,25 @@ public class SimulatedDriveHubTests
     }
 
     [Fact]
+    public async Task Loading_mode_holds_the_trip_back_until_the_mode_changes()
+    {
+        using var hub = NewHub(out _);
+        hub.SetMode(ConnectionMode.Loading);
+
+        await using var trips = ((ITripService)hub).Watch(default).GetAsyncEnumerator();
+        var first = trips.MoveNextAsync().AsTask();
+
+        // Nothing arrives while loading, which is what keeps the feed in its progress state.
+        await Task.Delay(TimeSpan.FromMilliseconds(200));
+        Assert.False(first.IsCompleted);
+
+        hub.SetMode(ConnectionMode.Live);
+
+        Assert.True(await first.WaitAsync(ReadTimeout));
+        Assert.NotNull(trips.Current);
+    }
+
+    [Fact]
     public async Task Offline_keeps_serving_the_car_but_marks_it_stale()
     {
         using var hub = NewHub(out _);

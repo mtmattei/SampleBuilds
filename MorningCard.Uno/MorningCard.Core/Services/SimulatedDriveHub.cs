@@ -110,6 +110,13 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
                 throw new CarUnreachableException("Could not reach the car to plan this morning's trip.");
             }
 
+            // Loading holds the answer back, so the feed stays in progress: the skeleton is what
+            // the card shows until a later state change lets a value through.
+            if (state.Mode == ConnectionMode.Loading)
+            {
+                continue;
+            }
+
             yield return state.Mode == ConnectionMode.NoTrip ? null : state.Trip;
         }
     }

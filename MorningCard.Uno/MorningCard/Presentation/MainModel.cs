@@ -80,14 +80,31 @@ public partial record MainModel
         {
             await using var trips = _trip.Watch(ct).GetAsyncEnumerator(ct);
             string? failure = null;
+            var answered = false;
 
             while (failure is null)
             {
                 TripPlan? plan;
+                var next = trips.MoveNextAsync().AsTask();
+
+                // The first answer is not in yet, so say so: the view draws its skeleton from this
+                // value. Only before the first answer - a later lookup keeps the last ETA on screen.
+                // The 300 ms grace keeps a fast answer from flashing the skeleton for one frame.
+                if (!answered)
+                {
+                    await Task.WhenAny(next, Task.Delay(SkeletonGrace, ct)).ConfigureAwait(false);
+
+                    if (!next.IsCompleted)
+                    {
+                        yield return Option.Some(TripResult.Loading);
+                    }
+                }
+
+                answered = true;
 
                 try
                 {
-                    if (!await trips.MoveNextAsync().ConfigureAwait(false))
+                    if (!await next.ConfigureAwait(false))
                     {
                         yield break;
                     }
@@ -140,6 +157,9 @@ public partial record MainModel
     }
 
     private TaskCompletionSource? _retryWaiter;
+
+    /// <summary>How long a first lookup may take before the Loading skeleton is shown at all.</summary>
+    private static readonly TimeSpan SkeletonGrace = TimeSpan.FromMilliseconds(300);
 
     /// <summary>True for 1.6 seconds after the destination is sent, driving the confirmation.</summary>
     public IState<bool> DriveSent => State.Value(this, () => false);
@@ -265,8 +285,8 @@ public partial record MainModel
                         Text("Headline_LeaveInTail")),
                 };
 
-        // Under the car now rather than in the status strip, which the strip's weather half needed
-        // the room for. Read-only: nothing on the card changes lock state since v2.
+        // In the bottom bar beside the lock button that changes it, so the state and its control
+        // read together.
         var lockText = car.IsStale
             ? Format("CarStatus_LastSeen", Clock(car.LastSeen))
             : Format(car.IsLocked ? "Status_Locked" : "Status_Unlocked", car.Name);
@@ -284,21 +304,19 @@ public partial record MainModel
             CarName: car.Name,
             LockText: lockText,
             IsLocked: car.IsLocked,
-            OutsideTemp: Format("Status_Temp", car.OutsideTemp),
-            WeatherSummary: car.WeatherSummary,
+            WeatherLine: Format("Status_Weather", Format("Status_Temp", car.OutsideTemp), car.WeatherSummary),
             NowText: Format("Status_Now", Clock(now)),
-            // Names the state rather than leaving it to colour alone, which is also what makes the
-            // three frames of the design distinguishable to someone who cannot tell them apart.
-            StatusBadge: car.IsStale
-                ? Text("Badge_Offline")
-                : timeline is null
-                    ? Text("Badge_NoTrip")
-                    : Text($"Badge_{timeline.Tone}"));
+            LockAction: Text(car.IsLocked ? "Lock_Unlock" : "Lock_Lock"));
     }
 
     private EtaView BuildEta((TripResult Result, TimeOnly Now) input)
     {
         var (result, now) = input;
+
+        if (result.Pending)
+        {
+            return Empty with { IsLoading = true };
+        }
 
         if (result.Plan is not { } plan)
         {
@@ -308,7 +326,7 @@ public partial record MainModel
         var timeline = TripMath.Derive(plan, now);
         var route = RouteLayout.Fractions(timeline, plan.WalkMin);
 
-        var vsUsual = VsUsual(timeline.VsUsualMin);
+        var (trafficText, trafficNote) = TrafficLine(timeline, plan, now);
 
         var description = timeline.IsLate
             ? Format("Route_AutomationLate",
@@ -318,12 +336,13 @@ public partial record MainModel
 
         return new EtaView(
             Failed: false,
+            IsLoading: false,
+            ShowsRoute: true,
             FailureMessage: string.Empty,
-            TotalMinutes: timeline.TotalMin,
-            ArrivalText: Format("Eta_Arrive", ClockWithPeriod(timeline.Arrive)),
+            DriveMinutes: timeline.DriveMin,
             Traffic: timeline.Traffic,
-            TrafficText: Text($"Traffic_{timeline.Traffic}"),
-            VsUsualText: vsUsual,
+            TrafficText: trafficText,
+            VsUsualText: trafficNote,
             IsLate: timeline.IsLate,
             RouteLeave: route.Leave,
             RouteArrive: route.Arrive,
@@ -339,13 +358,28 @@ public partial record MainModel
             TrackDrive: Math.Max(route.Arrive - route.Leave, 0.04),
             TrackWalk: Math.Max(1d - route.Arrive, 0.04),
             LeaveLabel: Format("Route_Leave", Clock(timeline.LeaveBy)),
-            ArriveLabel: Format("Route_Arrive", Clock(timeline.Arrive)),
-            BellLabel: Format("Route_Bell", Clock(plan.Bell)),
             RouteDescription: description,
             Ruler: new RulerPlan(timeline, plan.WalkMin, plan.Bell, now));
     }
 
-    /// <summary>How today compares with a usual morning, shared by the header and the ETA block.</summary>
+    /// <summary>
+    /// The traffic line under the drive time, written for the state the card is in. On a normal
+    /// morning it compares the drive with a usual one; once the driver is late it says where the
+    /// lateness comes from, because "Light traffic" beside "Running late" reads as a contradiction.
+    /// </summary>
+    private (string Text, string Note) TrafficLine(TripTimeline timeline, TripPlan plan, TimeOnly now)
+    {
+        if (!timeline.IsLate)
+        {
+            return (Text($"Traffic_{timeline.Traffic}"), VsUsual(timeline.VsUsualMin));
+        }
+
+        return timeline.Traffic == TrafficLevel.Light
+            ? (Text("Traffic_LateClear"), Format("Traffic_LateStart", Clock(now)))
+            : (Text($"Traffic_{timeline.Traffic}"), Format("Traffic_LateDelay", plan.DelayMin));
+    }
+
+    /// <summary>How today compares with a usual morning.</summary>
     private string VsUsual(int vsUsualMin) => vsUsualMin switch
     {
         > 0 => Format("VsUsual_Faster", vsUsualMin),
@@ -379,11 +413,9 @@ public partial record MainModel
             FuelNoteAccent: fuelNote,
             FuelChip: fuelNote.TrimStart(' ', '\u00b7', ' '),
             FuelLevel: fuelLevel,
+            FuelTitle: Text(fuelLevel == StatLevel.Bad ? "Fuel_TitleLow" : "Fuel_NoteFine"),
             CabinLabel: Text("Cabin_Label"),
             CabinLead: cabinLead,
-            CabinFrom: Format("Temp_Degrees", car.CabinTemp),
-            CabinMid: car.ClimateOn ? Text("Cabin_To") : string.Empty,
-            CabinTo: car.ClimateOn ? Format("Temp_Degrees", car.CabinTarget) : string.Empty,
             // Reports the climate command the Simulator holds; the card can no longer send one.
             CabinAccent: car.ClimateOn ? Text("Cabin_RemoteOn") : string.Empty,
             ChecksCount: Format("Checks_Count", 3),
@@ -400,22 +432,16 @@ public partial record MainModel
             // empty value column and a chevron pointing at nothing.
             HasDestination: slot.Plan is not null,
             IsStale: car.IsStale,
-            // Named, not left to the dot's colour alone - which is also what keeps the three states
-            // of the design apart for someone who cannot tell those colours apart.
-            StatusBadge: car.IsStale
-                ? Text("Badge_Offline")
-                : timeline is null
-                    ? Text("Badge_NoTrip")
-                    : Text($"Badge_{timeline.Tone}"),
             Tone: timeline?.Tone ?? CardTone.Ok);
     }
 
     /// <summary>A blank view to build a failure on, so every member stays non-null.</summary>
     private static EtaView Empty { get; } = new(
         Failed: false,
+        IsLoading: false,
+        ShowsRoute: false,
         FailureMessage: string.Empty,
-        TotalMinutes: 0,
-        ArrivalText: string.Empty,
+        DriveMinutes: 0,
         Traffic: TrafficLevel.Light,
         TrafficText: string.Empty,
         VsUsualText: string.Empty,
@@ -431,8 +457,6 @@ public partial record MainModel
         TrackDrive: 1d,
         TrackWalk: 1d,
         LeaveLabel: string.Empty,
-        ArriveLabel: string.Empty,
-        BellLabel: string.Empty,
         RouteDescription: string.Empty);
 
     private string Text(string key) => _text[key]!;
@@ -443,14 +467,11 @@ public partial record MainModel
     /// <summary>
     /// A bare clock time for the map labels: the culture's short-time pattern with the AM/PM
     /// designator removed. Seven labels each carrying "AM" crowds the panel and says nothing on a
-    /// card that only ever shows one morning - the designator belongs to the arrival line alone.
+    /// card that only ever shows one morning.
     /// A 24-hour culture is unaffected, since its pattern has no designator to strip.
     /// </summary>
     private static string Clock(TimeOnly time) =>
         time.ToString(BareTimePattern, CultureInfo.CurrentCulture);
-
-    /// <summary>The arrival line, where the designator earns its place.</summary>
-    private static string ClockWithPeriod(TimeOnly time) => time.ToString("t", CultureInfo.CurrentCulture);
 
     private static readonly string BareTimePattern =
         CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern
