@@ -12,14 +12,14 @@
           xmlns:utum="using:Uno.Toolkit.UI.Material"
           ColorOverrideSource="ms-appx:///Styles/ColorPaletteOverride.xaml">
           <!--
-            Without this, Material's own controls keep Roboto while the card's text is Instrument
+            Without this, Material's own controls keep Roboto while the card's text is Geist
             Sans - a mismatch that shows up first in the simulator's sliders and chips.
           -->
           <utum:MaterialToolkitTheme.FontOverrideDictionary>
             <ResourceDictionary>
-              <FontFamily x:Key="MaterialLightFontFamily">ms-appx:///Assets/Fonts/InstrumentSans_Regular.ttf#Instrument Sans</FontFamily>
-              <FontFamily x:Key="MaterialRegularFontFamily">ms-appx:///Assets/Fonts/InstrumentSans_Regular.ttf#Instrument Sans</FontFamily>
-              <FontFamily x:Key="MaterialMediumFontFamily">ms-appx:///Assets/Fonts/InstrumentSans_Medium.ttf#Instrument Sans Medium</FontFamily>
+              <FontFamily x:Key="MaterialLightFontFamily">ms-appx:///Assets/Fonts/Geist_Regular.ttf#Geist</FontFamily>
+              <FontFamily x:Key="MaterialRegularFontFamily">ms-appx:///Assets/Fonts/Geist_Regular.ttf#Geist</FontFamily>
+              <FontFamily x:Key="MaterialMediumFontFamily">ms-appx:///Assets/Fonts/Geist_Medium.ttf#Geist Medium</FontFamily>
             </ResourceDictionary>
           </utum:MaterialToolkitTheme.FontOverrideDictionary>
         </utum:MaterialToolkitTheme>

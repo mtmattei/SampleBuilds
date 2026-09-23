@@ -1,7 +1,7 @@
 #requires -Version 7
 <#
 .SYNOPSIS
-    Fetches the static Instrument Sans TTFs into MorningCard/Assets/Fonts.
+    Fetches the static Geist TTFs into MorningCard/Assets/Fonts.
 
 .DESCRIPTION
     The Skia text stack renders a variable TTF's default named instance only - FontWeight does not
@@ -24,10 +24,9 @@ $ErrorActionPreference = 'Stop'
 $LegacyUserAgent = 'Mozilla/5.0 (Linux; U; Android 2.2; en-us; Nexus One Build/FRF91) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1'
 
 $Requests = @(
-    @{ File = 'InstrumentSans_Regular.ttf';  Css = 'family=Instrument+Sans:wght@400' }
-    @{ File = 'InstrumentSans_Medium.ttf';   Css = 'family=Instrument+Sans:wght@500' }
-    @{ File = 'InstrumentSans_SemiBold.ttf'; Css = 'family=Instrument+Sans:wght@600' }
-    @{ File = 'InstrumentSans_Bold.ttf';     Css = 'family=Instrument+Sans:wght@700' }
+    @{ File = 'Geist_Regular.ttf';  Css = 'family=Geist:wght@400' }
+    @{ File = 'Geist_Medium.ttf';   Css = 'family=Geist:wght@500' }
+    @{ File = 'Geist_SemiBold.ttf'; Css = 'family=Geist:wght@600' }
 )
 
 if (-not (Test-Path $OutputDirectory)) {

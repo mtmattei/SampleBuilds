@@ -171,7 +171,7 @@
               <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Spacing="6">
                 <!-- No tile behind it: the car reads as a photograph of the car, and a panel
                      under it only added a second container inside the card. -->
-                <Image Source="ms-appx:///Assets/Car/xc60.png" MaxWidth="135" Stretch="Uniform" />
+                <Image Source="ms-appx:///Assets/Car/xc60_muted.png" MaxWidth="135" Stretch="Uniform" />
                 <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Center">
                   <Viewbox Width="13" Height="13" VerticalAlignment="Center">
                     <Canvas Width="24" Height="24">

@@ -1149,7 +1149,7 @@ there. The greeting name comes from a mock profile constant.
 
 ### Platform constraints
 
-- **Geist** ships as static TTFs per weight (400, 500, 600) with underscore filenames
+- **Geist** ships as static TTFs per weight (400, 500, 600) with underscore filenames, fetched from Google css2 (spike R7)
   (`Geist_Regular.ttf`); Skia ignores woff2 and variable-font weights (rules file). Source: the
   upstream OFL release (vercel/geist-font), checked by `name` table and absence of `fvar`.
 - The XC60 image is desaturated to the design's `saturate(.3) contrast(.95)` **offline** into a new
@@ -1194,7 +1194,7 @@ Card shadow (phone): 0.5 px ring `#1A2A2C2F`, `0 2 6 #0F2A2C2F`, `0 32 64 -24 #6
 
 | Role | Phone | TV | Wear | Auto |
 |---|---|---|---|---|
-| Greeting / weather | 15 w600 / 16 w500 | 20 / 15 | 16 / 13 | 18 / 14 |
+| Greeting / weather | 15 w600 / 13 w500 Ink3 (design CSS; was 16) | 20 / 15 | 16 / 13 | 18 / 14 |
 | Title | 34/40 w600 | 36/42 | 26 | 30 |
 | Headline / emphasis | 17 w500 / 27 w600 | 19 / 30 | 17 / 38 | 18 / 28 |
 | Ruler caps / values | 10 w600 / 19 w600 | 11 / 21 | 11 / 17 | 10 / 20 |

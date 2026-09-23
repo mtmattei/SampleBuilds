@@ -13,7 +13,7 @@
     This replaced three attempts at a hand-drawn vector. At this size a drawing cannot carry the
     detail a photograph does, and the near-realistic versions read as a generic sedan.
   -->
-  <Image Source="ms-appx:///Assets/Car/xc60.png"
+  <Image Source="ms-appx:///Assets/Car/xc60_muted.png"
          Stretch="Uniform"
          AutomationProperties.AccessibilityView="Raw" />
 </UserControl>

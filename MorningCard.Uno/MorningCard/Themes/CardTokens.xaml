@@ -10,69 +10,126 @@
   <ResourceDictionary.ThemeDictionaries>
 
     <ResourceDictionary x:Key="Light">
-      <Color x:Key="GroundColor">#D9D6D0</Color>
-
-      <!-- Out-of-focus backdrop blobs. -->
-      <Color x:Key="BlobAColor">#D9B37A</Color>
-      <Color x:Key="BlobBColor">#A9C4DD</Color>
-      <Color x:Key="BlobCColor">#8F9AA6</Color>
-      <Color x:Key="BlobDColor">#F1E6D2</Color>
-
-      <Color x:Key="GlassColor">#9EFFFFFF</Color>
-      <Color x:Key="GlassEdgeColor">#C7FFFFFF</Color>
-      <Color x:Key="GlassSecondaryColor">#8CFFFFFF</Color>
-      <!-- The white card nested inside the shell. Opaque, unlike the shell: the mockup reads as
-           paper on frosted glass, and a translucent inner card let the backdrop blobs through it. -->
-      <Color x:Key="CardSurfaceColor">#FFFFFFFF</Color>
-
-      <Color x:Key="InkColor">#1B2430</Color>
-      <Color x:Key="Ink2Color">#4C555F</Color>
-      <!-- 3.05:1 on the glass composite as an informational graphic; #98A1AB was 1.84:1. -->
-      <Color x:Key="Ink3Color">#6E7885</Color>
-      <Color x:Key="LineColor">#1A1B2430</Color>
-      <Color x:Key="ChipColor">#0F1B2430</Color>
-
-      <!-- hsl(218 82% 52%) and hsl(218 70% 42%): the default route accent. -->
-      <Color x:Key="AccentColor">#2169E9</Color>
-      <Color x:Key="AccentInkColor">#2057B6</Color>
+      <!-- Flat warm ground behind the card. -->
+      <Color x:Key="GroundColor">#E9E6DF</Color>
+      <!-- v6 has no bokeh: the blob keys equal the ground until the backdrop goes (step 5). -->
+      <Color x:Key="BlobAColor">#E9E6DF</Color>
+      <Color x:Key="BlobBColor">#E9E6DF</Color>
+      <Color x:Key="BlobCColor">#E9E6DF</Color>
+      <Color x:Key="BlobDColor">#E9E6DF</Color>
+      <!-- The shell (was frosted glass). -->
+      <Color x:Key="GlassColor">#F1EFE9</Color>
+      <!-- The shell's 1 px inset top highlight. -->
+      <Color x:Key="GlassEdgeColor">#E6FFFFFF</Color>
+      <Color x:Key="GlassSecondaryColor">#FBFAF7</Color>
+      <!-- The panel inside the shell. -->
+      <Color x:Key="CardSurfaceColor">#FBFAF7</Color>
+      <Color x:Key="PanelRingColor">#0D2A2C2F</Color>
+      <Color x:Key="InkColor">#2A2C2F</Color>
+      <Color x:Key="Ink2Color">#55585C</Color>
+      <Color x:Key="Ink3Color">#76787B</Color>
+      <!-- Caps labels (LEAVE BY, ARRIVE, BELL). -->
+      <Color x:Key="CapsColor">#94918A</Color>
+      <Color x:Key="FaintColor">#ADA9A1</Color>
+      <Color x:Key="LineColor">#142A2C2F</Color>
+      <Color x:Key="ChipColor">#0D2A2C2F</Color>
+      <!-- On time: muted slate. The accent is the on-time tone. -->
+      <Color x:Key="AccentColor">#4A6B8A</Color>
+      <Color x:Key="AccentInkColor">#3F5C78</Color>
       <Color x:Key="OnAccentColor">#FFFFFF</Color>
-
-      <Color x:Key="GoodColor">#1F8A5B</Color>
-      <Color x:Key="GoodInkColor">#1B7A51</Color>
-      <!-- The walk leg, on the map ground: 3.16:1. #E8931C was 2.10:1. -->
-      <Color x:Key="AmberColor">#B5700D</Color>
-      <!-- 4.65:1 on the 62% glass composite; #B8690A was 2.92:1, under the 4.5 minimum. -->
-      <Color x:Key="AmberInkColor">#8A4E06</Color>
-      <Color x:Key="DangerColor">#D9453A</Color>
-      <!-- 5.02:1 on the same composite; #B7352C was 4.15:1. -->
-      <Color x:Key="DangerInkColor">#A32C24</Color>
-
-      <Color x:Key="MapColor">#ECEFEC</Color>
+      <!-- Leave now: brown. -->
+      <Color x:Key="LeaveNowColor">#A6703F</Color>
+      <Color x:Key="LeaveNowInkColor">#8A5A2E</Color>
+      <!-- Sage for ready and light traffic. -->
+      <Color x:Key="GoodColor">#7E947A</Color>
+      <Color x:Key="GoodInkColor">#4F6B4C</Color>
+      <Color x:Key="GoodFillColor">#E4EBE1</Color>
+      <!-- Ochre: the walk leg and the sun. -->
+      <Color x:Key="AmberColor">#B5824F</Color>
+      <Color x:Key="AmberInkColor">#8A6236</Color>
+      <Color x:Key="WalkFillColor">#F1E7DA</Color>
+      <Color x:Key="DriveFillColor">#E1E8EF</Color>
+      <!-- Late: brick. -->
+      <Color x:Key="DangerColor">#9C4A3E</Color>
+      <Color x:Key="DangerInkColor">#8C4236</Color>
+      <!-- 1 px at 135 deg, 6 px pitch, drawn in Skia (spike R9). -->
+      <Color x:Key="HatchColor">#1A2A2C2F</Color>
+      <Color x:Key="HatchGroundColor">#F1EFEA</Color>
+      <Color x:Key="OverrunColor">#4D9C4A3E</Color>
+      <Color x:Key="OverrunRingColor">#739C4A3E</Color>
+      <!-- Strong ink (#2B2D30): headings and the primary action fill (Start drive). -->
+      <Color x:Key="InkStrongColor">#2B2D30</Color>
+      <Color x:Key="OnInkStrongColor">#FBFAF7</Color>
+      <!-- Ghost button fill (Unlock, Retry). -->
+      <Color x:Key="GhostColor">#0F2A2C2F</Color>
+      <!-- Paper map ground; also the tint target for the OSM tiles. -->
+      <Color x:Key="MapColor">#EFEEE9</Color>
       <Color x:Key="MapRoadColor">#FFFFFF</Color>
-      <Color x:Key="MapParkColor">#D6E7CF</Color>
-      <Color x:Key="MapWaterColor">#BCD7F2</Color>
-      <Color x:Key="PinColor">#3A424B</Color>
-
-      <Color x:Key="CardShadowNearColor">#14141C28</Color>
-      <Color x:Key="CardShadowFarColor">#73141C28</Color>
-            <Color x:Key="SunInkColor">#E8912B</Color>  <!-- The sun glyph in the status strip. Warm, and the only orange up there. -->
-      <Color x:Key="MapScrimColor">#E8F2F3F5</Color>  <!-- Covers the tiles when the map has no route to show. -->
-      <Color x:Key="MapPillColor">#D6FFFFFF</Color>
-      <Color x:Key="AccentChipColor">#1F2169E9</Color>
-      <Color x:Key="AmberChipColor">#242F8A4E</Color>
-      <Color x:Key="DangerChipColor">#1FA32C24</Color>
-      <Color x:Key="GoodChipColor">#1F1F8A5B</Color>
-      <Color x:Key="EtaScrimColor">#FFFFFFFF</Color>
+      <Color x:Key="MapParkColor">#E8ECE3</Color>
+      <Color x:Key="MapWaterColor">#DBE1E3</Color>
+      <Color x:Key="PinColor">#2A2C2F</Color>
+      <!-- Card shadow: 0.5 px ring, 0 2 6, 0 32 64 -24. -->
+      <Color x:Key="CardShadowRingColor">#1A2A2C2F</Color>
+      <Color x:Key="CardShadowNearColor">#0F2A2C2F</Color>
+      <Color x:Key="CardShadowFarColor">#612A2C2F</Color>
+      <Color x:Key="SunInkColor">#B5824F</Color>
+      <!-- Covers the tiles when the map has no route to show. -->
+      <Color x:Key="MapScrimColor">#E6EFEEE9</Color>
+      <Color x:Key="MapPillColor">#FBFAF7</Color>
+      <Color x:Key="AccentChipColor">#1F4A6B8A</Color>
+      <Color x:Key="AmberChipColor">#F1E7DA</Color>
+      <Color x:Key="DangerChipColor">#1F9C4A3E</Color>
+      <Color x:Key="GoodChipColor">#E4EBE1</Color>
+      <!-- Map scrim: white 97% to 90% at 24%, 45% at 44%, 0 at 62%. -->
+      <Color x:Key="EtaScrimColor">#F7FFFFFF</Color>
       <Color x:Key="EtaScrimFadeColor">#00FFFFFF</Color>
-      <!-- Intermediate stops for the scrim ramp, approximating an ease-out: a steep initial drop
-           once the text has its ground, then a long low tail. Measured at the old values the scrim
-           was still 81% opaque at the panel's midpoint, which is what killed the map by half. -->
-      <Color x:Key="EtaScrimStop1Color">#A0FFFFFF</Color>
-      <Color x:Key="EtaScrimStop2Color">#5AFFFFFF</Color>
-      <Color x:Key="EtaScrimStop3Color">#2EFFFFFF</Color>
-      <Color x:Key="EtaScrimStop4Color">#16FFFFFF</Color>
+      <Color x:Key="EtaScrimStop1Color">#E6FFFFFF</Color>
+      <Color x:Key="EtaScrimStop2Color">#73FFFFFF</Color>
+      <Color x:Key="EtaScrimStop3Color">#40FFFFFF</Color>
+      <Color x:Key="EtaScrimStop4Color">#1AFFFFFF</Color>
       <Color x:Key="EtaScrimStop5Color">#08FFFFFF</Color>
-      <Color x:Key="GlassInkColor">#FFFFFF</Color>  <!-- Ground for controls sitting on top of map tiles. -->
+      <!-- Ground for controls sitting on top of map tiles. -->
+      <Color x:Key="GlassInkColor">#FBFAF7</Color>
+
+      <SolidColorBrush x:Key="GroundBrush" Color="{StaticResource GroundColor}" />
+      <SolidColorBrush x:Key="GlassBrush" Color="{StaticResource GlassColor}" />
+      <SolidColorBrush x:Key="GlassEdgeBrush" Color="{StaticResource GlassEdgeColor}" />
+      <SolidColorBrush x:Key="GlassSecondaryBrush" Color="{StaticResource GlassSecondaryColor}" />
+      <SolidColorBrush x:Key="CardSurfaceBrush" Color="{StaticResource CardSurfaceColor}" />
+      <SolidColorBrush x:Key="PanelRingBrush" Color="{StaticResource PanelRingColor}" />
+      <SolidColorBrush x:Key="InkBrush" Color="{StaticResource InkColor}" />
+      <SolidColorBrush x:Key="Ink2Brush" Color="{StaticResource Ink2Color}" />
+      <SolidColorBrush x:Key="Ink3Brush" Color="{StaticResource Ink3Color}" />
+      <SolidColorBrush x:Key="CapsBrush" Color="{StaticResource CapsColor}" />
+      <SolidColorBrush x:Key="FaintBrush" Color="{StaticResource FaintColor}" />
+      <SolidColorBrush x:Key="LineBrush" Color="{StaticResource LineColor}" />
+      <SolidColorBrush x:Key="ChipBrush" Color="{StaticResource ChipColor}" />
+      <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+      <SolidColorBrush x:Key="AccentInkBrush" Color="{StaticResource AccentInkColor}" />
+      <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
+      <SolidColorBrush x:Key="LeaveNowBrush" Color="{StaticResource LeaveNowColor}" />
+      <SolidColorBrush x:Key="LeaveNowInkBrush" Color="{StaticResource LeaveNowInkColor}" />
+      <SolidColorBrush x:Key="GoodBrush" Color="{StaticResource GoodColor}" />
+      <SolidColorBrush x:Key="GoodInkBrush" Color="{StaticResource GoodInkColor}" />
+      <SolidColorBrush x:Key="GoodFillBrush" Color="{StaticResource GoodFillColor}" />
+      <SolidColorBrush x:Key="AmberBrush" Color="{StaticResource AmberColor}" />
+      <SolidColorBrush x:Key="AmberInkBrush" Color="{StaticResource AmberInkColor}" />
+      <SolidColorBrush x:Key="WalkFillBrush" Color="{StaticResource WalkFillColor}" />
+      <SolidColorBrush x:Key="DriveFillBrush" Color="{StaticResource DriveFillColor}" />
+      <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
+      <SolidColorBrush x:Key="DangerInkBrush" Color="{StaticResource DangerInkColor}" />
+      <SolidColorBrush x:Key="HatchBrush" Color="{StaticResource HatchColor}" />
+      <SolidColorBrush x:Key="HatchGroundBrush" Color="{StaticResource HatchGroundColor}" />
+      <SolidColorBrush x:Key="OverrunBrush" Color="{StaticResource OverrunColor}" />
+      <SolidColorBrush x:Key="OverrunRingBrush" Color="{StaticResource OverrunRingColor}" />
+      <SolidColorBrush x:Key="InkStrongBrush" Color="{StaticResource InkStrongColor}" />
+      <SolidColorBrush x:Key="OnInkStrongBrush" Color="{StaticResource OnInkStrongColor}" />
+      <SolidColorBrush x:Key="GhostBrush" Color="{StaticResource GhostColor}" />
+      <SolidColorBrush x:Key="MapBrush" Color="{StaticResource MapColor}" />
+      <SolidColorBrush x:Key="MapRoadBrush" Color="{StaticResource MapRoadColor}" />
+      <SolidColorBrush x:Key="MapParkBrush" Color="{StaticResource MapParkColor}" />
+      <SolidColorBrush x:Key="MapWaterBrush" Color="{StaticResource MapWaterColor}" />
+      <SolidColorBrush x:Key="PinBrush" Color="{StaticResource PinColor}" />
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
       <SolidColorBrush x:Key="MapPillBrush" Color="{StaticResource MapPillColor}" />
@@ -81,26 +138,6 @@
       <SolidColorBrush x:Key="DangerChipBrush" Color="{StaticResource DangerChipColor}" />
       <SolidColorBrush x:Key="GoodChipBrush" Color="{StaticResource GoodChipColor}" />
       <SolidColorBrush x:Key="GlassInkBrush" Color="{StaticResource GlassInkColor}" />
-      <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
-      <SolidColorBrush x:Key="GroundBrush" Color="{StaticResource GroundColor}" />
-      <SolidColorBrush x:Key="GlassBrush" Color="{StaticResource GlassColor}" />
-      <SolidColorBrush x:Key="GlassEdgeBrush" Color="{StaticResource GlassEdgeColor}" />
-      <SolidColorBrush x:Key="GlassSecondaryBrush" Color="{StaticResource GlassSecondaryColor}" />
-      <SolidColorBrush x:Key="CardSurfaceBrush" Color="{StaticResource CardSurfaceColor}" />
-      <SolidColorBrush x:Key="InkBrush" Color="{StaticResource InkColor}" />
-      <SolidColorBrush x:Key="Ink2Brush" Color="{StaticResource Ink2Color}" />
-      <SolidColorBrush x:Key="Ink3Brush" Color="{StaticResource Ink3Color}" />
-      <SolidColorBrush x:Key="LineBrush" Color="{StaticResource LineColor}" />
-      <SolidColorBrush x:Key="ChipBrush" Color="{StaticResource ChipColor}" />
-      <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
-      <SolidColorBrush x:Key="AccentInkBrush" Color="{StaticResource AccentInkColor}" />
-      <SolidColorBrush x:Key="GoodBrush" Color="{StaticResource GoodColor}" />
-      <SolidColorBrush x:Key="GoodInkBrush" Color="{StaticResource GoodInkColor}" />
-      <SolidColorBrush x:Key="AmberBrush" Color="{StaticResource AmberColor}" />
-      <SolidColorBrush x:Key="AmberInkBrush" Color="{StaticResource AmberInkColor}" />
-      <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
-      <SolidColorBrush x:Key="DangerInkBrush" Color="{StaticResource DangerInkColor}" />
-      <SolidColorBrush x:Key="MapBrush" Color="{StaticResource MapColor}" />
     </ResourceDictionary>
 
 

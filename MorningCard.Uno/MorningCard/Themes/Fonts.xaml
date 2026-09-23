@@ -1,26 +1,22 @@
 <!--
-  Instrument Sans as four static faces.
+  Geist as three static faces (v6). The design tops out at weight 600, so there is no Bold face:
+  CardFontBold points at SemiBold, and w550 in the design renders as Medium.
 
   Variable fonts are not supported on the Skia text stack: FontWeight does not select the wght axis,
-  so a single variable file would render its default instance everywhere. scripts/fetch-fonts.ps1
-  downloads static slices and prints each file's internal family name, which is what the #fragment
-  below has to match exactly. Google's slices carry weight-suffixed family names for Medium and
-  SemiBold, while Bold declares itself as "Instrument Sans" with a Bold subfamily - hence the
-  matching FontWeight in the text styles.
+  so each weight ships as its own file. Google's static slices carry weight-suffixed family names
+  (Geist, Geist Medium, Geist SemiBold), which the #fragment matches. Spike R7 found that a wrong
+  fragment does not fall back - the file path picks the face - so review these by filename.
 
-  Filenames use underscores, never hyphens. The Android build rewrites a hyphen in a Content asset
-  to an underscore, so an ms-appx path written with hyphens resolves on desktop and silently fails
-  on device - and the typeface loader swallows that, leaving the map labels on the default face.
-  Verified against the packaged assets: obj/.../net10.0-android/assets/Assets/Fonts holds
-  InstrumentSans_Regular.ttf.
+  Filenames use underscores, never hyphens: Android rewrites a hyphen in a Content asset to an
+  underscore, so an ms-appx path written with hyphens resolves on desktop and fails on device.
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <FontFamily x:Key="CardFontRegular">ms-appx:///Assets/Fonts/InstrumentSans_Regular.ttf#Instrument Sans</FontFamily>
-  <FontFamily x:Key="CardFontMedium">ms-appx:///Assets/Fonts/InstrumentSans_Medium.ttf#Instrument Sans Medium</FontFamily>
-  <FontFamily x:Key="CardFontSemiBold">ms-appx:///Assets/Fonts/InstrumentSans_SemiBold.ttf#Instrument Sans SemiBold</FontFamily>
-  <FontFamily x:Key="CardFontBold">ms-appx:///Assets/Fonts/InstrumentSans_Bold.ttf#Instrument Sans</FontFamily>
+  <FontFamily x:Key="CardFontRegular">ms-appx:///Assets/Fonts/Geist_Regular.ttf#Geist</FontFamily>
+  <FontFamily x:Key="CardFontMedium">ms-appx:///Assets/Fonts/Geist_Medium.ttf#Geist Medium</FontFamily>
+  <FontFamily x:Key="CardFontSemiBold">ms-appx:///Assets/Fonts/Geist_SemiBold.ttf#Geist SemiBold</FontFamily>
+  <FontFamily x:Key="CardFontBold">ms-appx:///Assets/Fonts/Geist_SemiBold.ttf#Geist SemiBold</FontFamily>
 
 </ResourceDictionary>
 
