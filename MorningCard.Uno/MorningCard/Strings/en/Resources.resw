@@ -67,9 +67,6 @@
   <data name="Headline_NoTrip" xml:space="preserve">
     <value>Nothing on the calendar before 9.</value>
   </data>
-  <data name="Headline_Offline" xml:space="preserve">
-    <value>Car isn't reachable, showing {0} data.</value>
-  </data>
   <data name="CarStatus_LastSeen" xml:space="preserve">
     <value>Last seen {0}</value>
   </data>
@@ -124,20 +121,8 @@
   <data name="Route_AutomationLate" xml:space="preserve">
     <value>Route to school. Now {0}, already {1} minutes late. {2} minute drive, arriving {3}. {4} minute walk. Bell {5}.</value>
   </data>
-  <data name="EmptyTitle.Text" xml:space="preserve">
-    <value>No drop-off today</value>
-  </data>
-  <data name="EmptyNote.Text" xml:space="preserve">
-    <value>Pedagogical day at school. Nothing else is planned this morning.</value>
-  </data>
-  <data name="ErrorTitle.Text" xml:space="preserve">
-    <value>Can't reach the car</value>
-  </data>
-  <data name="ErrorRetry.Content" xml:space="preserve">
-    <value>Retry</value>
-  </data>
   <data name="Header_NoTripTitle" xml:space="preserve">
-    <value>This morning</value>
+    <value>No drop-off today</value>
   </data>
   <data name="SimulatorTitle.Text" xml:space="preserve">
     <value>Simulator</value>
@@ -442,6 +427,66 @@
   </data>
   <data name="Cabin_Title" xml:space="preserve">
     <value>Warm the cabin</value>
+  </data>
+  <data name="Headline_NoTripLead" xml:space="preserve">
+    <value>School is closed. Next run tomorrow, leave by </value>
+  </data>
+  <data name="Headline_NoTripTail" xml:space="preserve">
+    <value>.</value>
+  </data>
+  <data name="Headline_ScheduleNote" xml:space="preserve">
+    <value>Times from your saved schedule.</value>
+  </data>
+  <data name="Lock_Offline" xml:space="preserve">
+    <value>Offline · last seen {0}</value>
+  </data>
+  <data name="Drive_Opened" xml:space="preserve">
+    <value>Opened in Maps</value>
+  </data>
+  <data name="Checks_ReadyTomorrow" xml:space="preserve">
+    <value>Ready for tomorrow</value>
+  </data>
+  <data name="Fuel_LastRead" xml:space="preserve">
+    <value>Last read {0}</value>
+  </data>
+  <data name="Fuel_PillNoSignal" xml:space="preserve">
+    <value>No signal</value>
+  </data>
+  <data name="Cabin_PillOffline" xml:space="preserve">
+    <value>Car offline</value>
+  </data>
+  <data name="Cabin_DetailOffline" xml:space="preserve">
+    <value>Remote start needs a connection to the car. It will retry on its own.</value>
+  </data>
+  <data name="EtaUnavailableTitle.Text" xml:space="preserve">
+    <value>Live ETA unavailable</value>
+  </data>
+  <data name="EtaUnavailableNote.Text" xml:space="preserve">
+    <value>Traffic data didn’t load</value>
+  </data>
+  <data name="EtaRetry.Content" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="RouteTomorrow.Text" xml:space="preserve">
+    <value>Route shows tomorrow</value>
+  </data>
+  <data name="ChecksChecking.Text" xml:space="preserve">
+    <value>Checking…</value>
+  </data>
+  <data name="FooterUpdating.Text" xml:space="preserve">
+    <value>Updating…</value>
+  </data>
+  <data name="LoadingTitle.Text" xml:space="preserve">
+    <value>School drop-off</value>
+  </data>
+  <data name="FooterUnlock.Text" xml:space="preserve">
+    <value>Unlock</value>
+  </data>
+  <data name="FooterStartDrive.Text" xml:space="preserve">
+    <value>Start drive</value>
+  </data>
+  <data name="ChecksLoadingCount.Text" xml:space="preserve">
+    <value>3 checks</value>
   </data>
 </root>
 

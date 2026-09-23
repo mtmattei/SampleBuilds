@@ -279,8 +279,9 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
     /// </summary>
     private void Refresh()
     {
-        // A failed lookup has no route to draw, so only the ground is left, same as no trip at all.
-        var eta = Eta is { Failed: false } value ? value : null;
+        // A failed live lookup still carries the saved schedule (E6), so the route stays; only a
+        // morning with no plan at all leaves the ground on its own.
+        var eta = Eta is { Ruler: not null } value ? value : null;
 
         _snapshot = new RouteRulerSnapshot
         {

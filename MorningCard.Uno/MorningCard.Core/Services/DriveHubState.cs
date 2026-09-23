@@ -22,7 +22,7 @@ public record DriveHubState(
     public const int DefaultClockMinutes = (7 * 60) + 24;
 
     /// <summary>The time the offline state reports as its last contact.</summary>
-    public static readonly TimeOnly LastSeenWhenOffline = new(6, 58);
+    public static readonly TimeOnly LastSeenWhenOffline = new(6, 10);
 
     public static DriveHubState Default { get; } = new(
         Mode: ConnectionMode.Live,

@@ -557,5 +557,18 @@
     <Setter Property="CornerRadius" Value="7" />
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
+
+  <!--
+    A loading skeleton bar (v6): the Line ink, radius 8, static (no pulse; spec). Out of the
+    automation tree: a skeleton that narrates is noise. Bars under 16 px set their own radius to
+    half their height: an oversized radius renders as an oval on Skia (rules file).
+  -->
+  <Style x:Key="SkeletonBar" TargetType="Rectangle">
+    <Setter Property="Fill" Value="{ThemeResource LineBrush}" />
+    <Setter Property="RadiusX" Value="8" />
+    <Setter Property="RadiusY" Value="8" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="AutomationProperties.AccessibilityView" Value="Raw" />
+  </Style>
 </ResourceDictionary>
 

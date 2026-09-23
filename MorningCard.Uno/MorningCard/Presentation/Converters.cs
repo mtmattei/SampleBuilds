@@ -355,3 +355,13 @@ public sealed class BoolToStrikeConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
         throw new NotSupportedException();
 }
+
+/// <summary>A token's brush by key, for views that carry the key rather than a tone.</summary>
+public sealed class TokenBrushConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language) =>
+        Tokens.Of(value as string ?? "InkBrush");
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}

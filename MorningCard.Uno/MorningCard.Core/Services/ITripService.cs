@@ -23,4 +23,10 @@ public interface ITripService
 
     /// <summary>Re-asks the source, which is also how a failed trip feed recovers.</summary>
     ValueTask RefreshAsync(CancellationToken ct);
+
+    /// <summary>
+    /// The next scheduled run when there is none today (a closed school), from the saved schedule
+    /// with no traffic. Null when nothing is scheduled at all.
+    /// </summary>
+    ValueTask<TripPlan?> GetNextRunAsync(CancellationToken ct);
 }

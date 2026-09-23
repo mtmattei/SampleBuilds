@@ -9,6 +9,99 @@
              HorizontalAlignment="Stretch"
              VerticalAlignment="Top">
 
+  <UserControl.Resources>
+    <!--
+      Loading templates, shared by ProgressTemplate and UndefinedTemplate. A feed over a push
+      stream sits in Undefined (not Progress) until its first value arrives, which is exactly the
+      first-load case these skeletons exist for (measured 2026-09-23: Progress alone left the card
+      blank while the trip was held).
+    -->
+    <DataTemplate x:Key="TitleLoadingTemplate">
+      <Grid ColumnSpacing="8" AutomationProperties.AccessibilityView="Raw">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <StackPanel VerticalAlignment="Top">
+          <Viewbox Stretch="Uniform" StretchDirection="DownOnly" HorizontalAlignment="Left">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <TextBlock x:Uid="LoadingTitle" Style="{StaticResource CardTitle}" VerticalAlignment="Center" />
+              <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconChevronRight}" FontSize="20"
+                        Foreground="{ThemeResource Ink3Brush}" VerticalAlignment="Center" Margin="0,4,0,0" />
+            </StackPanel>
+          </Viewbox>
+          <Rectangle Style="{StaticResource SkeletonBar}" Width="210" Height="18" Margin="0,14,0,0" />
+          <Rectangle Style="{StaticResource SkeletonBar}" Width="150" Height="14" Margin="0,10,0,0" RadiusX="7" RadiusY="7" />
+        </StackPanel>
+        <Image Grid.Column="1" Source="ms-appx:///Assets/Car/xc60_muted.png" Width="156" Height="82"
+               Margin="0,-4,-8,0" VerticalAlignment="Top" Stretch="Uniform" />
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="RulerLoadingTemplate">
+      <mc:SlackRuler IsSkeleton="True" AutomationProperties.AccessibilityView="Raw" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="MapLoadingTemplate">
+      <StackPanel Margin="18,16,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                  AutomationProperties.AccessibilityView="Raw">
+        <Rectangle Style="{StaticResource SkeletonBar}" Width="96" Height="30" />
+        <Rectangle Style="{StaticResource SkeletonBar}" Width="120" Height="10" Margin="0,12,0,0" RadiusX="5" RadiusY="5" />
+        <Rectangle Style="{StaticResource SkeletonBar}" Width="150" Height="10" Margin="0,10,0,0" RadiusX="5" RadiusY="5" />
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ChecksLoadingTemplate">
+      <utu:CardContentControl Style="{StaticResource OutlinedCardContentControlStyle}" Margin="0" Padding="14,0"
+                              HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                              CornerRadius="16" BorderThickness="1" BorderBrush="{ThemeResource LineBrush}">
+        <Grid Height="52" ColumnSpacing="10">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconListChecks}" FontSize="18" VerticalAlignment="Center" />
+          <TextBlock Grid.Column="1" x:Uid="ChecksTitle" Style="{StaticResource SectionTitle}" VerticalAlignment="Center" />
+          <Border Grid.Column="2" Style="{StaticResource StatusPillStyle}" HorizontalAlignment="Left" Background="{ThemeResource ChipBrush}">
+            <TextBlock x:Uid="ChecksLoadingCount" Style="{StaticResource PillText}" VerticalAlignment="Center" Foreground="{ThemeResource Ink2Brush}" />
+          </Border>
+          <TextBlock Grid.Column="3" x:Uid="ChecksChecking" Style="{StaticResource HeaderMeta}" VerticalAlignment="Center" />
+          <FontIcon Grid.Column="4" Style="{StaticResource CardIcon}" Glyph="{StaticResource IconChevronDown}" FontSize="16"
+                    Foreground="{ThemeResource FaintBrush}" VerticalAlignment="Center" />
+        </Grid>
+      </utu:CardContentControl>
+    </DataTemplate>
+
+    <DataTemplate x:Key="FooterLoadingTemplate">
+      <Grid Height="56" Padding="14,0,4,0" ColumnSpacing="8">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+          <Ellipse Width="6" Height="6" VerticalAlignment="Center" Fill="{ThemeResource GoodBrush}" />
+          <TextBlock x:Uid="FooterUpdating" Style="{StaticResource HeaderMeta}" />
+        </StackPanel>
+        <Button Grid.Column="1" Style="{StaticResource GhostPillStyle}" Command="{Binding Parent.ToggleLock}">
+          <StackPanel Orientation="Horizontal" Spacing="7">
+            <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconLockOpen}" FontSize="15" Foreground="{ThemeResource InkStrongBrush}" VerticalAlignment="Center" />
+            <TextBlock x:Uid="FooterUnlock" VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+        <Button Grid.Column="2" Style="{StaticResource StartDriveStyle}" IsEnabled="False">
+          <StackPanel Orientation="Horizontal" Spacing="7">
+            <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconNavigation}" FontSize="14" Foreground="{ThemeResource OnInkStrongBrush}" VerticalAlignment="Center" />
+            <TextBlock x:Uid="FooterStartDrive" VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+      </Grid>
+    </DataTemplate>
+  </UserControl.Resources>
+
   <!--
     v6: a warm shell (the card) holding one paper panel, with the header and the footer on the shell.
     The shadow canvas sits at a negative margin so the wide blur has room; hit-test transparent.
@@ -38,7 +131,7 @@
 
       <!-- ============================ header ============================ -->
       <!-- On the shell: sun, greeting over the weather line, and the time the card is reading. -->
-      <mvux:FeedView Source="{Binding Header}">
+      <mvux:FeedView Source="{Binding Greeting}">
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
             <Grid MinHeight="52" Padding="14,6,12,0" ColumnSpacing="10">
@@ -82,7 +175,8 @@
         <StackPanel>
 
           <!-- Title, headline and the car. -->
-          <mvux:FeedView Source="{Binding Header}">
+          <mvux:FeedView Source="{Binding Header}"
+                         ProgressTemplate="{StaticResource TitleLoadingTemplate}" UndefinedTemplate="{StaticResource TitleLoadingTemplate}">
             <mvux:FeedView.ValueTemplate>
               <DataTemplate>
                 <Grid ColumnSpacing="8">
@@ -111,7 +205,14 @@
                     <!-- One TextBlock, three Runs, so the emphasis shares the sentence's baseline. -->
                     <TextBlock Style="{StaticResource CardLead}"
                                Margin="0,8,0,0"
-                               TextWrapping="Wrap"><Run Text="{Binding Data.HeadlineLead}" /><Run Text="{Binding Data.HeadlineAccent}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" FontSize="{StaticResource LeadEmphasisSize}" Foreground="{Binding Data.Tone, Converter={StaticResource AccentTone}}" /><Run Text="{Binding Data.HeadlineTail}" /></TextBlock>
+                               TextWrapping="Wrap"><Run Text="{Binding Data.HeadlineLead}" /><Run Text="{Binding Data.HeadlineAccent}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" FontSize="{Binding Data.HeadlineAccentSize}" Foreground="{Binding Data.HeadlineAccentInk, Converter={StaticResource TokenBrush}}" /><Run Text="{Binding Data.HeadlineTail}" /></TextBlock>
+                    <!-- ETA unavailable (E6): the times on the card come from the saved schedule. -->
+                    <TextBlock Style="{StaticResource CardCaption}"
+                               FontSize="13.5"
+                               Margin="0,4,0,0"
+                               Text="{Binding Data.ScheduleNote}"
+                               Visibility="{Binding Data.ScheduleNote, Converter={StaticResource NullToVisibility}}"
+                               AutomationProperties.LiveSetting="Polite" />
                   </StackPanel>
                   <!-- The XC60, muted offline (saturate .3, contrast .95); the artboard's Outback is
                        ignored by decision C6. -->
@@ -126,15 +227,23 @@
                 </Grid>
               </DataTemplate>
             </mvux:FeedView.ValueTemplate>
+            <!-- Loading: the title and the car stay; the headline is two skeleton bars. -->
           </mvux:FeedView>
 
           <!-- ============================ slack ruler ============================ -->
-          <mvux:FeedView Margin="0,16,0,0" Source="{Binding Eta}">
+          <mvux:FeedView Margin="0,16,0,0" Source="{Binding Eta}"
+                         ProgressTemplate="{StaticResource RulerLoadingTemplate}" UndefinedTemplate="{StaticResource RulerLoadingTemplate}">
             <mvux:FeedView.ValueTemplate>
               <DataTemplate>
                 <mc:SlackRuler View="{Binding Data}" />
               </DataTemplate>
             </mvux:FeedView.ValueTemplate>
+            <!-- No drop-off: no ruler at all rather than an empty one. -->
+            <mvux:FeedView.NoneTemplate>
+              <DataTemplate>
+                <Grid />
+              </DataTemplate>
+            </mvux:FeedView.NoneTemplate>
           </mvux:FeedView>
           <!-- xaml-lint: allow card - clips the map's own drawing surface to the panel radius; the
                1 px ring is the artboard's inset edge, not card chrome. -->
@@ -164,8 +273,7 @@
               <!-- v6 scrim: a fixed ramp across the whole panel, white 97% to 90% at 24%, 45% at 44%,
                    clear from 62%. The ETA text sits on the opaque part; the route on the clear. -->
               <Border x:Name="EtaScrim"
-                      IsHitTestVisible="False"
-                      Visibility="{Binding State.Data.Failed, ElementName=EtaFeed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert, FallbackValue=Collapsed}">
+                      IsHitTestVisible="False">
                 <Border.Background>
                   <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                     <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0" />
@@ -187,7 +295,6 @@
               <Button x:Name="OpenInMaps"
                       x:Uid="OpenInMapsButton"
                       Style="{StaticResource MapPillStyle}"
-                      Visibility="{Binding State.Data.Failed, ElementName=EtaFeed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert, FallbackValue=Collapsed}"
                       HorizontalAlignment="Right"
                       VerticalAlignment="Bottom"
                       Margin="0,0,12,30"
@@ -198,7 +305,8 @@
                 </StackPanel>
               </Button>
 
-              <mvux:FeedView x:Name="EtaFeed" Source="{Binding Eta}">
+              <mvux:FeedView x:Name="EtaFeed" Source="{Binding Eta}"
+                             ProgressTemplate="{StaticResource MapLoadingTemplate}" UndefinedTemplate="{StaticResource MapLoadingTemplate}">
 
                 <mvux:FeedView.ValueTemplate>
                   <DataTemplate>
@@ -233,49 +341,44 @@
                                  Text="{Binding Data.VsUsualText}" />
                     </StackPanel>
 
-                    <Border x:Name="ErrorPanel"
-                            Background="{ThemeResource MapScrimBrush}"
-                            Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}}">
-                      <StackPanel HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
-                                  Padding="24"
-                                  Spacing="8">
-                        <TextBlock x:Uid="ErrorTitle"
-                                   Style="{StaticResource EmptyTitle}"
-                                   TextAlignment="Center" />
-                        <TextBlock Style="{StaticResource CardLabel}"
-                                   MaxWidth="260"
-                                   TextAlignment="Center"
-                                   TextWrapping="Wrap"
-                                   Text="{Binding Data.FailureMessage}" />
-                        <Button x:Name="RetryButton"
-                                x:Uid="ErrorRetry"
-                                HorizontalAlignment="Center"
-                                Command="{Binding Parent.Retry}" />
-                      </StackPanel>
-                    </Border>
+                    <!--
+                      ETA unavailable (E6): only this block reports the failure; the ruler and the
+                      route above keep the saved schedule. Retry is the model's own command, bound
+                      from the ValueTemplate, where Parent resolves commands.
+                    -->
+                    <StackPanel x:Name="ErrorPanel"
+                                Margin="18,16,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                MaxWidth="200"
+                                Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}}">
+                      <TextBlock x:Uid="EtaUnavailableTitle" Style="{StaticResource CardLead}"
+                                 FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold"
+                                 Foreground="{ThemeResource InkBrush}" AutomationProperties.LiveSetting="Polite" />
+                      <TextBlock x:Uid="EtaUnavailableNote" Style="{StaticResource RowMeta}" Margin="0,2,0,0" />
+                      <Button x:Name="RetryButton"
+                              x:Uid="EtaRetry"
+                              Style="{StaticResource RowActionGhostStyle}"
+                              Height="34"
+                              Margin="0,12,0,0"
+                              Command="{Binding Parent.Retry}" />
+                    </StackPanel>
                     </Grid>
                   </DataTemplate>
                 </mvux:FeedView.ValueTemplate>
 
-                <!-- Nothing on the calendar: the map stays, the route goes. -->
+                <!-- Loading: the tiles show, the route waits, the ETA block is three skeleton bars. -->
+
+                <!-- No drop-off: the map stays for Open in Maps (L6); the route shows tomorrow. -->
                 <mvux:FeedView.NoneTemplate>
                   <DataTemplate>
-                    <Border Background="{ThemeResource MapScrimBrush}">
-                      <StackPanel HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
-                                  Padding="24"
-                                  Spacing="4">
-                        <TextBlock x:Uid="EmptyTitle"
-                                   Style="{StaticResource EmptyTitle}"
-                                   TextAlignment="Center" />
-                        <TextBlock x:Uid="EmptyNote"
-                                   Style="{StaticResource CardLabel}"
-                                   MaxWidth="260"
-                                   TextAlignment="Center"
-                                   TextWrapping="Wrap" />
-                      </StackPanel>
-                    </Border>
+                    <TextBlock x:Uid="RouteTomorrow"
+                               Style="{StaticResource SectionTitle}"
+                               Foreground="{ThemeResource Ink2Brush}"
+                               Margin="18,16,0,0"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Top"
+                               AutomationProperties.LiveSetting="Polite" />
                   </DataTemplate>
                 </mvux:FeedView.NoneTemplate>
 
@@ -290,7 +393,8 @@
             Expander toggles its own IsExpanded on click, which would fight the model's single
             open-row state, and its template would need rebuilding for this row anatomy (S6).
           -->
-          <mvux:FeedView Margin="0,12,0,0" Source="{Binding Stats}">
+          <mvux:FeedView Margin="0,12,0,0" Source="{Binding Stats}"
+                         ProgressTemplate="{StaticResource ChecksLoadingTemplate}" UndefinedTemplate="{StaticResource ChecksLoadingTemplate}">
             <mvux:FeedView.ValueTemplate>
               <DataTemplate>
                 <utu:CardContentControl Style="{StaticResource OutlinedCardContentControlStyle}"
@@ -359,8 +463,13 @@
                             <TextBlock Style="{StaticResource RowTitle}" Text="{Binding Data.FuelTitle}" TextTrimming="CharacterEllipsis" />
                             <TextBlock Style="{StaticResource RowMeta}" Text="{Binding Data.FuelMeta}" />
                           </StackPanel>
-                          <Border Grid.Column="2" Style="{StaticResource StatusPillStyle}" Background="{Binding Data.FuelLevel, Converter={StaticResource FuelPillBrush}}">
+                          <Border Grid.Column="2" Style="{StaticResource StatusPillStyle}" Visibility="{Binding Data.FuelOffline, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}" Background="{Binding Data.FuelLevel, Converter={StaticResource FuelPillBrush}}">
                             <TextBlock Style="{StaticResource PillText}" VerticalAlignment="Center" Foreground="{Binding Data.FuelLevel, Converter={StaticResource FuelPillInk}}" Text="{Binding Data.FuelPill}" />
+                          </Border>
+                          <!-- Car offline: what the card last read, with no live signal. -->
+                          <Border Grid.Column="2" Style="{StaticResource StatusPillStyle}" Background="{ThemeResource NeutralChipBrush}"
+                                  Visibility="{Binding Data.FuelOffline, Converter={StaticResource BoolToVisibility}}">
+                            <TextBlock Style="{StaticResource PillText}" VerticalAlignment="Center" Foreground="{ThemeResource CapsBrush}" Text="{Binding Data.FuelNoSignal}" />
                           </Border>
                           <FontIcon Grid.Column="3" Style="{StaticResource CardIcon}" Glyph="{StaticResource IconChevronRight}" FontSize="16" Foreground="{ThemeResource FaintBrush}"
                                     VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
@@ -459,12 +568,14 @@
                 </utu:CardContentControl>
               </DataTemplate>
             </mvux:FeedView.ValueTemplate>
+            <!-- Loading: the closed header, "Checking…" in place of the ready count. -->
           </mvux:FeedView>
         </StackPanel>
       </utu:CardContentControl>
 
       <!-- ============================ footer ============================ -->
-      <mvux:FeedView Grid.Row="2" Source="{Binding Header}">
+      <mvux:FeedView Grid.Row="2" Source="{Binding Header}"
+                     ProgressTemplate="{StaticResource FooterLoadingTemplate}" UndefinedTemplate="{StaticResource FooterLoadingTemplate}">
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
             <Grid Height="56" Padding="14,0,4,0" ColumnSpacing="8">
@@ -476,7 +587,12 @@
 
               <!-- The live dot, the car, and its lock state. -->
               <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                <Ellipse Width="6" Height="6" VerticalAlignment="Center" Fill="{ThemeResource GoodBrush}" />
+                <Grid VerticalAlignment="Center">
+                  <Ellipse Width="6" Height="6" Fill="{ThemeResource GoodBrush}"
+                           Visibility="{Binding Data.IsStale, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}" />
+                  <Ellipse Width="6" Height="6" Fill="{ThemeResource FaintBrush}"
+                           Visibility="{Binding Data.IsStale, Converter={StaticResource BoolToVisibility}}" />
+                </Grid>
                 <TextBlock Style="{StaticResource HeaderMeta}" Foreground="{ThemeResource InkBrush}" Text="{Binding Data.CarName}" />
                 <TextBlock Style="{StaticResource HeaderMeta}" Foreground="{ThemeResource FaintBrush}" Text="&#x00B7;" />
                 <TextBlock Style="{StaticResource HeaderMeta}" Text="{Binding Data.LockState}" />
@@ -500,7 +616,8 @@
 
               <Button Grid.Column="2"
                       Style="{StaticResource StartDriveStyle}"
-                      Command="{Binding Parent.StartDrive}">
+                      Command="{Binding Parent.StartDrive}"
+                      IsEnabled="{Binding Data.CanStartDrive}">
                 <StackPanel Orientation="Horizontal" Spacing="7">
                   <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconNavigation}" FontSize="14" Foreground="{ThemeResource OnInkStrongBrush}" VerticalAlignment="Center" />
                   <TextBlock VerticalAlignment="Center" Text="{Binding Parent.DriveLabel}" />
@@ -509,6 +626,7 @@
             </Grid>
           </DataTemplate>
         </mvux:FeedView.ValueTemplate>
+        <!-- Loading: "Updating…", Unlock available, Start drive waits for the trip. -->
       </mvux:FeedView>
 
     </Grid>

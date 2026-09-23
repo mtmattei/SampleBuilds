@@ -9,33 +9,36 @@ namespace MorningCard.Presentation;
 /// members are where that generation breaks. Everything here is a string, a number, a bool or an
 /// enum, which also keeps the XAML free of converters.
 /// </summary>
-/// <param name="HeadlineLead">Text before the accented span, e.g. "Leave in ".</param>
+/// <param name="HeadlineLead">Text before the emphasised span, e.g. "Leave in ".</param>
 /// <param name="HeadlineAccent">
-/// The span the design colours, e.g. "9 min". Split into three parts rather than carrying markup,
+/// The span the design emphasises, e.g. "9 min". Split into three parts rather than carrying markup,
 /// because the headline is three <c>Run</c>s in one TextBlock and a converter cannot produce Runs.
 /// </param>
-/// <param name="LockText">Sits under the car, e.g. "XC60 · Locked".</param>
-/// <param name="WeatherLine">"-3° · Clear · High 9°", under the greeting.</param>
-/// <param name="NowText">"Now 7:24" at the header's right, so the card says what time it is reading.</param>
-/// <param name="StatusBadge">"On time", "Leave now" or "Running late" - the state, named.</param>
-/// <param name="LockState">"Locked" or "Unlocked", after the car's name in the footer.</param>
+/// <param name="HeadlineAccentInk">Token key for the emphasis: the tone's ink, or plain ink.</param>
+/// <param name="HeadlineAccentSize">27 for the countdown, 17 for an inline time ("leave by 7:33").</param>
+/// <param name="ScheduleNote">"Times from your saved schedule." when the live lookup failed.</param>
+/// <param name="LockState">"Locked" after the car's name; "Offline · last seen 6:10" when stale.</param>
 /// <param name="LockAction">The footer's ghost button: "Unlock" when locked, "Lock" when not.</param>
+/// <param name="CanStartDrive">False on a no-trip morning: there is nowhere to drive.</param>
 public record HeaderView(
-    string Greeting,
     string Title,
     string HeadlineLead,
     string HeadlineAccent,
     string HeadlineTail,
+    string HeadlineAccentInk,
+    double HeadlineAccentSize,
+    string ScheduleNote,
     CardTone Tone,
     bool IsStale,
     string CarName,
-    string LockText,
-    string WeatherLine,
-    string NowText,
     string StatusBadge,
     string LockState,
     string LockAction,
-    bool IsLocked);
+    bool IsLocked,
+    bool CanStartDrive);
+
+/// <summary>The shell's greeting row: live even while the trip is still loading.</summary>
+public record GreetingView(string Greeting, string WeatherLine, string NowText);
 
 /// <summary>
 /// The ETA block and the route ruler. Reached only when there is a trip: no trip means the feed is
@@ -97,7 +100,7 @@ public record RulerPlan(TripTimeline Timeline, int WalkMin, TimeOnly Bell, TimeO
 /// Wraps the trip so a no-trip morning stays a value on the header's feed. Without it the null
 /// becomes a none state and the header loses the car status it still has to show.
 /// </summary>
-internal record TripSlot(TripPlan? Plan);
+internal record TripSlot(TripPlan? Plan, TripPlan? NextRun = null);
 
 /// <summary>
 /// One attempt at reading the trip: either a plan, or the reason there isn't one.
@@ -160,7 +163,9 @@ public record CarView(
     string FuelTitle,
     string FuelMeta,
     string FuelPill,
+    string FuelNoSignal,
     StatLevel FuelLevel,
+    bool FuelOffline,
     string FuelDetail,
     bool FuelOpen,
     CabinChoice Cabin,

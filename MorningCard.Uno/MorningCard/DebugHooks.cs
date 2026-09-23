@@ -14,7 +14,7 @@ namespace MorningCard;
 /// DEBUG only, and inert unless a variable is set.
 ///
 /// <list type="bullet">
-/// <item><c>MC_STATE</c>: live, offline, empty, error.</item>
+/// <item><c>MC_STATE</c>: live, offline, empty, error (ETA unavailable), loading.</item>
 /// <item><c>MC_CLOCK</c>: minutes since midnight, e.g. 460 for 7:40.</item>
 /// <item><c>MC_DELAY</c>: traffic delay in minutes.</item>
 /// <item><c>MC_RANGE</c>, <c>MC_TIRE</c>: stat values, for the warning thresholds.</item>
@@ -67,6 +67,10 @@ internal static class DebugHooks
                 break;
             case "error":
                 hub.InjectFault();
+                break;
+            case "loading":
+                // Hold the trip's first value so the skeleton stays up long enough to capture.
+                hub.FirstValueDelay = TimeSpan.FromHours(1);
                 break;
         }
     }

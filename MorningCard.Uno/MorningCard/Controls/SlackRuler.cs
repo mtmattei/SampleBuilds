@@ -29,6 +29,19 @@ public sealed partial class SlackRuler : Canvas
     public static readonly DependencyProperty ViewProperty = DependencyProperty.Register(
         nameof(View), typeof(EtaView), typeof(SlackRuler), new PropertyMetadata(null, (d, _) => ((SlackRuler)d).Rebuild()));
 
+    public static readonly DependencyProperty IsSkeletonProperty = DependencyProperty.Register(
+        nameof(IsSkeleton), typeof(bool), typeof(SlackRuler), new PropertyMetadata(false, (d, _) => ((SlackRuler)d).Rebuild()));
+
+    /// <summary>
+    /// The loading state: ticks and key-time captions in their usual places (the artboard's 7:33,
+    /// 7:47, 7:50 positions), grey bars for the values, and one grey bar for the blocks.
+    /// </summary>
+    public bool IsSkeleton
+    {
+        get => (bool)GetValue(IsSkeletonProperty);
+        set => SetValue(IsSkeletonProperty, value);
+    }
+
     private const double BlockTop = 56;
     private const double BlockHeight = 30;
     private const double BlockRadius = 6;
@@ -62,6 +75,12 @@ public sealed partial class SlackRuler : Canvas
         Children.Clear();
 
         var width = ActualWidth;
+
+        if (IsSkeleton && width > 0)
+        {
+            BuildSkeleton(width);
+            return;
+        }
 
         if (View is not { Slack: { } plan } view || width <= 0)
         {
@@ -138,6 +157,56 @@ public sealed partial class SlackRuler : Canvas
         PlaceKey(view.LeaveCaption, view.LeaveValue, toneInk, plan.Leave, X(plan.Leave.AtMin), width);
         PlaceKey(view.ArriveCaption, view.ArriveTime, view.IsLate ? Token("DangerInkColor") : ink, plan.Arrive, X(plan.Arrive.AtMin), width);
         PlaceKey(view.BellCaption, view.BellTime, ink, plan.Bell, X(plan.Bell.AtMin), width);
+    }
+
+    private void BuildSkeleton(double width)
+    {
+        const int window = SlackRulerLayout.DefaultWindowMinutes;
+        double X(int minute) => minute / (double)window * width;
+
+        var ink = Token("InkColor");
+        for (var m = 0; m <= window; m++)
+        {
+            var major = m % 5 == 0;
+            Place(new Rectangle { Width = 1, Height = major ? 7 : 4, Fill = Brush(WithAlpha(ink, major ? 0.28 : 0.13)) }, X(m) - 0.5, major ? TickTop : TickTop + 3);
+        }
+
+        var loader = Windows.ApplicationModel.Resources.ResourceLoader.GetForViewIndependentUse();
+        var bar = Token("LineColor");
+
+        // The on-time layout's keys and sides, so the skeleton does not jump when the values land:
+        // LEAVE BY centred, ARRIVE ending left of its line, BELL starting right of its line.
+        foreach (var (minute, key, align) in new[]
+        {
+            (13, "Timeline_LeaveBy", KeyTimeAlign.Center),
+            (27, "Ruler_Arrive", KeyTimeAlign.Right),
+            (30, "Ruler_Bell", KeyTimeAlign.Left),
+        })
+        {
+            var side = align switch
+            {
+                KeyTimeAlign.Left => HorizontalAlignment.Left,
+                KeyTimeAlign.Right => HorizontalAlignment.Right,
+                _ => HorizontalAlignment.Center,
+            };
+            var stack = new StackPanel { Spacing = 5 };
+            var caption = Text(loader.GetString(key) ?? string.Empty, "TimelineLabel", null);
+            caption.HorizontalAlignment = side;
+            stack.Children.Add(caption);
+            stack.Children.Add(new Rectangle { Width = 44, Height = 18, RadiusX = 8, RadiusY = 8, Fill = Brush(bar), HorizontalAlignment = side });
+            stack.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
+            var w = stack.DesiredSize.Width;
+            var left = align switch
+            {
+                KeyTimeAlign.Left => X(minute) + KeyGap,
+                KeyTimeAlign.Right => X(minute) - w - KeyGap,
+                _ => X(minute) - (w / 2),
+            };
+            Place(stack, Math.Clamp(left, 0, Math.Max(0, width - w)), 0);
+        }
+
+        Place(new Rectangle { Width = width, Height = BlockHeight, RadiusX = BlockRadius, RadiusY = BlockRadius, Fill = Brush(bar) }, 0, BlockTop);
+        AutomationProperties.SetName(this, string.Empty);
     }
 
     private FrameworkElement Block(RulerSegment segment, EtaView view, double width)

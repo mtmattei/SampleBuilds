@@ -30,6 +30,7 @@
   <mp:FuelPillBrushConverter x:Key="FuelPillBrush" />
   <mp:FuelPillInkConverter x:Key="FuelPillInk" />
   <mp:BoolToStrikeConverter x:Key="BoolToStrike" />
+  <mp:TokenBrushConverter x:Key="TokenBrush" />
 
 </ResourceDictionary>
 

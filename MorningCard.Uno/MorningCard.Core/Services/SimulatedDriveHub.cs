@@ -27,6 +27,12 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
     /// </summary>
     public TimeSpan CommandLatency { get; set; } = TimeSpan.FromMilliseconds(600);
 
+    /// <summary>
+    /// Holds each trip stream's first value this long, so the loading state can be reached and
+    /// captured. Read per subscription. Zero (the default) delivers immediately.
+    /// </summary>
+    public TimeSpan FirstValueDelay { get; set; } = TimeSpan.Zero;
+
     public DriveHubState State => _state.Current;
 
     // ---- simulator knobs -------------------------------------------------------------------
@@ -100,6 +106,8 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
 
     public async IAsyncEnumerable<TripPlan?> Watch([EnumeratorCancellation] CancellationToken ct)
     {
+        await HoldFirstValueAsync(ct).ConfigureAwait(false);
+
         await foreach (var state in _state.Watch(ct).ConfigureAwait(false))
         {
             if (state.Faulted)
@@ -116,6 +124,8 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
 
     public async IAsyncEnumerable<TripPlan?> WatchLastKnown([EnumeratorCancellation] CancellationToken ct)
     {
+        await HoldFirstValueAsync(ct).ConfigureAwait(false);
+
         await foreach (var state in _state.Watch(ct).ConfigureAwait(false))
         {
             // A fault says the lookup failed, not that the known plan changed, so it is ignored here.
@@ -124,6 +134,10 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
     }
 
     ValueTask ITripService.RefreshAsync(CancellationToken ct) => ReconnectAsync(ct);
+
+    /// <summary>Tomorrow's run: the same schedule, without today's traffic.</summary>
+    public ValueTask<TripPlan?> GetNextRunAsync(CancellationToken ct) =>
+        ValueTask.FromResult<TripPlan?>(_state.Current.Trip with { DelayMin = 0 });
 
     // ---- IVehicleService -------------------------------------------------------------------
 
@@ -191,6 +205,10 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
             },
         });
     }
+
+    private Task HoldFirstValueAsync(CancellationToken ct) => FirstValueDelay <= TimeSpan.Zero
+        ? Task.CompletedTask
+        : Task.Delay(FirstValueDelay, _timeProvider, ct);
 
     private ValueTask DelayAsync(CancellationToken ct) => CommandLatency <= TimeSpan.Zero
         ? ValueTask.CompletedTask

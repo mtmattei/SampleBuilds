@@ -51,13 +51,16 @@ public partial record MainModel
     /// </summary>
     private IState<bool> Unreachable => State.Value(this, () => false);
 
-    public IFeed<HeaderView> Header => Feed.Combine(Slot, Now, Car).Select(BuildHeader);
+    public IFeed<HeaderView> Header => Feed.Combine(Slot, Now, Car, Unreachable).Select(BuildHeader);
+
+    /// <summary>The greeting row. Only the clock and the car, so it is up before the trip is.</summary>
+    public IFeed<GreetingView> Greeting => Feed.Combine(Now, Car).Select(BuildGreeting);
 
     /// <summary>
     /// Goes none when there is no trip, which is what the map panel's empty state binds to. A fault
     /// upstream surfaces here as the error state.
     /// </summary>
-    public IFeed<EtaView> Eta => Feed.Combine(Trip, Now).Select(BuildEta);
+    public IFeed<EtaView> Eta => Feed.Combine(Trip, Now, Slot).Select(BuildEta);
 
     /// <summary>
     /// The three list rows. Takes the trip as well as the car, because the destination row is a
@@ -73,8 +76,12 @@ public partial record MainModel
 
     public string EtaUnitLabel => Text("Eta_Unit");
 
-    /// <summary>"Start drive", or the confirmation while it is showing.</summary>
-    public IFeed<string> DriveLabel => DriveSent.Select(sent => Text(sent ? "Drive_Sent" : "Drive_Start"));
+    /// <summary>
+    /// "Start drive", or the confirmation while it is showing: "Sent to car", or "Opened in Maps"
+    /// when the car is offline and the send was skipped (J6).
+    /// </summary>
+    public IFeed<string> DriveLabel => Feed.Combine(DriveSent, Car).Select(input =>
+        Text(!input.Item1 ? "Drive_Start" : input.Item2.IsStale ? "Drive_Opened" : "Drive_Sent"));
 
     private IFeed<TripResult> Trip => Feed<TripResult>.AsyncEnumerable(WatchTrip);
 
@@ -222,7 +229,12 @@ public partial record MainModel
     /// </summary>
     public async ValueTask StartDrive(CancellationToken ct)
     {
-        await _vehicle.SendDestinationAsync(ct);
+        // J6: with the car offline the send cannot happen, but navigation does not need the car.
+        if (await Car is not { IsStale: true })
+        {
+            await _vehicle.SendDestinationAsync(ct);
+        }
+
         await DriveSent.SetAsync(true, ct);
 
         DriveStarted?.Invoke(this, EventArgs.Empty);
@@ -270,82 +282,96 @@ public partial record MainModel
     {
         await foreach (var plan in _trip.WatchLastKnown(ct).ConfigureAwait(false))
         {
-            yield return new TripSlot(plan);
+            yield return new TripSlot(plan, plan is null ? await _trip.GetNextRunAsync(ct).ConfigureAwait(false) : null);
         }
     }
 
-    private HeaderView BuildHeader((TripSlot Slot, TimeOnly Now, VehicleSnapshot Car) input)
+    private GreetingView BuildGreeting((TimeOnly Now, VehicleSnapshot Car) input) => new(
+        Greeting: Format("Greeting_Named", ProfileName),
+        // A true minus sign (U+2212), as the design sets it, not a hyphen.
+        WeatherLine: Format("Weather_Line", OutsideTemp(input.Car), input.Car.WeatherSummary),
+        NowText: Format("Status_Now", Clock(input.Now)));
+
+    private static string OutsideTemp(VehicleSnapshot car) =>
+        car.OutsideTemp.ToString(CultureInfo.CurrentCulture).Replace('-', '\u2212');
+
+    private HeaderView BuildHeader((TripSlot Slot, TimeOnly Now, VehicleSnapshot Car, bool Unreachable) input)
     {
-        var (slot, now, car) = input;
+        var (slot, now, car, unreachable) = input;
         var plan = slot.Plan;
         var timeline = plan is null ? null : TripMath.Derive(plan, now);
 
-        // Three parts so the duration can take the accent colour inline, which is what the v2
-        // mockup draws. Only the middle Run is coloured; an empty accent collapses to plain text.
-        var (lead, accent, tail) = car.IsStale
-            ? (Format("Headline_Offline", Clock(car.LastSeen)), string.Empty, string.Empty)
-            : timeline is null
-                ? (Text("Headline_NoTrip"), string.Empty, string.Empty)
-                : timeline.Tone switch
-                {
-                    CardTone.Late => (
-                        Text("Headline_LatePrefix"),
-                        Format("Headline_LateAccent", LateByMin(plan!, timeline)),
-                        Text("Headline_LateTail")),
-                    CardTone.LeaveNow => (
-                        Text("Headline_LeaveNowPrefix"),
-                        Text("Headline_LeaveNowAccent"),
-                        Text("Headline_LeaveNowTail")),
-                    _ => (
-                        Text("Headline_LeaveInPrefix"),
-                        Format("Headline_LeaveInAccent", timeline.SlackMin),
-                        Text("Headline_LeaveInTail")),
-                };
+        // Three parts so the emphasis can take its own size and ink inline. A no-trip morning still
+        // says when tomorrow's run leaves, from the saved schedule.
+        var (lead, accent, tail) = timeline is null
+            ? slot.NextRun is { } next
+                ? (Text("Headline_NoTripLead"), Clock(TripMath.Derive(next, now).LeaveBy), Text("Headline_NoTripTail"))
+                : (Text("Headline_NoTrip"), string.Empty, string.Empty)
+            : timeline.Tone switch
+            {
+                CardTone.Late => (
+                    Text("Headline_LatePrefix"),
+                    Format("Headline_LateAccent", LateByMin(plan!, timeline)),
+                    Text("Headline_LateTail")),
+                CardTone.LeaveNow => (
+                    Text("Headline_LeaveNowPrefix"),
+                    Text("Headline_LeaveNowAccent"),
+                    Text("Headline_LeaveNowTail")),
+                _ => (
+                    Text("Headline_LeaveInPrefix"),
+                    Format("Headline_LeaveInAccent", timeline.SlackMin),
+                    Text("Headline_LeaveInTail")),
+            };
 
-        // Under the car now rather than in the status strip, which the strip's weather half needed
-        // the room for. Read-only: nothing on the card changes lock state since v2.
-        var lockText = car.IsStale
-            ? Format("CarStatus_LastSeen", Clock(car.LastSeen))
-            : Format(car.IsLocked ? "Status_Locked" : "Status_Unlocked", car.Name);
+        var accentInk = timeline?.Tone switch
+        {
+            null => "InkBrush",
+            CardTone.Late => "DangerInkBrush",
+            CardTone.LeaveNow => "LeaveNowInkBrush",
+            _ => "AccentInkBrush",
+        };
 
         return new HeaderView(
-            Greeting: Format("Greeting_Named", ProfileName),
-            // Not "No drop-off today": the map panel already says that, and a card should not
-            // deliver the same sentence twice.
             Title: plan?.Title ?? Text("Header_NoTripTitle"),
             HeadlineLead: lead,
             HeadlineAccent: accent,
             HeadlineTail: tail,
+            HeadlineAccentInk: accentInk,
+            HeadlineAccentSize: timeline is null ? 17d : 27d,
+            // E6: a failed live lookup still shows the saved schedule, and says so.
+            ScheduleNote: unreachable && plan is not null ? Text("Headline_ScheduleNote") : string.Empty,
             Tone: timeline?.Tone ?? CardTone.Ok,
             IsStale: car.IsStale,
             CarName: car.Name,
-            LockText: lockText,
-            // A true minus sign (U+2212), as the design sets it, not a hyphen.
-            WeatherLine: Format("Weather_Line", car.OutsideTemp.ToString(CultureInfo.CurrentCulture).Replace('-', '\u2212'), car.WeatherSummary),
-            NowText: Format("Status_Now", Clock(now)),
-            // Names the state rather than leaving it to colour alone, which is also what makes the
-            // three frames of the design distinguishable to someone who cannot tell them apart.
+            // Names the state rather than leaving it to colour alone.
             StatusBadge: car.IsStale
                 ? Text("Badge_Offline")
                 : timeline is null
                     ? Text("Badge_NoTrip")
                     : Text($"Badge_{timeline.Tone}"),
-            LockState: Text(car.IsLocked ? "Lock_Locked" : "Lock_Unlocked"),
+            LockState: car.IsStale
+                ? Format("Lock_Offline", Clock(car.LastSeen))
+                : Text(car.IsLocked ? "Lock_Locked" : "Lock_Unlocked"),
             LockAction: Text(car.IsLocked ? "Lock_ActionUnlock" : "Lock_ActionLock"),
-            IsLocked: car.IsLocked);
+            IsLocked: car.IsLocked,
+            CanStartDrive: plan is not null);
     }
 
     /// <summary>Minutes the walk ends after the bell: what "4 min late" counts.</summary>
     private static int LateByMin(TripPlan plan, TripTimeline timeline) =>
         Math.Max(0, TripMath.ToMinutes(timeline.Arrive) + plan.WalkMin - TripMath.ToMinutes(plan.Bell));
 
-    private EtaView BuildEta((TripResult Result, TimeOnly Now) input)
+    private EtaView BuildEta((TripResult Result, TimeOnly Now, TripSlot Slot) input)
     {
-        var (result, now) = input;
+        var (result, now, slot) = input;
 
         if (result.Plan is not { } plan)
         {
-            return Empty with { Failed = true, FailureMessage = result.FailureMessage };
+            // E6: the live lookup failed. The saved schedule (no traffic) still places the ruler and
+            // the route; only the live ETA block reports the failure.
+            return slot.Plan is { } saved
+                ? BuildEta((TripResult.Ok(saved with { DelayMin = 0 }), now, slot)) with { Failed = true, FailureMessage = result.FailureMessage }
+                : Empty with { Failed = true, FailureMessage = result.FailureMessage };
         }
 
         var timeline = TripMath.Derive(plan, now);
@@ -450,15 +476,25 @@ public partial record MainModel
         // Fuel and parking are informational, so they are ready by definition; the cabin is ready
         // once the driver has decided either way.
         var ready = 2 + (cabin == CabinChoice.Pending ? 0 : 1);
+        var offline = car.IsStale;
+
+        if (offline)
+        {
+            // What the card last heard, and that the car cannot act on anything now.
+            cabinPill = Text("Cabin_PillOffline");
+            cabinDetail = Text("Cabin_DetailOffline");
+        }
 
         return new CarView(
             ChecksCount: Format("Checks_Count", 3),
-            ChecksReady: Format("Checks_Ready", ready, 3),
+            ChecksReady: plan is null ? Text("Checks_ReadyTomorrow") : Format("Checks_Ready", ready, 3),
             ChecksExpanded: expanded,
             FuelTitle: Format("Fuel_Title", car.Range.ToString(CultureInfo.CurrentCulture)),
-            FuelMeta: Text("Fuel_NoteFine"),
+            FuelMeta: offline ? Format("Fuel_LastRead", Clock(car.LastSeen)) : Text("Fuel_NoteFine"),
             FuelPill: fuelPill,
+            FuelNoSignal: Text("Fuel_PillNoSignal"),
             FuelLevel: fuelLevel,
+            FuelOffline: offline,
             FuelDetail: Text(fuelLevel == StatLevel.Normal ? "Fuel_DetailFine" : "Fuel_DetailSoon"),
             FuelOpen: open == ChecklistRow.Fuel,
             Cabin: cabin,
