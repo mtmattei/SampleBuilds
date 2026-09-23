@@ -2,13 +2,193 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <title>School drop-off — on time</title>
-<script src="605bc282-5541-47f7-a85d-bb6a12f9c72c"></script>
+<script src="45cd0aaf-b812-47c6-8389-9b92a3916487"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<!-- Geist @font-face blocks (400/500/600/700) removed -->
+<style>/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("1042b6f8-21a5-41c0-b494-b82b1e7a81c9") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("9cc7d4ac-bea7-4839-a900-6116b9c51022") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("5d1fc1c3-76c1-4021-8b19-adb187353777") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("07831642-88b4-4095-a46b-e707d606d289") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("d4ef0be3-4774-4a1e-84a8-87dc085ca6d8") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("1042b6f8-21a5-41c0-b494-b82b1e7a81c9") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("9cc7d4ac-bea7-4839-a900-6116b9c51022") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("5d1fc1c3-76c1-4021-8b19-adb187353777") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("07831642-88b4-4095-a46b-e707d606d289") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("d4ef0be3-4774-4a1e-84a8-87dc085ca6d8") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("1042b6f8-21a5-41c0-b494-b82b1e7a81c9") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("9cc7d4ac-bea7-4839-a900-6116b9c51022") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("5d1fc1c3-76c1-4021-8b19-adb187353777") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("07831642-88b4-4095-a46b-e707d606d289") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("d4ef0be3-4774-4a1e-84a8-87dc085ca6d8") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("1042b6f8-21a5-41c0-b494-b82b1e7a81c9") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("9cc7d4ac-bea7-4839-a900-6116b9c51022") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("5d1fc1c3-76c1-4021-8b19-adb187353777") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("07831642-88b4-4095-a46b-e707d606d289") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("d4ef0be3-4774-4a1e-84a8-87dc085ca6d8") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
 <style>
 body{margin:0;font-family:"Geist",-apple-system,"SF Pro Text","Segoe UI Variable Text",system-ui,sans-serif;background:#E6E3DC;-webkit-font-smoothing:antialiased}
 a{color:#4A6B8A}a:hover{color:#33506B}
@@ -64,9 +244,7 @@ p{text-wrap:pretty}
 </style>
 </helmet>
 <div class="scene" style="width: 640px; height: 1180px; position: relative; overflow: hidden; display: flex; align-items: flex-start; justify-content: center; padding-top: 48px; box-sizing: border-box;">
-<div style="position: absolute; inset: 0; background: rgba(236,238,241,0.18);"></div>
-
-<main style="position: relative; width: 552px; box-sizing: border-box; padding: 8px; border-radius: 26px; background: #F1EFE9; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 0 0 0.5px rgba(42,44,47,0.10), 0 2px 6px rgba(42,44,47,0.06), 0 32px 64px -24px rgba(42,44,47,0.38); display: flex; flex-direction: column; gap: 8px; color: #2A2C2F;">
+<div data-dc-group="" style="box-sizing: border-box; display: flex; flex-direction: row; gap: normal; justify-content: center; align-items: flex-start"><div style="position: absolute; inset: 0; background: rgba(236,238,241,0.18);"></div><main style="position: relative; width: 552px; box-sizing: border-box; padding: 8px; border-radius: 26px; background: #F1EFE9; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 0 0 0.5px rgba(42,44,47,0.10), 0 2px 6px rgba(42,44,47,0.06), 0 32px 64px -24px rgba(42,44,47,0.38); display: flex; flex-direction: column; gap: 8px; color: #2A2C2F;">
 
 <header style="display: flex; align-items: flex-start; justify-content: space-between; min-height: 52px; padding: 6px 12px 0 14px;">
 <div style="display: flex; align-items: flex-start; gap: 10px;">
@@ -89,7 +267,7 @@ p{text-wrap:pretty}
 </div>
 <figure style="position: relative; margin: -4px -8px 0 0; width: 156px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center;">
 <div aria-hidden="true" style="position: absolute; left: 14px; right: 14px; top: 70px; height: 12px; border-radius: 50%; background: radial-gradient(closest-side, rgba(42,44,47,0.28), rgba(42,44,47,0)); filter: blur(1.5px);"></div>
-<img src="397af2bc-0732-4b6b-a72e-4cd8a6985e20" alt="Silver Outback" width="156" height="82" style="position: relative; width: 156px; height: 82px; object-fit: contain; mix-blend-mode: multiply; filter: saturate(0.3) contrast(0.95);">
+<img src="3efd8122-1134-4da3-b8b2-49dea1802652" alt="Silver Outback" width="156" height="82" style="position: relative; width: 156px; height: 82px; object-fit: contain; mix-blend-mode: multiply; filter: saturate(0.3) contrast(0.95);">
 </figure>
 </div>
 
@@ -265,7 +443,9 @@ p{text-wrap:pretty}
 </button>
 </div>
 </footer>
-</main>
+</main></div>
+
+
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script="" data-props="{&quot;status&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;onTime&quot;,&quot;leaveNow&quot;,&quot;late&quot;],&quot;default&quot;:&quot;onTime&quot;},&quot;checklist&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false},&quot;$preview&quot;:{&quot;width&quot;:640,&quot;height&quot;:1180}}">
@@ -374,5 +554,3 @@ class Component extends DCLogic {
 
 
 </body></html>
-
-

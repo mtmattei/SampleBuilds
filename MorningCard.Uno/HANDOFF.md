@@ -5,9 +5,10 @@ Updated: 2026-09-22 15:05
 
 - The ruler and title-clip defects are **fixed** in `c658b2b` (`captures/android/fix-d420.png`).
 - The user added `docs/design/v6/`, which is **the new target**. The diff against v5 is in
-  `docs/design/v6/v6-vs-v5.md`: the phone card is redesigned with a full state set, and TV, Wear and
-  Auto are unchanged v5 sources.
-- **Next action:** get answers to D1–D11 in that file, then write the v6 section in SPEC.md
+  `docs/design/v6/v6-vs-v5.md` (rev 2): one new design language (Geist, muted slate and paper, slack ruler)
+  on the phone, TV, Wear and Auto, plus a phone state set. The source of truth is
+  `school_dropoff_card_v6_bundle.html` (it renders in a browser); the artboards are in `png/`.
+- **Next action:** get answers to D2, D3, D5–D10, D12 and D13 in that file, then write the v6 section in SPEC.md
   (`write-spec`), then implement v6 step A (phone redesign) before the v5 split.
 
 ## Where we are

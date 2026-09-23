@@ -1,124 +1,188 @@
-# v6 design set vs v5 (2026-09-23)
+# v6 design set vs v5 (2026-09-23, rev 2)
 
-Source: `docs/design/v6/*.html`, Claude Design component exports. The runtime script and image
-assets were not exported, so the files do not render in a browser; this diff is read from markup and
-the embedded state script. v5 baseline: SPEC.md v1-v5 plus the current `MorningCardView` (commit
-`c658b2b`).
+## Sources
 
-## Scope of the change
+| File | What it is |
+|---|---|
+| `school_dropoff_card_v6_bundle.html` | Claude Design standalone bundle (runtime, Geist woff2, car PNG inlined). **Opens in a browser; this is the source of truth.** |
+| `*.html` (10) | per-page markup unpacked from the bundle; readable, and does not render on its own |
+| `png/phone_*.png` | headless Edge renders of the seven phone pages, 640 wide, @1x |
+| `png/android_tv.png`, `png/android_auto.png`, `png/wear_os.png` | the user's @1x exports; identical to the bundle renders |
 
-| Artboard | vs v5 | Weight |
+Rev 1 of this file was written against an earlier export in which TV, Wear and Auto were still the
+v5 artboards. In the bundle they are **redesigned in the v6 language**, which resolves D1, D4, D9 and
+D11 of rev 1.
+
+v5 baseline: SPEC.md v1-v5, `docs/artboards/*.png` (v5 surfaces), and the current
+`MorningCardView` at `c658b2b`.
+
+## One design language on every surface
+
+| Token | Current phone / v5 surfaces | v6, all surfaces |
 |---|---|---|
-| `on-time`, `leave-now`, `running-late` | **Phone card redesigned**: new palette, new face, new ruler, new header and footer | major |
-| `loading`, `eta-unavailable`, `no-dropoff`, `car-offline` | **Phone state set, now specified** (v5 had captures only, no artboards) | major |
-| `tv.html` | HTML source of `docs/artboards/android_tv.png`; same content and layout | none |
-| `wear.html` | HTML source of `wear_os.png` | none |
-| `auto.html` | HTML source of `android_auto.png` | none |
+| Face | Instrument Sans / Geist-or-Roboto-Flex | **Geist** 400/500/600 (woff2 inlined in the bundle) |
+| Ground | bokeh blobs (phone), blurred photo (TV, Auto) | flat `#E9E6DF` |
+| Shell | glass `#9EFFFFFF` / `rgba(240,241,243,.9)` | paper `#F1EFE9` + inset top highlight, radius 26 (phone), 30 (TV), 32 (Auto) |
+| Panel | `#FFFFFF` | `#FBFAF7`, ring `rgba(42,44,47,.05)` |
+| Ink | `#1B2430` / `#111317` | `#2A2C2F`; 2nd `#55585C`, 3rd `#76787B`, caps `#94918A`, faint `#ADA9A1` |
+| On time | `#2169E9` / `#0A66E8` | slate `#4A6B8A`, ink `#3F5C78` |
+| Leave now | amber `#B5700D` | `#A6703F`, ink `#8A5A2E` |
+| Late | `#D9453A` | `#9C4A3E`, ink `#8C4236` |
+| Good | `#1F8A5B` / `#12A15F` | sage `#7E947A`, ink `#4F6B4C`, fill `#E4EBE1` / `#E8ECE3` |
+| Walk, sun | orange `#F29A1F` | ochre `#B5824F`, ink `#8A6236`, fill `#F1E7DA` / `#F0EADF` |
+| Drive fill | — | `#E1E8EF` |
+| Primary | accent blue / `#15171B` pill | charcoal `#2B2D30`, radius 12 (no pills anywhere) |
+| Chips, pills | fully rounded | radius 7 |
+| Car | XC60 full colour / Outback full colour | Outback, `saturate(.3) contrast(.95)` on the phone |
+| Dark | full dark palette (phone) | **not drawn** (D2) |
 
-The TV, Wear and Auto artboards are unchanged from v5 and still use the **v5 palette** (`#0A66E8`
-blue, `#F29A1F` orange, `#111317` ink). The phone moved to a muted palette. See D1.
+Status badges ("On time" + dots) are **gone from every surface**. The state lives in the headline
+sentence and its tone colour, and on the ruler.
 
-## Phone: tokens
+## Shared components, new in v6
 
-| Token | Current (v5 light) | v6 |
-|---|---|---|
-| Face | Instrument Sans | **Geist** (400/500/600/700; `@font-face` stripped from the export) |
-| Shell | glass `#9EFFFFFF` over bokeh | opaque paper `#F1EFE9`, radius 26, padding 8 |
-| Panel | `#FFFFFF` | `#FBFAF7`, radius 20, 1px ring `rgba(42,44,47,.05)` |
-| Ground | bokeh blobs | flat `#E9E6DF` (no bokeh) |
-| Ink | `#1B2430` | `#2A2C2F`; secondary `#55585C`, tertiary `#76787B`, caps `#94918A` |
-| Accent (on time) | `#2169E9` | slate `#4A6B8A` / ink `#3F5C78` |
-| Leave now tone | amber `#B5700D` | `#A6703F` / ink `#8A5A2E` |
-| Late tone | danger `#D9453A` | `#9C4A3E` / ink `#8C4236` |
-| Good | `#1F8A5B` | sage `#7E947A` / ink `#4F6B4C` |
-| Walk / sun | orange / `#E8912B` | ochre `#B5824F`, walk ink `#8A6236`, walk fill `#F1E7DA` |
-| Primary button | accent blue | charcoal `#2B2D30`, radius 12, h 40 |
-| Dark theme | full dark palette | **none drawn** (D2) |
-| Car image | full colour | `saturate(.3) contrast(.95)`, multiply blend, 156x82 |
+- **Slack ruler** (phone, TV, Auto; compact on Wear): a fixed 7:20-7:56 window, one tick per minute,
+  every fifth tick major. Segments: Past (hatched) · Slack "Slack · 9 min" (sage) · Drive
+  "Drive · 14 min" (slate) · Walk (ochre) · After (hatched). LEAVE BY / ARRIVE / BELL values sit
+  above their minute with drop lines, and the now dot and "NOW 7:24" caption sit under it. Late
+  swaps ARRIVE to the right of BELL and hatches the overrun red. Labels shorten with segment width
+  (≥7 min full, ≥3 short, else none; Wear draws no labels).
+- **ETA block**: "14 min / DRIVE TO SCHOOL", traffic dot and line, "2 min faster than usual". The
+  number is **drive only on every surface** (resolves D4).
+- **Map callouts**: "Now 7:24" and "3 min walk" only. The v5 "14 min", "Bell 7:50" and
+  "9 min slack" callouts moved onto the ruler.
+- **Greeting**: "Good morning, Josh" over a weather line "−3° · Clear · High 9°". The weather pill is
+  gone.
+- **Footer vehicle line**: "● Outback · Locked". The "62 km range" suffix is gone; range lives only
+  in the fuel row.
+- **Fuel pill**: "Fuel this week" everywhere (resolves D11).
 
-## Phone: layout, top to bottom
+## Phone
 
 | Region | Current | v6 |
 |---|---|---|
-| Header | sun, "Good morning", weather pill, overflow `⋯`; status strip "Now 7:24 · On time" | sun, "Good morning" over a second line "−3° · Clear · High 9°" (16px, no pill); right: "Now 7:24". **No overflow, no status badge.** |
-| Title block | title, chevron, headline, car + "XC60 · Locked" under it | title 34/40, chevron, headline 17 with the emphasis at 27 (e.g. **9 min**); car only, **lock line moves to the footer** |
-| Key times | LEAVE BY / ARRIVE / BELL columns + a dotted/blue/amber strip | **New slack ruler** (104 px): fixed 7:20-7:56 window, one tick per minute (major every 5); segments Past (hatched) · Slack "Slack · 9 min" (sage) · Drive "Drive · 14 min" (slate) · Walk (ochre) · After (hatched); Late adds an overrun hatch in red over 7:50-7:54. LEAVE BY / ARRIVE / BELL sit **on the ruler at their minute**, with 1 px drop lines; now dot + "NOW 7:24" caption under it. Labels shorten by segment width (≥7 min full, ≥3 short, else none). |
-| Map | half-width map panel beside the ETA block ("17 min", traffic); ruler overlay; "Leave 7:33" + "Bell 7:50" callouts; Open in Maps | **full-width map, 280 tall**, radius 16; white scrim left to right (97% → 0 at 62%); ETA top-left: **"14 min / DRIVE TO SCHOOL"**, traffic dot + line, sub-line; callouts "Now 7:24" and "3 min walk" only; bottom right: **Recenter FAB** + "Open in Maps ↗" pill |
-| Checklist | collapsed header: "Before you go", "3 of 3 ready", chevron; rows below | outlined container, header h 52: icon, "Before you go", "3 checks" chip, "N of 3 ready", chevron (collapsed by default). Rows are an **accordion** (one open, cabin open by default), each with its own chevron and detail |
-| Fuel row | Enough for today | "62 km of range" / "Enough for today", pill **"Fuel this week"** (TV and Auto say "Fuel soon") |
-| Cabin row | Suggested + Start warming | pill Suggested → **● Warming** → **Skipped**; detail "Warm to 20° so the car is ready when you leave at 7:33." + "Remote start" chip; **Start warming + Skip**, then **Undo** once decided. Skipped strikes the title through. Ready count 2 while pending, 3 once warming *or skipped*. |
-| Parking row | Rue Rachel Est / Until 9:30 | same, plus detail "Street parking on Rue Rachel Est. No parking from 9:30, so drop-off only." |
-| Footer | status dot + "On time"; icon-only lock button; Start drive | "● Outback · Locked" (pulsing live dot); **"Unlock" labelled ghost button**; charcoal "Start drive". Status text is gone from the footer too. |
+| Header | sun, greeting, weather pill, overflow `⋯`, status strip | greeting over the weather line; "Now 7:24" right; **no overflow, no badge** |
+| Title | title, chevron, headline, car + "XC60 · Locked" | title 34/40 w600, chevron; headline 17 with the emphasis at 27; car 156x82; lock line moves to the footer |
+| Key times | three columns + strip | slack ruler, 104 px |
+| Map | beside the ETA block; "17 min"; Open in Maps | full width, 280 tall, radius 16, scrim 97% → 0 at 62%; ETA top left; **Recenter FAB** + "Open in Maps ↗" |
+| Checklist | collapsible list | outlined; header h52 with "3 checks" chip and "N of 3 ready"; rows are an **accordion** (cabin open by default) with per-row detail |
+| Cabin | Suggested + Start warming | Suggested → ● Warming → **Skipped** (struck through); Start warming + Skip, then **Undo**; skipped counts as ready |
+| Footer | status dot + "On time"; lock icon button; Start drive | "● Outback · Locked"; labelled **Unlock**; Start drive |
 
-## Phone: states
+### Phone states
 
 | State | Current | v6 |
 |---|---|---|
-| On time | exists | redesigned as above |
-| Leave now | badge + amber | headline "Leave **now** to make the bell."; LEAVE shows "Now"; no slack segment; traffic "Traffic is clear / Leaving now still makes the bell" |
-| Running late | "Running N min late. Leave now to arrive 7:51." | "Running **4 min late** for the bell."; ARRIVE 7:51 in late ink; overrun hatch on the ruler; checklist open |
-| Loading | FeedView progress | **in-place skeleton**: headline bars, value bars under each caps label, one bar for the ruler, map tiles without route, ETA bars; checklist "Checking…"; footer "Updating…"; Start drive disabled |
-| ETA unavailable | whole-card error panel + Retry | **partial**: the card renders, title adds "Times from your saved schedule."; map shows "Live ETA unavailable / Traffic data didn't load / Retry" in the ETA slot |
-| No drop-off | title "This morning", "Nothing on the calendar before 9." | title **"No drop-off today"**, "School is closed. Next run tomorrow, leave by **7:33**."; ruler hidden; map without route, "Route shows tomorrow"; checklist "Ready for tomorrow"; Start drive disabled |
-| Car offline | "Car isn't reachable, showing {0} data." | per-row: fuel "Last read 6:10" + "No signal"; cabin pill "Car offline" + explanation, Start/Skip disabled; footer "Offline · last seen 6:10"; **Unlock and Start drive disabled** |
-| Whole-card error | exists | **not drawn** |
-| Device offline | exists (`offline` capture) | **not drawn** (car-offline is a different thing) |
-| Dark | exists | **not drawn** |
+| Leave now | badge + amber | "Leave **now** to make the bell."; LEAVE "Now"; no slack; "Traffic is clear / Leaving now still makes the bell" |
+| Running late | "Running N min late. Leave now to arrive 7:51." | "Running **4 min late** for the bell."; ARRIVE 7:51 in late ink after BELL; overrun hatch; checklist open |
+| Loading | FeedView progress | in-place skeleton (headline, value, ruler and ETA bars; map without route); "Checking…"; "Updating…"; Start drive disabled, Unlock enabled |
+| ETA unavailable | whole-card error + Retry | partial: "Times from your saved schedule." under the headline; ruler and route still drawn; ETA slot reads "Live ETA unavailable / Traffic data didn't load / Retry" |
+| No drop-off | "This morning" / "Nothing on the calendar before 9." | "No drop-off today" / "School is closed. Next run tomorrow, leave by **7:33**."; no ruler, no route; "Route shows tomorrow"; "Ready for tomorrow"; Start drive disabled |
+| Car offline | "Car isn't reachable, showing {0} data." | fuel "Last read 6:10" + "No signal"; cabin "Car offline" + explanation, actions disabled; footer "Offline · last seen 6:10"; Unlock **and Start drive** disabled |
+| Whole-card error, device offline, dark | exist | **not drawn** (D7, D2) |
+
+## TV (1280x720) vs v5 `android_tv.png`
+
+- Layout unchanged: header, trip panel (560 wide) over the checklist on the left, map panel on the
+  right, footer.
+- Title 36 w600 (v5 38 w700); headline 19 with the emphasis at 30; ruler caps 11 / values 21.
+- Checklist always expanded, no accordion; cabin sub "Outside is −3°" (v5 "· to 20°"); Start warming
+  and Skip at h40 r10. **Focus ring is a slate double ring** (v5 white + blue, scale 1.06).
+- Map ETA 58/24 "14 min" + "DRIVE TO SCHOOL" 18 caps (v5 "23 min / Arrive 7:47").
+- Footer Unlock / **Send to car** at h48 r12 (v5 pills r24).
+
+## Wear (454 round) vs v5 `wear_os.png`
+
+1. Greeting 16 + weather 13, title 26 (v5 30), **"Leave in 9 min" on one line, 17 with the number
+   at 38** (v5 stacked with a 68 number), "to arrive on time." 15, compact ruler with no segment
+   labels, Start drive on the bottom edge.
+2. ROUTE caps, map, ETA "14 min / DRIVE TO SCHOOL / Light traffic" (v5 23 / Arrive 7:47), Open in
+   Maps h48 r14.
+3. "Before you go" 22, "3 checks · 2 of 3 ready" (**the dots are gone**), fuel "Fuel this week",
+   cabin highlighted "Suggested · tap to start", parking scaled down and faded as the next item.
+4. Car, "● Outback / Locked" (v5 "Locked · 62 km range"), **no weather pill** (moved to screen 1),
+   Unlock h52 r14, Start drive.
+
+## Auto (1440x640, parked) vs v5 `android_auto.png`
+
+- Panel: greeting + weather, "Now 7:24" right; title 30; headline 18/28; ruler (caps 10, values 20).
+- Checklist expanded with an up-chevron; cabin **Start** (h48 r12) + icon-only Skip; footer
+  "● Outback · Locked" + Start drive h60 r14.
+- Map: ETA 44/18 top right of the panel; callouts Now + walk only; **zoom +, −, recenter unchanged**.
+- Rail: selected drop-off tile in slate.
+- v5 inventory 36 still stands: a POI app gets host-drawn pane rows, so the panel styling, **the
+  ruler**, the car image and the inline Start/Skip cannot appear in the car. The v6 panel is even
+  further from what the host allows (D12).
 
 ## Decisions v6 reverses or reopens
 
-| v5 decision | v6 says | Effect |
+| v5 decision | v6 | Effect |
 |---|---|---|
-| C: keep the XC60 | car is "Silver Outback" on every surface | **Reopens C** (D3) |
-| B4: map locked | Recenter FAB on the phone | **Reopens B4 on the phone**; recenter implies pan/zoom is possible |
-| v3 Q: Skip has no meaning | Skip → "Skipped" state, counts as ready, Undo returns to pending | **Resolves v5 UQ4** on the phone; TV/Auto still show Skip without the Skipped visuals |
-| Overflow menu (Refresh, Open in Maps, Replay) | no overflow | Refresh and Replay lose their entry point (D6) |
-| ETA = door to bell (17) | ETA = drive only (14); TV/Wear/Auto show 23 | **Three numbers on four surfaces** for "how long" (D4) |
-| Status badge "On time" | not rendered on the phone (defined in the script, unused) | status carried by tone + sentence only; fine for colour-blind users only because the sentence names it |
+| C: keep the XC60 | Outback on every surface, one image | **reopens C** (D3) |
+| B4: map locked | Recenter on the phone; zoom + recenter in Auto | **reopens B4** on the phone (D5); car already open (v5 UQ3) |
+| Skip undefined | Skipped state + Undo on the phone | **resolves v5 UQ4** for the phone; TV/Auto/Wear follow the same model |
+| Overflow menu (Refresh, Open in Maps, Replay) | none | Refresh and Replay lose their entry point (D6) |
+| ETA = door to bell (17); surfaces 23 | 14, drive only, everywhere | resolved (was D4) |
+| Status badge | removed everywhere | state is carried by sentence + tone + ruler; still not colour-only, because the sentence names it |
+| v5 ramp table (TV 54/27/81, Wear 30/68/40) | superseded | new ramp below |
+
+### v6 type ramp (px at artboard scale)
+
+| Role | Phone | TV | Wear | Auto |
+|---|---|---|---|---|
+| Greeting / weather | 15 / 16 | 20 / 15 | 16 / 13 | 18 / 14 |
+| Title | 34 | 36 | 26 | 30 |
+| Headline / emphasis | 17 / 27 | 19 / 30 | 17 / 38 | 18 / 28 |
+| Ruler caps / values | 10 / 19 | 11 / 21 | 11 / 17 | 10 / 20 |
+| ETA number / unit | 30 / 15 | 58 / 24 | 34 / 15 | 44 / 18 |
+| Row title / meta | 15.5 / 13 | 19 / 14 | 19 / 15 | 19 / 14 |
+| Primary action h | 40 | 48 | 100 (edge) | 60 |
 
 ## Capability inventory delta
 
 | # | Capability | Status | Note |
 |---|---|---|---|
-| 38 | Slack ruler (minute-scale timeline) | to implement | replaces the strip; XAML Grid of star columns, or `SKCanvasElement` for the hatches and ticks |
-| 39 | Map as OSM tiles styled muted | substitution candidate | the artboard map is a stylised drawing; keep Mapsui (real map) and tint tiles with a colour filter to reach the muted look. Raise in UQ |
-| 40 | Recenter | to implement if B4 reopens | Mapsui navigator re-fit (`CenterOnAndZoomTo` / the existing fit) |
-| 41 | Cabin Skip / Undo | to implement | new model state: `Cabin { Pending, Warming, Skipped }` replaces the bool |
-| 42 | Per-row accordion | to implement | one expanded row key in state |
-| 43 | Partial ETA error with Retry in the map | to implement | `EtaView.Failed` already exists; move it out of the whole-card error |
-| 44 | Skeleton loading | to implement | per-region placeholders in the templates (see `uno-component-states`) |
-| 45 | Car-offline per-row degradation | to implement | `IsStale` exists; needs last-seen time and disabled actions |
-| 46 | Geist font | to implement | static TTFs per weight, underscore filenames (Android asset rule) |
+| 38 | Slack ruler | to implement | one control, four sizes; XAML star-column grid, or `SKCanvasElement` for hatches and ticks |
+| 39 | Muted map | substitution candidate | the artboard map is drawn; keep Mapsui + OSM and tint the tiles (D10) |
+| 40 | Recenter (phone) | to implement if B4 reopens | re-run the existing fit |
+| 41 | Cabin Skip / Undo | to implement | `Cabin { Pending, Warming, Skipped }` replaces the bool |
+| 42 | Checklist accordion (phone) | to implement | one expanded-row key in state |
+| 43 | Partial ETA error | to implement | `EtaView.Failed` exists; move it out of the whole-card error into the ETA slot |
+| 44 | Skeleton loading | to implement | per-region placeholders (`uno-component-states`) |
+| 45 | Car-offline degradation | to implement | `IsStale` exists; add last-seen time and disabled actions |
+| 46 | Geist | to implement | static TTFs per weight, underscore filenames (Android asset rule) |
+| 47 | Outback image | to implement if D3 | the bundle carries a 99 KB PNG; name it `outback.png` |
 
 ## Unresolved questions
 
-1. **D1 Palette split.** The phone is muted slate/ochre; TV, Wear and Auto are still v5 blue/orange.
-   Restyle those three to the v6 palette, or keep two palettes on purpose?
-2. **D2 Dark theme.** v6 has no dark artboards. Derive a dark v6 palette ourselves, or drop dark on
-   the phone? (The car still needs a night treatment either way, v5 UQ1.)
-3. **D3 Car.** Switch to the Outback (new image + name everywhere), or keep the XC60 as decision C
-   said?
-4. **D4 ETA semantics.** Phone map shows 14 (drive), TV/Wear/Auto show 23 (now to arrival), current
-   phone shows 17 (drive + walk). Pick one number and its caption for all surfaces.
-5. **D5 Recenter on phone.** Honour it (unlock pan/zoom, reopen B4) or omit the FAB?
-6. **D6 Overflow removed.** Refresh and Replay lose their entry point. Move Refresh to pull-to-refresh
-   or the header, and Replay to the Simulator, or keep a small overflow?
-7. **D7 Missing states.** Whole-card error, device offline and dark are not drawn. Derive them from
-   the v6 language (proposed: error = ETA-unavailable treatment plus a disabled checklist), or keep
-   the current ones?
-8. **D8 Start drive while the car is offline.** v6 disables it, but navigation does not need the
-   car. Keep it enabled?
-9. **D9 Greeting.** `on-time.html` says "Good morning, Josh" with a stray leading comma on the
-   weather line and a 13px weather line; the other six say "Good morning" at 16px. Treat the six as
-   canonical?
-10. **D10 Map style.** Tint real OSM tiles toward the artboard's muted palette, or leave them stock?
-11. **D11 Fuel pill copy.** Phone "Fuel this week" vs TV/Auto "Fuel soon".
+- **D2 Dark.** v6 draws no dark theme. Derive a v6 dark palette, or drop dark on the phone and TV?
+  (The car still needs a night treatment, v5 UQ1.)
+- **D3 Car.** Switch to the Outback everywhere (image, name, alt text), reversing decision C?
+- **D5 Recenter on the phone.** Honour it, which means unlocking pan and zoom (reopens B4), or omit it?
+- **D6 Overflow removed.** Where do Refresh and Replay go: pull-to-refresh plus the Simulator, or a
+  small overflow kept against the design?
+- **D7 Missing states.** Whole-card error and device offline are not drawn. Derive them from the
+  ETA-unavailable and car-offline treatments?
+- **D8 Start drive while the car is offline.** v6 disables it; navigation does not need the car.
+  Keep it enabled?
+- **D9 Greeting.** "Good morning, Josh" is canonical (5 of 7 phone pages and all surfaces). Two
+  artboard defects to correct, not copy: the phone weather line has a stray leading comma at 13 px
+  where the clean pages use 16 px, and leave-now/running-late omit the name. Also: where does "Josh"
+  come from? It is a new profile field (simulated in this sample).
+- **D10 Map style.** Tint real OSM tiles toward the muted palette, or leave them stock?
+- **D12 Auto panel.** The v6 Auto artboard is a custom panel that the Car App Library does not allow
+  for a POI app. Keep v5's mapping (host rows + pane actions, ruler omitted) and record the ruler as
+  an omission?
+- **D13 No drop-off Recenter.** The artboard keeps Recenter and Open in Maps on a map with no route.
+  Hide both there?
 
-## Proposed effect on the v5 plan
+## Proposed effect on the plan
 
-- Step 0 (baseline) is still worth finishing, since it documents the pre-v6 card, but only light plus the
-  four states v6 draws. Dark only if D2 keeps it.
-- Insert **v6 step A (phone redesign)** before the v5 split (step 2): tokens and face, header,
-  slack ruler, full-width map, checklist accordion + Skip/Undo, footer, then the four v6 states.
-  Splitting the old card first would mean splitting it twice.
-- TV/Wear/Auto steps (5-9) wait on D1.
+- Step 0 (baseline): finish light plus the drawn states only; dark only if D2 keeps it.
+- **v6 step A, phone redesign, before the v5 split:** tokens + Geist, header/footer, slack ruler,
+  full-width map, checklist accordion + Skip/Undo, then the four v6 states. Build the ruler and the
+  ETA block as standalone parts from the start, because TV, Wear and Auto reuse them.
+- The v5 part list gains `SlackRuler`; `TripPanel` loses the strip. Rewrite the v5 ramp dictionaries
+  from the table above.
+- Parity targets for steps 5-8 become `png/android_tv.png`, `png/wear_os.png` and
+  `png/android_auto.png`, replacing `docs/artboards/*`.
