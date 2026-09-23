@@ -78,7 +78,7 @@ public class SimulatedDriveHubTests
 
         var stale = await NextAsync(cars);
         Assert.True(stale.IsStale);
-        Assert.Equal(new TimeOnly(6, 58), stale.LastSeen);
+        Assert.Equal(DriveHubState.LastSeenWhenOffline, stale.LastSeen);
 
         // The data itself survives: offline is a value, not an absence.
         Assert.Equal(live.Range, stale.Range);
