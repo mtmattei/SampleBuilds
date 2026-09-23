@@ -16,11 +16,19 @@ public partial record MainModel
     private readonly IVehicleService _vehicle;
     private readonly IStringLocalizer _text;
 
+    /// <summary>The simulated profile's first name (v6 decision F6): mock data, not a feature.</summary>
+    private const string ProfileName = "Josh";
+
     public MainModel(ITripService trip, IVehicleService vehicle, IStringLocalizer text)
     {
         _trip = trip;
         _vehicle = vehicle;
         _text = text;
+
+        // D6: Refresh lives in the Simulator. It signals rather than calling in, because the retry
+        // waiter belongs to this model. MainModel lives as long as the app, so the static
+        // subscription is never left dangling.
+        CardSignals.RefreshRequested += async (_, _) => await Retry(CancellationToken.None);
     }
 
     /// <summary>The simulated clock. Advances a minute per minute, and the dial can set it.</summary>
@@ -253,8 +261,8 @@ public partial record MainModel
                 {
                     CardTone.Late => (
                         Text("Headline_LatePrefix"),
-                        Format("Headline_LateAccent", -timeline.SlackMin),
-                        Format("Headline_LateTail", Clock(timeline.Arrive))),
+                        Format("Headline_LateAccent", LateByMin(plan!, timeline)),
+                        Text("Headline_LateTail")),
                     CardTone.LeaveNow => (
                         Text("Headline_LeaveNowPrefix"),
                         Text("Headline_LeaveNowAccent"),
@@ -272,7 +280,7 @@ public partial record MainModel
             : Format(car.IsLocked ? "Status_Locked" : "Status_Unlocked", car.Name);
 
         return new HeaderView(
-            Greeting: Text("Greeting"),
+            Greeting: Format("Greeting_Named", ProfileName),
             // Not "No drop-off today": the map panel already says that, and a card should not
             // deliver the same sentence twice.
             Title: plan?.Title ?? Text("Header_NoTripTitle"),
@@ -283,8 +291,8 @@ public partial record MainModel
             IsStale: car.IsStale,
             CarName: car.Name,
             LockText: lockText,
-            OutsideTemp: Format("Status_Temp", car.OutsideTemp),
-            WeatherSummary: car.WeatherSummary,
+            // A true minus sign, as the design sets it: "−3°", not a hyphen.
+            WeatherLine: Format("Weather_Line", car.OutsideTemp.ToString(CultureInfo.CurrentCulture).Replace('-', '−'), car.WeatherSummary),
             NowText: Format("Status_Now", Clock(now)),
             // Names the state rather than leaving it to colour alone, which is also what makes the
             // three frames of the design distinguishable to someone who cannot tell them apart.
@@ -292,8 +300,15 @@ public partial record MainModel
                 ? Text("Badge_Offline")
                 : timeline is null
                     ? Text("Badge_NoTrip")
-                    : Text($"Badge_{timeline.Tone}"));
+                    : Text($"Badge_{timeline.Tone}"),
+            LockState: Text(car.IsLocked ? "Lock_Locked" : "Lock_Unlocked"),
+            LockAction: Text(car.IsLocked ? "Lock_ActionUnlock" : "Lock_ActionLock"),
+            IsLocked: car.IsLocked);
     }
+
+    /// <summary>Minutes the walk ends after the bell: what "4 min late" counts.</summary>
+    private static int LateByMin(TripPlan plan, TripTimeline timeline) =>
+        Math.Max(0, TripMath.ToMinutes(timeline.Arrive) + plan.WalkMin - TripMath.ToMinutes(plan.Bell));
 
     private EtaView BuildEta((TripResult Result, TimeOnly Now) input)
     {
@@ -306,6 +321,7 @@ public partial record MainModel
 
         var timeline = TripMath.Derive(plan, now);
         var route = RouteLayout.Fractions(timeline, plan.WalkMin);
+        var slack = SlackRulerLayout.Compute(timeline, plan.WalkMin, plan.Bell, now);
 
         var vsUsual = VsUsual(timeline.VsUsualMin);
 
@@ -315,10 +331,16 @@ public partial record MainModel
             : Format("Route_AutomationName",
                 Clock(now), Clock(timeline.LeaveBy), route.SlackVisibleMin, timeline.DriveMin, Clock(timeline.Arrive), plan.WalkMin, Clock(plan.Bell));
 
+        var rulerName = slack.LateByMin > 0
+            ? Format("Ruler_NameLate", Clock(now), timeline.DriveMin, plan.WalkMin, slack.LateByMin, Clock(plan.Bell))
+            : slack.LeaveIsNow
+                ? Format("Ruler_NameLeaveNow", Clock(now), timeline.DriveMin, plan.WalkMin, Clock(plan.Bell))
+                : Format("Ruler_Name", Clock(now), timeline.SlackMin, Clock(timeline.LeaveBy), timeline.DriveMin, plan.WalkMin, Clock(plan.Bell));
+
         return new EtaView(
             Failed: false,
             FailureMessage: string.Empty,
-            TotalMinutes: timeline.TotalMin,
+            TotalMinutes: timeline.DriveMin,
             ArrivalText: Format("Eta_Arrive", ClockWithPeriod(timeline.Arrive)),
             Traffic: timeline.Traffic,
             TrafficText: Text($"Traffic_{timeline.Traffic}"),
@@ -327,21 +349,26 @@ public partial record MainModel
             RouteLeave: route.Leave,
             RouteArrive: route.Arrive,
             Tone: timeline.Tone,
-            // Once the answer is "Now" the column header loses its "BY": "LEAVE BY Now" reads wrong.
-            LeaveByTime: timeline.Tone == CardTone.Ok ? Clock(timeline.LeaveBy) : Text("Timeline_Now"),
-            LeaveByLabel: Text(timeline.Tone == CardTone.Ok ? "Timeline_LeaveBy" : "Timeline_Leave"),
+            // Once the answer is "Now" the caption loses its "BY": "LEAVE BY Now" reads wrong.
+            LeaveCaption: Text(slack.LeaveIsNow ? "Timeline_Leave" : "Timeline_LeaveBy"),
+            LeaveValue: slack.LeaveIsNow ? Text("Timeline_Now") : Clock(timeline.LeaveBy),
+            ArriveCaption: Text("Ruler_Arrive"),
             ArriveTime: Clock(timeline.Arrive),
+            BellCaption: Text("Ruler_Bell"),
             BellTime: Clock(plan.Bell),
-            // A floor on each, so no segment collapses to nothing and the track keeps its shape
-            // even when the slack is gone or the walk is a single minute.
-            TrackSlack: Math.Max(route.Leave, 0.04),
-            TrackDrive: Math.Max(route.Arrive - route.Leave, 0.04),
-            TrackWalk: Math.Max(1d - route.Arrive, 0.04),
+            NowCaption: Format("Ruler_Now", Clock(now)),
+            SlackSegment: Format("Ruler_Slack", Math.Max(0, timeline.SlackMin)),
+            SlackSegmentShort: Text("Ruler_SlackShort"),
+            DriveSegment: Format("Ruler_Drive", timeline.DriveMin),
+            DriveSegmentShort: Text("Ruler_DriveShort"),
+            WalkSegment: Text("Ruler_Walk"),
+            RulerDescription: rulerName,
             LeaveLabel: Format("Route_Leave", Clock(timeline.LeaveBy)),
             ArriveLabel: Format("Route_Arrive", Clock(timeline.Arrive)),
             BellLabel: Format("Route_Bell", Clock(plan.Bell)),
             RouteDescription: description,
-            Ruler: new RulerPlan(timeline, plan.WalkMin, plan.Bell, now));
+            Ruler: new RulerPlan(timeline, plan.WalkMin, plan.Bell, now),
+            Slack: slack);
     }
 
     /// <summary>How today compares with a usual morning, shared by the header and the ETA block.</summary>
@@ -422,13 +449,19 @@ public partial record MainModel
         RouteLeave: 0d,
         RouteArrive: 1d,
         Tone: CardTone.Ok,
-        LeaveByTime: string.Empty,
-        LeaveByLabel: string.Empty,
+        LeaveCaption: string.Empty,
+        LeaveValue: string.Empty,
+        ArriveCaption: string.Empty,
         ArriveTime: string.Empty,
+        BellCaption: string.Empty,
         BellTime: string.Empty,
-        TrackSlack: 1d,
-        TrackDrive: 1d,
-        TrackWalk: 1d,
+        NowCaption: string.Empty,
+        SlackSegment: string.Empty,
+        SlackSegmentShort: string.Empty,
+        DriveSegment: string.Empty,
+        DriveSegmentShort: string.Empty,
+        WalkSegment: string.Empty,
+        RulerDescription: string.Empty,
         LeaveLabel: string.Empty,
         ArriveLabel: string.Empty,
         BellLabel: string.Empty,

@@ -199,7 +199,7 @@
     <value>now</value>
   </data>
   <data name="Headline_LeaveNowTail" xml:space="preserve">
-    <value> to arrive on time.</value>
+    <value> to make the bell.</value>
   </data>
   <data name="Headline_LatePrefix" xml:space="preserve">
     <value>Running </value>
@@ -208,7 +208,7 @@
     <value>{0} min late</value>
   </data>
   <data name="Headline_LateTail" xml:space="preserve">
-    <value>. Leave now to arrive {0}.</value>
+    <value> for the bell.</value>
   </data>
   <data name="Status_Locked" xml:space="preserve">
     <value>{0} · Locked</value>
@@ -320,10 +320,63 @@
   <data name="Cabin_WarmDetail" xml:space="preserve"><value>Warm to {0}° while you drive.</value></data>
   <data name="Drive_Start" xml:space="preserve"><value>Start drive</value></data>
   <data name="Drive_Sent" xml:space="preserve"><value>Sent to car</value></data>
-  <data name="OverflowButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>More actions</value></data>
-  <data name="MenuRefresh.Text" xml:space="preserve"><value>Refresh</value></data>
-  <data name="MenuOpenMaps.Text" xml:space="preserve"><value>Open in Maps</value></data>
-  <data name="MenuReplay.Text" xml:space="preserve"><value>Replay entrance</value></data>
+  <data name="Greeting_Named" xml:space="preserve">
+    <value>Good morning, {0}</value>
+  </data>
+  <data name="Weather_Line" xml:space="preserve">
+    <value>{0}° · {1}</value>
+  </data>
+  <data name="Lock_Locked" xml:space="preserve">
+    <value>Locked</value>
+  </data>
+  <data name="Lock_Unlocked" xml:space="preserve">
+    <value>Unlocked</value>
+  </data>
+  <data name="Lock_ActionUnlock" xml:space="preserve">
+    <value>Unlock</value>
+  </data>
+  <data name="Lock_ActionLock" xml:space="preserve">
+    <value>Lock</value>
+  </data>
+  <data name="Ruler_Arrive" xml:space="preserve">
+    <value>ARRIVE</value>
+  </data>
+  <data name="Ruler_Bell" xml:space="preserve">
+    <value>BELL</value>
+  </data>
+  <data name="Ruler_Now" xml:space="preserve">
+    <value>NOW {0}</value>
+  </data>
+  <data name="Ruler_Slack" xml:space="preserve">
+    <value>Slack · {0} min</value>
+  </data>
+  <data name="Ruler_SlackShort" xml:space="preserve">
+    <value>Slack</value>
+  </data>
+  <data name="Ruler_Drive" xml:space="preserve">
+    <value>Drive · {0} min</value>
+  </data>
+  <data name="Ruler_DriveShort" xml:space="preserve">
+    <value>Drive</value>
+  </data>
+  <data name="Ruler_Walk" xml:space="preserve">
+    <value>Walk</value>
+  </data>
+  <data name="Ruler_Name" xml:space="preserve">
+    <value>Now {0}. {1} minutes of slack, leave at {2}, drive {3} minutes, walk {4} minutes, bell at {5}.</value>
+  </data>
+  <data name="Ruler_NameLeaveNow" xml:space="preserve">
+    <value>Now {0}. No slack left. Drive {1} minutes, walk {2} minutes, bell at {3}.</value>
+  </data>
+  <data name="Ruler_NameLate" xml:space="preserve">
+    <value>Now {0}. Drive {1} minutes, walk {2} minutes, arriving {3} minutes after the {4} bell.</value>
+  </data>
+  <data name="ButtonRefresh.Content" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Eta_Caption" xml:space="preserve">
+    <value>DRIVE TO SCHOOL</value>
+  </data>
 </root>
 
 

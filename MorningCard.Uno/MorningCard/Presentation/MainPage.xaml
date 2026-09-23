@@ -9,12 +9,7 @@
       utu:StatusBar.Background="{ThemeResource GroundBrush}">
 
   <Grid>
-    <!--
-      The backdrop is full bleed: safe-area insets go on the scrolling content instead, so the blur
-      runs under the status bar rather than stopping at it.
-    -->
-    <mc:BokehBackdrop />
-
+    <!-- v6 ground is flat (no bokeh): the page background carries it. -->
     <ScrollViewer utu:SafeArea.Insets="Left,Top,Right,Bottom"
                   VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Disabled">

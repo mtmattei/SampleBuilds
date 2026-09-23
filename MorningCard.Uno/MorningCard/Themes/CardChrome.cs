@@ -9,7 +9,7 @@ namespace MorningCard.Themes;
 /// </summary>
 public static class CardChrome
 {
-    private static double _cornerRadius = 34d;
+    private static double _cornerRadius = 28d;
     private static double _motionSpeed = 1d;
     private static bool _reducedMotion;
 

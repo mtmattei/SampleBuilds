@@ -372,17 +372,19 @@
     the rest of the card uses - this one sits on the shell beside a filled primary, and a near-white
     hairline there read as an unfinished button rather than a quiet one.
   -->
+  <!-- v6 ghost: a faint ink wash, no ring, 40 tall, radius 12 (Unlock, Retry). -->
   <Style x:Key="GhostPillStyle" TargetType="Button" BasedOn="{StaticResource PrimaryPillStyle}">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
-    <Setter Property="Padding" Value="11,8" />
+    <Setter Property="Background" Value="{ThemeResource GhostBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkStrongBrush}" />
+    <Setter Property="Height" Value="40" />
+    <Setter Property="Padding" Value="13,0,16,0" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="FontSize" Value="13.5" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
           <Border x:Name="Shell"
                   Background="{TemplateBinding Background}"
-                  BorderBrush="{ThemeResource InkBrush}"
-                  BorderThickness="1"
                   CornerRadius="{TemplateBinding CornerRadius}"
                   Padding="{TemplateBinding Padding}"
                   RenderTransformOrigin="0.5,0.5">
@@ -440,11 +442,15 @@
     </Setter>
   </Style>
 
-  <!-- The card's one primary action, so it is the only ink-filled control on it. -->
+  <!-- The card's one primary action: strong ink, 40 tall, radius 12 (v6). -->
   <Style x:Key="StartDriveStyle" TargetType="Button" BasedOn="{StaticResource PrimaryPillStyle}">
-    <Setter Property="Background" Value="{ThemeResource InkBrush}" />
-    <Setter Property="Foreground" Value="{ThemeResource GlassInkBrush}" />
-    <Setter Property="Padding" Value="17,9" />
+    <Setter Property="Background" Value="{ThemeResource InkStrongBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource OnInkStrongBrush}" />
+    <Setter Property="Height" Value="40" />
+    <Setter Property="Padding" Value="14,0,16,0" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
+    <Setter Property="FontSize" Value="13.5" />
   </Style>
 
 
@@ -506,12 +512,6 @@
   </Style>
 
   <!-- 28x28: under the 44px touch minimum, which is recorded as a desktop-only trade-off. -->
-  <Style x:Key="OverflowButtonStyle" TargetType="Button" BasedOn="{StaticResource RowButtonStyle}">
-    <Setter Property="Width" Value="28" />
-    <Setter Property="Height" Value="24" />
-    <Setter Property="HorizontalAlignment" Value="Right" />
-    <Setter Property="HorizontalContentAlignment" Value="Center" />
-  </Style>
 
 </ResourceDictionary>
 

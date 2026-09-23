@@ -98,6 +98,13 @@ public partial record TuningModel
     /// <summary>Reads back as the clock, so the label under the slider is the time, not a count.</summary>
     public IFeed<string> ClockText => Clock.Select(value => TripMath.FromMinutes((int)value).ToString("H:mm", CultureInfo.InvariantCulture));
 
+    /// <summary>Re-reads the trip and the car, as the card's own Retry does (D6).</summary>
+    public async ValueTask Refresh(CancellationToken ct)
+    {
+        CardSignals.RequestRefresh();
+        await ValueTask.CompletedTask;
+    }
+
     public async ValueTask ReplayEntrance(CancellationToken ct)
     {
         CardMotion.RequestReplay();

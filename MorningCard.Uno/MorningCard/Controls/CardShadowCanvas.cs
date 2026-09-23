@@ -21,14 +21,16 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
     /// <summary>How far the element extends past the card on every side, in effective pixels.</summary>
     public const double Bleed = 60d;
 
-    // Ported from the prototype: 0 30 60 -30 at 45%, and 0 2 6 at 8%.
-    private const float FarOffsetY = 30f;
-    private const float FarBlur = 60f;
-    private const float FarSpread = -30f;
+    // v6: 0.5 px ring, 0 2 6, and 0 32 64 -24 (colours in CardTokens).
+    private const float FarOffsetY = 32f;
+    private const float FarBlur = 64f;
+    private const float FarSpread = -24f;
     private const float NearOffsetY = 2f;
     private const float NearBlur = 6f;
 
     private readonly SKPaint _paint = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
+    private readonly SKPaint _ringPaint = new() { IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeWidth = 1f };
+    private SKColor _ring = new(0x2A, 0x2C, 0x2F, 0x1A);
 
     // Snapshotted on the UI thread. RenderOverride runs on the render thread, where reading
     // walking Application.Current.Resources is a cross-thread touch of the XAML
@@ -66,6 +68,7 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
     {
         _far = ReadColor("CardShadowFarColor", _far);
         _near = ReadColor("CardShadowNearColor", _near);
+        _ring = ReadColor("CardShadowRingColor", _ring);
         _radius = (float)CardChrome.CornerRadius;
         Invalidate();
     }
@@ -98,6 +101,10 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
 
         DrawLayer(canvas, card, radius, far, FarOffsetY, FarBlur, FarSpread);
         DrawLayer(canvas, card, radius, near, NearOffsetY, NearBlur, spread: 0f);
+
+        // The hairline ring, drawn just outside the card edge so the shell's own fill covers nothing.
+        _ringPaint.Color = _ring;
+        canvas.DrawRoundRect(card, radius, radius, _ringPaint);
 
         canvas.Restore();
     }

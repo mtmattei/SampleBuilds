@@ -1,0 +1,38 @@
+<!--
+  Lucide (lucide-static 1.47.0, ISC licence) as a static icon font, chosen 2026-09-23: its 24-unit
+  grid and 2 px round strokes are the style the v6 artboards draw. One library for the whole card;
+  never hand-draw a Path icon (project memory: hand-drawn sets drifted across five stroke weights).
+
+  Name every glyph here and reference the key, never a raw codepoint in a view. Codepoints come from
+  lucide-static's font/lucide.css. The glyphs are outlined strokes, so the weight is fixed: size
+  them at 14-20 epx beside text.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <FontFamily x:Key="IconFont">ms-appx:///Assets/Fonts/lucide.ttf#lucide</FontFamily>
+
+  <x:String x:Key="IconSun">&#xE178;</x:String>
+  <x:String x:Key="IconChevronRight">&#xE06F;</x:String>
+  <x:String x:Key="IconChevronDown">&#xE06D;</x:String>
+  <x:String x:Key="IconLock">&#xE10B;</x:String>
+  <x:String x:Key="IconLockOpen">&#xE10C;</x:String>
+  <x:String x:Key="IconNavigation">&#xE123;</x:String>
+  <x:String x:Key="IconListChecks">&#xE1D0;</x:String>
+  <x:String x:Key="IconFuel">&#xE2AF;</x:String>
+  <x:String x:Key="IconThermometer">&#xE186;</x:String>
+  <x:String x:Key="IconParking">&#xE3C9;</x:String>
+  <x:String x:Key="IconRefresh">&#xE149;</x:String>
+  <x:String x:Key="IconArrowUpRight">&#xE04D;</x:String>
+  <x:String x:Key="IconSchool">&#xE234;</x:String>
+  <x:String x:Key="IconWifiOff">&#xE1AF;</x:String>
+  <x:String x:Key="IconUndo">&#xE2A1;</x:String>
+
+  <!-- An icon beside card text. Size and colour are set per use. -->
+  <Style x:Key="CardIcon" TargetType="FontIcon">
+    <Setter Property="FontFamily" Value="{StaticResource IconFont}" />
+    <Setter Property="FontSize" Value="16" />
+    <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
+    <Setter Property="IsTextScaleFactorEnabled" Value="False" />
+  </Style>
+</ResourceDictionary>

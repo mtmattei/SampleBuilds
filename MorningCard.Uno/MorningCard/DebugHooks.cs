@@ -76,11 +76,11 @@ internal static class DebugHooks
 
     public static bool ProbeChips => Read("MC_PROBE_CHIPS") == "1";
 
-    /// <summary>MC_OPEN=checks opens the checklist; MC_OPEN=menu drops the overflow menu.</summary>
+    /// <summary>MC_OPEN=checks opens the checklist.</summary>
     public static string? OpenTarget => Read("MC_OPEN")?.ToLowerInvariant();
 
     /// <summary>
-    /// Invokes the checklist header or the overflow button through its automation peer.
+    /// Invokes the checklist header through its automation peer.
     ///
     /// Synthesised pointer input cannot drive an Uno desktop window from a background process -
     /// Windows refuses SetForegroundWindow, so every click lands on whatever is actually on top.
@@ -91,18 +91,11 @@ internal static class DebugHooks
     {
         await Task.Delay(TimeSpan.FromSeconds(5));
 
-        var name = target == "menu" ? "Overflow" : "ChecksHeader";
+        const string name = "ChecksHeader";
 
         if (FindByName<Button>(root, name) is not { } button)
         {
             Trace($"PROBE open: {name} not in the tree");
-            return;
-        }
-
-        if (target == "menu")
-        {
-            button.Flyout?.ShowAt(button);
-            Trace($"PROBE open: showed the flyout on {name}");
             return;
         }
 

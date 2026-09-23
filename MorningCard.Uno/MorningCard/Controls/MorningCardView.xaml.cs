@@ -321,12 +321,6 @@ public sealed partial class MorningCardView : UserControl
         }
     }
 
-    /// <summary>
-    /// Replays the route's entrance. It lives in the view because the animation is the view's, not
-    /// the model's - the Simulator raises the same signal.
-    /// </summary>
-    private void OnReplayEntrance(object sender, RoutedEventArgs e) => CardMotion.RequestReplay();
-
     // Three 6px dots, two 4px gaps and the 5px margin before the "ready" line.
     private const double ChecksDotsWidth = 31d;
 

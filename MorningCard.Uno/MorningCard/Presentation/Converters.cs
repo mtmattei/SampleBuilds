@@ -55,15 +55,17 @@ public sealed class TrafficBrushConverter : IValueConverter
 }
 
 /// <summary>
-/// The accented span inside the headline. Late is the one tone that overrides the route accent:
-/// a red sentence with a blue duration in the middle of it would read as two messages.
+/// The accented span inside the headline, in the tone's ink: slate on time, brown to leave now,
+/// brick when late (v6).
 /// </summary>
 public sealed class AccentToneConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, string language) =>
-        value is CardTone.Late
-            ? Tokens.Of("DangerInkBrush")
-            : Tokens.Of("AccentInkBrush");
+    public object Convert(object value, Type targetType, object parameter, string language) => value switch
+    {
+        CardTone.Late => Tokens.Of("DangerInkBrush"),
+        CardTone.LeaveNow => Tokens.Of("LeaveNowInkBrush"),
+        _ => Tokens.Of("AccentInkBrush"),
+    };
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
         throw new NotSupportedException();
@@ -92,7 +94,7 @@ public sealed class ToneChipInkConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, string language) => value switch
     {
         CardTone.Late => Tokens.Of("DangerInkBrush"),
-        CardTone.LeaveNow => Tokens.Of("AmberInkBrush"),
+        CardTone.LeaveNow => Tokens.Of("LeaveNowInkBrush"),
         _ => Tokens.Of("AccentInkBrush"),
     };
 
@@ -106,7 +108,7 @@ public sealed class ToneTrackBrushConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, string language) => value switch
     {
         CardTone.Late => Tokens.Of("DangerBrush"),
-        CardTone.LeaveNow => Tokens.Of("AmberBrush"),
+        CardTone.LeaveNow => Tokens.Of("LeaveNowBrush"),
         _ => Tokens.Of("AccentBrush"),
     };
 

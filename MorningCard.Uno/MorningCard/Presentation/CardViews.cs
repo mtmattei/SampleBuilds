@@ -1,3 +1,4 @@
+using MorningCard.Core;
 using MorningCard.Core.Models;
 
 namespace MorningCard.Presentation;
@@ -14,9 +15,11 @@ namespace MorningCard.Presentation;
 /// because the headline is three <c>Run</c>s in one TextBlock and a converter cannot produce Runs.
 /// </param>
 /// <param name="LockText">Sits under the car, e.g. "XC60 · Locked".</param>
-/// <param name="WeatherSummary">Conditions and the day's high, e.g. "Clear · High 9°".</param>
-/// <param name="NowText">"Now 7:24" in the status strip, so the card says what time it is reading.</param>
+/// <param name="WeatherLine">"-3° · Clear · High 9°", under the greeting.</param>
+/// <param name="NowText">"Now 7:24" at the header's right, so the card says what time it is reading.</param>
 /// <param name="StatusBadge">"On time", "Leave now" or "Running late" - the state, named.</param>
+/// <param name="LockState">"Locked" or "Unlocked", after the car's name in the footer.</param>
+/// <param name="LockAction">The footer's ghost button: "Unlock" when locked, "Lock" when not.</param>
 public record HeaderView(
     string Greeting,
     string Title,
@@ -27,10 +30,12 @@ public record HeaderView(
     bool IsStale,
     string CarName,
     string LockText,
-    string OutsideTemp,
-    string WeatherSummary,
+    string WeatherLine,
     string NowText,
-    string StatusBadge);
+    string StatusBadge,
+    string LockState,
+    string LockAction,
+    bool IsLocked);
 
 /// <summary>
 /// The ETA block and the route ruler. Reached only when there is a trip: no trip means the feed is
@@ -38,8 +43,12 @@ public record HeaderView(
 /// </summary>
 /// <param name="RouteLeave">Where the drive starts along the path, 0 to 1.</param>
 /// <param name="RouteArrive">Where the walk starts along the path, 0 to 1.</param>
-/// <param name="LeaveByTime">Bare "7:33" for the timeline strip, which supplies its own labels.</param>
-/// <param name="LeaveByLabel">"LEAVE BY" normally, "LEAVE" once the answer is "Now".</param>
+/// <param name="Slack">The v6 slack ruler's layout; null on a failed lookup.</param>
+/// <param name="LeaveCaption">"LEAVE BY", or "LEAVE" once the answer is "Now".</param>
+/// <param name="LeaveValue">"7:33", or "Now".</param>
+/// <param name="NowCaption">"NOW 7:24" under the ruler's now dot.</param>
+/// <param name="SlackSegment">"Slack · 9 min"; the short form is the one word.</param>
+/// <param name="RulerDescription">The ruler's one accessible name.</param>
 public record EtaView(
     bool Failed,
     string FailureMessage,
@@ -52,21 +61,26 @@ public record EtaView(
     double RouteLeave,
     double RouteArrive,
     CardTone Tone,
-    string LeaveByTime,
-    string LeaveByLabel,
+    string LeaveCaption,
+    string LeaveValue,
+    string ArriveCaption,
     string ArriveTime,
+    string BellCaption,
     string BellTime,
-    // The strip's three track segments, as star weights. Computed here rather than in a converter
-    // because the middle one is a span between two fractions and a value converter sees only one.
-    double TrackSlack,
-    double TrackDrive,
-    double TrackWalk,
+    string NowCaption,
+    string SlackSegment,
+    string SlackSegmentShort,
+    string DriveSegment,
+    string DriveSegmentShort,
+    string WalkSegment,
+    string RulerDescription,
     string LeaveLabel,
     string ArriveLabel,
     string BellLabel,
     string RouteDescription,
-    // Null on a failed lookup, which has no trip to lay on the map.
-    RulerPlan? Ruler = null);
+    // Null on a failed lookup, which has no trip to lay on the map or the ruler.
+    RulerPlan? Ruler = null,
+    SlackRulerPlan? Slack = null);
 
 /// <summary>
 /// What the route ruler needs from the morning, handed over whole rather than pre-computed.

@@ -12,11 +12,6 @@
     <ResourceDictionary x:Key="Light">
       <!-- Flat warm ground behind the card. -->
       <Color x:Key="GroundColor">#E9E6DF</Color>
-      <!-- v6 has no bokeh: the blob keys equal the ground until the backdrop goes (step 5). -->
-      <Color x:Key="BlobAColor">#E9E6DF</Color>
-      <Color x:Key="BlobBColor">#E9E6DF</Color>
-      <Color x:Key="BlobCColor">#E9E6DF</Color>
-      <Color x:Key="BlobDColor">#E9E6DF</Color>
       <!-- The shell (was frosted glass). -->
       <Color x:Key="GlassColor">#F1EFE9</Color>
       <!-- The shell's 1 px inset top highlight. -->
@@ -138,20 +133,32 @@
       <SolidColorBrush x:Key="DangerChipBrush" Color="{StaticResource DangerChipColor}" />
       <SolidColorBrush x:Key="GoodChipBrush" Color="{StaticResource GoodChipColor}" />
       <SolidColorBrush x:Key="GlassInkBrush" Color="{StaticResource GlassInkColor}" />
+
+      <!-- Toolkit CardContentControl lightweight keys: the shell is the Filled card, the paper
+           panel the Outlined one. State variants repeat the rest value: neither card is clickable. -->
+      <SolidColorBrush x:Key="FilledCardContentBackground" Color="{StaticResource GlassColor}" />
+      <SolidColorBrush x:Key="FilledCardContentBorderBrush" Color="{StaticResource GlassEdgeColor}" />
+      <SolidColorBrush x:Key="FilledCardContentBorderBrushPointerOver" Color="{StaticResource GlassEdgeColor}" />
+      <SolidColorBrush x:Key="FilledCardContentBorderBrushFocused" Color="{StaticResource GlassEdgeColor}" />
+      <SolidColorBrush x:Key="FilledCardContentBorderBrushPressed" Color="{StaticResource GlassEdgeColor}" />
+      <SolidColorBrush x:Key="OutlinedCardContentBackground" Color="{StaticResource CardSurfaceColor}" />
+      <SolidColorBrush x:Key="OutlinedCardContentBorderBrush" Color="{StaticResource PanelRingColor}" />
     </ResourceDictionary>
 
 
   </ResourceDictionary.ThemeDictionaries>
 
 
-  <!-- Geometry the card and its canvases share. CardCornerRadius is what the radius dial writes. -->
-  <CornerRadius x:Key="CardCornerRadius">34</CornerRadius>
+  <!-- Geometry the card and its canvases share. CardCornerRadius and CardPadding double as the
+       Toolkit's CardContentControl lightweight keys (the shell's values); the panel sets its own.
+       CardCornerRadius is what the radius dial writes. v6: shell 28 = panel 20 + padding 8. -->
+  <CornerRadius x:Key="CardCornerRadius">28</CornerRadius>
   <!-- Sits between the map panel inside it and the shell around it, so three nested surfaces
        read as nested rather than as three unrelated rounded boxes. -->
-  <CornerRadius x:Key="CardInnerCornerRadius">24</CornerRadius>
+  <CornerRadius x:Key="CardInnerCornerRadius">20</CornerRadius>
   <!-- The same radius as the card it sits in, by request: the two edges are close enough
        together that a 20-against-24 difference read as a mistake rather than as nesting. -->
-  <CornerRadius x:Key="MapCornerRadius">24</CornerRadius>
+  <CornerRadius x:Key="MapCornerRadius">16</CornerRadius>
   <!-- Skeleton bars, the map pin and other small rounded shapes share one value. 6, 9 and 10 were
        three separately invented values within 4px of each other. -->
   <CornerRadius x:Key="SmallCornerRadius">8</CornerRadius>
@@ -161,7 +168,7 @@
     edge and 4 from the inner card, pinned to the bottom of its own band. The 11 it gives up here
     is handed back as the strip's bottom margin, so the band and the card height are unchanged.
   -->
-  <Thickness x:Key="CardPadding">27,16,27,17</Thickness>
+  <Thickness x:Key="CardPadding">8</Thickness>
 
   <!-- What the top padding gave up, so the row still ends where it did. -->
   <Thickness x:Key="StatusStripMargin">0,0,0,11</Thickness>
@@ -175,7 +182,7 @@
   <Thickness x:Key="BottomBarMargin">0,10,0,0</Thickness>
   <!-- 529: the original 400 plus 15% twice. The two-column stage is two of these plus the 24 gap and
        the stage's own 16 of side padding each way. -->
-  <x:Double x:Key="CardMaxWidth">529</x:Double>
+  <x:Double x:Key="CardMaxWidth">552</x:Double>
 
   <!--
     Space held for the card whatever state it is in, so the Simulator below it does not move.
@@ -188,7 +195,7 @@
   <x:Double x:Key="CardReservedHeight">940</x:Double>
   <x:Double x:Key="StageMaxWidthWide">1114</x:Double>
   <!-- 264: the reference panel scaled to this card width. 248 read 6% short. -->
-  <x:Double x:Key="MapPanelHeight">264</x:Double>
+  <x:Double x:Key="MapPanelHeight">280</x:Double>
 
 </ResourceDictionary>
 
