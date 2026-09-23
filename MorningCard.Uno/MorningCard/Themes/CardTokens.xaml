@@ -62,7 +62,11 @@
       <Color x:Key="MapRoadColor">#FFFFFF</Color>
       <Color x:Key="MapParkColor">#E8ECE3</Color>
       <Color x:Key="MapWaterColor">#DBE1E3</Color>
-      <Color x:Key="PinColor">#2A2C2F</Color>
+      <Color x:Key="PinColor">#3A3C3F</Color>
+      <!-- Map overlay (v6): the dotted slack line, the callout ring and the walk callout plate. -->
+      <Color x:Key="SlackDotColor">#A8A49C</Color>
+      <Color x:Key="CalloutRingColor">#142A2C2F</Color>
+      <Color x:Key="WalkPlateColor">#F0EADF</Color>
       <!-- Card shadow: 0.5 px ring, 0 2 6, 0 32 64 -24. -->
       <Color x:Key="CardShadowRingColor">#1A2A2C2F</Color>
       <Color x:Key="CardShadowNearColor">#0F2A2C2F</Color>

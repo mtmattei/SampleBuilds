@@ -213,11 +213,12 @@
   -->
   <Style x:Key="MapPillStyle" TargetType="Button">
     <Setter Property="Background" Value="{ThemeResource MapPillBrush}" />
-    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkStrongBrush}" />
     <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="Padding" Value="14,7" />
+    <Setter Property="Height" Value="32" />
+    <Setter Property="Padding" Value="12,0" />
     <Setter Property="CornerRadius" Value="16" />
-    <Setter Property="FontFamily" Value="{StaticResource CardFontMedium}" />
+    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
     <Setter Property="FontSize" Value="13" />
     <Setter Property="UseSystemFocusVisuals" Value="True" />
     <Setter Property="FocusVisualPrimaryBrush" Value="{ThemeResource AccentBrush}" />

@@ -2,6 +2,7 @@
 // not the one here. Aliased rather than fully qualified, which would read the same eight times.
 using MapControl = Mapsui.UI.WinUI.MapControl;
 using Microsoft.UI.Xaml.Automation;
+using MorningCard.Core.Models;
 using MorningCard.Core.Route;
 using MorningCard.Themes;
 using SkiaSharp;
@@ -284,11 +285,11 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         _snapshot = new RouteRulerSnapshot
         {
             HasRoute = eta is not null,
-            IsLate = eta?.IsLate ?? false,
             Projection = Project(eta),
-            LeaveLabel = eta?.LeaveLabel ?? string.Empty,
-            ArriveLabel = eta?.ArriveLabel ?? string.Empty,
-            BellLabel = eta?.BellLabel ?? string.Empty,
+            SlackMin = eta?.Ruler?.Timeline.SlackMin ?? 0,
+            Tone = ToneColor(eta?.Tone ?? CardTone.Ok),
+            NowLabel = eta?.MapNowLabel ?? string.Empty,
+            WalkLabel = eta?.MapWalkLabel ?? string.Empty,
             Progress = Progress,
             // Cached: the tokens are fixed for the life of the app.
             Palette = _palette ??= ReadPalette(),
@@ -357,31 +358,31 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
 
         return new RouteRulerPalette(
             Map: Read("MapColor", fallback.Map),
-            Road: Read("MapRoadColor", fallback.Road),
-            Park: Read("MapParkColor", fallback.Park),
-            Water: Read("MapWaterColor", fallback.Water),
-            Ink: Read("InkColor", fallback.Ink),
-            Ink2: Read("Ink2Color", fallback.Ink2),
-            Ink3: Read("Ink3Color", fallback.Ink3),
-            Accent: ReadBrush("AccentBrush", fallback.Accent),
-            OnAccent: Read("OnAccentColor", fallback.OnAccent),
+            Accent: Read("AccentColor", fallback.Accent),
             Amber: Read("AmberColor", fallback.Amber),
             AmberInk: Read("AmberInkColor", fallback.AmberInk),
-            Danger: Read("DangerColor", fallback.Danger),
-            DangerInk: Read("DangerInkColor", fallback.DangerInk),
             Pin: Read("PinColor", fallback.Pin),
             // Nodes keep a white ring: it reads as a cut-out, not as ink.
-            NodeStroke: fallback.NodeStroke);
+            NodeStroke: fallback.NodeStroke,
+            Surface: Read("CardSurfaceColor", fallback.Surface),
+            SlackDot: Read("SlackDotColor", fallback.SlackDot),
+            CalloutInk: Read("InkStrongColor", fallback.CalloutInk),
+            CalloutRing: Read("CalloutRingColor", fallback.CalloutRing),
+            WalkPlate: Read("WalkPlateColor", fallback.WalkPlate));
     }
+
+    private static SKColor ToneColor(CardTone tone) => Read(
+        tone switch
+        {
+            CardTone.Late => "DangerColor",
+            CardTone.LeaveNow => "LeaveNowColor",
+            _ => "AccentColor",
+        },
+        RouteRulerPalette.Fallback.Accent);
 
     private static SKColor Read(string key, SKColor fallback) =>
         CardPalette.Lookup(key) is Windows.UI.Color color
             ? new SKColor(color.R, color.G, color.B, color.A)
-            : fallback;
-
-    private static SKColor ReadBrush(string key, SKColor fallback) =>
-        CardPalette.Lookup(key) is SolidColorBrush brush
-            ? new SKColor(brush.Color.R, brush.Color.G, brush.Color.B, brush.Color.A)
             : fallback;
 
     private async Task ApplyTypefaceAsync()
@@ -391,8 +392,14 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         if (typeface is not null)
         {
             _renderer.SetTypeface(typeface);
-            Invalidate();
         }
+
+        if (await (_iconLoad ??= LoadFaceAsync("ms-appx:///Assets/Fonts/lucide.ttf")) is { } icons)
+        {
+            _renderer.SetIconTypeface(icons);
+        }
+
+        Invalidate();
     }
 
     /// <summary>
@@ -400,14 +407,16 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
     /// same TTF the card's text styles use is opened as a stream here.
     /// </summary>
     private static Task<SKTypeface?> LoadTypefaceAsync() =>
-        _typefaceLoad ??= LoadCoreAsync();
+        _typefaceLoad ??= LoadFaceAsync("ms-appx:///Assets/Fonts/Geist_Medium.ttf");
 
-    private static async Task<SKTypeface?> LoadCoreAsync()
+    /// <summary>Lucide, for the school pin's glyph. Loaded once for every canvas.</summary>
+    private static Task<SKTypeface?>? _iconLoad;
+
+    private static async Task<SKTypeface?> LoadFaceAsync(string uri)
     {
         try
         {
-            var file = await StorageFile.GetFileFromApplicationUriAsync(
-                new Uri("ms-appx:///Assets/Fonts/Geist_SemiBold.ttf"));
+            var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri(uri));
 
             using var stream = await file.OpenStreamForReadAsync();
             using var memory = new MemoryStream();
@@ -421,7 +430,7 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
             // The default face is a legible fallback, so this must not throw - but it must not be
             // silent either. A swallowed failure here is exactly how the Android hyphen-to-
             // underscore asset rename went unnoticed: the labels just quietly changed font.
-            DebugTrace($"typeface load failed: {error.GetType().Name}: {error.Message}");
+            DebugTrace($"typeface load failed ({uri}): {error.GetType().Name}: {error.Message}");
             return null;
         }
     }

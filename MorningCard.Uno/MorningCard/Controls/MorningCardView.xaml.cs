@@ -143,8 +143,16 @@ public sealed partial class MorningCardView : UserControl
             // OSM blocks the default agent outright, and the block arrives as a tile image reading
             // "Access blocked" rather than as an error - so it renders as map content and looks
             // like a layout bug. Their usage policy wants an agent that identifies the app.
-            map.Layers.Add(Mapsui.Tiling.OpenStreetMap.CreateTileLayer(
-                "MorningCard/1.0 (Uno Platform sample; https://github.com/mtmattei/SampleBuilds)"));
+            //
+            // v6: the tiles are muted toward the paper map (spike R8). MutedTileSource re-renders
+            // each tile once through a colour matrix; Mapsui caches the result.
+            var osm = Mapsui.Tiling.OpenStreetMap.CreateTileLayer(
+                "MorningCard/1.0 (Uno Platform sample; https://github.com/mtmattei/SampleBuilds)");
+            var paper = Themes.CardPalette.Lookup("MapColor") is Windows.UI.Color c
+                ? new SkiaSharp.SKColor(c.R, c.G, c.B)
+                : new SkiaSharp.SKColor(0xEF, 0xEE, 0xE9);
+            map.Layers.Add(new Mapsui.Tiling.Layers.TileLayer(new MutedTileSource(
+                (BruTile.IHttpTileSource)osm.TileSource, MutedTileSource.PaperMatrix(paper))));
 
             Map.Map = map;
             Ruler.Map = Map;
@@ -192,15 +200,12 @@ public sealed partial class MorningCardView : UserControl
     private const double FitEtaGap = 40d;
 
     // The scrim's fade after the ETA text, and the ramp across it (fractions of the fade, stops 2-8):
-    // a steep first drop, then an ease-out, kept from the ramp the tokens were tuned against.
-    private const double ScrimFade = 72d;
-
-    private static readonly double[] ScrimRamp = [0d, 0.16d, 0.29d, 0.45d, 0.65d, 0.84d, 1d];
 
     private double _etaEdge;
 
     /// <summary>
-    /// Moves the scrim and the route's left edge to wherever the ETA text actually ends.
+    /// Moves the route's left edge to wherever the ETA text actually ends, so the fit keeps the
+    /// route clear of it. The scrim is a fixed ramp since v6.
     /// </summary>
     private void OnEtaBlockSizeChanged(object sender, SizeChangedEventArgs e)
     {
@@ -217,19 +222,6 @@ public sealed partial class MorningCardView : UserControl
         }
 
         _etaEdge = edge;
-
-        if (EtaScrim.Background is LinearGradientBrush { GradientStops.Count: 8 } brush)
-        {
-            var width = edge + ScrimFade;
-            var opaque = edge / width;
-
-            EtaScrim.Width = width;
-
-            for (var i = 0; i < ScrimRamp.Length; i++)
-            {
-                brush.GradientStops[i + 1].Offset = opaque + (ScrimRamp[i] * (1d - opaque));
-            }
-        }
 
         _fittedSize = default;
         FitToRoute();

@@ -269,9 +269,6 @@
   <data name="FuelLabel.Text" xml:space="preserve">
     <value>Fuel</value>
   </data>
-  <data name="OpenInMapsButton.Content" xml:space="preserve">
-    <value>Open in Maps</value>
-  </data>
   <data name="OpenInMapsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Open this trip in the maps app</value>
   </data>
@@ -374,8 +371,14 @@
   <data name="ButtonRefresh.Content" xml:space="preserve">
     <value>Refresh</value>
   </data>
-  <data name="Eta_Caption" xml:space="preserve">
+  <data name="Map_Walk" xml:space="preserve">
+    <value>{0} min walk</value>
+  </data>
+  <data name="EtaCaption.Text" xml:space="preserve">
     <value>DRIVE TO SCHOOL</value>
+  </data>
+  <data name="OpenInMapsLabel.Text" xml:space="preserve">
+    <value>Open in Maps</value>
   </data>
 </root>
 

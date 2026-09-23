@@ -136,11 +136,15 @@
               </DataTemplate>
             </mvux:FeedView.ValueTemplate>
           </mvux:FeedView>
+          <!-- xaml-lint: allow card - clips the map's own drawing surface to the panel radius; the
+               1 px ring is the artboard's inset edge, not card chrome. -->
           <Border x:Name="MapPanel"
-              Margin="0,18,0,0"
+                  Margin="0,18,0,0"
                   Height="{StaticResource MapPanelHeight}"
                   CornerRadius="{StaticResource MapCornerRadius}"
-                  Background="{ThemeResource CardSurfaceBrush}">
+                  BorderBrush="{ThemeResource LineBrush}"
+                  BorderThickness="1"
+                  Background="{ThemeResource MapBrush}">
             <Grid>
               <!--
                 Real OSM tiles since v2. The route above it stays schematic - minutes become distance
@@ -157,31 +161,17 @@
                 <mapsui:MapControl x:Name="Map" />
               </Border>
 
-              <!-- No CornerRadius of its own: the panel Border already clips to the radius, and a
-                   second rounding inside it cut a notch that exposed the panel's ground at the corner. -->
-              <!-- Sized from the ETA block's right edge (OnEtaBlockSizeChanged): opaque under the text,
-                   a fixed fade after it, and clear map beyond. A share of the panel either covered the
-                   map far past the text on a wide card or left text on bare streets on a phone. -->
+              <!-- v6 scrim: a fixed ramp across the whole panel, white 97% to 90% at 24%, 45% at 44%,
+                   clear from 62%. The ETA text sits on the opaque part; the route on the clear. -->
               <Border x:Name="EtaScrim"
-                      HorizontalAlignment="Left"
+                      IsHitTestVisible="False"
                       Visibility="{Binding State.Data.Failed, ElementName=EtaFeed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert, FallbackValue=Collapsed}">
                 <Border.Background>
-                  <!--
-                    Opaque, not a wash. The left of the panel is the ETA block's ground, so the map is
-                    fully gone behind it and only reappears past the text - a half-visible street grid
-                    under a headline reads as a rendering fault rather than as depth.
-                  -->
                   <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                     <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0" />
-                    <!-- Offsets are placeholders until the ETA block is measured; the ramp's shape
-                         (ScrimRamp in code-behind) is what these approximate. -->
-                    <GradientStop Color="{ThemeResource EtaScrimColor}" Offset="0.22" />
-                    <GradientStop Color="{ThemeResource EtaScrimStop1Color}" Offset="0.28" />
-                    <GradientStop Color="{ThemeResource EtaScrimStop2Color}" Offset="0.33" />
-                    <GradientStop Color="{ThemeResource EtaScrimStop3Color}" Offset="0.39" />
-                    <GradientStop Color="{ThemeResource EtaScrimStop4Color}" Offset="0.46" />
-                    <GradientStop Color="{ThemeResource EtaScrimStop5Color}" Offset="0.54" />
-                    <GradientStop Color="{ThemeResource EtaScrimFadeColor}" Offset="0.60" />
+                    <GradientStop Color="{ThemeResource EtaScrimStop1Color}" Offset="0.24" />
+                    <GradientStop Color="{ThemeResource EtaScrimStop2Color}" Offset="0.44" />
+                    <GradientStop Color="{ThemeResource EtaScrimFadeColor}" Offset="0.62" />
                   </LinearGradientBrush>
                 </Border.Background>
               </Border>
@@ -191,14 +181,22 @@
               <!-- Real launch, not a decorative pill: it opens the platform maps app at the school. -->
               <!-- Hidden whenever a scrim covers the map: a pill showing through "Can't reach the
                    car" offers to open a trip the card just said it could not read. -->
+              <!-- No Recenter beside it (I6): the map is locked, so one would impersonate a control.
+                   30 from the bottom, not the artboard's 12: the OSM attribution the tile policy
+                   requires sits in the bottom-right corner, and the pill must not cover it. -->
               <Button x:Name="OpenInMaps"
                       x:Uid="OpenInMapsButton"
                       Style="{StaticResource MapPillStyle}"
                       Visibility="{Binding State.Data.Failed, ElementName=EtaFeed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert, FallbackValue=Collapsed}"
                       HorizontalAlignment="Right"
                       VerticalAlignment="Bottom"
-                      Margin="0,0,12,26"
-                      Click="OnOpenInMaps" />
+                      Margin="0,0,12,30"
+                      Click="OnOpenInMaps">
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                  <TextBlock x:Uid="OpenInMapsLabel" VerticalAlignment="Center" />
+                  <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconArrowUpRight}" FontSize="12" Foreground="{ThemeResource InkStrongBrush}" VerticalAlignment="Center" />
+                </StackPanel>
+              </Button>
 
               <mvux:FeedView x:Name="EtaFeed" Source="{Binding Eta}">
 
@@ -211,40 +209,28 @@
                       to it executes and leaves the card broken. As a value, the stream stays alive and
                       the model's own Retry puts a good trip back through it.
                     -->
-                    <!--
-                      A gradient scrim under the ETA block. The v1 map was a schematic that faded out
-                      behind these numbers; real tiles do not, and dark ink on a street grid measured
-                      unreadable. The fade keeps the map legible where the route runs and gives the
-                      figures a ground where they sit.
-                    -->
-
-
-                    <!--
-                      Back inside the map in v3. It carries the minutes, the arrival and the traffic
-                      read, which the timeline strip above deliberately does not repeat.
-                    -->
-                    <StackPanel Margin="16,14,0,0"
+                    <!-- v6 ETA block: drive time, caption, traffic. Its right edge also bounds the
+                         route fit (OnEtaBlockSizeChanged). -->
+                    <StackPanel Margin="18,16,0,0"
                                 SizeChanged="OnEtaBlockSizeChanged"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 MaxWidth="200"
-                                Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}"><StackPanel.Resources><Style TargetType="TextBlock" BasedOn="{StaticResource CardBody}" /></StackPanel.Resources>
-                      <TextBlock Style="{StaticResource EtaNumber}"
-                                 Foreground="{Binding Data.IsLate, Converter={StaticResource LateInk}}"><Run Text="{Binding Data.TotalMinutes}" /><Run Text=" " /><Run Text="{Binding Parent.EtaUnitLabel}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" FontSize="{StaticResource EtaUnitSize}" /></TextBlock>
+                                Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}">
+                      <TextBlock Style="{StaticResource EtaNumber}"><Run Text="{Binding Data.TotalMinutes}" /><Run Text=" " /><Run Text="{Binding Parent.EtaUnitLabel}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" FontSize="{StaticResource EtaUnitSize}" /></TextBlock>
+                      <TextBlock x:Uid="EtaCaption" Style="{StaticResource CapsCaption}" Margin="0,1,0,0" />
 
-                      <StackPanel Margin="0,7,0,0">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                          <Ellipse Width="8" Height="8" VerticalAlignment="Center"
-                                   Fill="{Binding Data.Traffic, Converter={StaticResource TrafficBrush}}" />
-                          <TextBlock Style="{StaticResource CardLabelStrong}"
-                                     VerticalAlignment="Center"
-                                     Foreground="{Binding Data.Traffic, Converter={StaticResource TrafficBrush}}"
-                                     Text="{Binding Data.TrafficText}" />
-                        </StackPanel>
-                        <TextBlock Style="{StaticResource CardCaption}"
-                                   Foreground="{ThemeResource Ink3Brush}"
-                                   Text="{Binding Data.VsUsualText}" />
+                      <StackPanel Orientation="Horizontal" Spacing="7" Margin="0,10,0,0">
+                        <Ellipse Width="8" Height="8" VerticalAlignment="Center"
+                                 Fill="{Binding Data.Traffic, Converter={StaticResource TrafficBrush}}" />
+                        <TextBlock Style="{StaticResource CardLabelStrong}"
+                                   VerticalAlignment="Center"
+                                   Foreground="{Binding Data.Traffic, Converter={StaticResource TrafficBrush}}"
+                                   Text="{Binding Data.TrafficText}" />
                       </StackPanel>
+                      <TextBlock Style="{StaticResource CardCaption}"
+                                 Margin="15,1,0,0"
+                                 Text="{Binding Data.VsUsualText}" />
                     </StackPanel>
 
                     <Border x:Name="ErrorPanel"

@@ -291,8 +291,8 @@ public partial record MainModel
             IsStale: car.IsStale,
             CarName: car.Name,
             LockText: lockText,
-            // A true minus sign, as the design sets it: "−3°", not a hyphen.
-            WeatherLine: Format("Weather_Line", car.OutsideTemp.ToString(CultureInfo.CurrentCulture).Replace('-', '−'), car.WeatherSummary),
+            // A true minus sign (U+2212), as the design sets it, not a hyphen.
+            WeatherLine: Format("Weather_Line", car.OutsideTemp.ToString(CultureInfo.CurrentCulture).Replace('-', '\u2212'), car.WeatherSummary),
             NowText: Format("Status_Now", Clock(now)),
             // Names the state rather than leaving it to colour alone, which is also what makes the
             // three frames of the design distinguishable to someone who cannot tell them apart.
@@ -367,6 +367,8 @@ public partial record MainModel
             ArriveLabel: Format("Route_Arrive", Clock(timeline.Arrive)),
             BellLabel: Format("Route_Bell", Clock(plan.Bell)),
             RouteDescription: description,
+            MapNowLabel: Format("Status_Now", Clock(now)),
+            MapWalkLabel: Format("Map_Walk", plan.WalkMin),
             Ruler: new RulerPlan(timeline, plan.WalkMin, plan.Bell, now),
             Slack: slack);
     }
@@ -465,7 +467,9 @@ public partial record MainModel
         LeaveLabel: string.Empty,
         ArriveLabel: string.Empty,
         BellLabel: string.Empty,
-        RouteDescription: string.Empty);
+        RouteDescription: string.Empty,
+        MapNowLabel: string.Empty,
+        MapWalkLabel: string.Empty);
 
     private string Text(string key) => _text[key]!;
 

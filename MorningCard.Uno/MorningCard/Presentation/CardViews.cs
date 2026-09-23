@@ -78,6 +78,9 @@ public record EtaView(
     string ArriveLabel,
     string BellLabel,
     string RouteDescription,
+    // The map's two callouts: "Now 7:24" and "3 min walk".
+    string MapNowLabel,
+    string MapWalkLabel,
     // Null on a failed lookup, which has no trip to lay on the map or the ruler.
     RulerPlan? Ruler = null,
     SlackRulerPlan? Slack = null);
