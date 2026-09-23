@@ -1,7 +1,21 @@
 # HANDOFF — MorningCard v5 Android form factors (step 0, baseline)
 Updated: 2026-09-22 15:05
 
-## UPDATE 2026-09-23, v6 step 1 done (supersedes everything below)
+## UPDATE 2026-09-23, v6 steps 2-7 done (supersedes everything below)
+
+Running under `/loop` ("continue through completion"). Commits on `feat/android-form-factors`:
+`f11bfbf` drop dark + hue dial · `c591fe4` tokens and type · `b393a87` slack ruler layout ·
+`572fb4d` header, ruler, footer (Lucide icon font, user choice) · `29faa0f` route map ·
+`f99c544` checklist accordion and cabin choice. 102/102 tests pass, desktop 0 warnings.
+
+- **Next action:** v6 step 8 (states: loading skeleton, ETA unavailable, no drop-off, car offline;
+  remove the whole-card error), then step 9 (parity on desktop and Android against `png/phone_*.png`).
+- App MCP (`uno-app`) disconnected mid-session. Verification uses the Debug exe with
+  `APP_NO_HOTDESIGN=1`, `scripts/Capture-Tall.ps1`, and DEBUG probe hooks (`MC_OPEN=checks`,
+  `MC_PROBE_CABIN=1` with `MC_TRACE=<file>`).
+- New v6 substitutions are listed in SPEC.md v6 Unresolved Questions (Chip pills, pill offset, climate default).
+
+## UPDATE 2026-09-23, v6 step 1 done
 
 - Spikes R7, R8 and R9 **all pass**. Results are in SPEC.md under "v6 spike results".
   - R7: Geist static TTFs (from Google css2) are in `Assets/Fonts`. Fragments are `#Geist`, `#Geist Medium`
