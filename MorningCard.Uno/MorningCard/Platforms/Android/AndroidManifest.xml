@@ -4,5 +4,8 @@
     <!-- Wear OS: the app runs on the watch without a paired phone. -->
     <meta-data android:name="com.google.android.wearable.standalone" android:value="true" />
     <uses-library android:name="com.google.android.wearable" android:required="false" />
+    <!-- Android Auto: templated POI app (Platforms/Android/Car). -->
+    <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc" />
+    <meta-data android:name="androidx.car.app.minCarApiLevel" android:value="1" />
   </application>
 </manifest>

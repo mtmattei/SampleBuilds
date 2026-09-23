@@ -69,7 +69,8 @@ public partial class App : Application
                     // can never disagree about what state the app is in.
                     services
                         .AddSingleton(TimeProvider.System)
-                        .AddSingleton<SimulatedDriveHub>()
+                        // The shared instance: the Android Auto session reads the same hub (SharedHub).
+                        .AddSingleton(SharedHub.Instance)
                         .AddSingleton<ITripService>(sp => sp.GetRequiredService<SimulatedDriveHub>())
                         .AddSingleton<IVehicleService>(sp => sp.GetRequiredService<SimulatedDriveHub>());
                 })
