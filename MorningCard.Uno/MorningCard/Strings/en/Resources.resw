@@ -269,6 +269,12 @@
   <data name="Fuel_DetailSoon" xml:space="preserve">
     <value>Enough for today’s drive. Next fill-up within the week.</value>
   </data>
+  <data name="Cabin_WatchMeta" xml:space="preserve">
+    <value>{0} · tap to start</value>
+  </data>
+  <data name="WatchCabinTitle.Text" xml:space="preserve"><value>Warm the cabin</value></data>
+  <data name="WatchChecksTitle.Text" xml:space="preserve"><value>Before you go</value></data>
+  <data name="WatchRouteCaption.Text" xml:space="preserve"><value>ROUTE</value></data>
   <data name="Cabin_PillSuggested" xml:space="preserve">
     <value>Suggested</value>
   </data>

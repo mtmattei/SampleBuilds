@@ -36,7 +36,8 @@ public record HeaderView(
     bool CanStartDrive);
 
 /// <summary>The shell's greeting row: live even while the trip is still loading.</summary>
-public record GreetingView(string Greeting, string WeatherLine, string NowText);
+/// <param name="ClockText">The bare time, "7:24", for the watch's clock row.</param>
+public record GreetingView(string Greeting, string WeatherLine, string NowText, string ClockText);
 
 /// <summary>
 /// The ETA block and the route ruler. Reached only when there is a trip: no trip means the feed is
@@ -175,4 +176,6 @@ public record CarView(
     // One accessible name per row: title, meta and pill, since the pill is not its own stop.
     string FuelRowName,
     string CabinRowName,
-    string ParkingRowName);
+    string ParkingRowName,
+    // The watch's cabin line: "Suggested · tap to start" while undecided, else the pill.
+    string CabinWatchMeta);

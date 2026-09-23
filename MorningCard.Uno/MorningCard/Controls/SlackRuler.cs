@@ -32,6 +32,16 @@ public sealed partial class SlackRuler : Canvas
     public static readonly DependencyProperty IsSkeletonProperty = DependencyProperty.Register(
         nameof(IsSkeleton), typeof(bool), typeof(SlackRuler), new PropertyMetadata(false, (d, _) => ((SlackRuler)d).Rebuild()));
 
+    public static readonly DependencyProperty ShowSegmentLabelsProperty = DependencyProperty.Register(
+        nameof(ShowSegmentLabels), typeof(bool), typeof(SlackRuler), new PropertyMetadata(true, (d, _) => ((SlackRuler)d).Rebuild()));
+
+    /// <summary>False on the watch, whose compact ruler carries no "Slack · 9 min" labels (v6 Wear).</summary>
+    public bool ShowSegmentLabels
+    {
+        get => (bool)GetValue(ShowSegmentLabelsProperty);
+        set => SetValue(ShowSegmentLabelsProperty, value);
+    }
+
     /// <summary>
     /// The loading state: ticks and key-time captions in their usual places (the artboard's 7:33,
     /// 7:47, 7:50 positions), grey bars for the values, and one grey bar for the blocks.
@@ -285,7 +295,7 @@ public sealed partial class SlackRuler : Canvas
         };
 
         var room = width - (2 * padding);
-        var label = segment.Label switch
+        var label = !ShowSegmentLabels ? string.Empty : segment.Label switch
         {
             RulerLabelLevel.Full when Fits(full, room) => full,
             RulerLabelLevel.Full or RulerLabelLevel.Short when Fits(shortLabel, room) => shortLabel,

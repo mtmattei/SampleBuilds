@@ -80,10 +80,11 @@ public partial class App : Application
 
 #if DEBUG
         // UseStudio() never creates the window when no DevServer is reachable, so headless runs opt out.
-        // Phone only: on TV its toolbar is the first D-pad focus stop and opens over the card, and a
-        // watch has no room for it.
+        // It also carries the App MCP connection, so desktop keeps it for every form factor. On an
+        // Android TV or watch it stays off: on TV its toolbar is the first D-pad focus stop and opens
+        // over the card, and a watch has no room for it.
         if (Environment.GetEnvironmentVariable("APP_NO_HOTDESIGN") != "1"
-            && Presentation.FormFactors.Current == Presentation.FormFactor.Phone)
+            && (!OperatingSystem.IsAndroid() || Presentation.FormFactors.Current == Presentation.FormFactor.Phone))
         {
             MainWindow.UseStudio();
         }

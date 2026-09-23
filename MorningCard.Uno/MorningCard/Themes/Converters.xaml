@@ -30,5 +30,6 @@
   <mp:FuelPillInkConverter x:Key="FuelPillInk" />
   <!-- xaml-lint: allow tokentheme - light-only app (B6) -->
   <mp:TokenBrushConverter x:Key="TokenBrush" />
+  <mp:WatchAccentSizeConverter x:Key="WatchAccentSize" />
 
 </ResourceDictionary>

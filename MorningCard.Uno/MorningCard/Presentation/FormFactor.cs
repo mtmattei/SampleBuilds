@@ -21,7 +21,10 @@ public static class FormFactors
     private static FormFactor Detect()
     {
 #if DEBUG
-        switch (Environment.GetEnvironmentVariable("MC_FORM")?.ToLowerInvariant())
+        // MC_FORM, or --mc-form= for launches that cannot set the environment (the App MCP's uno_app_start).
+        var form = Environment.GetEnvironmentVariable("MC_FORM")
+            ?? Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--mc-form=", StringComparison.Ordinal))?["--mc-form=".Length..];
+        switch (form?.ToLowerInvariant())
         {
             case "tv":
                 return FormFactor.Television;

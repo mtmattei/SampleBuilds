@@ -298,7 +298,8 @@ public partial record MainModel
         Greeting: Format("Greeting_Named", ProfileName),
         // A true minus sign (U+2212), as the design sets it, not a hyphen.
         WeatherLine: Format("Weather_Line", OutsideTemp(input.Car), input.Car.WeatherSummary),
-        NowText: Format("Status_Now", Clock(input.Now)));
+        NowText: Format("Status_Now", Clock(input.Now)),
+        ClockText: Clock(input.Now));
 
     private static string OutsideTemp(VehicleSnapshot car) =>
         car.OutsideTemp.ToString(CultureInfo.CurrentCulture).Replace('-', '\u2212');
@@ -510,7 +511,8 @@ public partial record MainModel
             CabinTitleInk: cabin == CabinChoice.Skipped ? "SkippedTitleBrush" : "InkStrongBrush",
             FuelRowName: Format("Row_Name", Format("Fuel_Title", car.Range.ToString(CultureInfo.CurrentCulture)), Text("Fuel_NoteFine"), fuelPill),
             CabinRowName: Format("Row_Name", Text("Cabin_Title"), cabinMeta, cabinPill),
-            ParkingRowName: plan is null ? string.Empty : Format("Row_Name", plan.ParkingStreet, plan.ParkingNote, Text("Checks_ParkingChip")));
+            ParkingRowName: plan is null ? string.Empty : Format("Row_Name", plan.ParkingStreet, plan.ParkingNote, Text("Checks_ParkingChip")),
+            CabinWatchMeta: cabin == CabinChoice.Pending && !offline ? Format("Cabin_WatchMeta", cabinPill) : cabinPill);
     }
 
     /// <summary>"−3°", with a true minus sign as the design sets it.</summary>

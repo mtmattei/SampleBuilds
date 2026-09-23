@@ -12,7 +12,17 @@ namespace MorningCard.Controls;
 /// </summary>
 public sealed partial class MapPart : UserControl
 {
+    public static readonly DependencyProperty ShowMapsPillProperty = DependencyProperty.Register(
+        nameof(ShowMapsPill), typeof(bool), typeof(MapPart), new PropertyMetadata(true));
+
     private bool _started;
+
+    /// <summary>False on the watch, which puts Open in Maps under the map as its own button (v6 Wear).</summary>
+    public bool ShowMapsPill
+    {
+        get => (bool)GetValue(ShowMapsPillProperty);
+        set => SetValue(ShowMapsPillProperty, value);
+    }
 
     public MapPart()
     {

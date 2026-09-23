@@ -166,3 +166,16 @@ public sealed class TokenBrushConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
         throw new NotSupportedException();
 }
+
+/// <summary>
+/// The watch's headline emphasis (v6 Wear ramp): the countdown the phone sets at 27 becomes 38; an
+/// inline time stays at the sentence's 17.
+/// </summary>
+public sealed class WatchAccentSizeConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language) =>
+        value is double size && size >= 20 ? 38d : 17d;
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}

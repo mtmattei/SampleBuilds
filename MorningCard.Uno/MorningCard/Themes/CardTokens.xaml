@@ -73,6 +73,10 @@
       <Color x:Key="CardShadowFarColor">#612A2C2F</Color>
       <Color x:Key="SunInkColor">#B5824F</Color>
       <Color x:Key="MapPillColor">#FBFAF7</Color>
+      <!-- Wear (v6 wear_os.png): the round face, and the highlighted cabin row with its ring. -->
+      <Color x:Key="WatchFaceColor">#F4F2EC</Color>
+      <Color x:Key="WatchRowActiveColor">#E7EBEF</Color>
+      <Color x:Key="WatchRowRingColor">#400A66E8</Color>
       <Color x:Key="AccentChipColor">#1F4A6B8A</Color>
       <Color x:Key="AmberChipColor">#F0EADF</Color>
       <Color x:Key="DangerChipColor">#1F9C4A3E</Color>
@@ -135,6 +139,9 @@
       <SolidColorBrush x:Key="PinBrush" Color="{StaticResource PinColor}" />
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapPillBrush" Color="{StaticResource MapPillColor}" />
+      <SolidColorBrush x:Key="WatchFaceBrush" Color="{StaticResource WatchFaceColor}" />
+      <SolidColorBrush x:Key="WatchRowActiveBrush" Color="{StaticResource WatchRowActiveColor}" />
+      <SolidColorBrush x:Key="WatchRowRingBrush" Color="{StaticResource WatchRowRingColor}" />
       <SolidColorBrush x:Key="AccentChipBrush" Color="{StaticResource AccentChipColor}" />
       <SolidColorBrush x:Key="AmberChipBrush" Color="{StaticResource AmberChipColor}" />
       <SolidColorBrush x:Key="DangerChipBrush" Color="{StaticResource DangerChipColor}" />
