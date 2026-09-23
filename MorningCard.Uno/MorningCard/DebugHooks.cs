@@ -80,9 +80,6 @@ internal static class DebugHooks
 
     public static bool ProbeRetry => Read("MC_PROBE_RETRY") == "1";
 
-    /// <summary>MC_SPIKE=1 replaces the card with the v6 step 1 spike view (R7, R8, R9).</summary>
-    public static bool Spike => Read("MC_SPIKE") == "1";
-
     public static bool ProbeFocus => Read("MC_PROBE_FOCUS") == "1";
 
     public static bool ProbeChips => Read("MC_PROBE_CHIPS") == "1";

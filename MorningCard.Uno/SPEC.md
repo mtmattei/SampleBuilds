@@ -1314,7 +1314,7 @@ Two failed cycles on any spike: Debug Checkpoint, then take the listed fallback.
 
 ### v6 spike results (2026-09-23, Uno.Sdk 6.7.30, Mapsui 5.1.0)
 
-Harness: `MC_SPIKE=1` (DEBUG) swaps the card for `Spikes/SpikeView.cs`. Measured on `net10.0-desktop`
+Harness: a DEBUG-only `MC_SPIKE=1` view, deleted after the run (user, 2026-09-23; in `f61ac1b`). Measured on `net10.0-desktop`
 and the `chefs36` emulator (API 36, 1080x2400). Captures: `captures/spikes-desktop.png`,
 `captures/spikes-android.png`, plus the `-hatch-*` zooms.
 

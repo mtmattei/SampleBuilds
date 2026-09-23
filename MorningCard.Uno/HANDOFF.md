@@ -9,7 +9,7 @@ Updated: 2026-09-22 15:05
   - R8: `Controls/MutedTileSource.cs` tints OSM tiles through a colour matrix on both heads. Tune
     `PaperMatrix` at step 6. OSM labels stay, muted (user decision T6).
   - R9: hatched ruler blocks are drawn in Skia. The repeating gradient works, but its line weight is uneven.
-- Harness: `MC_SPIKE=1` (DEBUG) shows `Spikes/SpikeView.cs`. Delete it once step 6 has ported the tint.
+- The spike harness (`MC_SPIKE`, `Spikes/SpikeView.cs`) is deleted; it is still in `f61ac1b` if needed.
 - Android: the Pixel 8 (`3C090DLJH000V4`) is locked with a fingerprint, so use `chefs36` (`adb -e`).
   Its `debug.mono.env` is cleared.
 - **Next action:** v6 plan step 2, `refactor: drop dark mode and the hue dial`.
