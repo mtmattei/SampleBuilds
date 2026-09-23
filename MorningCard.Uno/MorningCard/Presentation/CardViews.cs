@@ -140,6 +140,8 @@ public record CarView(
     string FuelTitle,
     string CabinLabel,
     string CabinLead,
+    // The suggestion made concrete: target temperature and the moment it matters.
+    string CabinDetail,
     string CabinAccent,
     // The checklist header: how many checks there are and how many are ready.
     string ChecksCount,

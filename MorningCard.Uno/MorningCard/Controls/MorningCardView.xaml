@@ -613,6 +613,7 @@
                     </StackPanel>
 
                     <StackPanel Spacing="9" Visibility="{Binding Data.CabinNeedsWarming, Converter={StaticResource BoolToVisibility}}">
+                      <TextBlock Style="{StaticResource CardCaption}" Foreground="{ThemeResource Ink2Brush}" TextWrapping="Wrap" Text="{Binding Data.CabinDetail}" />
                       <!-- The method only. The temperatures are already in the row's own line. -->
                       <Border Background="{ThemeResource ChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="9,4" HorizontalAlignment="Left">
                         <TextBlock x:Uid="ChecksCabinRemote" Style="{StaticResource CardCaption}" />

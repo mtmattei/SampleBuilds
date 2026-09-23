@@ -60,7 +60,8 @@ public partial record MainModel
     public string EtaUnitLabel => Text("Eta_Unit");
 
     /// <summary>"Start drive", or the confirmation while it is showing.</summary>
-    public IFeed<string> DriveLabel => DriveSent.Select(sent => Text(sent ? "Drive_Sent" : "Drive_Start"));
+    public IFeed<string> DriveLabel => Feed.Combine(DriveSent, Car).Select(input =>
+        input.Item1 ? Format("Drive_Sent", input.Item2.Name) : Text("Drive_Start"));
 
     private IFeed<TripResult> Trip => Feed<TripResult>.AsyncEnumerable(WatchTrip);
 
@@ -266,7 +267,7 @@ public partial record MainModel
         // Three parts so the duration can take the accent colour inline, which is what the v2
         // mockup draws. Only the middle Run is coloured; an empty accent collapses to plain text.
         var (lead, accent, tail) = car.IsStale
-            ? (Format("Headline_Offline", Clock(car.LastSeen)), string.Empty, string.Empty)
+            ? (Format("Headline_Offline", car.Name, Clock(car.LastSeen)), string.Empty, string.Empty)
             : timeline is null
                 ? (Text("Headline_NoTrip"), string.Empty, string.Empty)
                 : timeline.Tone switch
@@ -278,7 +279,7 @@ public partial record MainModel
                     CardTone.LeaveNow => (
                         Text("Headline_LeaveNowPrefix"),
                         Text("Headline_LeaveNowAccent"),
-                        Text("Headline_LeaveNowTail")),
+                        Format("Headline_LeaveNowTail", Clock(plan!.Bell))),
                     _ => (
                         Text("Headline_LeaveInPrefix"),
                         Format("Headline_LeaveInAccent", timeline.SlackMin),
@@ -404,7 +405,17 @@ public partial record MainModel
 
         // Climate off means the cabin is not going anywhere, so the row states the temperature
         // rather than inventing a target it is not heading for.
-        var cabinLead = car.ClimateOn ? Text("Cabin_WarmingLead") : Text("Cabin_RestingLead");
+        // At rest, the row says why warming is suggested: the temperature outside.
+        var cabinLead = car.ClimateOn
+            ? Text("Cabin_WarmingLead")
+            : Format("Cabin_RestingLead", car.OutsideTemp);
+
+        // With a trip, the suggestion is tied to the moment it matters; without one, to the drive.
+        var cabinDetail = timeline is { IsLate: false }
+            ? Format("Cabin_WarmBeforeLeave", car.CabinTarget, Clock(timeline.LeaveBy))
+            : Format("Cabin_WarmDetail", car.CabinTarget);
+
+        var ready = car.ClimateOn ? 3 : 2;
 
         return new CarView(
             FuelValue: car.Range.ToString(CultureInfo.CurrentCulture),
@@ -416,12 +427,13 @@ public partial record MainModel
             FuelTitle: Text(fuelLevel == StatLevel.Bad ? "Fuel_TitleLow" : "Fuel_NoteFine"),
             CabinLabel: Text("Cabin_Label"),
             CabinLead: cabinLead,
+            CabinDetail: cabinDetail,
             // Reports the climate command the Simulator holds; the card can no longer send one.
             CabinAccent: car.ClimateOn ? Text("Cabin_RemoteOn") : string.Empty,
             ChecksCount: Format("Checks_Count", 3),
             // Fuel and parking are informational, so they are ready by definition; the cabin is the
             // one the driver can still act on, which is what "2 of 3" is counting.
-            ChecksReady: Format("Checks_Ready", car.ClimateOn ? 3 : 2, 3),
+            ChecksReady: ready == 3 ? Text("Checks_AllSet") : Format("Checks_Ready", ready, 3),
             CabinNeedsWarming: !car.ClimateOn,
             ChecksExpanded: expanded,
             ParkingChip: slot.Plan is null ? string.Empty : Format("Checks_ParkingChip", slot.Plan.ParkingNote),
