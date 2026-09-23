@@ -16,7 +16,7 @@ It stops on project restructuring and emulator downloads (see Open questions).
   `APP_NO_HOTDESIGN=1`, `scripts/Capture-Tall.ps1` and DEBUG probes. Confirmed: the cabin flow
   (`MC_PROBE_CABIN`), Retry from ETA unavailable (`MC_PROBE_RETRY`: PASSED), the ruler grow-in, the
   live-dot pulse, and all 7 states on desktop plus 5 on the `chefs36` emulator.
-- Git: `db9eab8` plus this handoff. The only uncommitted files are the pre-v6 `captures/android/*`
+- Git: `ac27715` (uno-audit) plus this handoff. The only uncommitted files are the pre-v6 `captures/android/*`
   files from an earlier session, left alone on purpose.
 - Lint (after uno-audit): all gating rules 0 (exit 0); TEMPLATE 4 info, each with its reason.
 
@@ -30,15 +30,15 @@ It stops on project restructuring and emulator downloads (see Open questions).
 | Spike R8: tinted tiles | MorningCard/Controls/MorningCardView.xaml.cs:154 |
 | Icon memory: Lucide font (user choice) | MorningCard/Themes/Icons.xaml:13 |
 | Rules file: timer pulse, not a Forever storyboard | MorningCard/Controls/MorningCardView.xaml:595 (LivePulse) |
-| Workaround protocol: Chip clips at 22 px | MorningCard/Themes/CardStyles.xaml:563 |
+| toolkit-chip: status pills as Chips, sized by scoped lightweight keys | MorningCard/Controls/MorningCardView.xaml (UserControl.Resources `ChipHeight`) |
+| uno-audit: semantic lint gating 0, dead code removed | ac27715 |
 Read, not applied: none.
 
 ## Next actions (in order)
 1. The user decides on v5 step 2: split the card into a `MorningCard.UI` library (project restructure).
 2. Install the TV, Wear and Automotive system images once approved (1-2 GB each), then run v5 steps 5-9
    against the v6 surface artboards (`docs/design/v6/png/android_tv.png`, `wear_os.png`, `android_auto.png`).
-3. Optionally: tune `MutedTileSource.PaperMatrix`, whose first pass is busier than the artboard, and
-   file the Toolkit Chip issue upstream.
+3. Optionally: tune `MutedTileSource.PaperMatrix`, whose first pass is busier than the artboard.
 
 ## Open questions
 - Should v5 go ahead (library split plus TV, Wear and Auto), and may it download the system images?
