@@ -1,7 +1,20 @@
 # HANDOFF — MorningCard v5 Android form factors (step 0, baseline)
 Updated: 2026-09-22 15:05
 
-## UPDATE 2026-09-23 (supersedes the sections below where they disagree)
+## UPDATE 2026-09-23, v6 step 1 done (supersedes everything below)
+
+- Spikes R7, R8 and R9 **all pass**. Results are in SPEC.md under "v6 spike results".
+  - R7: Geist static TTFs (from Google css2) are in `Assets/Fonts`. Fragments are `#Geist`, `#Geist Medium`
+    and `#Geist SemiBold`. A wrong fragment does not fall back, so check font URIs by filename.
+  - R8: `Controls/MutedTileSource.cs` tints OSM tiles through a colour matrix on both heads. Tune
+    `PaperMatrix` at step 6. OSM labels stay in the tiles (open question in SPEC).
+  - R9: hatched ruler blocks are drawn in Skia. The repeating gradient works, but its line weight is uneven.
+- Harness: `MC_SPIKE=1` (DEBUG) shows `Spikes/SpikeView.cs`. Delete it once step 6 has ported the tint.
+- Android: the Pixel 8 (`3C090DLJH000V4`) is locked with a fingerprint, so use `chefs36` (`adb -e`).
+  Its `debug.mono.env` is cleared.
+- **Next action:** v6 plan step 2, `refactor: drop dark mode and the hue dial`.
+
+## UPDATE 2026-09-23 (earlier)
 
 - The ruler and title-clip defects are **fixed** in `c658b2b` (`captures/android/fix-d420.png`).
 - The user added `docs/design/v6/`, which is **the new target**. The diff against v5 is in

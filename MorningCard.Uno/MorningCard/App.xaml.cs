@@ -144,6 +144,11 @@ public partial class App : Application
         {
             _ = DebugHooks.OpenAsync(openRoot, openTarget);
         }
+
+        if (DebugHooks.Spike)
+        {
+            MainWindow.Content = new Spikes.SpikeView();
+        }
 #endif
     }
 
