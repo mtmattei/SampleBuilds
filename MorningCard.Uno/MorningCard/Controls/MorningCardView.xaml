@@ -553,7 +553,7 @@
             -->
             <Border BorderBrush="{ThemeResource LineBrush}"
                     BorderThickness="1"
-                    CornerRadius="{StaticResource MapCornerRadius}"
+                    CornerRadius="{StaticResource ButtonCornerRadius}"
                     Opacity="{Binding Data.IsStale, Converter={StaticResource StaleOpacity}}">
               <StackPanel>
 
