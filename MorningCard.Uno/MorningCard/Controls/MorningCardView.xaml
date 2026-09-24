@@ -242,7 +242,7 @@
                 </StackPanel>
 
                 <!-- Light ticks at the Leave and Arrive edges, in the gaps between blocks. -->
-                <Rectangle Grid.Row="1" Grid.Column="2" Width="1" Margin="-1.5,0,0,0" HorizontalAlignment="Left" Fill="{ThemeResource Ink3Brush}" />
+                <Rectangle Grid.Row="1" Grid.Column="2" Width="1.5" Margin="-1.75,0,0,0" HorizontalAlignment="Left" Fill="{Binding Data.Tone, Converter={StaticResource ToneTrackBrush}}" />
                 <Rectangle Grid.Row="1" Grid.Column="3" Width="1" Margin="-1.5,0,0,0" HorizontalAlignment="Left" Fill="{ThemeResource Ink3Brush}" />
 
                 <!-- Now: a thin ink line from the callout down through the track. Declared first so
@@ -319,20 +319,20 @@
                         Grid.Column="3"
                         Height="34"
                         CornerRadius="8"
-                        Background="{ThemeResource ChipBrush}">
+                        Background="{ThemeResource RulerWalkBrush}">
                   <mc:FitOrFallbackPanel VerticalAlignment="Center">
                     <TextBlock x:Uid="TrackWalk"
                                Margin="8,0"
                                TextWrapping="NoWrap"
                                FontFamily="{StaticResource CardFontMedium}"
                                FontSize="12"
-                               Foreground="{ThemeResource Ink2Brush}" />
+                               Foreground="{ThemeResource AmberInkBrush}" />
                     <FontIcon x:Uid="TrackWalkIcon"
                               HorizontalAlignment="Center"
                               FontFamily="{StaticResource IconFont}"
                               Glyph="{StaticResource IconWalk}"
                               FontSize="14"
-                              Foreground="{ThemeResource Ink2Brush}" />
+                              Foreground="{ThemeResource AmberInkBrush}" />
                   </mc:FitOrFallbackPanel>
                 </Border>
 
@@ -614,6 +614,7 @@
                                 VerticalAlignment="Center">
                       <TextBlock Style="{StaticResource CardCaption}"
                                  VerticalAlignment="Center"
+                                 Foreground="{Binding Data.CabinNeedsWarming, Converter={StaticResource ReadyInk}}"
                                  Text="{Binding Data.ChecksReady}" />
                     </StackPanel>
 

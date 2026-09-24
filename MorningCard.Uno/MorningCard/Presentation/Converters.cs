@@ -73,6 +73,19 @@ public sealed class ToneChipInkConverter : IValueConverter
         throw new NotSupportedException();
 }
 
+/// <summary>
+/// The checklist summary: sage once every check is ready (sage means ready across the card), the
+/// caption's own grey while one is still open. Bound to CabinNeedsWarming, the only check that can be.
+/// </summary>
+public sealed class ReadyInkConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language) =>
+        value is true ? Tokens.Of("Ink2Brush") : Tokens.Of("GoodInkBrush");
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>The timeline's drive block: a soft tint of the tone, so the ink label stays the loud part.</summary>
 public sealed class ToneChipBrushConverter : IValueConverter
 {
