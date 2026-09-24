@@ -117,17 +117,26 @@
             <!-- Title, car, sentence. The sentence sits beside the car while it fits there at full
                  size, and drops to its own full-width row under the car when it would not. -->
             <mc:HeadlineLayoutPanel ColumnSpacing="12" RowSpacing="4">
-              <StackPanel Orientation="Horizontal" Spacing="8">
+              <!-- Left-aligned with a star column, so the title trims with an ellipsis inside its
+                   column instead of running under the car, and the chevron stays beside it. -->
+              <Grid HorizontalAlignment="Left" ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
                 <TextBlock Style="{StaticResource CardTitle}"
                            VerticalAlignment="Center"
+                           TextWrapping="NoWrap"
+                           TextTrimming="CharacterEllipsis"
                            Text="{Binding Data.Title}" />
-                <FontIcon FontFamily="{StaticResource IconFont}"
+                <FontIcon Grid.Column="1"
+                          FontFamily="{StaticResource IconFont}"
                           Glyph="{StaticResource IconChevronNext}"
                           FontSize="22"
                           Foreground="{ThemeResource Ink2Brush}"
                           VerticalAlignment="Center"
                           Margin="0,3,0,0" />
-              </StackPanel>
+              </Grid>
               <!-- Desaturated to 30% (scripts/Mute-Car.ps1), so it reads as a grey object on the
                    paper rather than as a product shot competing with the route accent. The car's
                    name and lock state live in the bottom bar, beside the button that changes it. -->
@@ -172,6 +181,7 @@
             <StackPanel Spacing="8"
                         AutomationProperties.AccessibilityView="Raw"
                         Visibility="{Binding Data.IsLoading, Converter={StaticResource BoolToVisibility}}">
+              <Border Height="34" Margin="0,30,0,4" CornerRadius="{StaticResource ChipCornerRadius}" Background="{ThemeResource ChipBrush}" />
               <Grid>
                 <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="*" />
@@ -191,35 +201,9 @@
                   <Border Style="{StaticResource SkeletonTime}" />
                 </StackPanel>
               </Grid>
-              <Border Height="8" Margin="0,1,0,0" CornerRadius="4" Background="{ThemeResource ChipBrush}" />
             </StackPanel>
             <StackPanel Spacing="8"
                         Visibility="{Binding Data.ShowsRoute, Converter={StaticResource BoolToVisibility}}">
-              <Grid>
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="*" />
-                  <ColumnDefinition Width="*" />
-                  <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Spacing="1">
-                  <TextBlock Style="{StaticResource TimelineLabel}" Text="{Binding Data.LeaveByLabel}" />
-                  <TextBlock Style="{StaticResource TimelineTime}"
-                             Foreground="{Binding Data.Tone, Converter={StaticResource ToneChipInk}}"
-                             Text="{Binding Data.LeaveByTime}" />
-                </StackPanel>
-
-                <StackPanel Grid.Column="1" Spacing="1">
-                  <TextBlock x:Uid="TimelineArrive" Style="{StaticResource TimelineLabel}" />
-                  <TextBlock Style="{StaticResource TimelineTime}" Text="{Binding Data.ArriveTime}" />
-                </StackPanel>
-
-                <StackPanel Grid.Column="2" Spacing="1">
-                  <TextBlock x:Uid="TimelineBell" Style="{StaticResource TimelineLabel}" />
-                  <TextBlock Style="{StaticResource TimelineTime}" Text="{Binding Data.BellTime}" />
-                </StackPanel>
-              </Grid>
-
               <!-- The slack ruler. Blocks for what the morning is made of: slack in soft green,
                    the committed drive in the tone's tint, the walk in neutral, and hatched stubs for
                    the time either side (already gone, and in class). Star columns carry the
@@ -229,6 +213,7 @@
                 <Grid.RowDefinitions>
                   <RowDefinition Height="Auto" />
                   <RowDefinition Height="42" />
+                  <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="12" />
@@ -237,6 +222,28 @@
                   <ColumnDefinition Width="{Binding Data.TrackWalk, Converter={StaticResource PercentToStar}}" />
                   <ColumnDefinition Width="12" />
                 </Grid.ColumnDefinitions>
+
+                <!-- The times live on the ruler, each at the edge it names: Leave where the drive
+                     starts and Arrive where it ends, under the track; Bell above it, over its own tick.
+                     The walk is only minutes long, so Arrive and Bell side by side collided. -->
+                <StackPanel Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" Spacing="1">
+                  <TextBlock Style="{StaticResource TimelineLabel}" Text="{Binding Data.LeaveByLabel}" />
+                  <TextBlock Style="{StaticResource TimelineTime}"
+                             Foreground="{Binding Data.Tone, Converter={StaticResource ToneChipInk}}"
+                             Text="{Binding Data.LeaveByTime}" />
+                </StackPanel>
+                <StackPanel Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right" Spacing="1">
+                  <TextBlock x:Uid="TimelineArrive" Style="{StaticResource TimelineLabel}" HorizontalAlignment="Right" />
+                  <TextBlock Style="{StaticResource TimelineTime}" HorizontalAlignment="Right" TextWrapping="NoWrap" Text="{Binding Data.ArriveTime}" />
+                </StackPanel>
+                <StackPanel Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" HorizontalAlignment="Right" VerticalAlignment="Bottom" Spacing="1">
+                  <TextBlock x:Uid="TimelineBell" Style="{StaticResource TimelineLabel}" HorizontalAlignment="Right" />
+                  <TextBlock Style="{StaticResource TimelineTime}" HorizontalAlignment="Right" TextWrapping="NoWrap" Text="{Binding Data.BellTime}" />
+                </StackPanel>
+
+                <!-- Light ticks at the Leave and Arrive edges, in the gaps between blocks. -->
+                <Rectangle Grid.Row="1" Grid.Column="2" Width="1" Margin="-1.5,0,0,0" HorizontalAlignment="Left" Fill="{ThemeResource Ink3Brush}" />
+                <Rectangle Grid.Row="1" Grid.Column="3" Width="1" Margin="-1.5,0,0,0" HorizontalAlignment="Left" Fill="{ThemeResource Ink3Brush}" />
 
                 <!-- Now: a thin ink line from the callout down through the track. Declared first so
                      the callout covers its top and the line reads as hanging from it. -->
