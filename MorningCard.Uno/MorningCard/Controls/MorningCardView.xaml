@@ -788,16 +788,16 @@
                       Command="{Binding Parent.ToggleLock}"
                       IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}">
                 <StackPanel Orientation="Horizontal" Spacing="6">
-                  <FontIcon FontFamily="{StaticResource IconFont}"
-                            Glyph="{Binding Data.IsLocked, Converter={StaticResource LockGlyph}}"
-                            FontSize="15"
-                            Foreground="{ThemeResource InkBrush}"
-                            VerticalAlignment="Center" />
                   <TextBlock Text="{Binding Data.LockAction}"
                              FontFamily="{StaticResource CardFontMedium}"
                              FontSize="13"
                              Foreground="{ThemeResource InkBrush}"
                              VerticalAlignment="Center" />
+                  <FontIcon FontFamily="{StaticResource IconFont}"
+                            Glyph="{Binding Data.IsLocked, Converter={StaticResource LockGlyph}}"
+                            FontSize="15"
+                            Foreground="{ThemeResource InkBrush}"
+                            VerticalAlignment="Center" />
                 </StackPanel>
               </Button>
 
@@ -806,23 +806,23 @@
                       Command="{Binding Parent.StartDrive}"
                       IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}">
                 <StackPanel Orientation="Horizontal" Spacing="7">
+                  <TextBlock Text="{Binding Parent.DriveLabel}"
+                             FontFamily="{StaticResource CardFontMedium}"
+                             FontSize="13"
+                             Foreground="{ThemeResource GlassInkBrush}"
+                             VerticalAlignment="Center" />
                   <FontIcon FontFamily="{StaticResource IconFont}"
                             Glyph="{StaticResource IconDrive}"
                             FontSize="15"
                             Foreground="{ThemeResource GlassInkBrush}"
                             VerticalAlignment="Center"
                             RenderTransformOrigin="0.5,0.5">
-                    <!-- The glyph points up-left; a quarter turn points it up-right, toward the
-                         label and the way the drive goes. -->
+                    <!-- The glyph points up-left; a quarter turn points it up-right, forward from
+                         the label and the way the drive goes. -->
                     <FontIcon.RenderTransform>
                       <RotateTransform Angle="90" />
                     </FontIcon.RenderTransform>
                   </FontIcon>
-                  <TextBlock Text="{Binding Parent.DriveLabel}"
-                             FontFamily="{StaticResource CardFontMedium}"
-                             FontSize="13"
-                             Foreground="{ThemeResource GlassInkBrush}"
-                             VerticalAlignment="Center" />
                 </StackPanel>
               </Button>
             </Grid>
