@@ -26,7 +26,10 @@ internal sealed class RouteRulerRenderer : IDisposable
     private const float RouteWidth = 5f;
 
     /// <summary>A lighter casing under the line, so it reads against the street grid.</summary>
-    private const float CasingWidth = 8.5f;
+    private const float CasingWidth = 11.5f;
+
+    /// <summary>The solid outline either side of the drive's pale fill.</summary>
+    private const float DriveEdgeWidth = 1.5f;
 
     private const float MinorTickWidth = 1f;
     private const float MinorTickLength = 6f;
@@ -143,10 +146,11 @@ internal sealed class RouteRulerRenderer : IDisposable
         EnsurePaths(projection);
 
         var palette = snapshot.Palette;
-        var driveColor = snapshot.IsLate ? palette.Danger : palette.Accent;
+        var driveColor = snapshot.IsLate ? palette.Danger : snapshot.IsLeaveNow ? palette.Amber : palette.Accent;
+        var driveFill = snapshot.IsLate ? palette.LateFill : snapshot.IsLeaveNow ? palette.LeaveNowFill : palette.DriveFill;
 
         DrawCasing(canvas, palette);
-        DrawRouteLines(canvas, palette, driveColor);
+        DrawRouteLines(canvas, palette, driveColor, driveFill);
         DrawTicks(canvas, projection, palette, driveColor);
         DrawRing(canvas, projection.OriginDwell, palette, driveColor);
         DrawRing(canvas, projection.DestinationDwell, palette, palette.Amber);
@@ -261,11 +265,19 @@ internal sealed class RouteRulerRenderer : IDisposable
         canvas.DrawPath(_walk, _line);
     }
 
-    private void DrawRouteLines(SKCanvas canvas, RouteRulerPalette palette, SKColor driveColor)
+    /// <summary>
+    /// The drive is the ruler's Drive block laid along the road: its pale fill, cased in the tone's
+    /// solid colour so it still separates from the tiles.
+    /// </summary>
+    private void DrawRouteLines(SKCanvas canvas, RouteRulerPalette palette, SKColor driveColor, SKColor driveFill)
     {
         _line.PathEffect = null;
-        _line.StrokeWidth = RouteWidth;
+        _line.StrokeWidth = RouteWidth + 2f * DriveEdgeWidth;
         _line.Color = driveColor;
+        canvas.DrawPath(_drive, _line);
+
+        _line.StrokeWidth = RouteWidth;
+        _line.Color = driveFill;
         canvas.DrawPath(_drive, _line);
 
         // Hollow, and clay: the mode change has to read without a legend.
@@ -470,7 +482,7 @@ internal sealed class RouteRulerRenderer : IDisposable
         RouteRulerPalette palette,
         SKSize area)
     {
-        var driveColor = snapshot.IsLate ? palette.Danger : palette.Accent;
+        var driveColor = snapshot.IsLate ? palette.Danger : snapshot.IsLeaveNow ? palette.Amber : palette.Accent;
 
         // A pin wearing a dwell ring is four times its own radius across, so its label has to clear
         // the ring rather than the pin - otherwise the arc is drawn straight through the text.

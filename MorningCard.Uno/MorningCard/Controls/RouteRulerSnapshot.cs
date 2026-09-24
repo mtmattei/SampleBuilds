@@ -12,6 +12,9 @@ public sealed record RouteRulerSnapshot
 
     public bool IsLate { get; init; }
 
+    /// <summary>Slack is gone but the car is not late yet: the ruler's clay state.</summary>
+    public bool IsLeaveNow { get; init; }
+
     /// <summary>
     /// The route in screen pixels, projected through the map's viewport on the UI thread. Null
     /// before the asset has loaded or the map has been fitted, which leaves only the tiles.
@@ -43,7 +46,12 @@ public sealed record RouteRulerPalette(
     SKColor Danger,
     SKColor DangerInk,
     SKColor Pin,
-    SKColor NodeStroke)
+    SKColor NodeStroke,
+    // The route's pale fill, one per card tone, matching the ruler's Drive block. The leave-now
+    // and late blocks are translucent chips on the paper, so these are those chips flattened over it.
+    SKColor DriveFill,
+    SKColor LeaveNowFill,
+    SKColor LateFill)
 {
     /// <summary>Light-theme values, used until the control has read the live resources.</summary>
     public static RouteRulerPalette Fallback { get; } = new(
@@ -56,5 +64,8 @@ public sealed record RouteRulerPalette(
         Danger: new SKColor(0xA8, 0x5A, 0x45),
         DangerInk: new SKColor(0x8E, 0x45, 0x33),
         Pin: new SKColor(0x3D, 0x3A, 0x35),
-        NodeStroke: SKColors.White);
+        NodeStroke: SKColors.White,
+        DriveFill: new SKColor(0xD9, 0xE2, 0xEC),
+        LeaveNowFill: new SKColor(0xEE, 0xE4, 0xD9),
+        LateFill: new SKColor(0xEE, 0xE4, 0xDF));
 }

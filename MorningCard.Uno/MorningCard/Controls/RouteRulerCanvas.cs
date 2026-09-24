@@ -170,6 +170,7 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
         {
             HasRoute = eta is not null,
             IsLate = eta?.IsLate ?? false,
+            IsLeaveNow = eta?.Tone == MorningCard.Core.Models.CardTone.LeaveNow,
             Projection = Project(eta),
             LeaveLabel = eta?.LeaveLabel ?? string.Empty,
             MapCornerRadius = MapCornerRadius(),
@@ -258,7 +259,18 @@ public sealed partial class RouteRulerCanvas : SKCanvasElement
             DangerInk: Read("DangerInkColor", theme, fallback.DangerInk),
             Pin: Read("PinColor", theme, fallback.Pin),
             // Nodes keep a white ring in both themes: it reads as a cut-out, not as ink.
-            NodeStroke: fallback.NodeStroke);
+            NodeStroke: fallback.NodeStroke,
+            DriveFill: Read("RulerDriveColor", theme, fallback.DriveFill),
+            LeaveNowFill: Over(Read("AmberChipColor", theme, fallback.LeaveNowFill), Read("CardSurfaceColor", theme, SKColors.White)),
+            LateFill: Over(Read("DangerChipColor", theme, fallback.LateFill), Read("CardSurfaceColor", theme, SKColors.White)));
+    }
+
+    /// <summary>A translucent chip colour flattened over an opaque ground.</summary>
+    private static SKColor Over(SKColor top, SKColor ground)
+    {
+        var a = top.Alpha / 255f;
+        byte Mix(byte t, byte g) => (byte)Math.Round(t * a + g * (1 - a));
+        return new SKColor(Mix(top.Red, ground.Red), Mix(top.Green, ground.Green), Mix(top.Blue, ground.Blue));
     }
 
     private static SKColor Read(string key, ElementTheme theme, SKColor fallback) =>
