@@ -269,15 +269,12 @@
                   <StackPanel Orientation="Horizontal" Spacing="8">
                     <Ellipse Width="8" Height="8" VerticalAlignment="Center" Fill="{ThemeResource GoodBrush}" />
                     <TextBlock VerticalAlignment="Center"
-                               FontFamily="{StaticResource CardFontSemiBold}"
-                               FontSize="13"
+                               Style="{StaticResource CardLabelStrong}"
                                Foreground="{ThemeResource GoodInkBrush}"
                                Text="{Binding Data.SlackText}" />
                     <TextBlock x:Uid="TrackSlackCaption"
                                VerticalAlignment="Center"
-                               FontFamily="{StaticResource CardFontRegular}"
-                               FontSize="12"
-                               Foreground="{ThemeResource Ink2Brush}" />
+                               Style="{StaticResource CardCaption}" />
                   </StackPanel>
                 </Border>
 
@@ -308,8 +305,7 @@
                   <TextBlock x:Uid="TrackDrive"
                              VerticalAlignment="Center"
                              TextTrimming="Clip"
-                             FontFamily="{StaticResource CardFontMedium}"
-                             FontSize="12"
+                             Style="{StaticResource BlockLabel}"
                              Foreground="{Binding Data.Tone, Converter={StaticResource ToneChipInk}}" />
                 </Border>
 
@@ -324,8 +320,7 @@
                     <TextBlock x:Uid="TrackWalk"
                                Margin="8,0"
                                TextWrapping="NoWrap"
-                               FontFamily="{StaticResource CardFontMedium}"
-                               FontSize="12"
+                               Style="{StaticResource BlockLabel}"
                                Foreground="{ThemeResource AmberInkBrush}" />
                     <FontIcon x:Uid="TrackWalkIcon"
                               HorizontalAlignment="Center"
@@ -806,8 +801,7 @@
                       IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                   <TextBlock Text="{Binding Data.LockAction}"
-                             FontFamily="{StaticResource CardFontMedium}"
-                             FontSize="13"
+                             Style="{StaticResource ButtonLabel}"
                              Foreground="{ThemeResource InkBrush}"
                              VerticalAlignment="Center" />
                   <FontIcon FontFamily="{StaticResource IconFont}"
@@ -824,8 +818,7 @@
                       IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                   <TextBlock Text="{Binding Parent.DriveLabel}"
-                             FontFamily="{StaticResource CardFontMedium}"
-                             FontSize="13"
+                             Style="{StaticResource ButtonLabel}"
                              Foreground="{ThemeResource GlassInkBrush}"
                              VerticalAlignment="Center" />
                   <FontIcon FontFamily="{StaticResource IconFont}"

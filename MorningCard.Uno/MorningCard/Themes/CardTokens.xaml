@@ -44,7 +44,7 @@
 
       <Color x:Key="InkColor">#1B2430</Color>
       <Color x:Key="Ink2Color">#4C555F</Color>
-      <Color x:Key="Ink3Color">#6E7885</Color>
+      <Color x:Key="Ink3Color">#626B77</Color>
       <!-- The one hairline every surface carries. Warm, so it sits in the paper rather than on it. -->
       <Color x:Key="LineColor">#243A342A</Color>
       <Color x:Key="ChipColor">#123A342A</Color>
@@ -143,7 +143,7 @@
 
       <Color x:Key="InkColor">#F0EEE9</Color>
       <Color x:Key="Ink2Color">#B3AFA7</Color>
-      <Color x:Key="Ink3Color">#8A857C</Color>
+      <Color x:Key="Ink3Color">#9A958C</Color>
       <Color x:Key="LineColor">#1FFFFFFF</Color>
       <Color x:Key="ChipColor">#14FFFFFF</Color>
 

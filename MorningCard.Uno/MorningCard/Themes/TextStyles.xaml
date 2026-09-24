@@ -1,112 +1,81 @@
 <!--
-  The card's type scale, each style based on the nearest Material role so the ramp still reads as
-  Material where sizes are not overridden. This is the only file that sets a font size: pages and
-  controls pick a style.
+  The card's type scale. One family (Instrument Sans) in three weights, seven sizes on a ~1.25 ramp
+  from a 14 body:
+
+    11  caps     uppercase labels only; the caps carry the size a lowercase 11 would not
+    12  caption  secondary lines, chips, meta
+    14  body     sentences, status, list labels, button labels
+    18  subhead  a list row's primary value
+    22  data     times and durations: the ruler's times, the drive ETA, the empty-state title
+    28  display  the countdown, the card's one answer
+    34  title    the trip title
+
+  Weights have one job each: Regular reads, Medium labels something you scan or press, SemiBold
+  is a value or a title. Nothing is bold for emphasis alone.
+
+  Each style is based on the nearest Material role so the ramp still reads as Material where sizes
+  are not overridden. This is the only file that sets a font size: pages and controls pick a style.
 
   LineHeight is deliberately unset everywhere: TextBlock.IsTextScaleFactorEnabled defaults true, so
   at 200% Android font scale a fixed line box clips the grown glyphs.
 
-  CharacterSpacing is a no-op on the Skia text stack, so the prototype's -0.02em and -0.03em
-  tracking on the title and the ETA number is not carried over.
+  CharacterSpacing is a no-op on the Skia text stack, so no tracking is attempted, including the
+  open tracking the uppercase labels would normally take.
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!--
-    30 / 600: the drive time. Deliberately smaller than the countdown in the headline, which is the
-    card's answer and so its largest number. Nothing is bold for emphasis alone.
-  -->
-  <Style x:Key="EtaNumber" TargetType="TextBlock" BasedOn="{StaticResource DisplayMedium}">
-    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
-    <Setter Property="FontWeight" Value="SemiBold" />
-    <Setter Property="FontSize" Value="30" />
-    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+  <!-- The 14 body style comes first: the data and subhead styles are based on it, and a
+       StaticResource cannot look forward. -->
+  <Style x:Key="CardBody" TargetType="TextBlock" BasedOn="{StaticResource BodyLarge}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
   </Style>
 
-  <!-- The ETA's unit. A Run cannot take a Style, so the size lives here as a token. -->
-  <x:Double x:Key="EtaUnitSize">15</x:Double>
+  <!-- ============================== 34 title ============================== -->
 
-  <!-- The countdown inside the headline sentence ("Leave in 9 min"): the largest number on the
-       card, because it is the card's answer. A Run token for the same reason as the unit. -->
-  <x:Double x:Key="CountdownSize">27</x:Double>
-
-  <!-- 34 / 600: the trip title. The design's tracking change (less negative) is not carried over:
-       CharacterSpacing is a no-op on the Skia text stack. -->
   <Style x:Key="CardTitle" TargetType="TextBlock" BasedOn="{StaticResource TitleLarge}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
     <Setter Property="FontSize" Value="34" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
+  <!-- ============================= 28 display ============================= -->
 
-  <!-- 15 / 400: the leave-in sentence and the arrival line. -->
-  <Style x:Key="CardBody" TargetType="TextBlock" BasedOn="{StaticResource BodyLarge}">
-    <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
-    <Setter Property="FontSize" Value="15" />
-    <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
-  </Style>
+  <!-- The countdown inside the headline sentence ("Leave in 9 min"): the largest number on the
+       card, because it is the card's answer. A Run cannot take a Style, so it is a token. -->
+  <x:Double x:Key="CountdownSize">28</x:Double>
 
-  <!-- 14 / 400: the greeting. -->
-  <Style x:Key="CardLabel" TargetType="TextBlock" BasedOn="{StaticResource BodyMedium}">
-    <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
-    <Setter Property="FontSize" Value="14" />
-    <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
-  </Style>
+  <!-- =============================== 22 data =============================== -->
 
-  <!-- 14 / 600: the traffic verdict, which carries its own semantic colour. -->
-  <Style x:Key="CardLabelStrong" TargetType="TextBlock" BasedOn="{StaticResource CardLabel}">
+  <!-- The drive time on the map. A duration, so it shares the ruler times' size and sits below
+       the countdown, which is the one number the card answers with. -->
+  <Style x:Key="EtaNumber" TargetType="TextBlock" BasedOn="{StaticResource DisplayMedium}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
-  </Style>
-
-  <!-- 13 / 400: action labels and simulator text. -->
-  <Style x:Key="ActionLabel" TargetType="TextBlock" BasedOn="{StaticResource LabelLarge}">
-    <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
-    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="FontSize" Value="22" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
-  <!-- 12.5 / 400: stat captions, car status, secondary action lines. -->
-  <Style x:Key="CardCaption" TargetType="TextBlock" BasedOn="{StaticResource BodySmall}">
-    <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
-    <Setter Property="FontSize" Value="12.5" />
-    <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
+  <!-- The ruler's Leave, Arrive and Bell times. -->
+  <Style x:Key="TimelineTime" TargetType="TextBlock" BasedOn="{StaticResource CardBody}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="FontSize" Value="22" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
-
-  <!-- 23 / 600: the empty and error headline inside the map panel. Shares CardTitle's size: 22 sat one pixel away for no reason. -->
+  <!-- The empty and error headline inside the map panel. -->
   <Style x:Key="EmptyTitle" TargetType="TextBlock" BasedOn="{StaticResource TitleLarge}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
-    <Setter Property="FontSize" Value="23" />
+    <Setter Property="FontSize" Value="22" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
-  <!-- 13 / 600: the simulator's own heading. -->
-  <Style x:Key="PanelHeading" TargetType="TextBlock" BasedOn="{StaticResource LabelLarge}">
-    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
-    <Setter Property="FontSize" Value="13" />
-    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
-  </Style>
+  <!-- ============================= 18 subhead ============================= -->
 
-
-  <!-- 13 / 400: the status strip above the headline. -->
-  <Style x:Key="StatusLine" TargetType="TextBlock" BasedOn="{StaticResource CardCaption}">
-    <Setter Property="FontSize" Value="14" />
-  </Style>
-
-  <!-- Same size, ink-weight: the temperature and conditions read as values, not captions. -->
-  <Style x:Key="StatusLineStrong" TargetType="TextBlock" BasedOn="{StaticResource StatusLine}">
-    <Setter Property="FontFamily" Value="{StaticResource CardFontMedium}" />
-    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
-  </Style>
-
-  <!-- 19 / 400: the sentence under the title, which carries the accented duration inline. -->
-  <Style x:Key="CardLead" TargetType="TextBlock" BasedOn="{StaticResource CardBody}">
-    <Setter Property="FontSize" Value="13" />
-    <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
-  </Style>
-
-
-  <!-- 18 / 600: a list row's primary value. -->
+  <!-- A list row's primary value. -->
   <Style x:Key="RowValueStrong" TargetType="TextBlock" BasedOn="{StaticResource CardBody}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
     <Setter Property="FontWeight" Value="SemiBold" />
@@ -114,23 +83,76 @@
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
   </Style>
 
+  <!-- =============================== 14 body =============================== -->
 
-  <!-- 11 / 500 uppercase: the timeline's column labels. CharacterSpacing is a no-op on the Skia
-       text stack, so the letterspacing the design shows is not attempted here. -->
+  <!-- The leave-in sentence under the title; its countdown Run takes CountdownSize. -->
+  <Style x:Key="CardLead" TargetType="TextBlock" BasedOn="{StaticResource CardBody}" />
+
+  <!-- The ETA's unit ("min"), a Run beside the number. -->
+  <x:Double x:Key="EtaUnitSize">14</x:Double>
+
+  <Style x:Key="CardLabel" TargetType="TextBlock" BasedOn="{StaticResource BodyMedium}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
+  </Style>
+
+  <!-- A value inside a sentence-sized line: the traffic verdict, the slack callout's minutes.
+       Both carry their own semantic colour. -->
+  <Style x:Key="CardLabelStrong" TargetType="TextBlock" BasedOn="{StaticResource CardLabel}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
+  </Style>
+
+  <!-- The status strip above the card. -->
+  <Style x:Key="StatusLine" TargetType="TextBlock" BasedOn="{StaticResource CardLabel}" />
+
+  <!-- The greeting: same size, Medium and full ink, so it leads the strip. -->
+  <Style x:Key="StatusLineStrong" TargetType="TextBlock" BasedOn="{StaticResource StatusLine}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontMedium}" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+  </Style>
+
+  <!-- Simulator labels and other plain action text. -->
+  <Style x:Key="ActionLabel" TargetType="TextBlock" BasedOn="{StaticResource LabelLarge}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+  </Style>
+
+  <!-- Text inside a button: Medium, because it is something you press. Foreground is left to the
+       button, which sets ink or glass ink. -->
+  <Style x:Key="ButtonLabel" TargetType="TextBlock" BasedOn="{StaticResource LabelLarge}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontMedium}" />
+    <Setter Property="FontSize" Value="14" />
+  </Style>
+
+  <!-- The simulator's own heading. -->
+  <Style x:Key="PanelHeading" TargetType="TextBlock" BasedOn="{StaticResource LabelLarge}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
+  </Style>
+
+  <!-- ============================= 12 caption ============================= -->
+
+  <Style x:Key="CardCaption" TargetType="TextBlock" BasedOn="{StaticResource BodySmall}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontRegular}" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Foreground" Value="{ThemeResource Ink2Brush}" />
+  </Style>
+
+  <!-- The ruler's block names (Drive, Walk): Medium, since you scan them. Ink comes from the block. -->
+  <Style x:Key="BlockLabel" TargetType="TextBlock" BasedOn="{StaticResource CardCaption}">
+    <Setter Property="FontFamily" Value="{StaticResource CardFontMedium}" />
+  </Style>
+
+  <!-- =============================== 11 caps =============================== -->
+
+  <!-- Uppercase labels only (LEAVE BY, DRIVE TO SCHOOL). Ink3, which is tuned to hold 4.5:1 at
+       this size on the panel in both themes. -->
   <Style x:Key="TimelineLabel" TargetType="TextBlock" BasedOn="{StaticResource CardCaption}">
     <Setter Property="FontFamily" Value="{StaticResource CardFontMedium}" />
     <Setter Property="FontSize" Value="11" />
     <Setter Property="Foreground" Value="{ThemeResource Ink3Brush}" />
   </Style>
-
-  <!-- 21 / 600: the times over the track. -->
-  <Style x:Key="TimelineTime" TargetType="TextBlock" BasedOn="{StaticResource CardBody}">
-    <Setter Property="FontFamily" Value="{StaticResource CardFontSemiBold}" />
-    <Setter Property="FontWeight" Value="SemiBold" />
-    <Setter Property="FontSize" Value="21" />
-    <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
-  </Style>
 </ResourceDictionary>
-
-
-
