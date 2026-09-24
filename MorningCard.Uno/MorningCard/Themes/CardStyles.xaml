@@ -39,8 +39,8 @@
   <Style x:Key="ListRowStyle" TargetType="Grid">
     <!-- 14 on the sides as well as top and bottom, matching the header's own padding, so the row
          icons line up with the header's icon instead of sitting against the container's edge. -->
-    <Setter Property="Padding" Value="14" />
-    <Setter Property="ColumnSpacing" Value="14" />
+    <Setter Property="Padding" Value="16,12" />
+    <Setter Property="ColumnSpacing" Value="12" />
   </Style>
 
   <!-- The hairline between rows. A Rectangle rather than a Border: one job, one element. -->

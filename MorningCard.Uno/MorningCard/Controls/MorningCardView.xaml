@@ -45,7 +45,7 @@
             <!-- ======================== status strip ======================== -->
             <!-- Greeting with the weather under it on the left; only the time on the right. The
                  card's status is the headline's job, so the strip does not repeat it. -->
-            <Grid ColumnSpacing="10">
+            <Grid ColumnSpacing="8">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -104,7 +104,7 @@
       -->
       <Border Grid.Row="1"
               Grid.RowSpan="4"
-              Margin="-14,-12,-14,-14"
+              Margin="-16"
               Background="{ThemeResource CardSurfaceBrush}"
               BorderBrush="{ThemeResource LineBrush}"
               BorderThickness="1"
@@ -169,7 +169,7 @@
               the chip tint, static like the rest of the card. Sized to the populated strip so
               nothing below it moves when the times arrive.
             -->
-            <StackPanel Spacing="9"
+            <StackPanel Spacing="8"
                         AutomationProperties.AccessibilityView="Raw"
                         Visibility="{Binding Data.IsLoading, Converter={StaticResource BoolToVisibility}}">
               <Grid>
@@ -193,7 +193,7 @@
               </Grid>
               <Border Height="8" Margin="0,1,0,0" CornerRadius="4" Background="{ThemeResource ChipBrush}" />
             </StackPanel>
-            <StackPanel Spacing="9"
+            <StackPanel Spacing="8"
                         Visibility="{Binding Data.ShowsRoute, Converter={StaticResource BoolToVisibility}}">
               <Grid>
                 <Grid.ColumnDefinitions>
@@ -225,7 +225,7 @@
                    the time either side (already gone, and in class). Star columns carry the
                    proportions, so the track needs no measuring code. -->
               <!-- xaml-lint: allow card - ruler segments and a status callout, not containers; a CardContentControl brings hover/pressed overlays a data bar must not have -->
-              <Grid ColumnSpacing="2" RowSpacing="6">
+              <Grid ColumnSpacing="2" RowSpacing="8">
                 <Grid.RowDefinitions>
                   <RowDefinition Height="Auto" />
                   <RowDefinition Height="42" />
@@ -253,13 +253,13 @@
                         Grid.ColumnSpan="3"
                         HorizontalAlignment="Left"
                         Margin="-10,0,0,0"
-                        Padding="9,5,11,6"
+                        Padding="10,6"
                         CornerRadius="{StaticResource ChipCornerRadius}"
                         BorderThickness="1"
                         BorderBrush="{ThemeResource LineBrush}"
                         Background="{ThemeResource CardSurfaceBrush}"
                         Visibility="{Binding Data.ShowsSlack, Converter={StaticResource BoolToVisibility}}">
-                  <StackPanel Orientation="Horizontal" Spacing="7">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
                     <Ellipse Width="8" Height="8" VerticalAlignment="Center" Fill="{ThemeResource GoodBrush}" />
                     <TextBlock VerticalAlignment="Center"
                                FontFamily="{StaticResource CardFontSemiBold}"
@@ -295,7 +295,7 @@
                 <Border Grid.Row="1"
                         Grid.Column="2"
                         Height="34"
-                        Padding="10,0"
+                        Padding="8,0"
                         CornerRadius="6"
                         Background="{Binding Data.Tone, Converter={StaticResource ToneChipBrush}}">
                   <TextBlock x:Uid="TrackDrive"
@@ -422,7 +422,7 @@
                   Visibility="{Binding State.Data.ShowsRoute, ElementName=EtaFeed, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}"
                   HorizontalAlignment="Right"
                   VerticalAlignment="Bottom"
-                  Margin="0,0,12,26"
+                  Margin="0,0,16,26"
                   Click="OnOpenInMaps" />
 
           <mvux:FeedView x:Name="EtaFeed" Source="{Binding Eta}">
@@ -448,7 +448,7 @@
                   Back inside the map in v3. It carries the minutes, the arrival and the traffic
                   read, which the timeline strip above deliberately does not repeat.
                 -->
-                <StackPanel Margin="16,14,0,0"
+                <StackPanel Margin="16,16,0,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
                             MaxWidth="200"
@@ -460,7 +460,7 @@
                   <TextBlock x:Uid="EtaDriveLabel" Style="{StaticResource TimelineLabel}" />
 
                   <StackPanel Margin="0,10,0,0">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
                       <Ellipse Width="8" Height="8" VerticalAlignment="Center"
                                Fill="{Binding Data.Traffic, Converter={StaticResource TrafficBrush}}" />
                       <TextBlock Style="{StaticResource CardLabelStrong}"
@@ -482,7 +482,7 @@
                 <Border Background="{ThemeResource MapScrimBrush}"
                         AutomationProperties.AccessibilityView="Raw"
                         Visibility="{Binding Data.IsLoading, Converter={StaticResource BoolToVisibility}}">
-                  <StackPanel Margin="16,14,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Spacing="6">
+                  <StackPanel Margin="16,16,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Spacing="6">
                     <Border Width="72" Height="30" Margin="0,4,0,0" HorizontalAlignment="Left" CornerRadius="{StaticResource SmallCornerRadius}" Background="{ThemeResource ChipBrush}" />
                     <Border Style="{StaticResource SkeletonLabel}" Width="96" />
                     <Border Width="92" Height="12" Margin="0,8,0,0" HorizontalAlignment="Left" CornerRadius="4" Background="{ThemeResource ChipBrush}" />
@@ -571,7 +571,7 @@
                 <Button x:Name="ChecksHeader"
                         Style="{StaticResource RowButtonStyle}"
                         CornerRadius="{Binding Data.ChecksExpanded, Converter={StaticResource ChecksHeaderRadius}}"
-                        Padding="14,12"
+                        Padding="16,12"
                         Command="{Binding Parent.ToggleChecks}"
                         AutomationProperties.Name="{Binding Data.ChecksReady}">
                   <!-- Padding zeroed: the row style's own 14pt top and bottom stacked on the
@@ -591,9 +591,9 @@
                               Foreground="{ThemeResource Ink2Brush}"
                               VerticalAlignment="Center" />
 
-                    <TextBlock Grid.Column="1" x:Uid="ChecksTitle" Style="{StaticResource RowValueStrong}" VerticalAlignment="Center" Margin="4,0,0,0" />
+                    <TextBlock Grid.Column="1" x:Uid="ChecksTitle" Style="{StaticResource RowValueStrong}" VerticalAlignment="Center" />
 
-                    <Border Grid.Column="2" Margin="9,0,0,0" Background="{ThemeResource ChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="8,2" VerticalAlignment="Center">
+                    <Border Grid.Column="2" Background="{ThemeResource ChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="8,4" VerticalAlignment="Center">
                       <TextBlock Style="{StaticResource CardCaption}" Text="{Binding Data.ChecksCount}" />
                     </Border>
 
@@ -617,7 +617,7 @@
                               FontSize="16"
                               Foreground="{ThemeResource Ink3Brush}"
                               VerticalAlignment="Center"
-                              Margin="10,0,0,0"
+                              Margin="0"
                               RenderTransformOrigin="0.5,0.5">
                       <FontIcon.RenderTransform>
                         <RotateTransform Angle="{Binding Data.ChecksExpanded, Converter={StaticResource BoolToAngle}}" />
@@ -654,7 +654,7 @@
                     <TextBlock Style="{StaticResource CardCaption}" Text="{Binding Data.FuelTitle}" />
                   </StackPanel>
 
-                  <Border Grid.Column="2" Background="{ThemeResource AmberChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="9,3" VerticalAlignment="Center"
+                  <Border Grid.Column="2" Background="{ThemeResource AmberChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="8,4" VerticalAlignment="Center"
                           Visibility="{Binding Data.FuelNoteAccent, Converter={StaticResource NullToVisibility}}">
                     <TextBlock Style="{StaticResource CardCaption}" Foreground="{ThemeResource AmberInkBrush}" Text="{Binding Data.FuelChip}" />
                   </Border>
@@ -669,7 +669,7 @@
                             Foreground="{ThemeResource Ink3Brush}"
                             Grid.Column="3"
                             VerticalAlignment="Center"
-                            Margin="10,0,0,0" />
+                            Margin="0" />
                 </Grid>
 
                 <Rectangle Style="{StaticResource RowRule}" />
@@ -695,10 +695,10 @@
                       <TextBlock Style="{StaticResource CardCaption}"><Run Text="{Binding Data.CabinLead}" /><Run Text="{Binding Data.CabinAccent}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" Foreground="{ThemeResource AccentInkBrush}" /></TextBlock>
                     </StackPanel>
 
-                    <StackPanel Spacing="9" Visibility="{Binding Data.CabinNeedsWarming, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel Spacing="8" Visibility="{Binding Data.CabinNeedsWarming, Converter={StaticResource BoolToVisibility}}">
                       <TextBlock Style="{StaticResource CardCaption}" Foreground="{ThemeResource Ink2Brush}" TextWrapping="Wrap" Text="{Binding Data.CabinDetail}" />
                       <!-- The method only. The temperatures are already in the row's own line. -->
-                      <Border Background="{ThemeResource ChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="9,4" HorizontalAlignment="Left">
+                      <Border Background="{ThemeResource ChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="8,4" HorizontalAlignment="Left">
                         <TextBlock x:Uid="ChecksCabinRemote" Style="{StaticResource CardCaption}" />
                       </Border>
 
@@ -711,7 +711,7 @@
                     </StackPanel>
                   </StackPanel>
 
-                  <Border Grid.Column="2" Background="{ThemeResource AccentChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="9,3" VerticalAlignment="Top" Margin="0,2,0,0"
+                  <Border Grid.Column="2" Background="{ThemeResource AccentChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="8,4" VerticalAlignment="Top" Margin="0,2,0,0"
                           Visibility="{Binding Data.CabinNeedsWarming, Converter={StaticResource BoolToVisibility}}">
                     <TextBlock x:Uid="ChecksCabinSuggested" Style="{StaticResource CardCaption}" Foreground="{ThemeResource AccentInkBrush}" />
                   </Border>
@@ -741,7 +741,7 @@
                     <TextBlock Style="{StaticResource CardCaption}" TextWrapping="Wrap" Text="{Binding Data.ParkingNote}" />
                   </StackPanel>
 
-                  <Border Grid.Column="2" Background="{ThemeResource GoodChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="9,3" VerticalAlignment="Center">
+                  <Border Grid.Column="2" Background="{ThemeResource GoodChipBrush}" CornerRadius="{StaticResource ChipCornerRadius}" Padding="8,4" VerticalAlignment="Center">
                     <TextBlock Style="{StaticResource CardCaption}" Foreground="{ThemeResource GoodInkBrush}" Text="{Binding Data.ParkingChip}" />
                   </Border>
 
@@ -755,7 +755,7 @@
                             Foreground="{ThemeResource Ink3Brush}"
                             Grid.Column="3"
                             VerticalAlignment="Center"
-                            Margin="10,0,0,0" />
+                            Margin="0" />
                 </Grid>
                 </StackPanel>
               </StackPanel>
@@ -768,7 +768,7 @@
       <mvux:FeedView Grid.Row="5" Margin="{StaticResource BottomBarMargin}" Source="{Binding Header}">
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
-            <Grid Margin="0,6,0,0" ColumnSpacing="10">
+            <Grid ColumnSpacing="8">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -780,7 +780,7 @@
                 headline's job, so it is not repeated here. The dot is the connection and is never
                 the only signal: offline, the text itself reads "Last seen 7:20".
               -->
-              <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                 <Ellipse Width="7" Height="7" VerticalAlignment="Center"
                          Fill="{Binding Data.IsStale, Converter={StaticResource ConnectionDotBrush}}" />
                 <TextBlock Style="{StaticResource CardCaption}"
@@ -794,7 +794,7 @@
                       Style="{StaticResource GhostPillStyle}"
                       Command="{Binding Parent.ToggleLock}"
                       IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}">
-                <StackPanel Orientation="Horizontal" Spacing="6">
+                <StackPanel Orientation="Horizontal" Spacing="8">
                   <TextBlock Text="{Binding Data.LockAction}"
                              FontFamily="{StaticResource CardFontMedium}"
                              FontSize="13"
@@ -812,7 +812,7 @@
                       Style="{StaticResource StartDriveStyle}"
                       Command="{Binding Parent.StartDrive}"
                       IsEnabled="{Binding Data.IsStale, Converter={StaticResource InverseBool}}">
-                <StackPanel Orientation="Horizontal" Spacing="7">
+                <StackPanel Orientation="Horizontal" Spacing="8">
                   <TextBlock Text="{Binding Parent.DriveLabel}"
                              FontFamily="{StaticResource CardFontMedium}"
                              FontSize="13"
