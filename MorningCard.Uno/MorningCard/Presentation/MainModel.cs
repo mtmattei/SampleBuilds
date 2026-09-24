@@ -372,6 +372,7 @@ public partial record MainModel
                 CardTone.LeaveNow => Text("Headline_LeaveNowAccent"),
                 _ => Format("Headline_LeaveInAccent", timeline.SlackMin),
             },
+            ShowsLeaveBy: timeline.Tone == CardTone.Ok,
             LeaveLabel: Format("Route_Leave", Clock(timeline.LeaveBy)),
             RouteDescription: description,
             Ruler: new RulerPlan(timeline, plan.WalkMin, plan.Bell, now));
@@ -485,6 +486,7 @@ public partial record MainModel
         ShowsSlack: false,
         CalloutLead: string.Empty,
         CalloutAccent: string.Empty,
+        ShowsLeaveBy: false,
         LeaveLabel: string.Empty,
         RouteDescription: string.Empty);
 

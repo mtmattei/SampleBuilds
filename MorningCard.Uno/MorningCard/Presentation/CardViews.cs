@@ -79,6 +79,9 @@ public record EtaView(
     // "Running" + "3 min late". Only the accent is coloured, by the card's tone.
     string CalloutLead,
     string CalloutAccent,
+    // The ruler's LEAVE BY label, only while there is slack to count down. Once leaving is "now"
+    // (leave-now or late) the callout at the now line already says so, and the label would stack on it.
+    bool ShowsLeaveBy,
     string LeaveLabel,
     string RouteDescription,
     // Null on a failed lookup, which has no trip to lay on the map.

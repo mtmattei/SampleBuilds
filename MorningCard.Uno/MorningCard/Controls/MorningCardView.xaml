@@ -247,7 +247,7 @@
                                  Text="{Binding Data.CalloutAccent}" />
                     </StackPanel>
                   </Border>
-                  <StackPanel Spacing="1">
+                  <StackPanel Spacing="1" Visibility="{Binding Data.ShowsLeaveBy, Converter={StaticResource BoolToVisibility}}">
                     <TextBlock Style="{StaticResource TimelineLabel}" Text="{Binding Data.LeaveByLabel}" />
                     <TextBlock Style="{StaticResource TimelineTime}"
                                TextWrapping="NoWrap"
@@ -256,7 +256,10 @@
                   </StackPanel>
                   <StackPanel Spacing="1">
                     <TextBlock x:Uid="TimelineArrive" Style="{StaticResource TimelineLabel}" HorizontalAlignment="Right" />
-                    <TextBlock Style="{StaticResource TimelineTime}" HorizontalAlignment="Right" TextWrapping="NoWrap" Text="{Binding Data.ArriveTime}" />
+                    <!-- Brick when late: the arrival lands after the bell, and this is where that shows. -->
+                    <TextBlock Style="{StaticResource TimelineTime}" HorizontalAlignment="Right" TextWrapping="NoWrap"
+                               Foreground="{Binding Data.IsLate, Converter={StaticResource LateInk}}"
+                               Text="{Binding Data.ArriveTime}" />
                   </StackPanel>
                   <StackPanel Spacing="1">
                     <TextBlock x:Uid="TimelineBell" Style="{StaticResource TimelineLabel}" HorizontalAlignment="Right" />
