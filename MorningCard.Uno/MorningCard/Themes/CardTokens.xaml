@@ -18,7 +18,8 @@
   <ResourceDictionary.ThemeDictionaries>
 
     <ResourceDictionary x:Key="Light">
-      <Color x:Key="GroundColor">#E3E0D9</Color>
+      <!-- The app ground: dark slate in both themes, with grain drawn over it by GrainCanvas. -->
+      <Color x:Key="GroundColor">#2C3238</Color>
       <!--
         The card's outer shell, from LightWidget's host background: cool periwinkle at the bottom-left
         warming to blush at the top-right. The white inner card sits on it, so the trip reads as an
@@ -121,7 +122,7 @@
     </ResourceDictionary>
 
     <ResourceDictionary x:Key="Dark">
-      <Color x:Key="GroundColor">#141311</Color>
+      <Color x:Key="GroundColor">#1F2328</Color>
       <!-- The shell's cool-to-warm diagonal at dark-theme luma; LightWidget has no dark ground. -->
       <Color x:Key="ShellCoolColor">#151923</Color>
       <Color x:Key="ShellMidColor">#17171A</Color>

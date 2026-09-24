@@ -5,7 +5,7 @@
       xmlns:uen="using:Uno.Extensions.Navigation.UI"
       xmlns:utu="using:Uno.Toolkit.UI"
       Background="{ThemeResource GroundBrush}"
-      utu:StatusBar.Foreground="Auto"
+      utu:StatusBar.Foreground="Light"
       utu:StatusBar.Background="{ThemeResource GroundBrush}">
 
   <Grid>

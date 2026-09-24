@@ -1,8 +1,11 @@
 <UserControl x:Class="MorningCard.Controls.BokehBackdrop"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="using:MorningCard.Controls"
              IsHitTestVisible="False">
 
-  <!-- A flat ground colour. The out-of-focus colour blobs were removed so the card sits on a neutral field. -->
-  <Grid Background="{ThemeResource GroundBrush}" />
+  <!-- Dark slate ground with a fixed film grain over it (GrainCanvas). -->
+  <Grid Background="{ThemeResource GroundBrush}">
+    <mc:GrainCanvas />
+  </Grid>
 </UserControl>
