@@ -43,6 +43,7 @@ $Wanted = [ordered]@{
     Unlock      = 'lock-simple-open'
     Drive       = 'navigation-arrow'
     Overflow    = 'dots-three'
+    Walk        = 'person-simple-walk'
 }
 
 Write-Verbose "GET $Css"

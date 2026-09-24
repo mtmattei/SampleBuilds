@@ -33,5 +33,7 @@
   <x:String x:Key="IconDrive">&#xEADE;</x:String>
   <!-- dots-three -->
   <x:String x:Key="IconOverflow">&#xE1FE;</x:String>
+  <!-- person-simple-walk -->
+  <x:String x:Key="IconWalk">&#xE73A;</x:String>
 
 </ResourceDictionary>

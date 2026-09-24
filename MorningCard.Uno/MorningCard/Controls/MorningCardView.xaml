@@ -136,10 +136,13 @@
                   how the design puts the duration in blue without splitting the sentence into
                   separate blocks that would not share a baseline.
                 -->
+                <!-- Always one line: the Viewbox measures the sentence unconstrained and only ever
+                     scales it down, so a narrow card shrinks the line instead of wrapping it. -->
+                <Viewbox Margin="0,4,0,0" HorizontalAlignment="Left" Stretch="Uniform" StretchDirection="DownOnly">
                 <TextBlock Style="{StaticResource CardLead}"
-                           Margin="0,4,0,0"
-                           TextWrapping="Wrap"
+                           TextWrapping="NoWrap"
                            Foreground="{Binding Data.Tone, Converter={StaticResource ToneBrush}}"><Run Text="{Binding Data.HeadlineLead}" /><Run Text="{Binding Data.HeadlineAccent}" FontFamily="{StaticResource CardFontMedium}" FontWeight="Medium" FontSize="{StaticResource CountdownSize}" Foreground="{Binding Data.Tone, Converter={StaticResource AccentTone}}" /><Run Text="{Binding Data.HeadlineTail}" /></TextBlock>
+                </Viewbox>
               </StackPanel>
               <!-- Desaturated to 30% (scripts/Mute-Car.ps1), so it reads as a grey object on the
                    paper rather than as a product shot competing with the route accent. The car's
@@ -308,18 +311,27 @@
                              Foreground="{Binding Data.Tone, Converter={StaticResource ToneChipInk}}" />
                 </Border>
 
+                <!-- The word while it fits, a walking figure once it would wrap. The word carries
+                     its own margin so the fit test includes it; the icon centres with none. -->
                 <Border Grid.Row="1"
                         Grid.Column="3"
                         Height="34"
-                        Padding="8,0"
                         CornerRadius="6"
                         Background="{ThemeResource ChipBrush}">
-                  <TextBlock x:Uid="TrackWalk"
-                             VerticalAlignment="Center"
-                             TextTrimming="Clip"
-                             FontFamily="{StaticResource CardFontMedium}"
-                             FontSize="12"
-                             Foreground="{ThemeResource Ink2Brush}" />
+                  <mc:FitOrFallbackPanel VerticalAlignment="Center">
+                    <TextBlock x:Uid="TrackWalk"
+                               Margin="8,0"
+                               TextWrapping="NoWrap"
+                               FontFamily="{StaticResource CardFontMedium}"
+                               FontSize="12"
+                               Foreground="{ThemeResource Ink2Brush}" />
+                    <FontIcon x:Uid="TrackWalkIcon"
+                              HorizontalAlignment="Center"
+                              FontFamily="{StaticResource IconFont}"
+                              Glyph="{StaticResource IconWalk}"
+                              FontSize="14"
+                              Foreground="{ThemeResource Ink2Brush}" />
+                  </mc:FitOrFallbackPanel>
                 </Border>
 
                 <Border Grid.Row="1" Grid.Column="4" Height="34" CornerRadius="0,6,6,0">

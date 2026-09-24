@@ -18,7 +18,7 @@ public sealed partial class GrainCanvas : SKCanvasElement
     private const int TileSize = 128;
 
     /// <summary>The strongest speck, out of 255. Low: the grain should be felt more than seen.</summary>
-    private const int MaxAlpha = 22;
+    private const int MaxAlpha = 11;
 
     /// <summary>Fixed, so the texture is the same on every launch and in every capture.</summary>
     private const int Seed = 7;

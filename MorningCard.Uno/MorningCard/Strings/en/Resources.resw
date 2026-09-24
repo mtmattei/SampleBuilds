@@ -278,6 +278,9 @@
   <data name="TrackWalk.Text" xml:space="preserve">
     <value>Walk</value>
   </data>
+  <data name="TrackWalkIcon.AutomationProperties.Name" xml:space="preserve">
+    <value>Walk</value>
+  </data>
   <data name="Cabin_RemoteOn" xml:space="preserve">
     <value> · Remote start on</value>
   </data>
