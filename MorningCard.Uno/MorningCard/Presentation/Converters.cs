@@ -168,13 +168,39 @@ public sealed class TokenBrushConverter : IValueConverter
 }
 
 /// <summary>
-/// The watch's headline emphasis (v6 Wear ramp): the countdown the phone sets at 27 becomes 38; an
-/// inline time stays at the sentence's 17.
+/// The watch's headline emphasis: the countdown the phone sets at 27 becomes 44 in the centre of the
+/// ring face; an inline time stays at the sentence's 17.
 /// </summary>
 public sealed class WatchAccentSizeConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language) =>
-        value is double size && size >= 20 ? 38d : 17d;
+        value is double size && size >= 20 ? 44d : 17d;
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}
+
+/// <summary>1 when true, 0 when false: hides an element that must stay live (its feed still feeds a sibling).</summary>
+public sealed class BoolToOpacityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language) =>
+        value is true ? 1d : 0d;
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}
+
+/// <summary>
+/// Visible when the headline's emphasis is a countdown (the phone's 27, "9 min"), which the watch
+/// stacks large; "Invert" gives the inline sentence used for an emphasised time ("leave by 7:33").
+/// </summary>
+public sealed class WatchCountdownVisibilityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        var countdown = value is double size && size >= 20;
+        return countdown ^ (parameter as string == "Invert") ? Visibility.Visible : Visibility.Collapsed;
+    }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
         throw new NotSupportedException();

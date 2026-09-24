@@ -410,6 +410,7 @@ public partial record MainModel
             BellCaption: Text("Ruler_Bell"),
             BellTime: Clock(plan.Bell),
             NowCaption: Format("Ruler_Now", Clock(now)),
+            NowShortCaption: Text("Ruler_NowShort"),
             SlackSegment: Format("Ruler_Slack", Math.Max(0, timeline.SlackMin)),
             SlackSegmentShort: Text("Ruler_SlackShort"),
             DriveSegment: Format("Ruler_Drive", timeline.DriveMin),
@@ -512,7 +513,8 @@ public partial record MainModel
             FuelRowName: Format("Row_Name", Format("Fuel_Title", car.Range.ToString(CultureInfo.CurrentCulture)), Text("Fuel_NoteFine"), fuelPill),
             CabinRowName: Format("Row_Name", Text("Cabin_Title"), cabinMeta, cabinPill),
             ParkingRowName: plan is null ? string.Empty : Format("Row_Name", plan.ParkingStreet, plan.ParkingNote, Text("Checks_ParkingChip")),
-            CabinWatchMeta: cabin == CabinChoice.Pending && !offline ? Format("Cabin_WatchMeta", cabinPill) : cabinPill);
+            CabinWatchMeta: cabin == CabinChoice.Pending && !offline ? Format("Cabin_WatchMeta", cabinPill) : cabinPill,
+            CabinCanStart: cabin == CabinChoice.Pending && !offline);
     }
 
     /// <summary>"−3°", with a true minus sign as the design sets it.</summary>
@@ -535,6 +537,7 @@ public partial record MainModel
         BellCaption: string.Empty,
         BellTime: string.Empty,
         NowCaption: string.Empty,
+        NowShortCaption: string.Empty,
         SlackSegment: string.Empty,
         SlackSegmentShort: string.Empty,
         DriveSegment: string.Empty,

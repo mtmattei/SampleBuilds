@@ -72,7 +72,7 @@
                     BorderThickness="{TemplateBinding BorderThickness}"
                     CornerRadius="{TemplateBinding CornerRadius}"
                     Padding="{TemplateBinding Padding}">
-              <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+              <ContentPresenter x:Name="Content" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
               <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="CommonStates">
                   <VisualState x:Name="Normal" />
@@ -82,7 +82,15 @@
                       <Setter Target="Shell.Opacity" Value="0.8" />
                     </VisualState.Setters>
                   </VisualState>
-                  <VisualState x:Name="Disabled" />
+                  <!-- Decided, or the car is offline: no longer the suggestion, so it drops the
+                       highlight and reads as a settled row. -->
+                  <VisualState x:Name="Disabled">
+                    <VisualState.Setters>
+                      <Setter Target="Shell.Background" Value="{ThemeResource CardSurfaceBrush}" />
+                      <Setter Target="Shell.BorderBrush" Value="{ThemeResource PanelRingBrush}" />
+                      <Setter Target="Content.Opacity" Value="0.7" />
+                    </VisualState.Setters>
+                  </VisualState>
                 </VisualStateGroup>
               </VisualStateManager.VisualStateGroups>
             </Border>
@@ -114,63 +122,59 @@
     <StackPanel>
 
       <!-- ============================ 1 · trip ============================ -->
+      <!--
+        The slack ruler runs round the bezel (RadialSlackRuler): 270° from 7:30 on the dial, open
+        at the bottom where Start drive sits. The centre holds the clock, the title and the
+        countdown. The ring takes the edge, so this face has no scroll arc.
+      -->
       <Viewbox Width="{Binding ViewportWidth, ElementName=Pages}" Height="{Binding ViewportHeight, ElementName=Pages}">
         <Grid Width="454" Height="454">
-          <!-- Scroll position: a 5 px arc on the right edge, thumb at screen 1 of 4. -->
-          <Path Data="M413.2,119.5 A215,215 0 0 1 413.2,334.5" Stroke="{ThemeResource LineBrush}" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
-          <Path Data="M413.2,119.5 A215,215 0 0 1 433.7,167.7" Stroke="{ThemeResource Ink3Brush}" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
-
-          <mvux:FeedView Source="{Binding Greeting}" VerticalAlignment="Top"
+          <mvux:FeedView Source="{Binding Eta}"
                          ProgressTemplate="{StaticResource WatchBlankTemplate}" UndefinedTemplate="{StaticResource WatchBlankTemplate}">
             <DataTemplate>
-              <Grid>
-                <TextBlock Style="{StaticResource WatchClock}" Text="{Binding Data.ClockText}" />
-                <StackPanel Margin="0,52,0,0" HorizontalAlignment="Center">
-                  <StackPanel Orientation="Horizontal" Spacing="7" HorizontalAlignment="Center">
-                    <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconSun}" FontSize="15"
-                              Foreground="{ThemeResource SunInkBrush}" VerticalAlignment="Center" />
-                    <TextBlock Style="{StaticResource WatchStrong}" FontSize="16" Foreground="{ThemeResource InkStrongBrush}"
-                               Text="{Binding Data.Greeting}" />
-                  </StackPanel>
-                  <TextBlock Style="{StaticResource WatchText}" FontFamily="{StaticResource CardFontMedium}" FontSize="13"
-                             Foreground="{ThemeResource Ink3Brush}" Text="{Binding Data.WeatherLine}" />
-                </StackPanel>
-              </Grid>
+              <mc:RadialSlackRuler View="{Binding Data}" />
+            </DataTemplate>
+            <mvux:FeedView.NoneTemplate>
+              <DataTemplate>
+                <Grid />
+              </DataTemplate>
+            </mvux:FeedView.NoneTemplate>
+          </mvux:FeedView>
+
+          <mvux:FeedView Source="{Binding Greeting}" Margin="0,76,0,0" VerticalAlignment="Top"
+                         ProgressTemplate="{StaticResource WatchBlankTemplate}" UndefinedTemplate="{StaticResource WatchBlankTemplate}">
+            <DataTemplate>
+              <TextBlock Style="{StaticResource WatchStrong}" FontSize="20" Text="{Binding Data.ClockText}" />
             </DataTemplate>
           </mvux:FeedView>
 
-          <StackPanel Margin="0,98,0,0" HorizontalAlignment="Center" VerticalAlignment="Top">
-            <mvux:FeedView Source="{Binding Header}"
-                           ProgressTemplate="{StaticResource WatchBlankTemplate}" UndefinedTemplate="{StaticResource WatchBlankTemplate}">
-              <DataTemplate>
-                <StackPanel HorizontalAlignment="Center">
-                  <StackPanel Orientation="Horizontal" Spacing="3" HorizontalAlignment="Center">
-                    <TextBlock Style="{StaticResource WatchStrong}" FontSize="26" Text="{Binding Data.Title}" />
-                    <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconChevronRight}" FontSize="18"
-                              Foreground="{ThemeResource FaintBrush}" VerticalAlignment="Center" Margin="0,3,0,0" />
-                  </StackPanel>
-                  <TextBlock Style="{StaticResource WatchText}" FontFamily="{StaticResource CardFontMedium}" FontSize="17"
-                             Foreground="{ThemeResource Ink2Brush}" LineHeight="40" LineStackingStrategy="BlockLineHeight"
-                             Margin="0,2,0,0"><Run Text="{Binding Data.HeadlineLead}" /><Run Text="{Binding Data.HeadlineAccent}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" FontSize="{Binding Data.HeadlineAccentSize, Converter={StaticResource WatchAccentSize}}" Foreground="{Binding Data.HeadlineAccentInk, Converter={StaticResource TokenBrush}}" /></TextBlock>
-                  <TextBlock Style="{StaticResource WatchText}" FontSize="15" Foreground="{ThemeResource Ink2Brush}"
+          <mvux:FeedView Source="{Binding Header}" Margin="0,150,0,0" VerticalAlignment="Top"
+                         ProgressTemplate="{StaticResource WatchBlankTemplate}" UndefinedTemplate="{StaticResource WatchBlankTemplate}">
+            <DataTemplate>
+              <StackPanel HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Spacing="3" HorizontalAlignment="Center">
+                  <TextBlock Style="{StaticResource WatchStrong}" FontSize="22" Text="{Binding Data.Title}" />
+                  <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconChevronRight}" FontSize="16"
+                            Foreground="{ThemeResource FaintBrush}" VerticalAlignment="Center" Margin="0,3,0,0" />
+                </StackPanel>
+                <!-- A countdown stacks: lead, the number at 44, tail. -->
+                <StackPanel Visibility="{Binding Data.HeadlineAccentSize, Converter={StaticResource WatchCountdownVisibility}}">
+                  <TextBlock Style="{StaticResource WatchText}" FontFamily="{StaticResource CardFontMedium}" FontSize="16"
+                             Foreground="{ThemeResource Ink2Brush}" Margin="0,4,0,0" Text="{Binding Data.HeadlineLead}" />
+                  <TextBlock Style="{StaticResource WatchStrong}" Margin="0,-2,0,0"
+                             FontSize="{Binding Data.HeadlineAccentSize, Converter={StaticResource WatchAccentSize}}"
+                             Foreground="{Binding Data.HeadlineAccentInk, Converter={StaticResource TokenBrush}}"
+                             Text="{Binding Data.HeadlineAccent}" />
+                  <TextBlock Style="{StaticResource WatchText}" FontSize="14" Foreground="{ThemeResource Ink2Brush}"
                              Text="{Binding Data.HeadlineTail}" />
                 </StackPanel>
-              </DataTemplate>
-            </mvux:FeedView>
-
-            <!-- The compact ruler: 300 wide, no segment labels. -->
-            <mvux:FeedView Source="{Binding Eta}" Margin="0,10,0,0" Width="300"
-                           ProgressTemplate="{StaticResource WatchBlankTemplate}" UndefinedTemplate="{StaticResource WatchBlankTemplate}">
-              <DataTemplate>
-                <mc:SlackRuler View="{Binding Data}" ShowSegmentLabels="False" />
-              </DataTemplate>
-              <mvux:FeedView.NoneTemplate>
-                <DataTemplate>
-                  <Grid />
-                </DataTemplate>
-              </mvux:FeedView.NoneTemplate>
-            </mvux:FeedView>
-          </StackPanel>
+                <!-- An emphasised time stays one sentence ("...leave by 7:33."), wrapped inside the ring. -->
+                <TextBlock Style="{StaticResource WatchText}" FontFamily="{StaticResource CardFontMedium}" FontSize="16"
+                           Foreground="{ThemeResource Ink2Brush}" Margin="0,6,0,0" TextWrapping="Wrap" MaxWidth="290"
+                           Visibility="{Binding Data.HeadlineAccentSize, Converter={StaticResource WatchCountdownVisibility}, ConverterParameter=Invert}"><Run Text="{Binding Data.HeadlineLead}" /><Run Text="{Binding Data.HeadlineAccent}" FontFamily="{StaticResource CardFontSemiBold}" FontWeight="SemiBold" Foreground="{Binding Data.HeadlineAccentInk, Converter={StaticResource TokenBrush}}" /><Run Text="{Binding Data.HeadlineTail}" /></TextBlock>
+              </StackPanel>
+            </DataTemplate>
+          </mvux:FeedView>
 
           <Button Style="{StaticResource WatchEdgeActionStyle}" Command="{Binding StartDrive}">
             <StackPanel Orientation="Horizontal" Spacing="10">
@@ -184,8 +188,28 @@
       </Viewbox>
 
       <!-- ============================ 2 · route ============================ -->
+      <!--
+        The map fills the face, clipped round. The ETA sits centred at the top and Open in Maps at
+        the bottom, each over a fade of the face colour; the route fits in the band between them.
+        OSM's attribution moves to the bottom centre: in the square corner it would fall outside
+        the round display, and the tile policy requires it to be visible.
+      -->
       <Viewbox Width="{Binding ViewportWidth, ElementName=Pages}" Height="{Binding ViewportHeight, ElementName=Pages}">
         <Grid Width="454" Height="454">
+          <mc:MapPart PanelCornerRadius="227" ShowMapsPill="False" ShowEtaBlock="False" FitInsets="84,168,84,128" />
+
+          <Ellipse IsHitTestVisible="False">
+            <Ellipse.Fill>
+              <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="{ThemeResource WatchScrimColor}" Offset="0" />
+                <GradientStop Color="{ThemeResource WatchScrimColor}" Offset="0.2" />
+                <GradientStop Color="{ThemeResource WatchScrimClearColor}" Offset="0.38" />
+                <GradientStop Color="{ThemeResource WatchScrimClearColor}" Offset="0.7" />
+                <GradientStop Color="{ThemeResource WatchScrimColor}" Offset="0.9" />
+              </LinearGradientBrush>
+            </Ellipse.Fill>
+          </Ellipse>
+
           <Path Data="M413.2,119.5 A215,215 0 0 1 413.2,334.5" Stroke="{ThemeResource LineBrush}" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
           <Path Data="M437.3,182.3 A215,215 0 0 1 441.9,234.5" Stroke="{ThemeResource Ink3Brush}" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
 
@@ -196,10 +220,36 @@
             </DataTemplate>
           </mvux:FeedView>
 
-          <StackPanel Margin="0,50,0,0" HorizontalAlignment="Center" VerticalAlignment="Top">
-            <TextBlock x:Uid="WatchRouteCaption" Style="{StaticResource CapsCaption}" FontSize="13" HorizontalAlignment="Center" />
-            <mc:MapPart Width="348" Height="228" Margin="0,10,0,0" ShowMapsPill="False" />
-            <Button Style="{StaticResource WatchGhostStyle}" Height="48" Padding="20,0" Margin="0,12,0,0"
+          <!-- ETA: 34/15, caption 10, traffic 13 (v6 Wear ramp), centred for the round face. -->
+          <mvux:FeedView Source="{Binding Eta}" Margin="0,40,0,0" VerticalAlignment="Top"
+                         ProgressTemplate="{StaticResource WatchBlankTemplate}" UndefinedTemplate="{StaticResource WatchBlankTemplate}">
+            <DataTemplate>
+              <StackPanel HorizontalAlignment="Center"
+                          Visibility="{Binding Data.Failed, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}">
+                <TextBlock Style="{StaticResource WatchStrong}" FontSize="34"><Run Text="{Binding Data.TotalMinutes}" /><Run Text=" " /><Run Text="{Binding Parent.EtaUnitLabel}" FontSize="15" /></TextBlock>
+                <TextBlock x:Uid="EtaCaption" Style="{StaticResource CapsCaption}" FontSize="10" HorizontalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" Spacing="7" HorizontalAlignment="Center" Margin="0,4,0,0">
+                  <Ellipse Width="7" Height="7" VerticalAlignment="Center"
+                           Fill="{Binding Data.Traffic, Converter={StaticResource TrafficBrush}}" />
+                  <TextBlock Style="{StaticResource WatchStrong}" FontSize="13"
+                             Foreground="{Binding Data.Traffic, Converter={StaticResource TrafficBrush}}"
+                             Text="{Binding Data.TrafficText}" />
+                </StackPanel>
+              </StackPanel>
+            </DataTemplate>
+            <!-- No drop-off: the map stays for Open in Maps and says why there is no route. -->
+            <mvux:FeedView.NoneTemplate>
+              <DataTemplate>
+                <TextBlock x:Uid="RouteTomorrow" Style="{StaticResource WatchStrong}" FontSize="17"
+                           Foreground="{ThemeResource Ink2Brush}" Margin="0,14,0,0"
+                           AutomationProperties.LiveSetting="Polite" />
+              </DataTemplate>
+            </mvux:FeedView.NoneTemplate>
+          </mvux:FeedView>
+
+          <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,22" Spacing="6">
+            <Button Style="{StaticResource WatchGhostStyle}" Height="48" Padding="20,0"
+                    Background="{ThemeResource MapPillBrush}"
                     Command="{Binding OpenInMaps}">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <TextBlock x:Uid="OpenInMapsLabel" VerticalAlignment="Center" FontSize="18"
@@ -208,6 +258,7 @@
                           Foreground="{ThemeResource InkStrongBrush}" />
               </StackPanel>
             </Button>
+            <TextBlock x:Uid="WatchMapAttribution" Style="{StaticResource WatchText}" FontSize="10" Foreground="{ThemeResource Ink3Brush}" />
           </StackPanel>
         </Grid>
       </Viewbox>
@@ -253,7 +304,7 @@
                           BorderBrush="{ThemeResource WatchRowRingBrush}"
                           BorderThickness="1.5"
                           Command="{Binding Parent.StartWarming}"
-                          IsEnabled="{Binding Data.CabinPending}"
+                          IsEnabled="{Binding Data.CabinCanStart}"
                           AutomationProperties.Name="{Binding Data.CabinRowName}">
                     <StackPanel Orientation="Horizontal" Spacing="12">
                       <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconThermometer}" FontSize="24"
@@ -305,7 +356,11 @@
                 <Image Source="ms-appx:///Assets/Car/xc60_muted.png" Width="144" Height="76" Stretch="Uniform"
                        HorizontalAlignment="Center" AutomationProperties.Name="{Binding Data.CarName}" />
                 <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" Margin="0,8,0,0">
-                  <Ellipse Width="7" Height="7" Fill="{ThemeResource GoodBrush}" VerticalAlignment="Center" />
+                  <!-- Connected green; grey when the car is offline, so the dot does not claim a link it lost. -->
+                  <Ellipse Width="7" Height="7" Fill="{ThemeResource GoodBrush}" VerticalAlignment="Center"
+                           Visibility="{Binding Data.IsStale, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}" />
+                  <Ellipse Width="7" Height="7" Fill="{ThemeResource FaintBrush}" VerticalAlignment="Center"
+                           Visibility="{Binding Data.IsStale, Converter={StaticResource BoolToVisibility}}" />
                   <TextBlock Style="{StaticResource WatchStrong}" FontSize="20" Text="{Binding Data.CarName}" />
                 </StackPanel>
                 <TextBlock Style="{StaticResource WatchText}" FontSize="17" Foreground="{ThemeResource Ink3Brush}"
@@ -313,8 +368,13 @@
                 <Button Style="{StaticResource WatchGhostStyle}" Height="52" Padding="22,0" Margin="0,14,0,0"
                         Command="{Binding Parent.ToggleLock}">
                   <StackPanel Orientation="Horizontal" Spacing="10">
+                    <!-- The icon shows what the button does: open lock to unlock, closed lock to lock. -->
                     <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconLockOpen}" FontSize="20" VerticalAlignment="Center"
-                              Foreground="{ThemeResource InkStrongBrush}" />
+                              Foreground="{ThemeResource InkStrongBrush}"
+                              Visibility="{Binding Data.IsLocked, Converter={StaticResource BoolToVisibility}}" />
+                    <FontIcon Style="{StaticResource CardIcon}" Glyph="{StaticResource IconLock}" FontSize="20" VerticalAlignment="Center"
+                              Foreground="{ThemeResource InkStrongBrush}"
+                              Visibility="{Binding Data.IsLocked, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}" />
                     <TextBlock Text="{Binding Data.LockAction}" VerticalAlignment="Center" FontSize="18"
                                FontFamily="{StaticResource CardFontMedium}" Foreground="{ThemeResource InkStrongBrush}" />
                   </StackPanel>

@@ -64,6 +64,8 @@ public record EtaView(
     string BellCaption,
     string BellTime,
     string NowCaption,
+    // "NOW" alone, for the watch ring, where the clock already shows the time.
+    string NowShortCaption,
     string SlackSegment,
     string SlackSegmentShort,
     string DriveSegment,
@@ -178,4 +180,6 @@ public record CarView(
     string CabinRowName,
     string ParkingRowName,
     // The watch's cabin line: "Suggested · tap to start" while undecided, else the pill.
-    string CabinWatchMeta);
+    string CabinWatchMeta,
+    // The watch's cabin row is the suggestion only while undecided and the car is reachable.
+    bool CabinCanStart);

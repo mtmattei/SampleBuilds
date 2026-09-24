@@ -77,6 +77,9 @@
       <Color x:Key="WatchFaceColor">#F4F2EC</Color>
       <Color x:Key="WatchRowActiveColor">#E7EBEF</Color>
       <Color x:Key="WatchRowRingColor">#400A66E8</Color>
+      <!-- The round map's top and bottom fades: the face colour, opaque and clear. -->
+      <Color x:Key="WatchScrimColor">#F2F4F2EC</Color>
+      <Color x:Key="WatchScrimClearColor">#00F4F2EC</Color>
       <Color x:Key="AccentChipColor">#1F4A6B8A</Color>
       <Color x:Key="AmberChipColor">#F0EADF</Color>
       <Color x:Key="DangerChipColor">#1F9C4A3E</Color>

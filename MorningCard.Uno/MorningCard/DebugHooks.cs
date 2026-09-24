@@ -391,9 +391,19 @@ internal static class DebugHooks
         return null;
     }
 
+    /// <summary>
+    /// The environment variable, or a <c>--mc-state=offline</c> style launch argument for launches that
+    /// cannot set the environment (the App MCP's uno_app_start).
+    /// </summary>
     private static string? Read(string name)
     {
         var value = Environment.GetEnvironmentVariable(name);
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            var flag = "--" + name.ToLowerInvariant().Replace('_', '-') + "=";
+            value = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith(flag, StringComparison.Ordinal))?[flag.Length..];
+        }
+
         return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 }

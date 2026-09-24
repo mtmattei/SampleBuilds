@@ -212,6 +212,7 @@
   <data name="Ruler_Bell" xml:space="preserve">
     <value>BELL</value>
   </data>
+  <data name="Ruler_NowShort" xml:space="preserve"><value>NOW</value></data>
   <data name="Ruler_Now" xml:space="preserve">
     <value>NOW {0}</value>
   </data>
@@ -274,7 +275,7 @@
   </data>
   <data name="WatchCabinTitle.Text" xml:space="preserve"><value>Warm the cabin</value></data>
   <data name="WatchChecksTitle.Text" xml:space="preserve"><value>Before you go</value></data>
-  <data name="WatchRouteCaption.Text" xml:space="preserve"><value>ROUTE</value></data>
+  <data name="WatchMapAttribution.Text" xml:space="preserve"><value>© OpenStreetMap contributors</value></data>
   <data name="Cabin_PillSuggested" xml:space="preserve">
     <value>Suggested</value>
   </data>

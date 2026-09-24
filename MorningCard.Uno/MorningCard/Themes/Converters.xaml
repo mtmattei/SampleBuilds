@@ -31,5 +31,7 @@
   <!-- xaml-lint: allow tokentheme - light-only app (B6) -->
   <mp:TokenBrushConverter x:Key="TokenBrush" />
   <mp:WatchAccentSizeConverter x:Key="WatchAccentSize" />
+  <mp:BoolToOpacityConverter x:Key="BoolToOpacity" />
+  <mp:WatchCountdownVisibilityConverter x:Key="WatchCountdownVisibility" />
 
 </ResourceDictionary>

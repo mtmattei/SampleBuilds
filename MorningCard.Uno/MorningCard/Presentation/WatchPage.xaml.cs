@@ -12,6 +12,28 @@ public sealed partial class WatchPage : Page
     {
         InitializeComponent();
         Pages.ViewChanged += OnPagesViewChanged;
+        Loaded += OnLoaded;
+    }
+
+    // WORKAROUND(Late feed content unpainted on Android Skia): on the Wear emulator the first face
+    // stayed half drawn (clock, title and ring missing, headline present) until a scroll forced a
+    // frame, whenever nothing else invalidated - offline, the car's clock stops ticking. Nudging the
+    // scroller's opacity for the first seconds produces the frames the late content needs.
+    // xaml-lint: allow codebehind - see WORKAROUND
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        var ticks = 0;
+        var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
+        timer.Tick += (_, _) =>
+        {
+            Pages.Opacity = ticks % 2 == 0 ? 0.999 : 1;
+            if (++ticks >= 8)
+            {
+                Pages.Opacity = 1;
+                timer.Stop();
+            }
+        };
+        timer.Start();
     }
 
     // WORKAROUND(Snap points on a StackPanel pin the ScrollViewer on Uno Skia): VerticalSnapPointsType

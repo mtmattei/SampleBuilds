@@ -30,7 +30,7 @@
   <!-- xaml-lint: allow card - clips the map's own drawing surface to the panel radius; the
        1 px ring is the artboard's inset edge, not card chrome. -->
   <Border x:Name="MapPanel"
-          CornerRadius="{StaticResource MapCornerRadius}"
+          CornerRadius="{Binding PanelCornerRadius, ElementName=Root}"
           BorderBrush="{ThemeResource LineBrush}"
           BorderThickness="1"
           Background="{ThemeResource MapBrush}">
@@ -46,13 +46,14 @@
         draws through its own surface, so the outer Border clipped everything except the tiles
         and the map showed square corners inside a rounded panel.
       -->
-      <Border CornerRadius="{StaticResource MapCornerRadius}">
+      <Border CornerRadius="{Binding PanelCornerRadius, ElementName=Root}">
         <mapsui:MapControl x:Name="Map" />
       </Border>
 
       <!-- v6 scrim: a fixed ramp across the whole panel, white 97% to 90% at 24%, 45% at 44%,
            clear from 62%. The ETA text sits on the opaque part; the route on the clear. -->
       <Border x:Name="EtaScrim"
+              Visibility="{Binding ShowEtaBlock, ElementName=Root, Converter={StaticResource BoolToVisibility}}"
               IsHitTestVisible="False">
         <Border.Background>
           <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
@@ -87,6 +88,8 @@
       </Button>
 
       <mvux:FeedView x:Name="EtaFeed" Source="{Binding Eta}"
+                     Opacity="{Binding ShowEtaBlock, ElementName=Root, Converter={StaticResource BoolToOpacity}}"
+                     IsHitTestVisible="{Binding ShowEtaBlock, ElementName=Root}"
                      ProgressTemplate="{StaticResource MapLoadingTemplate}" UndefinedTemplate="{StaticResource MapLoadingTemplate}">
 
         <mvux:FeedView.ValueTemplate>

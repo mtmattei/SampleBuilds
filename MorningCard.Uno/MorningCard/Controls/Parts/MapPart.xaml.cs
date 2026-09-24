@@ -15,7 +15,47 @@ public sealed partial class MapPart : UserControl
     public static readonly DependencyProperty ShowMapsPillProperty = DependencyProperty.Register(
         nameof(ShowMapsPill), typeof(bool), typeof(MapPart), new PropertyMetadata(true));
 
+    public static readonly DependencyProperty PanelCornerRadiusProperty = DependencyProperty.Register(
+        nameof(PanelCornerRadius), typeof(CornerRadius), typeof(MapPart), new PropertyMetadata(new CornerRadius(16)));
+
+    public static readonly DependencyProperty ShowEtaBlockProperty = DependencyProperty.Register(
+        nameof(ShowEtaBlock), typeof(bool), typeof(MapPart), new PropertyMetadata(true));
+
+    public static readonly DependencyProperty FitInsetsProperty = DependencyProperty.Register(
+        nameof(FitInsets), typeof(Thickness), typeof(MapPart), new PropertyMetadata(default(Thickness), OnFitInsetsChanged));
+
     private bool _started;
+
+    /// <summary>The panel's radius (16); the watch sets half its size for a round, full-face map.</summary>
+    public CornerRadius PanelCornerRadius
+    {
+        get => (CornerRadius)GetValue(PanelCornerRadiusProperty);
+        set => SetValue(PanelCornerRadiusProperty, value);
+    }
+
+    /// <summary>False when the host draws the ETA itself (the round watch map centres it above the route).</summary>
+    public bool ShowEtaBlock
+    {
+        get => (bool)GetValue(ShowEtaBlockProperty);
+        set => SetValue(ShowEtaBlockProperty, value);
+    }
+
+    /// <summary>
+    /// Room around the route, in viewport units, when the host overlays its own content; zero keeps
+    /// the panel's own fit (ETA block on the left, pill band at the bottom).
+    /// </summary>
+    public Thickness FitInsets
+    {
+        get => (Thickness)GetValue(FitInsetsProperty);
+        set => SetValue(FitInsetsProperty, value);
+    }
+
+    private static void OnFitInsetsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var part = (MapPart)d;
+        part._fittedSize = default;
+        part.FitToRoute();
+    }
 
     /// <summary>False on the watch, which puts Open in Maps under the map as its own button (v6 Wear).</summary>
     public bool ShowMapsPill
@@ -182,16 +222,21 @@ public sealed partial class MapPart : UserControl
 
         var bounds = RouteGeometryLoader.Bounds(route);
         // The ETA block's edge once it is measured; a share of the panel until then.
-        var left = _etaEdge > 0d ? _etaEdge + FitEtaGap : viewport.Width * FitLeftShare;
-        var innerWidth = Math.Max(viewport.Width - left - FitRight, 1d);
-        var innerHeight = Math.Max(viewport.Height - FitTop - FitBottom, 1d);
+        var insets = FitInsets;
+        var custom = insets != default;
+        var left = custom ? insets.Left : _etaEdge > 0d ? _etaEdge + FitEtaGap : viewport.Width * FitLeftShare;
+        var right = custom ? insets.Right : FitRight;
+        var top = custom ? insets.Top : FitTop;
+        var bottom = custom ? insets.Bottom : FitBottom;
+        var innerWidth = Math.Max(viewport.Width - left - right, 1d);
+        var innerHeight = Math.Max(viewport.Height - top - bottom, 1d);
         var resolution = Math.Max(bounds.Width / innerWidth, bounds.Height / innerHeight);
 
         // The viewport centre sits off the route's centre by half the difference between opposite
         // insets. World Y points north and screen Y points down, hence the opposite signs.
         var center = new Mapsui.MPoint(
-            bounds.Centroid.X - ((left - FitRight) / 2d * resolution),
-            bounds.Centroid.Y + ((FitTop - FitBottom) / 2d * resolution));
+            bounds.Centroid.X - ((left - right) / 2d * resolution),
+            bounds.Centroid.Y + ((top - bottom) / 2d * resolution));
 
         // A locked navigator ignores the fit as well, so unlock around it.
         map.Navigator.PanLock = false;
