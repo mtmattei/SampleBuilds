@@ -116,7 +116,10 @@
     </DataTemplate>
   </Page.Resources>
 
+  <!-- Touch paging is owned by the page (see WatchPage.xaml.cs), so the ScrollViewer only hosts the offset. -->
   <ScrollViewer x:Name="Pages"
+                VerticalScrollMode="Disabled"
+                ManipulationMode="TranslateY"
                 VerticalScrollBarVisibility="Hidden"
                 HorizontalScrollBarVisibility="Disabled">
     <StackPanel>
