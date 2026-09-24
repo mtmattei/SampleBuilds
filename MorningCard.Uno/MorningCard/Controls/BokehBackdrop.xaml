@@ -3,6 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              IsHitTestVisible="False">
 
-  <!-- A flat ground colour. The out-of-focus colour blobs were removed so the card sits on a neutral field. -->
-  <Grid Background="{ThemeResource GroundBrush}" />
+  <!-- The shell ground: a quiet cool-to-warm diagonal (ShellBackgroundBrush in CardTokens.xaml). -->
+  <Grid Background="{ThemeResource ShellBackgroundBrush}" />
 </UserControl>

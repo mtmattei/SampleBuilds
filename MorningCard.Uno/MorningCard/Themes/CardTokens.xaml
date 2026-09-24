@@ -19,6 +19,20 @@
 
     <ResourceDictionary x:Key="Light">
       <Color x:Key="GroundColor">#E3E0D9</Color>
+      <!--
+        The shell ground, from LightWidget's host background: cool periwinkle at the bottom-left
+        warming to blush at the top-right. Complementary to the warm paper card, so the card reads as
+        an object on the surface rather than a patch of it. About 14 points of luma across the stops:
+        the change is hue, not contrast.
+      -->
+      <Color x:Key="ShellCoolColor">#D8E0EF</Color>
+      <Color x:Key="ShellMidColor">#ECEDF2</Color>
+      <Color x:Key="ShellWarmColor">#F8E9E3</Color>
+      <LinearGradientBrush x:Key="ShellBackgroundBrush" StartPoint="0,1" EndPoint="1,0">
+        <GradientStop Offset="0" Color="{StaticResource ShellCoolColor}" />
+        <GradientStop Offset="0.52" Color="{StaticResource ShellMidColor}" />
+        <GradientStop Offset="1" Color="{StaticResource ShellWarmColor}" />
+      </LinearGradientBrush>
 
       <!-- The outer frame: flat warm paper grey. -->
       <Color x:Key="FrameColor">#F1EFE9</Color>
@@ -108,6 +122,15 @@
 
     <ResourceDictionary x:Key="Dark">
       <Color x:Key="GroundColor">#141311</Color>
+      <!-- The same cool-to-warm diagonal at dark-theme luma; LightWidget has no dark ground. -->
+      <Color x:Key="ShellCoolColor">#151923</Color>
+      <Color x:Key="ShellMidColor">#17171A</Color>
+      <Color x:Key="ShellWarmColor">#1E1817</Color>
+      <LinearGradientBrush x:Key="ShellBackgroundBrush" StartPoint="0,1" EndPoint="1,0">
+        <GradientStop Offset="0" Color="{StaticResource ShellCoolColor}" />
+        <GradientStop Offset="0.52" Color="{StaticResource ShellMidColor}" />
+        <GradientStop Offset="1" Color="{StaticResource ShellWarmColor}" />
+      </LinearGradientBrush>
 
       <Color x:Key="FrameColor">#1D1C1A</Color>
       <Color x:Key="CardSurfaceColor">#252421</Color>
