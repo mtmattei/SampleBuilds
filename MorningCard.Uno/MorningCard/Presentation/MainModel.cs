@@ -307,7 +307,8 @@ public partial record MainModel
             IsLocked: car.IsLocked,
             WeatherLine: Format("Status_Weather", Format("Status_Temp", car.OutsideTemp), car.WeatherSummary),
             NowText: Format("Status_Now", Clock(now)),
-            LockAction: Text(car.IsLocked ? "Lock_Unlock" : "Lock_Lock"));
+            LockAction: Text(car.IsLocked ? "Lock_Unlock" : "Lock_Lock"),
+            ShowsLead: car.IsStale || timeline is null);
     }
 
     private EtaView BuildEta((TripResult Result, TimeOnly Now) input)
@@ -359,7 +360,18 @@ public partial record MainModel
             TrackDrive: Math.Max(route.Arrive - route.Leave, 0.04),
             TrackWalk: Math.Max(1d - route.Arrive, 0.04),
             ShowsSlack: timeline.SlackMin > 0,
-            SlackText: Format("Route_Drive", Math.Max(timeline.SlackMin, 0)),
+            CalloutLead: Text(timeline.Tone switch
+            {
+                CardTone.Late => "Headline_LatePrefix",
+                CardTone.LeaveNow => "Headline_LeaveNowPrefix",
+                _ => "Headline_LeaveInPrefix",
+            }).TrimEnd(),
+            CalloutAccent: timeline.Tone switch
+            {
+                CardTone.Late => Format("Headline_LateAccent", -timeline.SlackMin),
+                CardTone.LeaveNow => Text("Headline_LeaveNowAccent"),
+                _ => Format("Headline_LeaveInAccent", timeline.SlackMin),
+            },
             LeaveLabel: Format("Route_Leave", Clock(timeline.LeaveBy)),
             RouteDescription: description,
             Ruler: new RulerPlan(timeline, plan.WalkMin, plan.Bell, now));
@@ -471,7 +483,8 @@ public partial record MainModel
         TrackDrive: 1d,
         TrackWalk: 1d,
         ShowsSlack: false,
-        SlackText: string.Empty,
+        CalloutLead: string.Empty,
+        CalloutAccent: string.Empty,
         LeaveLabel: string.Empty,
         RouteDescription: string.Empty);
 

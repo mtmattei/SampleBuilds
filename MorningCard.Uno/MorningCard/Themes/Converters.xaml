@@ -18,6 +18,7 @@
   <mp:ToneTrackBrushConverter x:Key="ToneTrackBrush" />
   <mp:ToneChipBrushConverter x:Key="ToneChipBrush" />
   <mp:ReadyInkConverter x:Key="ReadyInk" />
+  <mp:SlackToneConverter x:Key="SlackTone" />
   <mp:BoolToAngleConverter x:Key="BoolToAngle" />
   <mp:LateInkConverter x:Key="LateInk" />
   <mp:StaleOpacityConverter x:Key="StaleOpacity" />

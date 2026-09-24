@@ -151,7 +151,8 @@
                 Always one line. The panel gives it a full-width row before it would ever shrink;
                 the DownOnly Viewbox is only the last resort for a card narrower than the sentence.
               -->
-              <Viewbox HorizontalAlignment="Left" Stretch="Uniform" StretchDirection="DownOnly">
+              <Viewbox HorizontalAlignment="Left" Stretch="Uniform" StretchDirection="DownOnly"
+                       Visibility="{Binding Data.ShowsLead, Converter={StaticResource BoolToVisibility}}">
                 <TextBlock Style="{StaticResource CardLead}"
                            TextWrapping="NoWrap"
                            Foreground="{Binding Data.Tone, Converter={StaticResource ToneBrush}}"><Run Text="{Binding Data.HeadlineLead}" /><Run Text="{Binding Data.HeadlineAccent}" FontFamily="{StaticResource CardFontMedium}" FontWeight="Medium" FontSize="{StaticResource CountdownSize}" Foreground="{Binding Data.Tone, Converter={StaticResource AccentTone}}" /><Run Text="{Binding Data.HeadlineTail}" /></TextBlock>
@@ -181,7 +182,6 @@
             <StackPanel Spacing="8"
                         AutomationProperties.AccessibilityView="Raw"
                         Visibility="{Binding Data.IsLoading, Converter={StaticResource BoolToVisibility}}">
-              <Border Height="34" Margin="0,30,0,4" CornerRadius="{StaticResource ChipCornerRadius}" Background="{ThemeResource ChipBrush}" />
               <Grid>
                 <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="*" />
@@ -201,6 +201,7 @@
                   <Border Style="{StaticResource SkeletonTime}" />
                 </StackPanel>
               </Grid>
+              <Border Height="34" Margin="0,4,0,4" CornerRadius="{StaticResource ChipCornerRadius}" Background="{ThemeResource ChipBrush}" />
             </StackPanel>
             <StackPanel Spacing="8"
                         Visibility="{Binding Data.ShowsRoute, Converter={StaticResource BoolToVisibility}}">
@@ -213,7 +214,6 @@
                 <Grid.RowDefinitions>
                   <RowDefinition Height="Auto" />
                   <RowDefinition Height="42" />
-                  <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="12" />
@@ -223,60 +223,59 @@
                   <ColumnDefinition Width="12" />
                 </Grid.ColumnDefinitions>
 
-                <!-- The times live on the ruler, each at the edge it names: Leave where the drive
-                     starts and Arrive where it ends, under the track; Bell above it, over its own tick.
-                     The walk is only minutes long, so Arrive and Bell side by side collided. -->
-                <StackPanel Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" Spacing="1">
-                  <TextBlock Style="{StaticResource TimelineLabel}" Text="{Binding Data.LeaveByLabel}" />
-                  <TextBlock Style="{StaticResource TimelineTime}"
-                             Foreground="{Binding Data.Tone, Converter={StaticResource ToneChipInk}}"
-                             Text="{Binding Data.LeaveByTime}" />
-                </StackPanel>
-                <StackPanel Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right" Spacing="1">
-                  <TextBlock x:Uid="TimelineArrive" Style="{StaticResource TimelineLabel}" HorizontalAlignment="Right" />
-                  <TextBlock Style="{StaticResource TimelineTime}" HorizontalAlignment="Right" TextWrapping="NoWrap" Text="{Binding Data.ArriveTime}" />
-                </StackPanel>
-                <StackPanel Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" HorizontalAlignment="Right" VerticalAlignment="Bottom" Spacing="1">
-                  <TextBlock x:Uid="TimelineBell" Style="{StaticResource TimelineLabel}" HorizontalAlignment="Right" />
-                  <TextBlock Style="{StaticResource TimelineTime}" HorizontalAlignment="Right" TextWrapping="NoWrap" Text="{Binding Data.BellTime}" />
-                </StackPanel>
+                <!-- Every label sits above the track, at the edge it names: the callout at Now,
+                     Leave where the drive starts, Arrive where it ends, Bell at the bell. The panel
+                     lifts a label to a second tier only when it would collide with another. -->
+                <mc:RulerLabelPanel Grid.ColumnSpan="5"
+                                    SlackWeight="{Binding Data.TrackSlack}"
+                                    DriveWeight="{Binding Data.TrackDrive}"
+                                    WalkWeight="{Binding Data.TrackWalk}">
+                  <!-- The card's answer, which used to be the sentence under the title. Only the
+                       accent takes the tone: sage on time, clay for leave now, brick when late. -->
+                  <Border Padding="10,6"
+                          CornerRadius="{StaticResource ChipCornerRadius}"
+                          BorderThickness="1"
+                          BorderBrush="{ThemeResource LineBrush}"
+                          Background="{ThemeResource CardSurfaceBrush}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <Ellipse Width="8" Height="8" Margin="0,0,2,0" VerticalAlignment="Center"
+                               Fill="{Binding Data.Tone, Converter={StaticResource SlackTone}, ConverterParameter=dot}" />
+                      <TextBlock VerticalAlignment="Center" Style="{StaticResource CardLabel}" Text="{Binding Data.CalloutLead}" />
+                      <TextBlock VerticalAlignment="Center"
+                                 Style="{StaticResource CardLabelStrong}"
+                                 Foreground="{Binding Data.Tone, Converter={StaticResource SlackTone}, ConverterParameter=ink}"
+                                 Text="{Binding Data.CalloutAccent}" />
+                    </StackPanel>
+                  </Border>
+                  <StackPanel Spacing="1">
+                    <TextBlock Style="{StaticResource TimelineLabel}" Text="{Binding Data.LeaveByLabel}" />
+                    <TextBlock Style="{StaticResource TimelineTime}"
+                               TextWrapping="NoWrap"
+                               Foreground="{Binding Data.Tone, Converter={StaticResource ToneChipInk}}"
+                               Text="{Binding Data.LeaveByTime}" />
+                  </StackPanel>
+                  <StackPanel Spacing="1">
+                    <TextBlock x:Uid="TimelineArrive" Style="{StaticResource TimelineLabel}" HorizontalAlignment="Right" />
+                    <TextBlock Style="{StaticResource TimelineTime}" HorizontalAlignment="Right" TextWrapping="NoWrap" Text="{Binding Data.ArriveTime}" />
+                  </StackPanel>
+                  <StackPanel Spacing="1">
+                    <TextBlock x:Uid="TimelineBell" Style="{StaticResource TimelineLabel}" HorizontalAlignment="Right" />
+                    <TextBlock Style="{StaticResource TimelineTime}" HorizontalAlignment="Right" TextWrapping="NoWrap" Text="{Binding Data.BellTime}" />
+                  </StackPanel>
+                </mc:RulerLabelPanel>
 
-                <!-- Light ticks at the Leave and Arrive edges, in the gaps between blocks. -->
+                <!-- Ticks at the Leave and Arrive edges, in the gaps between blocks. -->
                 <Rectangle Grid.Row="1" Grid.Column="2" Width="1.5" Margin="-1.75,0,0,0" HorizontalAlignment="Left" Fill="{Binding Data.Tone, Converter={StaticResource ToneTrackBrush}}" />
                 <Rectangle Grid.Row="1" Grid.Column="3" Width="1" Margin="-1.5,0,0,0" HorizontalAlignment="Left" Fill="{ThemeResource Ink3Brush}" />
 
-                <!-- Now: a thin ink line from the callout down through the track. Declared first so
-                     the callout covers its top and the line reads as hanging from it. -->
-                <Rectangle Grid.RowSpan="2"
+                <!-- Now: a thin ink line through the track, reaching up across the row gap to the
+                     label band so the callout reads as hanging from it. -->
+                <Rectangle Grid.Row="1"
                            Grid.Column="1"
                            Width="1.5"
-                           Margin="-1,0,0,0"
+                           Margin="-1,-8,0,0"
                            HorizontalAlignment="Left"
-                           Fill="{ThemeResource InkBrush}"
-                           Visibility="{Binding Data.ShowsSlack, Converter={StaticResource BoolToVisibility}}" />
-
-                <!-- The callout names the slack and how much of it is left. -->
-                <Border Grid.Column="1"
-                        Grid.ColumnSpan="3"
-                        HorizontalAlignment="Left"
-                        Margin="-10,0,0,0"
-                        Padding="10,6"
-                        CornerRadius="{StaticResource ChipCornerRadius}"
-                        BorderThickness="1"
-                        BorderBrush="{ThemeResource LineBrush}"
-                        Background="{ThemeResource CardSurfaceBrush}"
-                        Visibility="{Binding Data.ShowsSlack, Converter={StaticResource BoolToVisibility}}">
-                  <StackPanel Orientation="Horizontal" Spacing="8">
-                    <Ellipse Width="8" Height="8" VerticalAlignment="Center" Fill="{ThemeResource GoodBrush}" />
-                    <TextBlock VerticalAlignment="Center"
-                               Style="{StaticResource CardLabelStrong}"
-                               Foreground="{ThemeResource GoodInkBrush}"
-                               Text="{Binding Data.SlackText}" />
-                    <TextBlock x:Uid="TrackSlackCaption"
-                               VerticalAlignment="Center"
-                               Style="{StaticResource CardCaption}" />
-                  </StackPanel>
-                </Border>
+                           Fill="{ThemeResource InkBrush}" />
 
                 <Border Grid.Row="1" Height="34" CornerRadius="8,0,0,8">
                   <Border.Background>

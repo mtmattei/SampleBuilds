@@ -86,6 +86,27 @@ public sealed class ReadyInkConverter : IValueConverter
         throw new NotSupportedException();
 }
 
+/// <summary>
+/// The ruler callout's dot and number. Sage while there is slack (the slack block's own colour),
+/// clay once it is time to leave, brick when late. ConverterParameter picks "dot" or "ink".
+/// </summary>
+public sealed class SlackToneConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        var ink = parameter as string == "ink";
+        return value switch
+        {
+            CardTone.Late => Tokens.Of(ink ? "DangerInkBrush" : "DangerBrush"),
+            CardTone.LeaveNow => Tokens.Of(ink ? "AmberInkBrush" : "AmberBrush"),
+            _ => Tokens.Of(ink ? "GoodInkBrush" : "GoodBrush"),
+        };
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>The timeline's drive block: a soft tint of the tone, so the ink label stays the loud part.</summary>
 public sealed class ToneChipBrushConverter : IValueConverter
 {

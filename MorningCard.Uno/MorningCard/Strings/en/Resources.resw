@@ -269,9 +269,6 @@
   <data name="TimelineBell.Text" xml:space="preserve">
     <value>BELL</value>
   </data>
-  <data name="TrackSlackCaption.Text" xml:space="preserve">
-    <value>Slack time</value>
-  </data>
   <data name="TrackDrive.Text" xml:space="preserve">
     <value>Drive</value>
   </data>

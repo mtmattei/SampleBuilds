@@ -32,7 +32,10 @@ public record HeaderView(
     bool IsLocked,
     string WeatherLine,
     string NowText,
-    string LockAction);
+    string LockAction,
+    // The sentence under the title shows only when there is no trip to put on the ruler: offline and
+    // no-trip mornings. With a trip, the ruler's callout carries it.
+    bool ShowsLead);
 
 /// <summary>
 /// The ETA block and the route ruler. Reached only when there is a trip: no trip means the feed is
@@ -70,9 +73,12 @@ public record EtaView(
     double TrackSlack,
     double TrackDrive,
     double TrackWalk,
-    // The strip's slack callout. Hidden once there is no slack left to protect.
+    // The slack block and its now line. Hidden once there is no slack left to protect.
     bool ShowsSlack,
-    string SlackText,
+    // The ruler's callout: the card's answer, "Leave in" + "9 min", "Time to go. Leave" + "now",
+    // "Running" + "3 min late". Only the accent is coloured, by the card's tone.
+    string CalloutLead,
+    string CalloutAccent,
     string LeaveLabel,
     string RouteDescription,
     // Null on a failed lookup, which has no trip to lay on the map.
