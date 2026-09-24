@@ -212,14 +212,13 @@
   <!--
     Secondary: same height, outline instead of fill. The ring is dark grey (Ink2), not full ink and
     not the hairline the rest of the card uses: it sits beside the ink-filled primary, where a full
-    ink ring competed with it and a hairline read as an unfinished button. The corner is the small
-    8 rather than the primary's 12, so the icon-only square reads as the lesser control.
+    ink ring competed with it and a hairline read as an unfinished button. The corner is inherited
+    from the primary (ButtonCornerRadius), so the two buttons in the action row share one shape.
   -->
   <Style x:Key="GhostPillStyle" TargetType="Button" BasedOn="{StaticResource PrimaryPillStyle}">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="Foreground" Value="{ThemeResource InkBrush}" />
     <Setter Property="BorderBrush" Value="{ThemeResource Ink2Brush}" />
-    <Setter Property="CornerRadius" Value="{StaticResource SmallCornerRadius}" />
     <Setter Property="Padding" Value="11,8" />
     <Setter Property="Template">
       <Setter.Value>
