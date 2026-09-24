@@ -358,6 +358,8 @@ public partial record MainModel
             TrackSlack: Math.Max(route.Leave, 0.04),
             TrackDrive: Math.Max(route.Arrive - route.Leave, 0.04),
             TrackWalk: Math.Max(1d - route.Arrive, 0.04),
+            ShowsSlack: timeline.SlackMin > 0,
+            SlackText: Format("Route_Drive", Math.Max(timeline.SlackMin, 0)),
             LeaveLabel: Format("Route_Leave", Clock(timeline.LeaveBy)),
             RouteDescription: description,
             Ruler: new RulerPlan(timeline, plan.WalkMin, plan.Bell, now));
@@ -468,6 +470,8 @@ public partial record MainModel
         TrackSlack: 1d,
         TrackDrive: 1d,
         TrackWalk: 1d,
+        ShowsSlack: false,
+        SlackText: string.Empty,
         LeaveLabel: string.Empty,
         RouteDescription: string.Empty);
 

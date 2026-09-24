@@ -74,6 +74,9 @@
       <Color x:Key="EtaScrimStop6Color">#1EFBFAF7</Color>
       <Color x:Key="EtaScrimStop7Color">#0AFBFAF7</Color>
       <Color x:Key="GlassInkColor">#FBFAF7</Color>  <!-- Ink on an ink-filled control (Start drive). -->
+      <!-- The slack ruler's blocks: firmer tints than the chips, so each block reads as a span of time. -->
+      <Color x:Key="RulerSlackColor">#D3E3D4</Color>
+      <Color x:Key="RulerDriveColor">#D9E2EC</Color>
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
       <SolidColorBrush x:Key="MapPillBrush" Color="{StaticResource MapPillColor}" />
@@ -82,6 +85,8 @@
       <SolidColorBrush x:Key="DangerChipBrush" Color="{StaticResource DangerChipColor}" />
       <SolidColorBrush x:Key="GoodChipBrush" Color="{StaticResource GoodChipColor}" />
       <SolidColorBrush x:Key="GlassInkBrush" Color="{StaticResource GlassInkColor}" />
+      <SolidColorBrush x:Key="RulerSlackBrush" Color="{StaticResource RulerSlackColor}" />
+      <SolidColorBrush x:Key="RulerDriveBrush" Color="{StaticResource RulerDriveColor}" />
       <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
       <SolidColorBrush x:Key="GroundBrush" Color="{StaticResource GroundColor}" />
       <SolidColorBrush x:Key="FrameBrush" Color="{StaticResource FrameColor}" />
@@ -146,6 +151,8 @@
       <Color x:Key="EtaScrimStop6Color">#1E252421</Color>
       <Color x:Key="EtaScrimStop7Color">#0A252421</Color>
       <Color x:Key="GlassInkColor">#141311</Color>
+      <Color x:Key="RulerSlackColor">#444C42</Color>
+      <Color x:Key="RulerDriveColor">#3D4449</Color>
       <SolidColorBrush x:Key="SunInkBrush" Color="{StaticResource SunInkColor}" />
       <SolidColorBrush x:Key="MapScrimBrush" Color="{StaticResource MapScrimColor}" />
       <SolidColorBrush x:Key="MapPillBrush" Color="{StaticResource MapPillColor}" />
@@ -154,6 +161,8 @@
       <SolidColorBrush x:Key="DangerChipBrush" Color="{StaticResource DangerChipColor}" />
       <SolidColorBrush x:Key="GoodChipBrush" Color="{StaticResource GoodChipColor}" />
       <SolidColorBrush x:Key="GlassInkBrush" Color="{StaticResource GlassInkColor}" />
+      <SolidColorBrush x:Key="RulerSlackBrush" Color="{StaticResource RulerSlackColor}" />
+      <SolidColorBrush x:Key="RulerDriveBrush" Color="{StaticResource RulerDriveColor}" />
       <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
       <SolidColorBrush x:Key="GroundBrush" Color="{StaticResource GroundColor}" />
       <SolidColorBrush x:Key="FrameBrush" Color="{StaticResource FrameColor}" />

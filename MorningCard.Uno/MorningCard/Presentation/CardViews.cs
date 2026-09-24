@@ -70,6 +70,9 @@ public record EtaView(
     double TrackSlack,
     double TrackDrive,
     double TrackWalk,
+    // The strip's slack callout. Hidden once there is no slack left to protect.
+    bool ShowsSlack,
+    string SlackText,
     string LeaveLabel,
     string RouteDescription,
     // Null on a failed lookup, which has no trip to lay on the map.

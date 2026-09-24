@@ -269,6 +269,15 @@
   <data name="TimelineBell.Text" xml:space="preserve">
     <value>BELL</value>
   </data>
+  <data name="TrackSlackCaption.Text" xml:space="preserve">
+    <value>Slack time</value>
+  </data>
+  <data name="TrackDrive.Text" xml:space="preserve">
+    <value>Drive</value>
+  </data>
+  <data name="TrackWalk.Text" xml:space="preserve">
+    <value>Walk</value>
+  </data>
   <data name="Cabin_RemoteOn" xml:space="preserve">
     <value> · Remote start on</value>
   </data>

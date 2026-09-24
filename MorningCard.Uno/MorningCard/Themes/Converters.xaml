@@ -14,7 +14,9 @@
   <mp:ConnectionDotBrushConverter x:Key="ConnectionDotBrush" />
   <mp:AccentToneConverter x:Key="AccentTone" />
   <mp:ToneChipInkConverter x:Key="ToneChipInk" />
+  <!-- xaml-lint: allow tokentheme - converters, not brushes; they hand out live per-theme brushes from Tokens -->
   <mp:ToneTrackBrushConverter x:Key="ToneTrackBrush" />
+  <mp:ToneChipBrushConverter x:Key="ToneChipBrush" />
   <mp:BoolToAngleConverter x:Key="BoolToAngle" />
   <mp:LateInkConverter x:Key="LateInk" />
   <mp:StaleOpacityConverter x:Key="StaleOpacity" />

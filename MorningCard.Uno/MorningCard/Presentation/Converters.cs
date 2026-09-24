@@ -73,6 +73,20 @@ public sealed class ToneChipInkConverter : IValueConverter
         throw new NotSupportedException();
 }
 
+/// <summary>The timeline's drive block: a soft tint of the tone, so the ink label stays the loud part.</summary>
+public sealed class ToneChipBrushConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language) => value switch
+    {
+        CardTone.Late => Tokens.Of("DangerChipBrush"),
+        CardTone.LeaveNow => Tokens.Of("AmberChipBrush"),
+        _ => Tokens.Of("RulerDriveBrush"),
+    };
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>The timeline track's drive segment and its "now" marker.</summary>
 public sealed class ToneTrackBrushConverter : IValueConverter
 {

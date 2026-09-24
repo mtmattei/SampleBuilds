@@ -222,58 +222,134 @@
                 </StackPanel>
               </Grid>
 
-              <!-- Star columns carry the proportions, so the track needs no measuring code. -->
-              <Grid Height="10">
+              <!-- The slack ruler. Blocks for what the morning is made of: slack in soft green,
+                   the committed drive in the tone's tint, the walk in neutral, and hatched stubs for
+                   the time either side (already gone, and in class). Star columns carry the
+                   proportions, so the track needs no measuring code. -->
+              <!-- xaml-lint: allow card - ruler segments and a status callout, not containers; a CardContentControl brings hover/pressed overlays a data bar must not have -->
+              <Grid ColumnSpacing="2" RowSpacing="6">
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="Auto" />
+                  <RowDefinition Height="42" />
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="12" />
                   <ColumnDefinition Width="{Binding Data.TrackSlack, Converter={StaticResource PercentToStar}}" />
                   <ColumnDefinition Width="{Binding Data.TrackDrive, Converter={StaticResource PercentToStar}}" />
                   <ColumnDefinition Width="{Binding Data.TrackWalk, Converter={StaticResource PercentToStar}}" />
+                  <ColumnDefinition Width="12" />
                 </Grid.ColumnDefinitions>
 
-                <!-- Slack: dotted, because the car has not moved yet. Stretch="Fill" spans the
-                     cell without a measured width, so the dash pattern needs no code behind it. -->
-                <Line X1="0" Y1="0" X2="1" Y2="0"
-                      Stretch="Fill"
-                      VerticalAlignment="Center"
-                      Margin="14,0,2,0"
-                      Stroke="{ThemeResource Ink3Brush}"
-                      StrokeThickness="4"
-                      StrokeDashCap="Round"
-                      StrokeDashArray="0.01 2.5" />
+                <!-- Now: a thin ink line from the callout down through the track. Declared first so
+                     the callout covers its top and the line reads as hanging from it. -->
+                <Rectangle Grid.RowSpan="2"
+                           Grid.Column="1"
+                           Width="1.5"
+                           Margin="-1,0,0,0"
+                           HorizontalAlignment="Left"
+                           Fill="{ThemeResource InkBrush}"
+                           Visibility="{Binding Data.ShowsSlack, Converter={StaticResource BoolToVisibility}}" />
 
+                <!-- The callout names the slack and how much of it is left. -->
                 <Border Grid.Column="1"
-                        Height="8"
-                        VerticalAlignment="Center"
-                        CornerRadius="4"
-                        Background="{Binding Data.Tone, Converter={StaticResource ToneTrackBrush}}" />
+                        Grid.ColumnSpan="3"
+                        HorizontalAlignment="Left"
+                        Margin="-10,0,0,0"
+                        Padding="9,5,11,6"
+                        CornerRadius="{StaticResource ChipCornerRadius}"
+                        BorderThickness="1"
+                        BorderBrush="{ThemeResource LineBrush}"
+                        Background="{ThemeResource CardSurfaceBrush}"
+                        Visibility="{Binding Data.ShowsSlack, Converter={StaticResource BoolToVisibility}}">
+                  <StackPanel Orientation="Horizontal" Spacing="7">
+                    <Ellipse Width="8" Height="8" VerticalAlignment="Center" Fill="{ThemeResource GoodBrush}" />
+                    <TextBlock VerticalAlignment="Center"
+                               FontFamily="{StaticResource CardFontSemiBold}"
+                               FontSize="13"
+                               Foreground="{ThemeResource GoodInkBrush}"
+                               Text="{Binding Data.SlackText}" />
+                    <TextBlock x:Uid="TrackSlackCaption"
+                               VerticalAlignment="Center"
+                               FontFamily="{StaticResource CardFontRegular}"
+                               FontSize="12"
+                               Foreground="{ThemeResource Ink2Brush}" />
+                  </StackPanel>
+                </Border>
 
-                <Border Grid.Column="2"
-                        Height="8"
-                        VerticalAlignment="Center"
-                        Margin="0,0,7,0"
-                        CornerRadius="4"
-                        Background="{ThemeResource AmberBrush}" />
+                <Border Grid.Row="1" Height="34" CornerRadius="6,0,0,6">
+                  <Border.Background>
+                    <LinearGradientBrush MappingMode="Absolute" SpreadMethod="Repeat" StartPoint="0,0" EndPoint="5,5">
+                      <GradientStop Offset="0" Color="{ThemeResource LineColor}" />
+                      <GradientStop Offset="0.28" Color="{ThemeResource LineColor}" />
+                      <GradientStop Offset="0.28" Color="Transparent" />
+                      <GradientStop Offset="1" Color="Transparent" />
+                    </LinearGradientBrush>
+                  </Border.Background>
+                </Border>
 
-                <!-- Now, and the bell it has to beat. -->
-                <Ellipse Width="11"
-                         Height="11"
+                <Border Grid.Row="1"
+                        Grid.Column="1"
+                        Height="34"
+                        CornerRadius="6"
+                        Background="{ThemeResource RulerSlackBrush}"
+                        Visibility="{Binding Data.ShowsSlack, Converter={StaticResource BoolToVisibility}}" />
+
+                <Border Grid.Row="1"
+                        Grid.Column="2"
+                        Height="34"
+                        Padding="10,0"
+                        CornerRadius="6"
+                        Background="{Binding Data.Tone, Converter={StaticResource ToneChipBrush}}">
+                  <TextBlock x:Uid="TrackDrive"
+                             VerticalAlignment="Center"
+                             TextTrimming="Clip"
+                             FontFamily="{StaticResource CardFontMedium}"
+                             FontSize="12"
+                             Foreground="{Binding Data.Tone, Converter={StaticResource ToneChipInk}}" />
+                </Border>
+
+                <Border Grid.Row="1"
+                        Grid.Column="3"
+                        Height="34"
+                        Padding="8,0"
+                        CornerRadius="6"
+                        Background="{ThemeResource ChipBrush}">
+                  <TextBlock x:Uid="TrackWalk"
+                             VerticalAlignment="Center"
+                             TextTrimming="Clip"
+                             FontFamily="{StaticResource CardFontMedium}"
+                             FontSize="12"
+                             Foreground="{ThemeResource Ink2Brush}" />
+                </Border>
+
+                <Border Grid.Row="1" Grid.Column="4" Height="34" CornerRadius="0,6,6,0">
+                  <Border.Background>
+                    <LinearGradientBrush MappingMode="Absolute" SpreadMethod="Repeat" StartPoint="0,0" EndPoint="5,5">
+                      <GradientStop Offset="0" Color="{ThemeResource LineColor}" />
+                      <GradientStop Offset="0.28" Color="{ThemeResource LineColor}" />
+                      <GradientStop Offset="0.28" Color="Transparent" />
+                      <GradientStop Offset="1" Color="Transparent" />
+                    </LinearGradientBrush>
+                  </Border.Background>
+                </Border>
+
+                <Ellipse Grid.Row="1"
+                         Grid.Column="1"
+                         Width="9"
+                         Height="9"
+                         Margin="-5,0,0,0"
                          HorizontalAlignment="Left"
                          VerticalAlignment="Center"
                          Fill="{Binding Data.Tone, Converter={StaticResource ToneTrackBrush}}" />
 
-                <!-- The stroke is drawn inside the bounds, so an 8x18 rect with a 2px panel-colour
-                     outline keeps the 4x14 ink tick and cuts it cleanly out of the walk segment. -->
-                <Rectangle Grid.Column="2"
-                           Width="8"
-                           Height="18"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Center"
+                <!-- The bell: the one hard edge, a 2px ink tick standing proud of the blocks. -->
+                <Rectangle Grid.Row="1"
+                           Grid.Column="3"
+                           Width="2"
+                           Height="42"
                            Margin="0,0,-2,0"
-                           RadiusX="3"
-                           RadiusY="3"
-                           Fill="{ThemeResource InkBrush}"
-                           Stroke="{ThemeResource CardSurfaceBrush}"
-                           StrokeThickness="2" />
+                           HorizontalAlignment="Right"
+                           Fill="{ThemeResource InkBrush}" />
               </Grid>
 
 
