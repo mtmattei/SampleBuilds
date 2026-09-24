@@ -159,13 +159,13 @@ public sealed class InverseBoolConverter : IValueConverter
 /// <summary>
 /// The checklist header's corners. Rounded all round while it is closed, because then the header
 /// IS the container; flat along the bottom once it is open, because the rows continue past it and
-/// a hover fill that curved away mid-list read as a second container starting underneath. 12
-/// matches ButtonCornerRadius, which the container around it shares with the action buttons below.
+/// a hover fill that curved away mid-list read as a second container starting underneath. 4
+/// matches MapCornerRadius, the concentric radius of panels nested 8 inside the white card.
 /// </summary>
 public sealed class ChecksHeaderRadiusConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language) =>
-        value is true ? new CornerRadius(12, 12, 0, 0) : new CornerRadius(12);
+        value is true ? new CornerRadius(4, 4, 0, 0) : new CornerRadius(4);
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) =>
         throw new NotSupportedException();

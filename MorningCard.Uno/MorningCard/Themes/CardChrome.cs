@@ -10,7 +10,7 @@ namespace MorningCard.Themes;
 public static class CardChrome
 {
     private static double _hue = AccentPalette.DefaultHue;
-    private static double _cornerRadius = 26d;
+    private static double _cornerRadius = 28d;
 
     public static event EventHandler? Changed;
 

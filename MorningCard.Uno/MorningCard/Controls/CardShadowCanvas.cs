@@ -32,7 +32,7 @@ public sealed partial class CardShadowCanvas : SKCanvasElement
     // ActualTheme or walking Application.Current.Resources is a cross-thread touch of the XAML
     // object graph - which is exactly what the sibling ruler canvas avoids and documents.
     private SKColor _color = new(0x2A, 0x24, 0x19, 0x1C);
-    private float _radius = 26f;
+    private float _radius = 28f;
 
     private readonly SKRoundRect _hole = new();
 

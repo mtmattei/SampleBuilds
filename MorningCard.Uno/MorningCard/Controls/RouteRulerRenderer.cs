@@ -58,7 +58,7 @@ internal sealed class RouteRulerRenderer : IDisposable
     private const float CursorRadius = 5f;
 
     /// <summary>Callouts are status labels, so they share the chips' 7.</summary>
-    private const float CalloutCornerRadius = 7f;
+    private const float CalloutCornerRadius = 8f;
 
     private const float CalloutPadX = 7f;
     private const float CalloutPadY = 4f;

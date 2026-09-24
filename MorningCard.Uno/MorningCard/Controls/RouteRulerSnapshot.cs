@@ -23,7 +23,7 @@ public sealed record RouteRulerSnapshot
 
 
     /// <summary>The map panel's corner, so the map's tone is clipped to the panel's shape.</summary>
-    public float MapCornerRadius { get; init; } = 20f;
+    public float MapCornerRadius { get; init; } = 4f;
 
     public RouteRulerPalette Palette { get; init; } = RouteRulerPalette.Fallback;
 
