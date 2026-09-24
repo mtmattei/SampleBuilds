@@ -13,7 +13,8 @@
   the other hues are quiet states - clay for walking, sage for ready, tan for "soon", brick for late.
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:media="using:Microsoft.UI.Xaml.Media">
 
   <ResourceDictionary.ThemeDictionaries>
 
@@ -21,19 +22,20 @@
       <!-- The app ground: dark slate in both themes, with grain drawn over it by GrainCanvas. -->
       <Color x:Key="GroundColor">#2C3238</Color>
       <!--
-        The card's outer shell, from LightWidget's host background: cool periwinkle at the bottom-left
-        warming to blush at the top-right. The white inner card sits on it, so the trip reads as an
-        object on the shell rather than a patch of it. About 14 points of luma across the stops:
-        the change is hue, not contrast.
+        The card's outer shell: frosted grey glass. One cool grey tint over a real backdrop blur of
+        the slate ground (Uno's Skia-native acrylic path, not the Composition effect brush, which
+        paints nothing on Skia desktop). The tint is high enough that ink on the shell keeps 4.5:1
+        over the darkest thing behind it. FallbackColor is the same glass flattened, for any head
+        where the backdrop path is unavailable.
       -->
-      <Color x:Key="ShellCoolColor">#D8E0EF</Color>
-      <Color x:Key="ShellMidColor">#ECEDF2</Color>
-      <Color x:Key="ShellWarmColor">#F8E9E3</Color>
-      <LinearGradientBrush x:Key="ShellBackgroundBrush" StartPoint="0,1" EndPoint="1,0">
-        <GradientStop Offset="0" Color="{StaticResource ShellCoolColor}" />
-        <GradientStop Offset="0.52" Color="{StaticResource ShellMidColor}" />
-        <GradientStop Offset="1" Color="{StaticResource ShellWarmColor}" />
-      </LinearGradientBrush>
+      <Color x:Key="ShellTintColor">#EEF0F2</Color>
+      <Color x:Key="ShellFallbackColor">#CDD0D4</Color>
+      <AcrylicBrush x:Key="ShellBackgroundBrush"
+                    AlwaysUseFallback="False"
+                    media:AcrylicBrushExtensions.UseCompositionEffectBrush="False"
+                    TintColor="{StaticResource ShellTintColor}"
+                    TintOpacity="0.8"
+                    FallbackColor="{StaticResource ShellFallbackColor}" />
 
       <!-- The outer frame: flat warm paper grey. -->
       <Color x:Key="FrameColor">#F1EFE9</Color>
@@ -123,15 +125,15 @@
 
     <ResourceDictionary x:Key="Dark">
       <Color x:Key="GroundColor">#1F2328</Color>
-      <!-- The shell's cool-to-warm diagonal at dark-theme luma; LightWidget has no dark ground. -->
-      <Color x:Key="ShellCoolColor">#151923</Color>
-      <Color x:Key="ShellMidColor">#17171A</Color>
-      <Color x:Key="ShellWarmColor">#1E1817</Color>
-      <LinearGradientBrush x:Key="ShellBackgroundBrush" StartPoint="0,1" EndPoint="1,0">
-        <GradientStop Offset="0" Color="{StaticResource ShellCoolColor}" />
-        <GradientStop Offset="0.52" Color="{StaticResource ShellMidColor}" />
-        <GradientStop Offset="1" Color="{StaticResource ShellWarmColor}" />
-      </LinearGradientBrush>
+      <!-- The same frosted glass in a dark grey. -->
+      <Color x:Key="ShellTintColor">#3E434A</Color>
+      <Color x:Key="ShellFallbackColor">#373C42</Color>
+      <AcrylicBrush x:Key="ShellBackgroundBrush"
+                    AlwaysUseFallback="False"
+                    media:AcrylicBrushExtensions.UseCompositionEffectBrush="False"
+                    TintColor="{StaticResource ShellTintColor}"
+                    TintOpacity="0.8"
+                    FallbackColor="{StaticResource ShellFallbackColor}" />
 
       <Color x:Key="FrameColor">#1D1C1A</Color>
       <Color x:Key="CardSurfaceColor">#252421</Color>
