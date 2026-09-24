@@ -46,9 +46,31 @@ internal sealed class DropoffScreen : Screen
         : base(carContext)
     {
         var hub = SharedHub.Instance;
+        _ = LoadRouteAsync();
         _ = WatchAsync(hub.WatchLastKnown(_watch.Token));
         _ = WatchAsync(((IVehicleService)hub).Watch(_watch.Token));
         _ = WatchAsync(hub.WatchClock(_watch.Token));
+    }
+
+    private MorningCard.Core.Route.RouteGeometry? _route;
+    private bool _routeLoaded;
+
+    private async Task LoadRouteAsync()
+    {
+        // Straight from the APK's assets: the car session can run without the Uno app ever
+        // starting, and ms-appx:/// (RouteGeometryLoader) only resolves once it has.
+        try
+        {
+            using var stream = CarContext.Assets!.Open("Assets/route.json");
+            using var reader = new StreamReader(stream);
+            _route = MorningCard.Core.Route.RouteAsset.TryParse(await reader.ReadToEndAsync());
+        }
+        catch (Java.IO.IOException)
+        {
+            _route = null;
+        }
+        _routeLoaded = true;
+        _main.Post(Invalidate);
     }
 
     private async Task WatchAsync<T>(IAsyncEnumerable<T> changes)
@@ -69,68 +91,91 @@ internal sealed class DropoffScreen : Screen
     public override ITemplate OnGetTemplate()
     {
         var state = SharedHub.Instance.State;
-        var school = new Place.Builder(CarLocation.Create(Destination.Latitude, Destination.Longitude))
-            .SetMarker(new PlaceMarker.Builder().Build())
-            .Build();
+        var template = new PlaceListMapTemplate.Builder()
+            .SetTitle(state.Mode == ConnectionMode.NoTrip ? "This morning" : state.Trip.Title)
+            .SetHeaderAction(CarAction.AppIcon);
+
+        // The host shows its own spinner until the route (and so the distances) has loaded.
+        if (!_routeLoaded)
+        {
+            return template.SetLoading(true).Build();
+        }
+
+        // Every row needs a distance, and the distances come from the route asset.
+        if (_route is not { } route)
+        {
+            return template.SetItemList(new ItemList.Builder().SetNoItemsMessage("Route unavailable. Open Maps to navigate.").Build())
+                .SetActionStrip(new ActionStrip.Builder().AddAction(StartDriveAction()).Build())
+                .Build();
+        }
 
         var items = new ItemList.Builder();
 
         if (state.Mode == ConnectionMode.NoTrip)
         {
-            items.AddItem(new Row.Builder().SetTitle("No drop-off today").AddText("School is closed.").Build());
+            items.SetNoItemsMessage("No drop-off today. School is closed.");
         }
         else
         {
             var plan = state.Trip;
-            var now = TripMath.FromMinutes(state.ClockMinutes);
-            var timeline = TripMath.Derive(plan, now);
+            var timeline = TripMath.Derive(plan, TripMath.FromMinutes(state.ClockMinutes));
             var headline = timeline.Tone switch
             {
                 CardTone.Late => $"Running {Math.Max(0, TripMath.ToMinutes(timeline.Arrive) + plan.WalkMin - TripMath.ToMinutes(plan.Bell))} min late",
                 CardTone.LeaveNow => "Leave now",
                 _ => $"Leave in {timeline.SlackMin} min",
             };
+            var traffic = timeline.Traffic switch
+            {
+                TrafficLevel.Heavy => "Heavy traffic",
+                TrafficLevel.Moderate => "Moderate traffic",
+                _ => "Light traffic",
+            };
+            var car = state.Vehicle;
+            var cabin = car.IsStale ? "car offline" : car.ClimateOn ? "cabin warming" : $"{car.OutsideTemp}° outside";
 
+            // PlaceListMapTemplate: every row that is not browsable carries a distance, and each
+            // row here is a real place on the map - the school at the end of the walk, and the
+            // parking spot at the end of the drive.
             items.AddItem(new Row.Builder()
                 .SetTitle(headline)
-                .AddText($"Leave by {Clock(timeline.LeaveBy)} · arrive {Clock(timeline.Arrive)} · bell {Clock(plan.Bell)}")
-                .SetMetadata(new Metadata.Builder().SetPlace(school).Build())
+                .AddText(WithDistance(route.Drive.TotalMeters + route.Walk.TotalMeters, $" · Drive {timeline.DriveMin} min · {traffic}"))
+                .AddText($"Leave by {Clock(timeline.LeaveBy)} · bell {Clock(plan.Bell)} · {cabin}")
+                .SetMetadata(new Metadata.Builder().SetPlace(Place(Destination.Latitude, Destination.Longitude)).Build())
                 .Build());
 
-            items.AddItem(new Row.Builder()
-                .SetTitle($"Drive {timeline.DriveMin} min")
-                .AddText(timeline.Traffic switch
-                {
-                    TrafficLevel.Heavy => "Heavy traffic",
-                    TrafficLevel.Moderate => "Moderate traffic",
-                    _ => "Light traffic",
-                })
-                .Build());
-
-            var car = state.Vehicle;
-            items.AddItem(new Row.Builder()
-                .SetTitle(car.IsStale ? "Car offline" : car.ClimateOn ? "Cabin warming" : "Warm the cabin")
-                .AddText(car.IsStale ? $"Last seen {Clock(car.LastSeen)}" : $"Outside is {car.OutsideTemp}°")
-                .Build());
-
+            var (parkLon, parkLat) = Mapsui.Projections.SphericalMercator.ToLonLat(route.Parking.X, route.Parking.Y);
             items.AddItem(new Row.Builder()
                 .SetTitle(plan.ParkingStreet)
-                .AddText(plan.ParkingNote)
+                .AddText(WithDistance(route.Drive.TotalMeters, $" · {plan.ParkingNote}"))
+                .SetMetadata(new Metadata.Builder().SetPlace(Place(parkLat, parkLon)).Build())
                 .Build());
         }
 
-        var startDrive = new CarAction.Builder()
-            .SetTitle("Start drive")
-            .SetOnClickListener(new ClickListener(StartNavigation))
+        return template
+            .SetItemList(items.Build())
+            .SetActionStrip(new ActionStrip.Builder().AddAction(StartDriveAction()).Build())
+            .SetAnchor(Place(Destination.Latitude, Destination.Longitude))
+            .Build();
+    }
+
+    private CarAction StartDriveAction() => new CarAction.Builder()
+        .SetTitle("Start drive")
+        .SetOnClickListener(new ClickListener(StartNavigation))
+        .Build();
+
+    private static Place Place(double latitude, double longitude) =>
+        new Place.Builder(CarLocation.Create(latitude, longitude))
+            .SetMarker(new PlaceMarker.Builder().Build())
             .Build();
 
-        return new PlaceListMapTemplate.Builder()
-            .SetTitle(state.Mode == ConnectionMode.NoTrip ? "This morning" : state.Trip.Title)
-            .SetHeaderAction(CarAction.AppIcon)
-            .SetItemList(items.Build())
-            .SetActionStrip(new ActionStrip.Builder().AddAction(startDrive).Build())
-            .SetAnchor(school)
-            .Build();
+    /// <summary>The host formats the distance (units, locale) from a DistanceSpan on the first character.</summary>
+    private static Android.Text.SpannableString WithDistance(double meters, string rest)
+    {
+        var text = new Android.Text.SpannableString(" " + rest);
+        var distance = Distance.Create(Math.Round(meters / 1000d, 1), Distance.UnitKilometers);
+        text.SetSpan(DistanceSpan.Create(distance), 0, 1, Android.Text.SpanTypes.InclusiveInclusive);
+        return text;
     }
 
     /// <summary>Hands the drop-off to the car's navigation app (Car App Library ACTION_NAVIGATE).</summary>

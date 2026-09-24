@@ -5,6 +5,25 @@
     <PackageReference Include="Xamarin.AndroidX.Lifecycle.Common.Java8" Condition="'$(TargetPlatformIdentifier)' == 'android'" />
   </ItemGroup>
 
+  <!--
+    Android Auto: the Car App Library reads its API level from car-app-api.level, a Java resource in
+    its classes.jar; without it the host's GET_APP_VERSION call throws and Android Auto closes the
+    app. .NET for Android keeps jar resources only when a packaging rule includes them, and it reads
+    the library's jar only on builds that re-extract the AAR, so incremental builds dropped it.
+  -->
+  <ItemGroup Condition="'$(TargetPlatformIdentifier)' == 'android'">
+    <AndroidPackagingOptionsInclude Include="car-app-api.level" />
+  </ItemGroup>
+
+  <!--
+    WORKAROUND(car-app-api.level dropped on incremental builds): an incremental APK update drops the
+    library's jar resources on every other build (present, missing, present across three builds with
+    a C# change between them, Debug and Release). Packaging from a fresh intermediate APK keeps them.
+  -->
+  <Target Name="MorningCardFreshApk" BeforeTargets="_BuildApkEmbed" Condition="'$(TargetPlatformIdentifier)' == 'android'">
+    <Delete Files="$(ApkFileIntermediate)" />
+  </Target>
+
   <PropertyGroup>
     <TargetFrameworks>net10.0-android;net10.0-desktop</TargetFrameworks>
 
