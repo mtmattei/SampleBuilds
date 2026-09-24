@@ -114,45 +114,40 @@
         <mvux:FeedView.ValueTemplate>
           <DataTemplate>
             <!-- ======================== headline ======================== -->
-            <Grid ColumnSpacing="12">
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-              </Grid.ColumnDefinitions>
-              <StackPanel VerticalAlignment="Center">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                  <TextBlock Style="{StaticResource CardTitle}"
-                             VerticalAlignment="Center"
-                             Text="{Binding Data.Title}" />
-                  <FontIcon FontFamily="{StaticResource IconFont}"
-                            Glyph="{StaticResource IconChevronNext}"
-                            FontSize="22"
-                            Foreground="{ThemeResource Ink2Brush}"
-                            VerticalAlignment="Center"
-                            Margin="0,3,0,0" />
-                </StackPanel>
-                <!--
-                  One TextBlock, three Runs. Only the middle one takes the accent colour, which is
-                  how the design puts the duration in blue without splitting the sentence into
-                  separate blocks that would not share a baseline.
-                -->
-                <!-- Always one line: the Viewbox measures the sentence unconstrained and only ever
-                     scales it down, so a narrow card shrinks the line instead of wrapping it. -->
-                <Viewbox Margin="0,4,0,0" HorizontalAlignment="Left" Stretch="Uniform" StretchDirection="DownOnly">
-                <TextBlock Style="{StaticResource CardLead}"
-                           TextWrapping="NoWrap"
-                           Foreground="{Binding Data.Tone, Converter={StaticResource ToneBrush}}"><Run Text="{Binding Data.HeadlineLead}" /><Run Text="{Binding Data.HeadlineAccent}" FontFamily="{StaticResource CardFontMedium}" FontWeight="Medium" FontSize="{StaticResource CountdownSize}" Foreground="{Binding Data.Tone, Converter={StaticResource AccentTone}}" /><Run Text="{Binding Data.HeadlineTail}" /></TextBlock>
-                </Viewbox>
+            <!-- Title, car, sentence. The sentence sits beside the car while it fits there at full
+                 size, and drops to its own full-width row under the car when it would not. -->
+            <mc:HeadlineLayoutPanel ColumnSpacing="12" RowSpacing="4">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Style="{StaticResource CardTitle}"
+                           VerticalAlignment="Center"
+                           Text="{Binding Data.Title}" />
+                <FontIcon FontFamily="{StaticResource IconFont}"
+                          Glyph="{StaticResource IconChevronNext}"
+                          FontSize="22"
+                          Foreground="{ThemeResource Ink2Brush}"
+                          VerticalAlignment="Center"
+                          Margin="0,3,0,0" />
               </StackPanel>
               <!-- Desaturated to 30% (scripts/Mute-Car.ps1), so it reads as a grey object on the
                    paper rather than as a product shot competing with the route accent. The car's
                    name and lock state live in the bottom bar, beside the button that changes it. -->
-              <Image Grid.Column="1"
-                     VerticalAlignment="Center"
-                     Source="ms-appx:///Assets/Car/xc60_muted.png"
+              <Image Source="ms-appx:///Assets/Car/xc60_muted.png"
                      Width="135"
                      Stretch="Uniform" />
-            </Grid>
+              <!--
+                One TextBlock, three Runs. Only the middle one takes the accent colour, which is
+                how the design puts the duration in blue without splitting the sentence into
+                separate blocks that would not share a baseline.
+
+                Always one line. The panel gives it a full-width row before it would ever shrink;
+                the DownOnly Viewbox is only the last resort for a card narrower than the sentence.
+              -->
+              <Viewbox HorizontalAlignment="Left" Stretch="Uniform" StretchDirection="DownOnly">
+                <TextBlock Style="{StaticResource CardLead}"
+                           TextWrapping="NoWrap"
+                           Foreground="{Binding Data.Tone, Converter={StaticResource ToneBrush}}"><Run Text="{Binding Data.HeadlineLead}" /><Run Text="{Binding Data.HeadlineAccent}" FontFamily="{StaticResource CardFontMedium}" FontWeight="Medium" FontSize="{StaticResource CountdownSize}" Foreground="{Binding Data.Tone, Converter={StaticResource AccentTone}}" /><Run Text="{Binding Data.HeadlineTail}" /></TextBlock>
+              </Viewbox>
+            </mc:HeadlineLayoutPanel>
           </DataTemplate>
         </mvux:FeedView.ValueTemplate>
       </mvux:FeedView>
