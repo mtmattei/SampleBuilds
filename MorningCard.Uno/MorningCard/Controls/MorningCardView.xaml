@@ -17,7 +17,7 @@
     <mc:CardShadowCanvas />
 
     <Border x:Name="Frame"
-            Background="{ThemeResource FrameBrush}"
+            Background="{ThemeResource ShellBackgroundBrush}"
             BorderBrush="{ThemeResource LineBrush}"
             BorderThickness="1"
             CornerRadius="{StaticResource CardCornerRadius}" />
