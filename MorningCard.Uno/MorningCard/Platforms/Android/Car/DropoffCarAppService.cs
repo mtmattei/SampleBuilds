@@ -140,22 +140,33 @@ internal sealed class DropoffScreen : Screen
             items.AddItem(new Row.Builder()
                 .SetTitle(headline)
                 .AddText(WithDistance(route.Drive.TotalMeters + route.Walk.TotalMeters, $" · Drive {timeline.DriveMin} min · {traffic}"))
-                .AddText($"Leave by {Clock(timeline.LeaveBy)} · bell {Clock(plan.Bell)} · {cabin}")
-                .SetMetadata(new Metadata.Builder().SetPlace(Place(Destination.Latitude, Destination.Longitude)).Build())
+                .AddText($"Leave by {Clock(timeline.LeaveBy)} · arrive {Clock(timeline.Arrive)} · bell {Clock(plan.Bell)} · {cabin}")
+                .SetMetadata(new Metadata.Builder().SetPlace(Place(Destination.Latitude, Destination.Longitude, SchoolMarker, null)).Build())
                 .Build());
 
             var (parkLon, parkLat) = Mapsui.Projections.SphericalMercator.ToLonLat(route.Parking.X, route.Parking.Y);
             items.AddItem(new Row.Builder()
                 .SetTitle(plan.ParkingStreet)
                 .AddText(WithDistance(route.Drive.TotalMeters, $" · {plan.ParkingNote}"))
-                .SetMetadata(new Metadata.Builder().SetPlace(Place(parkLat, parkLon)).Build())
+                .SetMetadata(new Metadata.Builder().SetPlace(Place(parkLat, parkLon, ParkingMarker, "P")).Build())
+                .Build());
+        }
+
+        // The card's cabin Start (v6 Auto artboard) as the strip's second action, while the driver
+        // has not decided and the car can act on it.
+        var strip = new ActionStrip.Builder().AddAction(StartDriveAction());
+        if (state.Mode != ConnectionMode.NoTrip && !state.Vehicle.IsStale && !state.Vehicle.ClimateOn)
+        {
+            strip.AddAction(new CarAction.Builder()
+                .SetTitle("Warm cabin")
+                .SetOnClickListener(new ClickListener(() => _ = SharedHub.Instance.SetClimateAsync(true, CancellationToken.None)))
                 .Build());
         }
 
         return template
             .SetItemList(items.Build())
-            .SetActionStrip(new ActionStrip.Builder().AddAction(StartDriveAction()).Build())
-            .SetAnchor(Place(Destination.Latitude, Destination.Longitude))
+            .SetActionStrip(strip.Build())
+            .SetAnchor(Place(Destination.Latitude, Destination.Longitude, SchoolMarker, null))
             .Build();
     }
 
@@ -164,10 +175,24 @@ internal sealed class DropoffScreen : Screen
         .SetOnClickListener(new ClickListener(StartNavigation))
         .Build();
 
-    private static Place Place(double latitude, double longitude) =>
-        new Place.Builder(CarLocation.Create(latitude, longitude))
-            .SetMarker(new PlaceMarker.Builder().Build())
+    // The card's pin ink and parking green (PinColor #3A3C3F, GoodInkColor #4F6B4C in CardTokens).
+    // The car session cannot read XAML resources - the Uno app may never have started - so the two
+    // values are repeated here; the host picks the dark variant at night.
+    private static readonly CarColor SchoolMarker = CarColor.CreateCustom(unchecked((int)0xFF3A3C3F), unchecked((int)0xFFE9E6DF));
+    private static readonly CarColor ParkingMarker = CarColor.CreateCustom(unchecked((int)0xFF4F6B4C), unchecked((int)0xFFA9C2A5));
+
+    private static Place Place(double latitude, double longitude, CarColor color, string? label)
+    {
+        var marker = new PlaceMarker.Builder().SetColor(color);
+        if (label is not null)
+        {
+            marker.SetLabel(label);
+        }
+
+        return new Place.Builder(CarLocation.Create(latitude, longitude))
+            .SetMarker(marker.Build())
             .Build();
+    }
 
     /// <summary>The host formats the distance (units, locale) from a DistanceSpan on the first character.</summary>
     private static Android.Text.SpannableString WithDistance(double meters, string rest)
