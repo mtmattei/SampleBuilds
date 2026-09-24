@@ -28,8 +28,8 @@
         over the darkest thing behind it. FallbackColor is the same glass flattened, for any head
         where the backdrop path is unavailable.
       -->
-      <Color x:Key="ShellTintColor">#EEF0F2</Color>
-      <Color x:Key="ShellFallbackColor">#CDD0D4</Color>
+      <Color x:Key="ShellTintColor">#EAEFF5</Color>
+      <Color x:Key="ShellFallbackColor">#C9CFD7</Color>
       <AcrylicBrush x:Key="ShellBackgroundBrush"
                     AlwaysUseFallback="False"
                     media:AcrylicBrushExtensions.UseCompositionEffectBrush="False"
@@ -129,8 +129,8 @@
     <ResourceDictionary x:Key="Dark">
       <Color x:Key="GroundColor">#1F2328</Color>
       <!-- The same frosted glass in a dark grey. -->
-      <Color x:Key="ShellTintColor">#3E434A</Color>
-      <Color x:Key="ShellFallbackColor">#373C42</Color>
+      <Color x:Key="ShellTintColor">#3A424C</Color>
+      <Color x:Key="ShellFallbackColor">#333B45</Color>
       <AcrylicBrush x:Key="ShellBackgroundBrush"
                     AlwaysUseFallback="False"
                     media:AcrylicBrushExtensions.UseCompositionEffectBrush="False"
