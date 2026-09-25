@@ -177,6 +177,37 @@ public class SimulatedDriveHubTests
     }
 
     [Fact]
+    public void Following_the_wall_clock_shows_the_same_minute_on_every_device()
+    {
+        using var hub = NewHub(out var time);
+        time.SetUtcNow(new DateTimeOffset(2026, 9, 25, 14, 40, 5, TimeSpan.Zero));
+
+        hub.FollowWallClock();
+        Assert.Equal(new TimeOnly(7, 34), TripMath.FromMinutes(hub.State.ClockMinutes));
+
+        // The next wall-clock minute, and a restart of the half-hour morning at :00.
+        time.Advance(TimeSpan.FromMinutes(1));
+        Assert.Equal(new TimeOnly(7, 35), TripMath.FromMinutes(hub.State.ClockMinutes));
+
+        time.SetUtcNow(new DateTimeOffset(2026, 9, 25, 15, 0, 2, TimeSpan.Zero));
+        time.Advance(TimeSpan.FromSeconds(1));
+        Assert.Equal(new TimeOnly(7, 24), TripMath.FromMinutes(hub.State.ClockMinutes));
+    }
+
+    [Fact]
+    public void Setting_the_clock_by_hand_stops_following_the_wall_clock()
+    {
+        using var hub = NewHub(out var time);
+        time.SetUtcNow(new DateTimeOffset(2026, 9, 25, 14, 40, 5, TimeSpan.Zero));
+        hub.FollowWallClock();
+
+        hub.SetClock((7 * 60) + 45);
+        time.Advance(TimeSpan.FromSeconds(30));
+
+        Assert.Equal(new TimeOnly(7, 45), TripMath.FromMinutes(hub.State.ClockMinutes));
+    }
+
+    [Fact]
     public async Task The_clock_dial_sets_the_time_directly()
     {
         using var hub = NewHub(out _);

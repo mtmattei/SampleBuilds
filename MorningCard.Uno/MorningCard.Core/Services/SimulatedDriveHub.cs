@@ -14,6 +14,8 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
     private readonly TimeProvider _timeProvider;
     private readonly CancellationTokenSource _clockCts = new();
     private readonly Task _clockLoop;
+    private Task? _wallClockLoop;
+    private volatile bool _followWallClock;
 
     public SimulatedDriveHub(TimeProvider timeProvider)
     {
@@ -51,10 +53,52 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
         },
     });
 
-    public void SetClock(int minutesSinceMidnight) => Mutate(state => state with
+    /// <summary>Sets the clock by hand (the simulator dial, MC_CLOCK), which stops following the wall clock.</summary>
+    public void SetClock(int minutesSinceMidnight)
     {
-        ClockMinutes = Wrap(minutesSinceMidnight),
-    });
+        _followWallClock = false;
+        Mutate(state => state with { ClockMinutes = Wrap(minutesSinceMidnight) });
+    }
+
+    /// <summary>
+    /// Follow the wall clock through a repeating half-hour morning: 7:24 at every :00 and :30 UTC,
+    /// then one simulated minute per real minute. Every device reads the same system time, so the
+    /// phone, TV, watch and car heads - separate processes with nothing shared - show the same
+    /// minute and tick together. Setting the clock by hand stops it.
+    /// </summary>
+    public void FollowWallClock()
+    {
+        _followWallClock = true;
+        SyncToWallClock();
+        _wallClockLoop ??= RunWallClockAsync(_clockCts.Token);
+    }
+
+    private void SyncToWallClock()
+    {
+        var minutes = Wrap(DriveHubState.DefaultClockMinutes + (_timeProvider.GetUtcNow().Minute % 30));
+        if (_followWallClock && State.ClockMinutes != minutes)
+        {
+            Mutate(state => state with { ClockMinutes = minutes });
+        }
+    }
+
+    // Checked every second, so every device flips within a second of the wall-clock minute.
+    private async Task RunWallClockAsync(CancellationToken ct)
+    {
+        try
+        {
+            using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1), _timeProvider);
+
+            while (await timer.WaitForNextTickAsync(ct).ConfigureAwait(false))
+            {
+                SyncToWallClock();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Disposed.
+        }
+    }
 
     public void SetTrafficDelay(int delayMin) => Mutate(state => state with
     {
@@ -229,7 +273,11 @@ public sealed class SimulatedDriveHub : ITripService, IVehicleService, IDisposab
 
             while (await timer.WaitForNextTickAsync(ct).ConfigureAwait(false))
             {
-                Mutate(state => state with { ClockMinutes = Wrap(state.ClockMinutes + 1) });
+                // Following the wall clock, the minute comes from it instead.
+                if (!_followWallClock)
+                {
+                    Mutate(state => state with { ClockMinutes = Wrap(state.ClockMinutes + 1) });
+                }
             }
         }
         catch (OperationCanceledException)

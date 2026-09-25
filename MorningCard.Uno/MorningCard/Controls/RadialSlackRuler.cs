@@ -42,6 +42,10 @@ public sealed partial class RadialSlackRuler : Canvas
     // Two stacked captions (11 + 17) need about this much arc at LabelRadius to clear each other.
     private const double MinLabelDegrees = 18;
 
+    // 4 o'clock (120°, unwrapped past the ring's 225° start): the lowest a caption can sit before
+    // it meets the Start drive button across the bottom of the face.
+    private const double MaxLabelAngle = 360 + 120;
+
     public RadialSlackRuler()
     {
         Width = Face;
@@ -130,25 +134,35 @@ public sealed partial class RadialSlackRuler : Canvas
             PlaceLabel(Caption(view.NowShortCaption, toneInk), now, 170);
         }
 
-        PlaceKey(view.LeaveCaption, view.LeaveValue, toneInk, A(plan.Leave.AtMin));
-
-        // ARRIVE and BELL are three minutes apart on time (22.5°) and one when late (7.5°): keep
-        // their captions at least MinLabelDegrees apart by pushing the later one on round the ring.
-        var (arrive, bell) = (A(plan.Arrive.AtMin), A(plan.Bell.AtMin));
-        if (Math.Abs(arrive - bell) < MinLabelDegrees)
+        // LEAVE, ARRIVE and BELL can share a minute (leaving now at the bell, late) and are one
+        // minute (7.5°) apart when late: walk them clockwise and keep each MinLabelDegrees past the
+        // one before.
+        var keys = new[]
         {
-            if (arrive > bell)
+            (Caption: view.LeaveCaption, Value: view.LeaveValue, Ink: toneInk, Angle: A(plan.Leave.AtMin)),
+            (Caption: view.ArriveCaption, Value: view.ArriveTime, Ink: view.IsLate ? Token("DangerInkColor") : ink, Angle: A(plan.Arrive.AtMin)),
+            (Caption: view.BellCaption, Value: view.BellTime, Ink: ink, Angle: A(plan.Bell.AtMin)),
+        }.OrderBy(k => k.Angle).ToArray();
+
+        for (var i = 1; i < keys.Length; i++)
+        {
+            keys[i].Angle = Math.Max(keys[i].Angle, keys[i - 1].Angle + MinLabelDegrees);
+        }
+
+        // Past 4 o'clock a caption runs into Start drive: pull the last one back and the rest with it.
+        if (keys[^1].Angle > MaxLabelAngle)
+        {
+            keys[^1].Angle = MaxLabelAngle;
+            for (var i = keys.Length - 2; i >= 0; i--)
             {
-                arrive = bell + MinLabelDegrees;
-            }
-            else
-            {
-                bell = arrive + MinLabelDegrees;
+                keys[i].Angle = Math.Min(keys[i].Angle, keys[i + 1].Angle - MinLabelDegrees);
             }
         }
 
-        PlaceKey(view.ArriveCaption, view.ArriveTime, view.IsLate ? Token("DangerInkColor") : ink, arrive);
-        PlaceKey(view.BellCaption, view.BellTime, ink, bell);
+        foreach (var key in keys)
+        {
+            PlaceKey(key.Caption, key.Value, key.Ink, key.Angle);
+        }
     }
 
     private void PlaceKey(string caption, string value, Color valueInk, double angle)

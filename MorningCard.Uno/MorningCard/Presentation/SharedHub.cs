@@ -7,5 +7,14 @@ namespace MorningCard.Presentation;
 /// </summary>
 public static class SharedHub
 {
-    public static SimulatedDriveHub Instance { get; } = new(TimeProvider.System);
+    public static SimulatedDriveHub Instance { get; } = Create();
+
+    private static SimulatedDriveHub Create()
+    {
+        var hub = new SimulatedDriveHub(TimeProvider.System);
+
+        // Every head on every device shows the same minute (see FollowWallClock).
+        hub.FollowWallClock();
+        return hub;
+    }
 }

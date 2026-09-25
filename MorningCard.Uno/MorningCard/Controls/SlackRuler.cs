@@ -185,9 +185,10 @@ public sealed partial class SlackRuler : Canvas
         }
 
         // Key times.
-        PlaceKey(view.LeaveCaption, view.LeaveValue, toneInk, plan.Leave, X(plan.Leave.AtMin), width);
-        PlaceKey(view.ArriveCaption, view.ArriveTime, view.IsLate ? Token("DangerInkColor") : ink, plan.Arrive, X(plan.Arrive.AtMin), width);
-        PlaceKey(view.BellCaption, view.BellTime, ink, plan.Bell, X(plan.Bell.AtMin), width);
+        PlaceKeys(width,
+            KeyLabel(view.LeaveCaption, view.LeaveValue, toneInk, plan.Leave, X(plan.Leave.AtMin), width),
+            KeyLabel(view.ArriveCaption, view.ArriveTime, view.IsLate ? Token("DangerInkColor") : ink, plan.Arrive, X(plan.Arrive.AtMin), width),
+            KeyLabel(view.BellCaption, view.BellTime, ink, plan.Bell, X(plan.Bell.AtMin), width));
     }
 
     private void BuildSkeleton(double width)
@@ -328,7 +329,42 @@ public sealed partial class SlackRuler : Canvas
         };
     }
 
-    private void PlaceKey(string caption, string value, Color valueInk, RulerKeyTime key, double x, double width)
+    /// <summary>
+    /// Places the three key-time labels without overlap. Each starts where its alignment puts it;
+    /// then, left to right, any label that would overlap the one before it moves right, and if the
+    /// last one runs past the ruler the row slides back left. Leaving now at the bell (late, the
+    /// clock at 7:50) put LEAVE, BELL and ARRIVE on two minutes.
+    /// </summary>
+    private void PlaceKeys(double width, params (FrameworkElement Label, double Left, double Width)[] keys)
+    {
+        var ordered = keys.OrderBy(k => k.Left).ToArray();
+        var lefts = ordered.Select(k => k.Left).ToArray();
+
+        for (var i = 1; i < ordered.Length; i++)
+        {
+            lefts[i] = Math.Max(lefts[i], lefts[i - 1] + ordered[i - 1].Width + KeyGap);
+        }
+
+        var overflow = lefts[^1] + ordered[^1].Width - width;
+        for (var i = ordered.Length - 1; overflow > 0 && i >= 0; i--)
+        {
+            var room = i == 0 ? lefts[0] : lefts[i] - (lefts[i - 1] + ordered[i - 1].Width + KeyGap);
+            var shift = Math.Min(overflow, Math.Max(0, room));
+            for (var j = i; j < ordered.Length; j++)
+            {
+                lefts[j] -= shift;
+            }
+
+            overflow -= shift;
+        }
+
+        for (var i = 0; i < ordered.Length; i++)
+        {
+            Place(ordered[i].Label, Math.Max(0, lefts[i]), 0);
+        }
+    }
+
+    private (FrameworkElement Label, double Left, double Width) KeyLabel(string caption, string value, Color valueInk, RulerKeyTime key, double x, double width)
     {
         var stack = new StackPanel { Spacing = 1 };
         var align = key.Align switch
@@ -354,7 +390,7 @@ public sealed partial class SlackRuler : Canvas
             _ => x - (w / 2),
         };
 
-        Place(stack, Math.Clamp(left, 0, Math.Max(0, width - w)), 0);
+        return (stack, Math.Clamp(left, 0, Math.Max(0, width - w)), w);
     }
 
     private void PlaceCentered(FrameworkElement element, double x, double top, double width)
