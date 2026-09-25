@@ -436,12 +436,16 @@
   </ControlTemplate>
 
   <Style x:Key="StaticFilledCardStyle" TargetType="utu:CardContentControl" BasedOn="{StaticResource FilledCardContentControlStyle}">
+    <!-- A container, not a D-pad stop: focus landed here on TV and showed no ring. -->
+    <Setter Property="IsTabStop" Value="False" />
     <Setter Property="Background" Value="{ThemeResource FilledCardContentBackground}" />
     <Setter Property="BorderBrush" Value="{ThemeResource FilledCardContentBorderBrush}" />
     <Setter Property="Template" Value="{StaticResource StaticCardTemplate}" />
   </Style>
 
   <Style x:Key="StaticOutlinedCardStyle" TargetType="utu:CardContentControl" BasedOn="{StaticResource OutlinedCardContentControlStyle}">
+    <!-- A container, not a D-pad stop: focus landed here on TV and showed no ring. -->
+    <Setter Property="IsTabStop" Value="False" />
     <Setter Property="Background" Value="{ThemeResource OutlinedCardContentBackground}" />
     <Setter Property="BorderBrush" Value="{ThemeResource OutlinedCardContentBorderBrush}" />
     <Setter Property="Template" Value="{StaticResource StaticCardTemplate}" />

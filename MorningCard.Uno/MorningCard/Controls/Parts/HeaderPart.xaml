@@ -12,7 +12,7 @@
   -->
   <!-- ============================ header ============================ -->
   <!-- On the shell: sun, greeting over the weather line, and the time the card is reading. -->
-  <mvux:FeedView Source="{Binding Greeting}">
+  <mvux:FeedView IsTabStop="False" Source="{Binding Greeting}">
     <mvux:FeedView.ValueTemplate>
       <DataTemplate>
         <Grid MinHeight="52" Padding="14,6,12,0" ColumnSpacing="10">

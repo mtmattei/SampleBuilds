@@ -87,7 +87,7 @@
         </StackPanel>
       </Button>
 
-      <mvux:FeedView x:Name="EtaFeed" Source="{Binding Eta}"
+      <mvux:FeedView IsTabStop="False" x:Name="EtaFeed" Source="{Binding Eta}"
                      Opacity="{Binding ShowEtaBlock, ElementName=Root, Converter={StaticResource BoolToOpacity}}"
                      IsHitTestVisible="{Binding ShowEtaBlock, ElementName=Root}"
                      ProgressTemplate="{StaticResource MapLoadingTemplate}" UndefinedTemplate="{StaticResource MapLoadingTemplate}">

@@ -45,7 +45,7 @@
 
   <StackPanel>
     <!-- Title, headline and the car. -->
-    <mvux:FeedView Source="{Binding Header}"
+    <mvux:FeedView IsTabStop="False" Source="{Binding Header}"
                    ProgressTemplate="{StaticResource TitleLoadingTemplate}" UndefinedTemplate="{StaticResource TitleLoadingTemplate}">
       <mvux:FeedView.ValueTemplate>
         <DataTemplate>
@@ -101,7 +101,7 @@
     </mvux:FeedView>
 
     <!-- ============================ slack ruler ============================ -->
-    <mvux:FeedView Margin="0,16,0,0" Source="{Binding Eta}"
+    <mvux:FeedView IsTabStop="False" Margin="0,16,0,0" Source="{Binding Eta}"
                    ProgressTemplate="{StaticResource RulerLoadingTemplate}" UndefinedTemplate="{StaticResource RulerLoadingTemplate}">
       <mvux:FeedView.ValueTemplate>
         <DataTemplate>

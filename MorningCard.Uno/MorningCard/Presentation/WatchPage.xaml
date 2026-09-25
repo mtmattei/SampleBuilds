@@ -132,7 +132,7 @@
       -->
       <Viewbox Width="{Binding ViewportWidth, ElementName=Pages}" Height="{Binding ViewportHeight, ElementName=Pages}">
         <Grid Width="454" Height="454">
-          <mvux:FeedView Source="{Binding Eta}"
+          <mvux:FeedView IsTabStop="False" Source="{Binding Eta}"
                          ProgressTemplate="{StaticResource WatchBlankTemplate}" UndefinedTemplate="{StaticResource WatchBlankTemplate}">
             <DataTemplate>
               <mc:RadialSlackRuler View="{Binding Data}" />
@@ -144,14 +144,14 @@
             </mvux:FeedView.NoneTemplate>
           </mvux:FeedView>
 
-          <mvux:FeedView Source="{Binding Greeting}" Margin="0,76,0,0" VerticalAlignment="Top"
+          <mvux:FeedView IsTabStop="False" Source="{Binding Greeting}" Margin="0,76,0,0" VerticalAlignment="Top"
                          ProgressTemplate="{StaticResource WatchBlankTemplate}" UndefinedTemplate="{StaticResource WatchBlankTemplate}">
             <DataTemplate>
               <TextBlock Style="{StaticResource WatchStrong}" FontSize="20" Text="{Binding Data.ClockText}" />
             </DataTemplate>
           </mvux:FeedView>
 
-          <mvux:FeedView Source="{Binding Header}" Margin="0,150,0,0" VerticalAlignment="Top"
+          <mvux:FeedView IsTabStop="False" Source="{Binding Header}" Margin="0,150,0,0" VerticalAlignment="Top"
                          ProgressTemplate="{StaticResource WatchBlankTemplate}" UndefinedTemplate="{StaticResource WatchBlankTemplate}">
             <DataTemplate>
               <StackPanel HorizontalAlignment="Center">
@@ -216,7 +216,7 @@
           <Path Data="M413.2,119.5 A215,215 0 0 1 413.2,334.5" Stroke="{ThemeResource LineBrush}" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
           <Path Data="M437.3,182.3 A215,215 0 0 1 441.9,234.5" Stroke="{ThemeResource Ink3Brush}" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
 
-          <mvux:FeedView Source="{Binding Greeting}" VerticalAlignment="Top"
+          <mvux:FeedView IsTabStop="False" Source="{Binding Greeting}" VerticalAlignment="Top"
                          ProgressTemplate="{StaticResource WatchBlankTemplate}" UndefinedTemplate="{StaticResource WatchBlankTemplate}">
             <DataTemplate>
               <TextBlock Style="{StaticResource WatchClock}" Text="{Binding Data.ClockText}" />
@@ -224,7 +224,7 @@
           </mvux:FeedView>
 
           <!-- ETA: 34/15, caption 10, traffic 13 (v6 Wear ramp), centred for the round face. -->
-          <mvux:FeedView Source="{Binding Eta}" Margin="0,40,0,0" VerticalAlignment="Top"
+          <mvux:FeedView IsTabStop="False" Source="{Binding Eta}" Margin="0,40,0,0" VerticalAlignment="Top"
                          ProgressTemplate="{StaticResource WatchBlankTemplate}" UndefinedTemplate="{StaticResource WatchBlankTemplate}">
             <DataTemplate>
               <StackPanel HorizontalAlignment="Center"
@@ -272,7 +272,7 @@
           <Path Data="M413.2,119.5 A215,215 0 0 1 413.2,334.5" Stroke="{ThemeResource LineBrush}" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
           <Path Data="M441.5,242 A215,215 0 0 1 433.7,286.3" Stroke="{ThemeResource Ink3Brush}" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
 
-          <mvux:FeedView Source="{Binding Stats}" Margin="40,48,40,0" VerticalAlignment="Top"
+          <mvux:FeedView IsTabStop="False" Source="{Binding Stats}" Margin="40,48,40,0" VerticalAlignment="Top"
                          ProgressTemplate="{StaticResource WatchBlankTemplate}" UndefinedTemplate="{StaticResource WatchBlankTemplate}">
             <DataTemplate>
               <StackPanel>
@@ -351,7 +351,7 @@
           <Path Data="M413.2,119.5 A215,215 0 0 1 413.2,334.5" Stroke="{ThemeResource LineBrush}" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
           <Path Data="M433.7,286.3 A215,215 0 0 1 413.2,334.5" Stroke="{ThemeResource Ink3Brush}" StrokeThickness="5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
 
-          <mvux:FeedView Source="{Binding Header}" Margin="0,44,0,0" VerticalAlignment="Top"
+          <mvux:FeedView IsTabStop="False" Source="{Binding Header}" Margin="0,44,0,0" VerticalAlignment="Top"
                          ProgressTemplate="{StaticResource WatchBlankTemplate}" UndefinedTemplate="{StaticResource WatchBlankTemplate}">
             <DataTemplate>
               <StackPanel HorizontalAlignment="Center">

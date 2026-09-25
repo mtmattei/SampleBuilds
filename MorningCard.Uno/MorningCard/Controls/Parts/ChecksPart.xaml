@@ -62,7 +62,7 @@
     Expander toggles its own IsExpanded on click, which would fight the model's single
     open-row state, and its template would need rebuilding for this row anatomy (S6).
   -->
-  <mvux:FeedView Source="{Binding Stats}"
+  <mvux:FeedView IsTabStop="False" Source="{Binding Stats}"
                  ProgressTemplate="{StaticResource ChecksLoadingTemplate}" UndefinedTemplate="{StaticResource ChecksLoadingTemplate}">
     <mvux:FeedView.ValueTemplate>
       <DataTemplate>

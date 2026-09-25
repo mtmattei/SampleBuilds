@@ -44,7 +44,7 @@
   </UserControl.Resources>
 
   <!-- ============================ footer ============================ -->
-  <mvux:FeedView Source="{Binding Header}"
+  <mvux:FeedView IsTabStop="False" Source="{Binding Header}"
                  ProgressTemplate="{StaticResource FooterLoadingTemplate}" UndefinedTemplate="{StaticResource FooterLoadingTemplate}">
     <mvux:FeedView.ValueTemplate>
       <DataTemplate>

@@ -15,6 +15,15 @@ public static class SharedHub
 
         // Every head on every device shows the same minute (see FollowWallClock).
         hub.FollowWallClock();
+
+#if DEBUG
+        // MC_CLOCK pins the start time here too, not only in DebugHooks: the car session can run
+        // without the Uno app (and so DebugHooks) ever starting.
+        if (int.TryParse(Environment.GetEnvironmentVariable("MC_CLOCK"), out var minutes))
+        {
+            hub.SetClock(minutes);
+        }
+#endif
         return hub;
     }
 }
