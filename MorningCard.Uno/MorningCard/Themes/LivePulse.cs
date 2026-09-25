@@ -3,7 +3,7 @@ namespace MorningCard.Themes;
 /// <summary>
 /// The footer's live dot: opacity 1 to 0.35 and back over 1.8 s while the car is connected (v6).
 ///
-/// One shared ~30 fps DispatcherTimer writing Opacity, never a Forever storyboard: on Uno Skia
+/// One shared 10 fps DispatcherTimer writing Opacity, never a Forever storyboard: on Uno Skia
 /// desktop a Forever storyboard cost about a third of a core and kept costing after its target was
 /// hidden, where a timer idles at 0-2% and stops itself when nothing is registered (rules file).
 /// Off under reduced motion.
@@ -15,6 +15,11 @@ public static class LivePulse
 
     private const double PeriodSeconds = 1.8;
     private const double Floor = 0.35;
+
+    // 10 fps, not 30: every tick redraws the whole window on Uno Skia Android, and at 30 fps the
+    // dot alone held the TV emulator at ~78% of a core. Over a 1.8 s breath 10 fps is steps of
+    // about 3.6% opacity on a 7 px dot, which do not read as steps.
+    private const int FrameMs = 100;
 
     private static readonly List<UIElement> Pulsing = [];
     private static readonly System.Diagnostics.Stopwatch Clock = System.Diagnostics.Stopwatch.StartNew();
@@ -63,7 +68,7 @@ public static class LivePulse
 
         if (_timer is null)
         {
-            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(33) };
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(FrameMs) };
             _timer.Tick += OnTick;
         }
 

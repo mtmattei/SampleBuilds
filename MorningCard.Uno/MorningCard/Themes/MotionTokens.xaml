@@ -18,9 +18,6 @@
   <!-- Decorative entrances, where the arrival should feel a touch lighter. -->
   <KeySpline x:Key="EaseOut" ControlPoint1="0.17,1" ControlPoint2="0.32,1" />
 
-  <!-- Symmetric moves: something that goes out the way it came in. -->
-  <KeySpline x:Key="EaseInOut" ControlPoint1="0.66,0" ControlPoint2="0.34,1" />
-
   <!--
     There is deliberately no spring curve here. A KeySpline clamps its control points to 0..1 on
     both axes, unlike a CSS cubic-bezier, so an easing curve cannot overshoot at all. A pop comes
@@ -29,13 +26,7 @@
     curve; it silently clamps and you get a flat move that looks like a mistake.
   -->
 
-  <Duration x:Key="DurationFast">0:0:0.15</Duration>
-  <Duration x:Key="DurationNormal">0:0:0.2</Duration>
-  <Duration x:Key="DurationSlow">0:0:0.28</Duration>
-
-  <!-- The same three as plain numbers, for animations built in C#. -->
-  <x:Double x:Key="DurationFastMs">150</x:Double>
-  <x:Double x:Key="DurationNormalMs">200</x:Double>
+  <!-- The house slow duration as a plain number, for animations built in C#. -->
   <x:Double x:Key="DurationSlowMs">280</x:Double>
 
   <!--
@@ -44,8 +35,5 @@
     it. 0.98 is felt and barely seen, which is the whole idea.
   -->
   <x:Double x:Key="PressScale">0.98</x:Double>
-
-  <!-- How far a hero entrance rises as it fades in. -->
-  <x:Double x:Key="EntranceRise">8</x:Double>
 
 </ResourceDictionary>

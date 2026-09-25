@@ -50,9 +50,9 @@
                                   Padding="24,20"
                                   BorderThickness="1">
             <ScrollViewer VerticalScrollBarVisibility="Hidden">
-              <!-- 8 right: the car image hangs 8 past its column (the phone card's bleed), and the
-                   ScrollViewer clips it. -->
-              <StackPanel Padding="0,0,8,0">
+              <!-- 4 top, 8 right: the car image hangs 4 above and 8 past its column (the phone
+                   card's bleed), and the ScrollViewer clips anything outside it. -->
+              <StackPanel Padding="0,4,8,0">
                 <mc:TripPart />
                 <mc:ChecksPart Margin="0,12,0,0" />
               </StackPanel>

@@ -64,15 +64,6 @@
   <data name="Headline_NoTrip" xml:space="preserve">
     <value>Nothing on the calendar before 9.</value>
   </data>
-  <data name="Traffic_Light" xml:space="preserve">
-    <value>Light traffic</value>
-  </data>
-  <data name="Traffic_Moderate" xml:space="preserve">
-    <value>Moderate traffic</value>
-  </data>
-  <data name="Traffic_Heavy" xml:space="preserve">
-    <value>Heavy traffic</value>
-  </data>
   <data name="VsUsual_Faster" xml:space="preserve">
     <value>{0} min faster than usual</value>
   </data>
@@ -389,6 +380,17 @@
   </data>
   <data name="Drive_SendToCar" xml:space="preserve">
     <value>Send to car</value>
+  </data>
+  <!-- Read by a built key, Traffic_{TrafficLevel} (MainModel), so no search finds them by name;
+       ResourceKeyTests keeps every level covered. -->
+  <data name="Traffic_Light" xml:space="preserve">
+    <value>Light traffic</value>
+  </data>
+  <data name="Traffic_Moderate" xml:space="preserve">
+    <value>Moderate traffic</value>
+  </data>
+  <data name="Traffic_Heavy" xml:space="preserve">
+    <value>Heavy traffic</value>
   </data>
 </root>
 

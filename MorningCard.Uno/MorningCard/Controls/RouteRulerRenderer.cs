@@ -70,6 +70,10 @@ internal sealed class RouteRulerRenderer : IDisposable
     private readonly SKPath _drive = new();
     private readonly SKPath _walk = new();
 
+    // Scratch paths, rewound per use: these were a native allocation per frame of the entrance.
+    private readonly SKPath _segment = new();
+    private readonly SKPath _slackPath = new();
+
     private SKPathMeasure? _driveMeasure;
     private SKPathMeasure? _walkMeasure;
     private SKPathEffect? _slackDash;
@@ -203,11 +207,11 @@ internal sealed class RouteRulerRenderer : IDisposable
             return;
         }
 
-        using var segment = new SKPath();
+        _segment.Rewind();
 
-        if (measure.GetSegment(0f, measure.Length * progress, segment, startWithMoveTo: true))
+        if (measure.GetSegment(0f, measure.Length * progress, _segment, startWithMoveTo: true))
         {
-            canvas.DrawPath(segment, _line);
+            canvas.DrawPath(_segment, _line);
         }
     }
 
@@ -302,10 +306,10 @@ internal sealed class RouteRulerRenderer : IDisposable
         _line.StrokeWidth = SlackDotWidth;
         _line.Color = palette.SlackDot.WithAlpha((byte)(255 * Math.Clamp(progress, 0f, 1f)));
         // A path, not DrawLine: on this Skia build a dash effect on DrawLine painted nothing.
-        using var path = new SKPath();
-        path.MoveTo(from);
-        path.LineTo(to);
-        canvas.DrawPath(path, _line);
+        _slackPath.Rewind();
+        _slackPath.MoveTo(from);
+        _slackPath.LineTo(to);
+        canvas.DrawPath(_slackPath, _line);
         _line.PathEffect = null;
     }
 
@@ -501,6 +505,8 @@ internal sealed class RouteRulerRenderer : IDisposable
     {
         _drive.Dispose();
         _walk.Dispose();
+        _segment.Dispose();
+        _slackPath.Dispose();
         _driveMeasure?.Dispose();
         _walkMeasure?.Dispose();
         _slackDash?.Dispose();

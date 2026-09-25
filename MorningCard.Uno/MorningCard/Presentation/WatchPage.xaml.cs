@@ -32,6 +32,10 @@ public sealed partial class WatchPage : Page
         Pages.ManipulationCompleted += OnPagesManipulationCompleted;
         Pages.AddHandler(PointerWheelChangedEvent, new PointerEventHandler(OnPagesWheel), handledEventsToo: true);
         Loaded += OnLoaded;
+
+        // A settle still running when the page goes would hold CompositionTarget.Rendering, which
+        // makes the Skia compositor produce frames for as long as the process lives (rules file).
+        Unloaded += (_, _) => StopSettle();
     }
 
     // WORKAROUND(Late feed content unpainted on Android Skia): on the Wear emulator the first face
@@ -147,6 +151,7 @@ public sealed partial class WatchPage : Page
         }
     }
 
+    // xaml-lint: allow codebehind - see WORKAROUND (snap points); a one-shot frame loop for the settle
     private void OnSettleFrame(object? sender, object e)
     {
         var p = Math.Min(1, (Environment.TickCount64 - _settleStart) / SettleMs);
