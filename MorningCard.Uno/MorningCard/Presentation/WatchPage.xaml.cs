@@ -36,8 +36,9 @@ public sealed partial class WatchPage : Page
 
     // WORKAROUND(Late feed content unpainted on Android Skia): on the Wear emulator the first face
     // stayed half drawn (clock, title and ring missing, headline present) until a scroll forced a
-    // frame, whenever nothing else invalidated - offline, the car's clock stops ticking. Nudging the
-    // scroller's opacity for the first seconds produces the frames the late content needs.
+    // frame, whenever nothing else invalidated - offline, the car's clock stops ticking, and on any slow
+    // start. Nudging the scroller's opacity for the first 20 seconds produces the frames the late
+    // content needs.
     // xaml-lint: allow codebehind - see WORKAROUND
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
@@ -46,7 +47,8 @@ public sealed partial class WatchPage : Page
         timer.Tick += (_, _) =>
         {
             Pages.Opacity = ticks % 2 == 0 ? 0.999 : 1;
-            if (++ticks >= 8)
+            // 20 s: a cold-started emulator delivered the first feed values after the original 4 s.
+            if (++ticks >= 40)
             {
                 Pages.Opacity = 1;
                 timer.Stop();
