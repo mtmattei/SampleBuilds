@@ -79,4 +79,24 @@
   <data name="ApplicationName" xml:space="preserve">
     <value>Carte</value>
   </data>
+<data name="Explore.LowConfidence" xml:space="preserve"><value>a less certain placement</value></data>
+<data name="Explore.Estimated" xml:space="preserve"><value>estimated from the menu</value></data>
+<data name="Explore.PairNote" xml:space="preserve"><value>The suggested contrast comes from the menu descriptions.</value></data>
+<data name="Explore.Crowded.Text" xml:space="preserve"><value>Some items sit close together. Menu view lists every item.</value></data>
+<data name="Demo.MenuDescriptor" xml:space="preserve"><value>A neighbourhood bistro</value></data>
+<data name="ExplorePage.ScanMenuLabel.Text" xml:space="preserve"><value>Scan menu</value></data>
+<data name="ExplorePage.TonightLabel.Text" xml:space="preserve"><value>Tonight</value></data>
+<data name="ExplorePage.Tagline.Text" xml:space="preserve"><value>A little guide to good taste</value></data>
+<data name="ExplorePage.CategoryGroup.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Menu category</value></data>
+<data name="ExplorePage.MenuList.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Menu items</value></data>
+<data name="ItemDetail.PairLabel.Text" xml:space="preserve"><value>Pair it</value></data>
+<data name="Format.AxisSummary" xml:space="preserve"><value>{0} ↔ {1} · {2} ↔ {3}</value></data>
+<data name="Format.PairItem" xml:space="preserve"><value>Pair it with {0}</value></data>
+<data name="Format.PairReturn" xml:space="preserve"><value>Back to {0}</value></data>
+<data name="Format.RemoveItem" xml:space="preserve"><value>Remove {0} from tonight</value></data>
+<data name="Format.SavedItem" xml:space="preserve"><value>{0} saved for tonight.</value></data>
+<data name="Format.RemovedItem" xml:space="preserve"><value>{0} removed from tonight.</value></data>
+<data name="Format.SelectedItem" xml:space="preserve"><value>{0} selected.</value></data>
+<data name="Format.TonightName" xml:space="preserve"><value>Tonight, {0} saved</value></data>
+<data name="Format.TasteMapName" xml:space="preserve"><value>Taste map, {0}</value></data>
 </root>

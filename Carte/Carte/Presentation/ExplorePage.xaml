@@ -1,0 +1,203 @@
+<Page x:Class="Carte.Presentation.ExplorePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:Carte.Presentation"
+      xmlns:controls="using:Carte.Controls"
+      NavigationCacheMode="Required"
+      Background="{StaticResource CartePaperBrush}">
+  <Grid>
+    <VisualStateManager.VisualStateGroups>
+      <VisualStateGroup x:Name="LayoutStates">
+        <VisualState x:Name="Narrow">
+          <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
+          <VisualState.Setters><Setter Target="ContentRoot.Padding" Value="16,8,16,24" /></VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="Compact">
+          <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="360" /></VisualState.StateTriggers>
+        </VisualState>
+        <VisualState x:Name="Medium">
+          <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="600" /></VisualState.StateTriggers>
+          <VisualState.Setters><Setter Target="ContentRoot.MaxWidth" Value="640" /></VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="Wide">
+          <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="905" /></VisualState.StateTriggers>
+          <VisualState.Setters>
+            <Setter Target="DetailColumn.Width" Value="360" />
+            <Setter Target="Body.ColumnSpacing" Value="48" />
+            <Setter Target="DetailPanel.(Grid.Row)" Value="0" />
+            <Setter Target="DetailPanel.(Grid.Column)" Value="1" />
+            <Setter Target="DetailPanel.Margin" Value="0,0,0,0" />
+          </VisualState.Setters>
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+
+    <ScrollViewer HorizontalScrollMode="Disabled" HorizontalScrollBarVisibility="Disabled">
+      <Grid x:Name="ContentRoot" MaxWidth="1120" Padding="24,8,24,24" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+        <!-- AppHeader -->
+        <Grid ColumnDefinitions="*,Auto" BorderBrush="{StaticResource CarteInkBrush}" BorderThickness="0,0,0,1.5" Padding="0,12,0,12">
+          <TextBlock Text="carte." Style="{StaticResource CarteWordmarkTextStyle}" VerticalAlignment="Center"
+                     AutomationProperties.Name="Carte" />
+          <Button Grid.Column="1" Command="{x:Bind ViewModel.ScanMenuCommand, Mode=OneWay}" Style="{StaticResource CarteQuietButtonStyle}"
+                  AutomationProperties.LabeledBy="{x:Bind ScanText}">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Image Source="ms-appx:///Assets/Svg/scan-line.svg" Style="{StaticResource CarteIconStyle}" />
+              <TextBlock x:Name="ScanText" x:Uid="ExplorePage.ScanMenuLabel" Text="Scan menu" Style="{StaticResource CarteQuietActionTextStyle}" />
+            </StackPanel>
+          </Button>
+        </Grid>
+
+        <!-- Heading -->
+        <StackPanel Grid.Row="1" Spacing="8" Padding="0,28,0,20">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock x:Uid="ExplorePage.Eyebrow" Text="Your evening, mapped" Style="{StaticResource CarteLabelTextStyle}"
+                       controls:TextCase.Upper="True" />
+            <TextBlock Grid.Column="1" x:Uid="Demo.SampleMenu" Text="Sample menu" Style="{StaticResource CarteLabelTextStyle}"
+                       controls:TextCase.Upper="True" Visibility="{x:Bind ViewModel.IsIllustrative, Mode=OneWay}" />
+          </Grid>
+          <TextBlock Text="{x:Bind ViewModel.MenuName, Mode=OneWay}" Style="{StaticResource CarteTitleTextStyle}"
+                     AutomationProperties.HeadingLevel="Level1" />
+          <TextBlock Text="{x:Bind ViewModel.MenuSubtitle, Mode=OneWay}" Style="{StaticResource CarteSecondaryTextStyle}" />
+          <StackPanel Spacing="12" Visibility="{x:Bind ViewModel.HasError, Mode=OneWay}">
+            <TextBlock x:Uid="ReviewPage.ServiceError" Style="{StaticResource CarteBodyTextStyle}" />
+            <Button x:Uid="Common.Retry" Command="{x:Bind ViewModel.RetryCommand, Mode=OneWay}" Style="{StaticResource CarteSecondaryButtonStyle}" />
+          </StackPanel>
+        </StackPanel>
+
+        <!-- CategorySelector -->
+        <Border Grid.Row="2" BorderBrush="{StaticResource CarteRuleBrush}" BorderThickness="0,1,0,1">
+          <ItemsControl ItemsSource="{x:Bind ViewModel.Categories, Mode=OneWay}" x:Uid="ExplorePage.CategoryGroup"
+                        AutomationProperties.Name="Menu category">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate><controls:EqualColumnsPanel /></ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="local:CategoryViewModel">
+                <RadioButton GroupName="Category" IsChecked="{x:Bind IsSelected, Mode=TwoWay}" Style="{StaticResource CarteCategoryTabStyle}"
+                             AutomationProperties.Name="{x:Bind Label}">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Image Source="{x:Bind Glyph}" Style="{StaticResource CarteIconStyle}" />
+                    <TextBlock Text="{x:Bind Label}" Style="{StaticResource CarteTabTextStyle}" />
+                  </StackPanel>
+                </RadioButton>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </Border>
+
+        <!-- Pairing context with a route back to the source dish -->
+        <StackPanel Grid.Row="3" Spacing="4" Padding="0,14,0,6" BorderBrush="{StaticResource CarteRuleBrush}" BorderThickness="0,0,0,1"
+                    Visibility="{x:Bind ViewModel.HasPairing, Mode=OneWay}">
+          <TextBlock Text="{x:Bind ViewModel.PairNotice, Mode=OneWay}" Style="{StaticResource CarteSecondaryTextStyle}" />
+          <TextBlock Text="{x:Bind ViewModel.PairNote, Mode=OneWay}" Style="{StaticResource CarteSecondaryTextStyle}" />
+          <Button Content="{x:Bind ViewModel.PairReturnLabel, Mode=OneWay}" Command="{x:Bind ViewModel.ReturnFromPairCommand, Mode=OneWay}"
+                  Style="{StaticResource CarteLinkButtonStyle}" />
+        </StackPanel>
+
+        <!-- View bar -->
+        <Grid Grid.Row="4" ColumnDefinitions="*,Auto" Padding="0,10,0,6">
+          <TextBlock Text="{x:Bind ViewModel.ViewBarLabel, Mode=OneWay}" Style="{StaticResource CarteLabelTextStyle}"
+                     controls:TextCase.Upper="True" VerticalAlignment="Center" />
+          <Button Grid.Column="1" Command="{x:Bind ViewModel.ToggleViewCommand, Mode=OneWay}" Style="{StaticResource CarteQuietButtonStyle}"
+                  Margin="0,0,-8,0" AutomationProperties.LabeledBy="{x:Bind OtherViewText}">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Image Source="{x:Bind ViewModel.OtherViewGlyph, Mode=OneWay}" Style="{StaticResource CarteIconStyle}" />
+              <TextBlock x:Name="OtherViewText" Text="{x:Bind ViewModel.OtherViewLabel, Mode=OneWay}" Style="{StaticResource CarteQuietActionTextStyle}" />
+            </StackPanel>
+          </Button>
+        </Grid>
+
+        <!-- Body: map or menu, with the detail beneath (compact) or beside (wide) -->
+        <Grid x:Name="Body" Grid.Row="5" RowDefinitions="Auto,Auto">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition x:Name="DetailColumn" Width="0" />
+          </Grid.ColumnDefinitions>
+
+          <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.MapVisibility, Mode=OneWay}" Padding="0,8,0,16">
+            <controls:TasteMapView ItemsSource="{x:Bind ViewModel.VisibleItems, Mode=OneWay}"
+                                   AxisSet="{x:Bind ViewModel.AxisSet, Mode=OneWay}"
+                                   SelectedItem="{x:Bind ViewModel.SelectedItem, Mode=TwoWay}" />
+            <TextBlock Text="{x:Bind ViewModel.MapNote, Mode=OneWay}" Style="{StaticResource CarteSecondaryTextStyle}"
+                       HorizontalAlignment="Center" TextAlignment="Center" />
+            <StackPanel Spacing="4" Padding="0,12,0,0" Visibility="{x:Bind ViewModel.HasUnplaced, Mode=OneWay}">
+              <TextBlock x:Uid="ExplorePage.Unplaced" Style="{StaticResource CarteSecondaryTextStyle}" />
+              <ItemsControl ItemsSource="{x:Bind ViewModel.UnplacedItems, Mode=OneWay}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="local:MenuItemViewModel">
+                    <Button Content="{x:Bind Name}" Command="{x:Bind SelectCommand}" Style="{StaticResource CarteQuietButtonStyle}"
+                            AutomationProperties.Name="{x:Bind AccessibleName}" />
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </StackPanel>
+
+          <StackPanel Visibility="{x:Bind ViewModel.ListVisibility, Mode=OneWay}">
+            <TextBlock Text="{x:Bind ViewModel.AxisSummary, Mode=OneWay}" Style="{StaticResource CarteSecondaryTextStyle}" Margin="0,4,0,14" />
+            <Rectangle Style="{StaticResource CarteRuleStyle}" />
+            <ListView ItemsSource="{x:Bind ViewModel.VisibleItems, Mode=OneWay}"
+                      SelectedItem="{x:Bind ViewModel.SelectedItem, Mode=TwoWay}"
+                      SelectionMode="Single" ItemContainerStyle="{StaticResource CarteListItemStyle}"
+                      ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                      x:Uid="ExplorePage.MenuList" AutomationProperties.Name="Menu items">
+              <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:MenuItemViewModel">
+                  <Grid ColumnDefinitions="40,*,44" ColumnSpacing="12" Padding="0,20" BorderBrush="{StaticResource CarteRuleBrush}" BorderThickness="0,0,0,1">
+                    <Image Source="{x:Bind GlyphInk}" Width="26" Height="26" Stretch="Uniform" VerticalAlignment="Top" Margin="0,4,0,0" />
+                    <StackPanel Grid.Column="1" Spacing="6">
+                      <TextBlock Text="{x:Bind Name}" Style="{StaticResource CarteItemTitleTextStyle}" />
+                      <TextBlock Text="{x:Bind SummaryLine}" Style="{StaticResource CarteSecondaryTextStyle}" />
+                      <controls:ItemDetailView Item="{x:Bind}" ShowHeader="False" Margin="0,8,0,0"
+                                               Visibility="{x:Bind ShowInlineDetail, Mode=OneWay}" />
+                    </StackPanel>
+                    <!-- MiniTasteMap: decorative; the row's automation name carries the position in words -->
+                    <Grid Grid.Column="2" Width="44" Height="44" VerticalAlignment="Top" AutomationProperties.AccessibilityView="Raw">
+                      <Rectangle Width="1" Fill="{StaticResource CarteRuleBrush}" HorizontalAlignment="Center" />
+                      <Rectangle Height="1" Fill="{StaticResource CarteRuleBrush}" VerticalAlignment="Center" />
+                      <Ellipse Width="7" Height="7" Fill="{StaticResource CarteInkBrush}" HorizontalAlignment="Left" VerticalAlignment="Top"
+                               Margin="{x:Bind MiniDotMargin}" Visibility="{x:Bind ShowSolidDot}" />
+                      <Ellipse Width="7" Height="7" Stroke="{StaticResource CarteInkBrush}" StrokeThickness="1.2" HorizontalAlignment="Left"
+                               VerticalAlignment="Top" Margin="{x:Bind MiniDotMargin}" Visibility="{x:Bind ShowRingDot}" />
+                    </Grid>
+                  </Grid>
+                </DataTemplate>
+              </ListView.ItemTemplate>
+            </ListView>
+          </StackPanel>
+
+          <!-- ItemDetail -->
+          <Border x:Name="DetailPanel" Grid.Row="1" Margin="0,8,0,0" Padding="0,24,0,8"
+                  BorderBrush="{StaticResource CarteInkBrush}" BorderThickness="0,1.5,0,0"
+                  Visibility="{x:Bind ViewModel.ShowDetailPanel, Mode=OneWay}">
+            <controls:ItemDetailView Item="{x:Bind ViewModel.SelectedItem, Mode=OneWay}" ShowHeader="True" />
+          </Border>
+        </Grid>
+
+        <!-- Footer -->
+        <Grid Grid.Row="6" ColumnDefinitions="*,Auto" Margin="0,16,0,0" Padding="0,12,0,0"
+              BorderBrush="{StaticResource CarteRuleBrush}" BorderThickness="0,1,0,0">
+          <TextBlock x:Uid="ExplorePage.Tagline" Text="A little guide to good taste" Style="{StaticResource CarteLabelTextStyle}"
+                     controls:TextCase.Upper="True" VerticalAlignment="Center" />
+          <Button Grid.Column="1" Command="{x:Bind ViewModel.ShowTonightCommand, Mode=OneWay}" Style="{StaticResource CarteQuietButtonStyle}"
+                  Margin="0,0,-8,0" AutomationProperties.Name="{x:Bind ViewModel.TonightName, Mode=OneWay}">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Image Source="ms-appx:///Assets/Svg/bookmark.svg" Style="{StaticResource CarteIconStyle}" />
+              <TextBlock x:Uid="ExplorePage.TonightLabel" Text="Tonight" Style="{StaticResource CarteQuietActionTextStyle}" />
+              <Border MinWidth="24" Height="24" CornerRadius="12" Padding="6,0" Background="{StaticResource CarteWashBrush}"
+                      BorderBrush="{StaticResource CarteRuleBrush}" BorderThickness="1">
+                <TextBlock Text="{x:Bind ViewModel.TonightCount, Mode=OneWay}" Style="{StaticResource CarteLabelTextStyle}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+            </StackPanel>
+          </Button>
+        </Grid>
+      </Grid>
+    </ScrollViewer>
+
+    <!-- Quiet status announcements for selection and save/remove -->
+    <TextBlock x:Name="StatusText" Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" AutomationProperties.LiveSetting="Polite"
+               Opacity="0" IsHitTestVisible="False" Width="1" Height="1" HorizontalAlignment="Left" VerticalAlignment="Top" />
+  </Grid>
+</Page>
