@@ -58,6 +58,7 @@ public sealed partial class MenuItemViewModel : ObservableObject
     [ObservableProperty] public partial bool IsSelected { get; private set; }
     [ObservableProperty] public partial bool IsSaved { get; private set; }
     [ObservableProperty] public partial bool ShowInlineDetail { get; private set; }
+    [ObservableProperty] public partial bool ShowSelectionWash { get; private set; }
     [ObservableProperty] public partial bool IsRationaleOpen { get; private set; }
 
     public string SaveLabel => Loc.Get(IsSaved ? "ItemDetail.Saved.Content" : "ItemDetail.Save.Content");
@@ -74,6 +75,8 @@ public sealed partial class MenuItemViewModel : ObservableObject
         IsSelected = _session.SelectedItem?.Id == Id && _session.CategoryId == Item.CategoryId;
         IsSaved = _session.IsSaved(Id);
         ShowInlineDetail = IsSelected && inlineDetails;
+        // When the detail lives in the side panel, the selected row still needs a visible mark.
+        ShowSelectionWash = IsSelected && !inlineDetails;
         IsRationaleOpen = IsSelected && _session.IsRationaleOpen;
         OnPropertyChanged(nameof(SaveLabel));
         OnPropertyChanged(nameof(SaveGlyph));

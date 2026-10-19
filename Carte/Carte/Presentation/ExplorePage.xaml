@@ -35,18 +35,7 @@
     <ScrollViewer HorizontalScrollMode="Disabled" HorizontalScrollBarVisibility="Disabled">
       <Grid x:Name="ContentRoot" MaxWidth="1120" Padding="24,8,24,24" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 
-        <!-- AppHeader -->
-        <Grid ColumnDefinitions="*,Auto" BorderBrush="{StaticResource CarteInkBrush}" BorderThickness="0,0,0,1.5" Padding="0,12,0,12">
-          <TextBlock Text="carte." Style="{StaticResource CarteWordmarkTextStyle}" VerticalAlignment="Center"
-                     AutomationProperties.Name="Carte" />
-          <Button Grid.Column="1" Command="{x:Bind ViewModel.ScanMenuCommand, Mode=OneWay}" Style="{StaticResource CarteQuietButtonStyle}"
-                  AutomationProperties.LabeledBy="{x:Bind ScanText}">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <Image Source="ms-appx:///Assets/Svg/scan-line.svg" Style="{StaticResource CarteIconStyle}" />
-              <TextBlock x:Name="ScanText" x:Uid="ExplorePage.ScanMenuLabel" Text="Scan menu" Style="{StaticResource CarteQuietActionTextStyle}" />
-            </StackPanel>
-          </Button>
-        </Grid>
+        <controls:AppHeader ScanCommand="{x:Bind ViewModel.ScanMenuCommand, Mode=OneWay}" />
 
         <!-- Heading -->
         <StackPanel Grid.Row="1" Spacing="8" Padding="0,28,0,20">
@@ -144,14 +133,18 @@
                       x:Uid="ExplorePage.MenuList" AutomationProperties.Name="Menu items">
               <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local:MenuItemViewModel">
-                  <Grid ColumnDefinitions="40,*,44" ColumnSpacing="12" Padding="0,20" BorderBrush="{StaticResource CarteRuleBrush}" BorderThickness="0,0,0,1">
+                  <Grid ColumnDefinitions="40,*,44" RowDefinitions="Auto,Auto" ColumnSpacing="12" Padding="0,20"
+                        BorderBrush="{StaticResource CarteRuleBrush}" BorderThickness="0,0,0,1">
+                    <Rectangle Grid.ColumnSpan="3" Grid.RowSpan="2" Margin="0,-20" Fill="{StaticResource CarteWashBrush}"
+                               Visibility="{x:Bind ShowSelectionWash, Mode=OneWay}" />
                     <Image Source="{x:Bind GlyphInk}" Width="26" Height="26" Stretch="Uniform" VerticalAlignment="Top" Margin="0,4,0,0" />
                     <StackPanel Grid.Column="1" Spacing="6">
                       <TextBlock Text="{x:Bind Name}" Style="{StaticResource CarteItemTitleTextStyle}" />
                       <TextBlock Text="{x:Bind SummaryLine}" Style="{StaticResource CarteSecondaryTextStyle}" />
-                      <controls:ItemDetailView Item="{x:Bind}" ShowHeader="False" Margin="0,8,0,0"
-                                               Visibility="{x:Bind ShowInlineDetail, Mode=OneWay}" />
                     </StackPanel>
+                    <!-- Expanded detail runs under the mini map so actions keep their full width -->
+                    <controls:ItemDetailView Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Item="{x:Bind}" ShowHeader="False"
+                                             Margin="0,16,0,0" Visibility="{x:Bind ShowInlineDetail, Mode=OneWay}" />
                     <!-- MiniTasteMap: decorative; the row's automation name carries the position in words -->
                     <Grid Grid.Column="2" Width="44" Height="44" VerticalAlignment="Top" AutomationProperties.AccessibilityView="Raw">
                       <Rectangle Width="1" Fill="{StaticResource CarteRuleBrush}" HorizontalAlignment="Center" />

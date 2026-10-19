@@ -337,7 +337,7 @@
                         <Ellipse x:Name="Hover" Opacity="0" Fill="{StaticResource CarteWashBrush}" />
                         <Ellipse x:Name="Disc" Opacity="0" Fill="{StaticResource CarteInkBrush}" />
                         <Ellipse x:Name="DashedRing" Opacity="0" Stroke="{StaticResource CarteInkBrush}"
-                                 StrokeThickness="1.2" StrokeDashArray="3,3" Margin="1" />
+                                 StrokeThickness="1.2" StrokeDashArray="3,3" Margin="-3" />
                         <Ellipse x:Name="FocusRing" Opacity="0" Stroke="{StaticResource CarteInkBrush}"
                                  StrokeThickness="2" Margin="-5" />
                         <Image x:Name="InkGlyph" Source="{Binding GlyphInk}" Width="24" Height="24" Stretch="Uniform" />

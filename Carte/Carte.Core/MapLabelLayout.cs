@@ -24,7 +24,7 @@ public sealed record MapLabelResult(IReadOnlyList<MapLabelPlacement> Labels, boo
 // Crowded hit targets are reported so the UI can point to the list view.
 public static class MapLabelLayout
 {
-    private const double Gap = 2;
+    private const double Gap = 6;
 
     public static MapLabelResult Arrange(IReadOnlyList<MapLabelInput> items, double width, double height,
         IReadOnlyList<PlotRect> obstacles, double targetSize = 44)

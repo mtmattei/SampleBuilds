@@ -67,11 +67,17 @@ public partial class App : Application
     private static void RegisterRoutes(IViewRegistry views, IRouteRegistry routes)
     {
         views.Register(
-            new ViewMap<ExplorePage, ExploreViewModel>()
+            new ViewMap<ExplorePage, ExploreViewModel>(),
+            new ViewMap<TonightPage, TonightViewModel>(),
+            new ViewMap<CapturePage, CaptureViewModel>(),
+            new ViewMap<ReviewPage, ReviewViewModel>()
         );
 
         routes.Register(
-            new RouteMap("Explore", View: views.FindByViewModel<ExploreViewModel>(), IsDefault: true)
+            new RouteMap("Explore", View: views.FindByViewModel<ExploreViewModel>(), IsDefault: true),
+            new RouteMap("Tonight", View: views.FindByViewModel<TonightViewModel>()),
+            new RouteMap("Capture", View: views.FindByViewModel<CaptureViewModel>()),
+            new RouteMap("Review", View: views.FindByViewModel<ReviewViewModel>())
         );
     }
 }

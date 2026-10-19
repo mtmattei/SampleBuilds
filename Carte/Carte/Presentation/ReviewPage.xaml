@@ -1,0 +1,71 @@
+<Page x:Class="Carte.Presentation.ReviewPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:Carte.Presentation"
+      xmlns:controls="using:Carte.Controls"
+      Background="{StaticResource CartePaperBrush}">
+  <Grid>
+    <VisualStateManager.VisualStateGroups>
+      <VisualStateGroup>
+        <VisualState x:Name="Narrow">
+          <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
+          <VisualState.Setters><Setter Target="ContentRoot.Padding" Value="16,8,16,24" /></VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="Compact">
+          <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="360" /></VisualState.StateTriggers>
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+
+    <ScrollViewer HorizontalScrollMode="Disabled" HorizontalScrollBarVisibility="Disabled">
+      <StackPanel x:Name="ContentRoot" MaxWidth="640" Padding="24,8,24,24">
+        <controls:AppHeader />
+
+        <Button Command="{x:Bind ViewModel.BackCommand, Mode=OneWay}" Style="{StaticResource CarteQuietButtonStyle}"
+                Margin="-8,16,0,0" AutomationProperties.LabeledBy="{x:Bind BackText}">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Image Source="ms-appx:///Assets/Svg/arrow-left.svg" Style="{StaticResource CarteIconStyle}" />
+            <TextBlock x:Name="BackText" x:Uid="ReviewPage.BackLabel" Text="Back to photo" Style="{StaticResource CarteQuietActionTextStyle}" />
+          </StackPanel>
+        </Button>
+
+        <TextBlock x:Uid="ReviewPage.Eyebrow" Text="02 / Review" Style="{StaticResource CarteLabelTextStyle}"
+                   controls:TextCase.Upper="True" Margin="0,8,0,8" />
+        <TextBlock x:Uid="ReviewPage.Title" Text="A menu full of possibilities." Style="{StaticResource CarteTitleTextStyle}"
+                   AutomationProperties.HeadingLevel="Level1" />
+        <TextBlock Text="{x:Bind ViewModel.MenuName, Mode=OneWay}" Style="{StaticResource CarteBodyTextStyle}" Margin="0,16,0,0" />
+        <TextBlock Text="{x:Bind ViewModel.Summary, Mode=OneWay}" Style="{StaticResource CarteBodyTextStyle}" Margin="0,0,0,20" />
+
+        <!-- ScanReviewRow summary per category. Line-level correction arrives with real extraction. -->
+        <ItemsControl ItemsSource="{x:Bind ViewModel.Categories, Mode=OneWay}" BorderBrush="{StaticResource CarteRuleBrush}" BorderThickness="0,1,0,0">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="local:CategoryViewModel">
+              <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12" MinHeight="56" Padding="0,8"
+                    BorderBrush="{StaticResource CarteRuleBrush}" BorderThickness="0,0,0,1">
+                <Image Source="{x:Bind Glyph}" Style="{StaticResource CarteIconStyle}" />
+                <TextBlock Grid.Column="1" Text="{x:Bind Label}" Style="{StaticResource CarteBodyTextStyle}" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="2" Text="{x:Bind CountText}" Style="{StaticResource CarteBodyTextStyle}" VerticalAlignment="Center" />
+                <Image Grid.Column="3" Source="ms-appx:///Assets/Svg/check.svg" Style="{StaticResource CarteIconStyle}" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Border Background="{StaticResource CarteWashBrush}" Padding="20,16" Margin="0,24,0,20">
+          <TextBlock x:Uid="ReviewPage.Note" Style="{StaticResource CarteSecondaryTextStyle}" />
+        </Border>
+
+        <Button Command="{x:Bind ViewModel.ConfirmCommand, Mode=OneWay}" Style="{StaticResource CartePrimaryButtonStyle}"
+                HorizontalAlignment="Stretch" AutomationProperties.LabeledBy="{x:Bind ConfirmText}">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock x:Name="ConfirmText" x:Uid="ReviewPage.ConfirmLabel" Text="Draw my taste map" Style="{StaticResource CarteActionTextStyle}"
+                       Foreground="{StaticResource CartePaperBrush}" />
+            <Image Source="ms-appx:///Assets/Svg/arrow-right-paper.svg" Style="{StaticResource CarteIconStyle}" />
+          </StackPanel>
+        </Button>
+
+        <TextBlock x:Uid="Demo.ScanDisclosure" Style="{StaticResource CarteSecondaryTextStyle}" HorizontalAlignment="Center" Margin="0,16,0,0" />
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
+</Page>

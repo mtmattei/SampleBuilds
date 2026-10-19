@@ -90,7 +90,8 @@ public sealed partial class TasteMapView : UserControl
             var glyph = new Button { Style = (Style)Application.Current.Resources["CarteGlyphButtonStyle"], DataContext = item };
             AutomationProperties.SetName(glyph, item.AccessibleName);
             glyph.Click += (_, _) => SelectedItem = item;
-            glyph.Loaded += (_, _) => UpdateStates(useTransitions: false);
+            // A glyph's first SizeChanged comes after its template exists, including when the map was collapsed.
+            glyph.SizeChanged += (_, _) => ApplyStates(useTransitions: false);
 
             var text = new TextBlock { Text = item.ShortName, Style = (Style)Application.Current.Resources["CarteMapLabelTextStyle"] };
             var label = new Border
@@ -112,6 +113,13 @@ public sealed partial class TasteMapView : UserControl
 
     private void UpdateStates(bool useTransitions)
     {
+        ApplyStates(useTransitions);
+        Arrange();
+    }
+
+    // Going to the current state again is a no-op, so this is safe to repeat.
+    private void ApplyStates(bool useTransitions)
+    {
         foreach (var (item, glyph, _, text) in _marks)
         {
             var selected = ReferenceEquals(item, SelectedItem);
@@ -119,7 +127,6 @@ public sealed partial class TasteMapView : UserControl
             VisualStateManager.GoToState(glyph, item.IsLowConfidence ? "LowConfidence" : "Confident", false);
             text.FontFamily = (FontFamily)Application.Current.Resources[selected ? "CarteBodySemiBoldFont" : "CarteBodyFont"];
         }
-        Arrange();
     }
 
     private void Arrange()

@@ -99,4 +99,11 @@
 <data name="Format.SelectedItem" xml:space="preserve"><value>{0} selected.</value></data>
 <data name="Format.TonightName" xml:space="preserve"><value>Tonight, {0} saved</value></data>
 <data name="Format.TasteMapName" xml:space="preserve"><value>Taste map, {0}</value></data>
+<data name="CapturePage.BackLabel.Text" xml:space="preserve"><value>Back to your menu</value></data>
+<data name="CapturePage.ReadLabel.Text" xml:space="preserve"><value>Read this menu</value></data>
+<data name="CapturePage.CardSubtitle.Text" xml:space="preserve"><value>À la carte</value></data>
+<data name="CapturePage.ReviewHint.Text" xml:space="preserve"><value>A quick review before we draw your map.</value></data>
+<data name="ReviewPage.BackLabel.Text" xml:space="preserve"><value>Back to photo</value></data>
+<data name="ReviewPage.ConfirmLabel.Text" xml:space="preserve"><value>Draw my taste map</value></data>
+<data name="TonightPage.ContinueLabel.Text" xml:space="preserve"><value>Keep exploring</value></data>
 </root>
