@@ -4,8 +4,9 @@ namespace MorningCard.Controls;
 
 /// <summary>
 /// The band of labels above the slack ruler. Every label anchors to an edge on the track and sits
-/// above it; a label that would collide with one already placed moves up a tier, so the band is one
-/// line tall until two labels actually meet.
+/// above it. A label that would meet another slides along the row, away from it; only when the row
+/// has no room does it go up a tier. Sliding first keeps the band one row tall as the clock runs,
+/// so the track below it does not jump each time two labels pass each other.
 ///
 /// Children, in order, each with its anchor:
 ///   0  the callout      left edge at Now (pulled out by <see cref="CalloutInset"/> so its dot
@@ -105,21 +106,47 @@ public sealed partial class RulerLabelPanel : Panel
 
         for (var i = 0; i < Children.Count; i++)
         {
+            _placed.Add((new Rect(0, 0, 0, 0), -1));
+        }
+
+        // The callout and Bell hold their anchors exactly: they are Now and the deadline. Leave and
+        // Arrive are placed after them and give way sideways.
+        foreach (var i in PlacementOrder)
+        {
+            if (i >= Children.Count)
+            {
+                continue;
+            }
+
             var size = Children[i].DesiredSize;
             if (Children[i].Visibility == Visibility.Collapsed || size.Width <= 0)
             {
-                _placed.Add((new Rect(0, 0, 0, 0), 0));
                 continue;
             }
 
             var (x, right) = i < anchors.Length ? anchors[i] : (0d, false);
-            var left = right ? x - size.Width : x;
-            left = Math.Clamp(left, 0, Math.Max(0, width - size.Width));
+            var preferred = Math.Clamp(right ? x - size.Width : x, 0, Math.Max(0, width - size.Width));
 
+            // Slide first, lift last. A label that meets another moves along the row, away from the
+            // one it met (a left-anchored label to the right, a right-anchored one to the left), so as
+            // the clock runs the labels drift with their edges instead of jumping a whole row. Only
+            // when the row has no room left does the label go up a tier.
+            var left = preferred;
             var tier = 0;
-            while (Collides(left, left + size.Width, tier))
+            while (Blocker(left, left + size.Width, 0) is { } blocker)
             {
-                tier++;
+                left = right ? blocker.Left - LabelGap - size.Width : blocker.Right + LabelGap;
+                if (left < 0 || left + size.Width > width)
+                {
+                    left = preferred;
+                    tier = 1;
+                    while (Blocker(left, left + size.Width, tier) is not null)
+                    {
+                        tier++;
+                    }
+
+                    break;
+                }
             }
 
             while (_tierHeights.Count <= tier)
@@ -128,21 +155,33 @@ public sealed partial class RulerLabelPanel : Panel
             }
 
             _tierHeights[tier] = Math.Max(_tierHeights[tier], size.Height);
-            _placed.Add((new Rect(left, 0, size.Width, size.Height), tier));
+            _placed[i] = (new Rect(left, 0, size.Width, size.Height), tier);
+        }
+
+        for (var i = 0; i < _placed.Count; i++)
+        {
+            if (_placed[i].Tier < 0)
+            {
+                _placed[i] = (_placed[i].Slot, 0);
+            }
         }
     }
 
-    private bool Collides(double left, double right, int tier)
+    /// <summary>Callout, Bell, then Leave, then Arrive.</summary>
+    private static readonly int[] PlacementOrder = [0, 3, 1, 2];
+
+    /// <summary>The placed label this span would touch on the tier, if any.</summary>
+    private Rect? Blocker(double left, double right, int tier)
     {
         foreach (var (slot, t) in _placed)
         {
             if (t == tier && slot.Width > 0 && left < slot.Right + LabelGap && right + LabelGap > slot.Left)
             {
-                return true;
+                return slot;
             }
         }
 
-        return false;
+        return null;
     }
 
     /// <summary>The now line, the drive's two edges and the bell, as x in this panel.</summary>

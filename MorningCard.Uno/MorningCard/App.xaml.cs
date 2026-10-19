@@ -144,6 +144,12 @@ public partial class App : Application
         {
             _ = DebugHooks.OpenAsync(openRoot, openTarget);
         }
+
+        // Last, so the snapshot sees every hook above already applied.
+        if (MainWindow.Content is { } snapshotRoot)
+        {
+            DebugSnapshot.Start(snapshotRoot, hub);
+        }
 #endif
     }
 

@@ -1,0 +1,50 @@
+name: MorningCard
+
+# Lives at the SampleBuilds repo root as .github/workflows/morningcard.yml.
+on:
+  push:
+    paths: ['MorningCard.Uno/**', '.github/workflows/morningcard.yml']
+  pull_request:
+    paths: ['MorningCard.Uno/**', '.github/workflows/morningcard.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: morningcard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: MorningCard.Uno
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the benchmark baseline needs history
+          persist-credentials: false
+
+      # The same script cloud agents run, so it stays working: installs .NET 10 and the android
+      # workload packs, builds Core, Tests, Benchmarks and the desktop head, and runs the tests.
+      - name: Set up, build and test
+        run: bash scripts/setup-cloud-agent.sh --desktop
+
+      - name: Benchmark against the baseline
+        env:
+          # Pull requests compare with their base; pushes with the previous head of the branch.
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$BASE" ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then BASE=HEAD~1; fi
+          bash scripts/bench-compare.sh "$BASE" "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload benchmark results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: morningcard-benchmarks
+          path: MorningCard.Uno/artifacts/bench/
+          if-no-files-found: ignore
