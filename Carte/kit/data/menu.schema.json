@@ -1,0 +1,272 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carte Menu",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "name",
+    "locale",
+    "currency",
+    "isIllustrative",
+    "source",
+    "categories",
+    "items"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "locale": {
+      "type": "string"
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "isIllustrative": {
+      "type": "boolean"
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "kind",
+        "pageCount"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "hand-authored-demo",
+            "photo",
+            "import"
+          ]
+        },
+        "pageCount": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "categories": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/category"
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    }
+  },
+  "$defs": {
+    "axis": {
+      "type": "object",
+      "required": [
+        "id",
+        "low",
+        "high"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "low": {
+          "type": "string"
+        },
+        "high": {
+          "type": "string"
+        }
+      }
+    },
+    "category": {
+      "type": "object",
+      "required": [
+        "id",
+        "label",
+        "glyph",
+        "axisSet"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "glyph": {
+          "type": "string"
+        },
+        "axisSet": {
+          "type": "object",
+          "required": [
+            "id",
+            "revision",
+            "x",
+            "y",
+            "locked"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "x": {
+              "$ref": "#/$defs/axis"
+            },
+            "y": {
+              "$ref": "#/$defs/axis"
+            },
+            "locked": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "placement": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "required": [
+        "x",
+        "y",
+        "axisSetId",
+        "axisRevision",
+        "confidence",
+        "rationale"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "axisSetId": {
+          "type": "string"
+        },
+        "axisRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "confidence": {
+          "enum": [
+            "estimated",
+            "low",
+            "reviewed"
+          ]
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "required": [
+        "id",
+        "categoryId",
+        "name",
+        "shortName",
+        "glyph",
+        "price",
+        "sensoryTags",
+        "description",
+        "originalMenuText",
+        "placement",
+        "pairingItemIds"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "categoryId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "shortName": {
+          "type": "string"
+        },
+        "glyph": {
+          "type": "string"
+        },
+        "price": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "required": [
+            "amount",
+            "currency",
+            "unit"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "amount": {
+              "type": "number",
+              "minimum": 0
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "unit": {
+              "type": "string"
+            }
+          }
+        },
+        "sensoryTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "originalMenuText": {
+          "type": "string"
+        },
+        "placement": {
+          "$ref": "#/$defs/placement"
+        },
+        "pairingItemIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

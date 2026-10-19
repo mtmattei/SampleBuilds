@@ -1,0 +1,123 @@
+{
+  "date": "2026-10-19",
+  "sampleSchema": "pass",
+  "sampleItems": 18,
+  "localizationStrings": 74,
+  "glyphBaseCount": 27,
+  "svgVariants": 54,
+  "xmlSyntax": "pass",
+  "graphReferences": "pass",
+  "indexLinks": "pass",
+  "images": [
+    {
+      "file": "design/design-graph.png",
+      "width": 1400,
+      "height": 1040
+    },
+    {
+      "file": "design/overview.png",
+      "width": 1760,
+      "height": 1220
+    },
+    {
+      "file": "design/previews/01-menu-margins.png",
+      "width": 824,
+      "height": 2056
+    },
+    {
+      "file": "design/previews/02-taste-atlas-plates.png",
+      "width": 824,
+      "height": 1880
+    },
+    {
+      "file": "design/previews/03-item-rationale.png",
+      "width": 824,
+      "height": 1994
+    },
+    {
+      "file": "design/previews/04-taste-atlas-wine.png",
+      "width": 824,
+      "height": 1880
+    },
+    {
+      "file": "design/previews/05-taste-atlas-cocktails.png",
+      "width": 824,
+      "height": 1880
+    },
+    {
+      "file": "design/previews/06-pairing.png",
+      "width": 824,
+      "height": 1988
+    },
+    {
+      "file": "design/previews/07-tonight.png",
+      "width": 824,
+      "height": 1700
+    },
+    {
+      "file": "design/previews/08-scan-preview.png",
+      "width": 824,
+      "height": 1726
+    },
+    {
+      "file": "design/previews/09-review-preview.png",
+      "width": 824,
+      "height": 1700
+    },
+    {
+      "file": "design/user-flow.png",
+      "width": 1400,
+      "height": 1040
+    }
+  ],
+  "fonts": [
+    {
+      "file": "CarteSans-Medium.ttf",
+      "variable": false,
+      "family": "Carte Sans"
+    },
+    {
+      "file": "CarteSans-Regular.ttf",
+      "variable": false,
+      "family": "Carte Sans"
+    },
+    {
+      "file": "CarteSans-SemiBold.ttf",
+      "variable": false,
+      "family": "Carte Sans"
+    },
+    {
+      "file": "DMMono-Medium.ttf",
+      "variable": false,
+      "family": "DM Mono Medium"
+    },
+    {
+      "file": "DMMono-Regular.ttf",
+      "variable": false,
+      "family": "DM Mono"
+    },
+    {
+      "file": "DMSans-Variable.ttf",
+      "variable": true,
+      "family": "DM Sans 9pt"
+    },
+    {
+      "file": "InstrumentSerif-Italic.ttf",
+      "variable": false,
+      "family": "Instrument Serif"
+    },
+    {
+      "file": "InstrumentSerif-Regular.ttf",
+      "variable": false,
+      "family": "Instrument Serif"
+    }
+  ],
+  "contrast": 7.9,
+  "nativeUiBuild": "not performed; XAML is an integration blueprint",
+  "coreChecks": {
+    "result": "PASS",
+    "count": 19,
+    "sdk": "10.0.303",
+    "target": "net10.0"
+  }
+}

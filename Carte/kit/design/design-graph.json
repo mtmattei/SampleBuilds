@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "title": "Carte design graph",
+  "nodes": [
+    {
+      "id": "tokens",
+      "kind": "foundation",
+      "label": "Palette, type and spacing",
+      "source": "design/tokens.json"
+    },
+    {
+      "id": "glyphs",
+      "kind": "foundation",
+      "label": "Line-art glyph library",
+      "source": "assets/icons/registry.json"
+    },
+    {
+      "id": "copy",
+      "kind": "foundation",
+      "label": "Interface language",
+      "source": "copy/strings.en-US.json"
+    },
+    {
+      "id": "menu",
+      "kind": "data",
+      "label": "Reviewed menu and axis sets",
+      "source": "data/menu.schema.json"
+    },
+    {
+      "id": "header",
+      "kind": "component",
+      "label": "Header and category selector"
+    },
+    {
+      "id": "map",
+      "kind": "component",
+      "label": "Taste map and marker"
+    },
+    {
+      "id": "row",
+      "kind": "component",
+      "label": "Menu row and mini map"
+    },
+    {
+      "id": "detail",
+      "kind": "component",
+      "label": "Item detail and rationale"
+    },
+    {
+      "id": "capture",
+      "kind": "screen",
+      "label": "Capture"
+    },
+    {
+      "id": "review",
+      "kind": "screen",
+      "label": "Review"
+    },
+    {
+      "id": "explore",
+      "kind": "screen",
+      "label": "Explore: Menu or Map"
+    },
+    {
+      "id": "tonight",
+      "kind": "screen",
+      "label": "Tonight"
+    },
+    {
+      "id": "captureService",
+      "kind": "service",
+      "label": "Camera and photo picker"
+    },
+    {
+      "id": "extractionService",
+      "kind": "service",
+      "label": "Menu text extraction"
+    },
+    {
+      "id": "analysisService",
+      "kind": "service",
+      "label": "Axis and taste analysis"
+    },
+    {
+      "id": "store",
+      "kind": "service",
+      "label": "Local menu and shortlist store"
+    }
+  ],
+  "edges": [
+    {
+      "from": "tokens",
+      "to": "header",
+      "relation": "styles"
+    },
+    {
+      "from": "tokens",
+      "to": "map",
+      "relation": "styles"
+    },
+    {
+      "from": "tokens",
+      "to": "row",
+      "relation": "styles"
+    },
+    {
+      "from": "tokens",
+      "to": "detail",
+      "relation": "styles"
+    },
+    {
+      "from": "glyphs",
+      "to": "map",
+      "relation": "illustrates"
+    },
+    {
+      "from": "glyphs",
+      "to": "row",
+      "relation": "illustrates"
+    },
+    {
+      "from": "copy",
+      "to": "detail",
+      "relation": "labels"
+    },
+    {
+      "from": "copy",
+      "to": "header",
+      "relation": "labels"
+    },
+    {
+      "from": "menu",
+      "to": "map",
+      "relation": "positions"
+    },
+    {
+      "from": "menu",
+      "to": "row",
+      "relation": "populates"
+    },
+    {
+      "from": "menu",
+      "to": "detail",
+      "relation": "explains"
+    },
+    {
+      "from": "header",
+      "to": "explore",
+      "relation": "composes"
+    },
+    {
+      "from": "map",
+      "to": "explore",
+      "relation": "composes"
+    },
+    {
+      "from": "row",
+      "to": "explore",
+      "relation": "composes"
+    },
+    {
+      "from": "detail",
+      "to": "explore",
+      "relation": "composes"
+    },
+    {
+      "from": "row",
+      "to": "tonight",
+      "relation": "composes"
+    },
+    {
+      "from": "capture",
+      "to": "review",
+      "relation": "navigate"
+    },
+    {
+      "from": "review",
+      "to": "explore",
+      "relation": "navigate"
+    },
+    {
+      "from": "explore",
+      "to": "tonight",
+      "relation": "navigate"
+    },
+    {
+      "from": "captureService",
+      "to": "capture",
+      "relation": "provides"
+    },
+    {
+      "from": "extractionService",
+      "to": "review",
+      "relation": "provides"
+    },
+    {
+      "from": "analysisService",
+      "to": "menu",
+      "relation": "derives"
+    },
+    {
+      "from": "store",
+      "to": "menu",
+      "relation": "persists"
+    },
+    {
+      "from": "store",
+      "to": "tonight",
+      "relation": "persists"
+    }
+  ]
+}

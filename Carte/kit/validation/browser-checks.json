@@ -1,0 +1,41 @@
+{
+  "offline": true,
+  "consoleErrors": [],
+  "networkRequests": [],
+  "screenshots": 9,
+  "viewportChecks": [
+    {
+      "width": 320,
+      "frameWidth": 288,
+      "scrollWidth": 288,
+      "appWidth": 288,
+      "appScrollWidth": 288,
+      "appHeight": 936.9375
+    },
+    {
+      "width": 390,
+      "frameWidth": 358,
+      "scrollWidth": 358,
+      "appWidth": 358,
+      "appScrollWidth": 358,
+      "appHeight": 936.9375
+    },
+    {
+      "width": 760,
+      "frameWidth": 728,
+      "scrollWidth": 728,
+      "appWidth": 412,
+      "appScrollWidth": 412,
+      "appHeight": 939.171875
+    }
+  ],
+  "interactions": [
+    "both variants",
+    "category switching",
+    "rationale disclosure",
+    "shortlist 3 items",
+    "cross-category pairing",
+    "scan preview",
+    "review preview"
+  ]
+}

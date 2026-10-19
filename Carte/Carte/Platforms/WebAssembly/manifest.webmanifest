@@ -1,0 +1,10 @@
+{
+  "background_color": "#ffffff",
+  "description": "Carte",
+  "display": "standalone",
+  "name": "Carte",
+  "short_name": "Carte",
+  "start_url": "/index.html",
+  "theme_color": "#ffffff",
+  "scope": "/"
+}

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "coordinateSystem": "x increases to the right; y increases upward; both range from 0 to 1",
+  "selectionRules": [
+    "Choose two distinct sensory dimensions from evidence available for this menu category.",
+    "Prefer a curated axis pair over inventing axes.",
+    "Keep the selected axis set and calibration fixed during filtering, selection and pairing.",
+    "Changing axes explicitly creates a new axisSetId or revision and recomputes all placements together.",
+    "Unknown placements stay unplaced; never use 0,0 as a substitute for missing information."
+  ],
+  "presets": [
+    {
+      "id": "plates-v1",
+      "category": "plates",
+      "x": [
+        "light",
+        "rich"
+      ],
+      "y": [
+        "delicate",
+        "bold"
+      ]
+    },
+    {
+      "id": "wine-v1",
+      "category": "wine",
+      "x": [
+        "light",
+        "full-bodied"
+      ],
+      "y": [
+        "round",
+        "crisp"
+      ]
+    },
+    {
+      "id": "white-wine-aroma-v1",
+      "category": "wine",
+      "x": [
+        "subtle",
+        "aromatic"
+      ],
+      "y": [
+        "round",
+        "crisp"
+      ]
+    },
+    {
+      "id": "cocktails-v1",
+      "category": "cocktails",
+      "x": [
+        "refreshing",
+        "spirit-forward"
+      ],
+      "y": [
+        "sweet",
+        "bitter"
+      ]
+    },
+    {
+      "id": "sours-v1",
+      "category": "cocktails",
+      "x": [
+        "sweet",
+        "tart"
+      ],
+      "y": [
+        "light",
+        "weighty"
+      ]
+    }
+  ]
+}

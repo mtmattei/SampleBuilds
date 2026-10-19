@@ -1,0 +1,38 @@
+<Project Sdk="Uno.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\Carte.Core\Carte.Core.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
+
+    <OutputType>Exe</OutputType>
+    <UnoSingleProject>true</UnoSingleProject>
+
+    <!-- Display name -->
+    <ApplicationTitle>Carte</ApplicationTitle>
+    <!-- App Identifier -->
+    <ApplicationId>com.unoplatform.carte</ApplicationId>
+    <!-- Versions -->
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+    <!-- Package Publisher -->
+    <ApplicationPublisher>Carte</ApplicationPublisher>
+    <!-- Package Description -->
+    <Description>Carte powered by Uno Platform.</Description>
+
+    <!--
+      UnoFeatures are used to quickly add and manage features enabled for your app.
+      https://aka.platform.uno/singleproject-features
+    -->
+    <UnoFeatures>
+      Svg;
+      Hosting;
+      Logging;
+      Mvvm;
+      Navigation;
+      ThemeService;
+      SkiaRenderer;
+    </UnoFeatures>
+  </PropertyGroup>
+
+</Project>

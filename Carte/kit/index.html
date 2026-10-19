@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carte — Uno build kit</title>
+<style>
+@font-face{font-family:Editorial;src:url('assets/fonts/InstrumentSerif-Regular.ttf')}@font-face{font-family:Body;src:url('assets/fonts/CarteSans-Regular.ttf')}
+*{box-sizing:border-box}body{margin:0;background:#f7f1e4;color:#203bb6;font:16px/1.65 Body,Arial,sans-serif}main{max-width:1180px;margin:auto;padding:48px 24px 80px}header{display:flex;align-items:end;justify-content:space-between;gap:24px;border-bottom:1px solid #203bb6;padding-bottom:24px}h1{font:74px/1 Editorial,Georgia,serif;margin:0}h2{font:36px/1.2 Editorial,Georgia,serif;margin:0 0 12px}h3{font:24px/1.3 Editorial,Georgia,serif;margin:0 0 8px}p{margin:8px 0 16px;max-width:760px}a{color:inherit;text-underline-offset:4px}small,.meta{font-size:12px;letter-spacing:.06em}.primary{display:inline-block;background:#203bb6;color:#f7f1e4;padding:12px 20px;border-radius:4px;text-decoration:none}.intro{padding:30px 0}.links{display:flex;gap:20px;align-items:center;flex-wrap:wrap}.overview{width:100%;height:auto;display:block;border:1px solid #203bb625;margin:16px 0 40px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin:20px 0 44px}.group{border-top:1px solid #203bb640;padding-top:16px}.group ul{padding-left:18px;margin:0}.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin:24px 0 44px}.gallery img{display:block;width:100%;height:380px;object-fit:contain;object-position:top;margin:12px 0;background:#eee8dc;padding:12px}.diagrams{display:grid;grid-template-columns:1fr 1fr;gap:24px}.diagrams img{width:100%;height:auto}.note{border-left:2px solid #203bb6;padding-left:16px}footer{margin-top:44px;border-top:1px solid #203bb640;padding-top:16px;font-size:12px}@media(max-width:700px){header{align-items:start;flex-direction:column}.grid,.gallery,.diagrams{grid-template-columns:1fr}.gallery img{height:auto;max-height:900px}main{padding:24px 18px}}
+</style>
+</head>
+<body><main>
+<header><div><h1>carte.</h1><p>A little guide to good taste.</p></div><div class="meta">UNO BUILD KIT<br>19 OCTOBER 2026</div></header>
+<section class="intro"><h2>From a menu to a taste map.</h2><p>A complete design handoff for the cream-paper and ultramarine app: an offline prototype, screen exports, product copy, editable design graphs, assets and a C#/XAML starting point.</p><div class="links"><a class="primary" href="prototype/carte.html">Open interactive prototype</a><a href="START-HERE.md">Start here</a><a href="uno/BUILD-PROMPT.md">Implementation prompt</a></div></section>
+<a href="design/overview.png"><img class="overview" src="design/overview.png" alt="Four Carte screens showing menu margins, taste atlas, capture and tonight"></a>
+<h2>Build references</h2>
+<div class="grid">
+<section class="group"><h3>Product and behavior</h3><ul><li><a href="docs/product-brief.md">Product brief</a></li><li><a href="design/interaction-spec.md">Interaction specification</a></li><li><a href="docs/data-and-analysis.md">Data and analysis contract</a></li><li><a href="docs/acceptance-checklist.md">Milestones and acceptance checks</a></li></ul></section>
+<section class="group"><h3>Design and assets</h3><ul><li><a href="design/tokens.json">Design tokens</a></li><li><a href="design/component-spec.md">Component specification</a></li><li><a href="assets/README.md">Fonts, icons and licenses</a></li><li><a href="assets/icons/registry.json">Glyph registry</a></li></ul></section>
+<section class="group"><h3>Uno implementation</h3><ul><li><a href="uno/BUILD-GUIDE.md">Build guide</a></li><li><a href="uno/xaml/CarteResources.xaml">XAML resource dictionary</a></li><li><a href="uno/xaml/ExplorePage.blueprint.xaml">Explore page blueprint</a></li><li><a href="uno/starter/Carte.Core/Carte.Core.csproj">C# core project</a></li><li><a href="uno/SOURCES.md">Official platform references</a></li></ul></section>
+<section class="group"><h3>Copy</h3><ul><li><a href="copy/product-copy.md">Brand voice and product copy</a></li><li><a href="copy/strings.en-US.json">74 keyed interface strings</a></li><li><a href="copy/copy.csv">Copy spreadsheet CSV</a></li><li><a href="copy/Resources.resw">Uno localization resources</a></li></ul></section>
+<section class="group"><h3>Data</h3><ul><li><a href="data/menu.sample.json">18-item sample menu</a></li><li><a href="data/menu.schema.json">JSON Schema</a></li><li><a href="data/axes.catalog.json">Adaptive axis presets</a></li></ul></section>
+<section class="group"><h3>Verification</h3><ul><li><a href="validation/REPORT.md">Validation report</a></li><li><a href="validation/browser-checks.json">Offline browser checks</a></li><li><a href="validation/package-checks.json">Asset and data checks</a></li></ul></section>
+</div>
+<h2>Editable diagrams</h2><div class="diagrams"><section><h3>Design graph</h3><a href="design/design-graph.png"><img src="design/design-graph.png" alt="Carte design foundations, UI components, screens and service boundaries"></a><a href="design/design-graph.json">JSON</a> · <a href="design/design-graph.mmd">Mermaid</a> · <a href="design/design-graph.svg">SVG</a></section><section><h3>User flow</h3><a href="design/user-flow.png"><img src="design/user-flow.png" alt="Carte user flow from capture through review, exploration and shortlist"></a><a href="design/user-flow.mmd">Mermaid</a> · <a href="design/user-flow.svg">SVG</a></section></div>
+<h2 style="margin-top:44px">Screen exports</h2><p>Open any image for its full-resolution 2× PNG. These are the actual HTML prototype screens.</p>
+<div class="gallery">
+<a href="design/previews/01-menu-margins.png"><h3>Menu margins</h3><img src="design/previews/01-menu-margins.png" alt="Reading-led menu with expanded crudo detail"></a>
+<a href="design/previews/02-taste-atlas-plates.png"><h3>Taste atlas</h3><img src="design/previews/02-taste-atlas-plates.png" alt="Plate taste quadrant"></a>
+<a href="design/previews/03-item-rationale.png"><h3>Why here</h3><img src="design/previews/03-item-rationale.png" alt="Item rationale and original menu text"></a>
+<a href="design/previews/04-taste-atlas-wine.png"><h3>Wine axes</h3><img src="design/previews/04-taste-atlas-wine.png" alt="Wine taste quadrant with changed axes"></a>
+<a href="design/previews/05-taste-atlas-cocktails.png"><h3>Cocktail axes</h3><img src="design/previews/05-taste-atlas-cocktails.png" alt="Cocktail quadrant"></a>
+<a href="design/previews/06-pairing.png"><h3>Pairing</h3><img src="design/previews/06-pairing.png" alt="Albariño pairing for sea bass crudo"></a>
+<a href="design/previews/07-tonight.png"><h3>Tonight</h3><img src="design/previews/07-tonight.png" alt="Saved dinner choices and subtotal"></a>
+<a href="design/previews/08-scan-preview.png"><h3>Capture preview</h3><img src="design/previews/08-scan-preview.png" alt="Simulated menu photograph flow"></a>
+<a href="design/previews/09-review-preview.png"><h3>Review preview</h3><img src="design/previews/09-review-preview.png" alt="Simulated extracted menu review"></a>
+</div>
+<p class="note">The HTML is a working interaction demo with an illustrative menu. Camera, OCR and live taste analysis are not implemented. The C# core is checked independently; the XAML remains an integration blueprint for a real Uno project.</p>
+<footer>Offline package. Keep the font and Lucide notices when redistributing assets. Start with the fixture-driven UI, then implement the service boundaries.</footer>
+</main></body></html>
