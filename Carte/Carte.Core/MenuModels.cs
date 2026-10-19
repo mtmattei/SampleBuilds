@@ -17,7 +17,8 @@ public sealed record MenuDocument(int SchemaVersion, string Id, string Name, str
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        TypeInfoResolver = CarteJsonContext.Default
     };
 
     // Validate incoming JSON against menu.schema.json before calling this domain loader.

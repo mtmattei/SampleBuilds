@@ -11,7 +11,7 @@ Scope for this build: **Milestone one (fixture experience)** in full, plus the d
 | Project | Role |
 | --- | --- |
 | `Carte` | Uno single-project app, `net10.0-desktop` + `net10.0-browserwasm`, Skia renderer, Uno.Sdk 6.7.30 |
-| `Carte.Core` | Kit starter, dependency-free `net10.0`. Kept intact; new files only: `FileMenuStore`, `TasteDescriber`, `PriceFormatter`, `MapLabelLayout` |
+| `Carte.Core` | Kit starter, dependency-free `net10.0`. New files: `FileMenuStore`, `TasteDescriber`, `PriceFormatter`, `MapLabelLayout`, `CarteJsonContext`. One kit line changed: `MenuDocument`'s JSON options use the source-generated context, because trimmed WebAssembly disables reflection-based serialization |
 | `Carte.Core.Checks` | Kit console harness, extended with checks for the new core files |
 
 **Decisions**
@@ -67,6 +67,13 @@ Scope for this build: **Milestone one (fixture experience)** in full, plus the d
 4. `TasteMapView`, menu rows, detail, pairing, responsive states; captures. *(commit)*
 5. Tonight, Capture, Review; captures. *(commit)*
 6. WASM build, acceptance checklist pass, README. *(commit, push)*
+
+## Build notes
+
+- Uno does not implement `VisualTransition.GeneratedDuration`; the selection fade is an explicit 160 ms transition storyboard, skipped when `useTransitions` is false.
+- Glyphs created while the map is collapsed have no template yet; states are applied on each glyph's first `SizeChanged`.
+- The resource map stores `ItemDetail.Save.Content` as `ItemDetail/Save.Content`; `Loc.Get` converts the first dot.
+- Equal-width category tabs fall back to content widths when a label would clip (320 wide).
 
 ## Unresolved Questions
 

@@ -36,7 +36,7 @@ public sealed partial class FileMenuStore : IMenuStore
     }
 
     public Task SaveShortlistAsync(string menuId, IReadOnlyCollection<string> itemIds, CancellationToken cancellationToken) =>
-        WriteAtomicAsync(PathFor("shortlists", menuId), JsonSerializer.Serialize(itemIds), cancellationToken);
+        WriteAtomicAsync(PathFor("shortlists", menuId), JsonSerializer.Serialize(itemIds.ToArray(), CarteJsonContext.Default.StringArray), cancellationToken);
 
     public async Task<IReadOnlyList<string>> LoadShortlistAsync(string menuId, CancellationToken cancellationToken)
     {
@@ -44,7 +44,7 @@ public sealed partial class FileMenuStore : IMenuStore
         if (!File.Exists(path)) return [];
         try
         {
-            return JsonSerializer.Deserialize<string[]>(await File.ReadAllTextAsync(path, cancellationToken)) ?? [];
+            return JsonSerializer.Deserialize(await File.ReadAllTextAsync(path, cancellationToken), CarteJsonContext.Default.StringArray) ?? [];
         }
         catch (JsonException)
         {

@@ -81,7 +81,7 @@ public sealed class MenuSession(ILogger<MenuSession> logger)
             }
 
             Menu = menu;
-            if (Environment.GetEnvironmentVariable("CARTE_FRESH") != "1")
+            if (!IgnoreSavedShortlist)
                 _shortlist.Restore(await _store.LoadShortlistAsync(menu.Id, CancellationToken.None), menu);
             CategoryId = menu.Categories[0].Id;
             EnsureSelection();
@@ -193,6 +193,12 @@ public sealed class MenuSession(ILogger<MenuSession> logger)
             logger.LogWarning(ex, "Could not save the shortlist.");
         }
     }
+
+#if DEBUG
+    private static bool IgnoreSavedShortlist => Environment.GetEnvironmentVariable("CARTE_FRESH") == "1";
+#else
+    private const bool IgnoreSavedShortlist = false;
+#endif
 
     // DEBUG-only start state so runtime captures are deterministic without a pointer.
     [System.Diagnostics.Conditional("DEBUG")]
