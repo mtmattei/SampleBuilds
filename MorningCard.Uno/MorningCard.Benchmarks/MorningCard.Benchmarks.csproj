@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- A plain console runner, no BenchmarkDotNet: CI copies this project into an older checkout to
+       measure the baseline with the same code, so it has to build against Core alone. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <TieredPGO>true</TieredPGO>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MorningCard.Core\MorningCard.Core.csproj" />
+  </ItemGroup>
+</Project>
