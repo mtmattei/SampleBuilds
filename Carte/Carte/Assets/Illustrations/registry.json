@@ -1,0 +1,186 @@
+{
+  "steak": {
+    "label": "Steak frites",
+    "file": "steak.svg",
+    "parts": [
+      "sear",
+      "heat-a",
+      "heat-b",
+      "heat-c",
+      "sizzle-a",
+      "sizzle-b"
+    ],
+    "action": "Sizzle & rising heat"
+  },
+  "oysters": {
+    "label": "Oysters",
+    "file": "oysters.svg",
+    "parts": [
+      "lower-shell",
+      "oyster-flesh",
+      "upper-shell"
+    ],
+    "action": "The shell opens"
+  },
+  "crudo": {
+    "label": "Sea bass crudo",
+    "file": "crudo.svg",
+    "parts": [
+      "citrus",
+      "juice-a",
+      "juice-b"
+    ],
+    "action": "A squeeze of citrus"
+  },
+  "tomatoes": {
+    "label": "Heritage tomatoes",
+    "file": "tomatoes.svg",
+    "parts": [
+      "basil",
+      "oil-a",
+      "oil-b",
+      "oil-pool"
+    ],
+    "action": "Olive oil finishes the plate"
+  },
+  "agnolotti": {
+    "label": "Mushroom agnolotti",
+    "file": "agnolotti.svg",
+    "parts": [
+      "steam-a",
+      "steam-b",
+      "steam-c"
+    ],
+    "action": "Steam curls from warm pasta"
+  },
+  "burrata": {
+    "label": "Burrata & peach",
+    "file": "burrata.svg",
+    "parts": [
+      "cream",
+      "cheese-left",
+      "cheese-right"
+    ],
+    "action": "A soft creamy centre"
+  },
+  "albarino": {
+    "label": "Albariño",
+    "file": "albarino.svg",
+    "parts": [
+      "liquid",
+      "glass"
+    ],
+    "action": "Glass fills"
+  },
+  "syrah": {
+    "label": "Syrah",
+    "file": "syrah.svg",
+    "parts": [
+      "liquid",
+      "glass"
+    ],
+    "action": "Glass fills"
+  },
+  "muscadet": {
+    "label": "Muscadet",
+    "file": "muscadet.svg",
+    "parts": [
+      "liquid",
+      "glass"
+    ],
+    "action": "Glass fills"
+  },
+  "riesling": {
+    "label": "Dry Riesling",
+    "file": "riesling.svg",
+    "parts": [
+      "liquid",
+      "glass"
+    ],
+    "action": "Glass fills"
+  },
+  "chardonnay": {
+    "label": "Chardonnay",
+    "file": "chardonnay.svg",
+    "parts": [
+      "liquid",
+      "glass"
+    ],
+    "action": "Glass fills"
+  },
+  "gamay": {
+    "label": "Gamay",
+    "file": "gamay.svg",
+    "parts": [
+      "liquid",
+      "glass"
+    ],
+    "action": "Glass fills"
+  },
+  "spritz": {
+    "label": "Bitter orange spritz",
+    "file": "spritz.svg",
+    "parts": [
+      "liquid",
+      "glass",
+      "orange",
+      "bubble-a",
+      "bubble-b"
+    ],
+    "action": "Glass fills · bubbles rise"
+  },
+  "negroni": {
+    "label": "Negroni",
+    "file": "negroni.svg",
+    "parts": [
+      "liquid",
+      "glass",
+      "ice"
+    ],
+    "action": "Glass fills · ice settles"
+  },
+  "paloma": {
+    "label": "Paloma",
+    "file": "paloma.svg",
+    "parts": [
+      "liquid",
+      "glass",
+      "grapefruit",
+      "bubble-a",
+      "bubble-b"
+    ],
+    "action": "Glass fills · citrus fizzes"
+  },
+  "martinez": {
+    "label": "Martinez",
+    "file": "martinez.svg",
+    "parts": [
+      "liquid",
+      "glass",
+      "cherry"
+    ],
+    "action": "Glass fills · cherry drops"
+  },
+  "americano": {
+    "label": "Americano",
+    "file": "americano.svg",
+    "parts": [
+      "liquid",
+      "glass",
+      "bubble-a",
+      "bubble-b",
+      "bubble-c"
+    ],
+    "action": "Glass fills · soda effervesces"
+  },
+  "sour": {
+    "label": "Amaretto sour",
+    "file": "sour.svg",
+    "parts": [
+      "liquid",
+      "glass",
+      "foam"
+    ],
+    "action": "Glass fills · foam settles"
+  }
+}

@@ -1,0 +1,22 @@
+<UserControl x:Class="Carte.Controls.TasteMapView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Grid x:Name="Root" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8">
+    <TextBlock x:Name="TopLabel" Style="{StaticResource CarteAxisTextStyle}" HorizontalAlignment="Center" />
+
+    <!-- Measured plot. Rules, axis ends, labels and glyphs are positioned in code from normalized data. -->
+    <Grid x:Name="Plot" Grid.Row="1" Height="320">
+      <Canvas x:Name="Surface">
+        <Rectangle x:Name="VerticalRule" Width="1" Fill="{StaticResource CarteRuleBrush}" />
+        <Rectangle x:Name="HorizontalRule" Height="1" Fill="{StaticResource CarteRuleBrush}" />
+        <Ellipse x:Name="CentreDot" Width="6" Height="6" Fill="{StaticResource CarteInkBrush}" />
+        <TextBlock x:Name="LeftLabel" Style="{StaticResource CarteAxisTextStyle}" />
+        <TextBlock x:Name="RightLabel" Style="{StaticResource CarteAxisTextStyle}" />
+      </Canvas>
+    </Grid>
+
+    <TextBlock x:Name="BottomLabel" Grid.Row="2" Style="{StaticResource CarteAxisTextStyle}" HorizontalAlignment="Center" />
+    <TextBlock x:Name="CrowdedNote" x:Uid="Explore.Crowded" Grid.Row="3" Visibility="Collapsed" Margin="0,8,0,0"
+               Style="{StaticResource CarteCaptionTextStyle}" HorizontalAlignment="Center" TextAlignment="Center" />
+  </Grid>
+</UserControl>

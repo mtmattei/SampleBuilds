@@ -1,0 +1,18 @@
+flowchart LR
+  Capture[Photograph or choose menu] --> Review[Review names, categories and prices]
+  Review -->|Correct text| Review
+  Review -->|Confirm| Analyze[Choose axes and estimate taste]
+  Analyze --> Explore[Explore shared menu state]
+  Explore --> Menu[Menu margins]
+  Explore --> Map[Taste atlas]
+  Menu <--> Map
+  Map --> Detail[Item detail and menu evidence]
+  Menu --> Detail
+  Detail -->|Save or remove| Tonight[Tonight shortlist]
+  Detail -->|Pair it| Pair[Suggested item in another category]
+  Pair --> Detail
+  Tonight -->|Keep exploring| Explore
+  Analyze -->|Insufficient evidence| Unplaced[Unplaced items remain in list]
+  Unplaced --> Menu
+  Capture -->|Permission denied| Picker[Choose a photo]
+  Picker --> Review

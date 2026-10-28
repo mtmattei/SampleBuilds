@@ -1,0 +1,41 @@
+flowchart TB
+  tokens["Palette, type and spacing"]
+  glyphs["Line-art glyph library"]
+  copy["Interface language"]
+  menu["Reviewed menu and axis sets"]
+  header["Header and category selector"]
+  map["Taste map and marker"]
+  row["Menu row and mini map"]
+  detail["Item detail and rationale"]
+  capture["Capture"]
+  review["Review"]
+  explore["Explore: Menu or Map"]
+  tonight["Tonight"]
+  captureService["Camera and photo picker"]
+  extractionService["Menu text extraction"]
+  analysisService["Axis and taste analysis"]
+  store["Local menu and shortlist store"]
+  tokens -->|styles| header
+  tokens -->|styles| map
+  tokens -->|styles| row
+  tokens -->|styles| detail
+  glyphs -->|illustrates| map
+  glyphs -->|illustrates| row
+  copy -->|labels| detail
+  copy -->|labels| header
+  menu -->|positions| map
+  menu -->|populates| row
+  menu -->|explains| detail
+  header -->|composes| explore
+  map -->|composes| explore
+  row -->|composes| explore
+  detail -->|composes| explore
+  row -->|composes| tonight
+  capture -->|navigate| review
+  review -->|navigate| explore
+  explore -->|navigate| tonight
+  captureService -->|provides| capture
+  extractionService -->|provides| review
+  analysisService -->|derives| menu
+  store -->|persists| menu
+  store -->|persists| tonight

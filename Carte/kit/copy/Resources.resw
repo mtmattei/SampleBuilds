@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+<resheader name="version"><value>2.0</value></resheader>
+<data name="Brand.Name" xml:space="preserve"><value>Carte</value></data>
+<data name="Brand.Tagline" xml:space="preserve"><value>A little guide to good taste</value></data>
+<data name="Brand.ShortDescription" xml:space="preserve"><value>Photograph a menu. Find your corner of good taste.</value></data>
+<data name="ExplorePage.Eyebrow.Text" xml:space="preserve"><value>Your evening, mapped</value></data>
+<data name="ExplorePage.CategoryPlates.Content" xml:space="preserve"><value>Plates</value></data>
+<data name="ExplorePage.CategoryWine.Content" xml:space="preserve"><value>Wine</value></data>
+<data name="ExplorePage.CategoryCocktails.Content" xml:space="preserve"><value>Cocktails</value></data>
+<data name="ExplorePage.MapTitle.Text" xml:space="preserve"><value>Find your corner</value></data>
+<data name="ExplorePage.ListTitle.Text" xml:space="preserve"><value>The menu, with a little context</value></data>
+<data name="ExplorePage.MenuView.Content" xml:space="preserve"><value>Menu view</value></data>
+<data name="ExplorePage.MapView.Content" xml:space="preserve"><value>Taste map</value></data>
+<data name="ExplorePage.ScanMenu.Content" xml:space="preserve"><value>Scan menu</value></data>
+<data name="ExplorePage.Tonight.Content" xml:space="preserve"><value>Tonight</value></data>
+<data name="ExplorePage.RelativeNote.Text" xml:space="preserve"><value>A relative taste map · estimated from the menu</value></data>
+<data name="ExplorePage.UncertainLegend.Text" xml:space="preserve"><value>Dashed ring = a less certain placement</value></data>
+<data name="ExplorePage.Unplaced.Text" xml:space="preserve"><value>Not enough detail to place this item yet.</value></data>
+<data name="CapturePage.Eyebrow.Text" xml:space="preserve"><value>01 / Photograph</value></data>
+<data name="CapturePage.Title.Text" xml:space="preserve"><value>Good taste starts with a menu.</value></data>
+<data name="CapturePage.Instruction.Text" xml:space="preserve"><value>Fit the whole page inside the frame. You can add more pages next.</value></data>
+<data name="CapturePage.Capture.Content" xml:space="preserve"><value>Photograph menu</value></data>
+<data name="CapturePage.Library.Content" xml:space="preserve"><value>Choose a photo</value></data>
+<data name="CapturePage.AddPage.Content" xml:space="preserve"><value>Add another page</value></data>
+<data name="CapturePage.Read.Content" xml:space="preserve"><value>Read this menu</value></data>
+<data name="CapturePage.Back.Content" xml:space="preserve"><value>Back to your menu</value></data>
+<data name="CapturePage.Privacy.Text" xml:space="preserve"><value>We use this photo to read the menu.</value></data>
+<data name="CapturePage.PermissionTitle.Text" xml:space="preserve"><value>Let Carte see your menu</value></data>
+<data name="CapturePage.PermissionBody.Text" xml:space="preserve"><value>Allow camera access to photograph a menu, or choose a photo instead.</value></data>
+<data name="CapturePage.CameraUnavailable.Text" xml:space="preserve"><value>Camera unavailable. Choose a menu photo to continue.</value></data>
+<data name="CapturePage.Blur.Text" xml:space="preserve"><value>Some lines are hard to read. Try a closer, steadier photo.</value></data>
+<data name="CapturePage.Retake.Content" xml:space="preserve"><value>Retake photo</value></data>
+<data name="ReviewPage.Eyebrow.Text" xml:space="preserve"><value>02 / Review</value></data>
+<data name="ReviewPage.Title.Text" xml:space="preserve"><value>A menu full of possibilities.</value></data>
+<data name="ReviewPage.Confirm.Content" xml:space="preserve"><value>Draw my taste map</value></data>
+<data name="ReviewPage.Edit.Content" xml:space="preserve"><value>Correct item</value></data>
+<data name="ReviewPage.Note.Text" xml:space="preserve"><value>Taste is a useful estimate. Tap “Why here?” on any item to see the description behind its position.</value></data>
+<data name="ReviewPage.LowConfidence.Text" xml:space="preserve"><value>Please check this line.</value></data>
+<data name="ReviewPage.NoItems.Text" xml:space="preserve"><value>We could not find menu items in this photo.</value></data>
+<data name="ReviewPage.TryAgain.Content" xml:space="preserve"><value>Try another photo</value></data>
+<data name="ReviewPage.CurrencyUnknown.Text" xml:space="preserve"><value>Confirm the menu currency.</value></data>
+<data name="ReviewPage.PriceUnknown.Text" xml:space="preserve"><value>Price not listed</value></data>
+<data name="ReviewPage.Reading.Text" xml:space="preserve"><value>Reading the menu…</value></data>
+<data name="ReviewPage.Mapping.Text" xml:space="preserve"><value>Finding the flavours…</value></data>
+<data name="ReviewPage.Offline.Text" xml:space="preserve"><value>You’re offline. Your saved menus are still here.</value></data>
+<data name="ReviewPage.ServiceError.Text" xml:space="preserve"><value>We could not read this menu just now. Your photo is still available to retry.</value></data>
+<data name="ItemDetail.Why.Content" xml:space="preserve"><value>Why here?</value></data>
+<data name="ItemDetail.HideWhy.Content" xml:space="preserve"><value>Hide tasting note</value></data>
+<data name="ItemDetail.Save.Content" xml:space="preserve"><value>Save for tonight</value></data>
+<data name="ItemDetail.Saved.Content" xml:space="preserve"><value>Saved for tonight</value></data>
+<data name="ItemDetail.Pair.Content" xml:space="preserve"><value>Pair it</value></data>
+<data name="ItemDetail.SourcePrefix.Text" xml:space="preserve"><value>On the menu:</value></data>
+<data name="ItemDetail.NoPairing.Text" xml:space="preserve"><value>No clear pairing on this menu yet.</value></data>
+<data name="ItemDetail.UnknownIngredients.Text" xml:space="preserve"><value>Check ingredients with your server.</value></data>
+<data name="TonightPage.Title.Text" xml:space="preserve"><value>For tonight.</value></data>
+<data name="TonightPage.Subtitle.Text" xml:space="preserve"><value>A few things that caught your eye.</value></data>
+<data name="TonightPage.Empty.Text" xml:space="preserve"><value>Your evening is still unwritten.</value></data>
+<data name="TonightPage.Continue.Content" xml:space="preserve"><value>Keep exploring</value></data>
+<data name="TonightPage.PriceNote.Text" xml:space="preserve"><value>Menu prices · one of each</value></data>
+<data name="TonightPage.Note.Text" xml:space="preserve"><value>Your shortlist · share your choices with your server</value></data>
+<data name="TonightPage.Remove.AutomationProperties.Name" xml:space="preserve"><value>Remove from tonight</value></data>
+<data name="TonightPage.TotalIncomplete.Text" xml:space="preserve"><value>Some prices are missing.</value></data>
+<data name="Common.Cancel.Content" xml:space="preserve"><value>Cancel</value></data>
+<data name="Common.Retry.Content" xml:space="preserve"><value>Try again</value></data>
+<data name="Common.Close.Content" xml:space="preserve"><value>Close</value></data>
+<data name="Common.Back.Content" xml:space="preserve"><value>Back</value></data>
+<data name="Common.Edit.Content" xml:space="preserve"><value>Edit</value></data>
+<data name="Demo.SampleMenu.Text" xml:space="preserve"><value>Sample menu</value></data>
+<data name="Demo.ScanPreview.Text" xml:space="preserve"><value>Scan preview · using an illustrative menu</value></data>
+<data name="Demo.ScanDisclosure.Text" xml:space="preserve"><value>Illustrative scan · no camera or upload used</value></data>
+<data name="Format.ItemsCount" xml:space="preserve"><value>{0} items</value></data>
+<data name="Format.CategoryCount" xml:space="preserve"><value>{0} items across {1} categories</value></data>
+<data name="Format.PairSuggestion" xml:space="preserve"><value>With {0}: try {1}.</value></data>
+<data name="Format.SavedAnnouncement" xml:space="preserve"><value>{0} items saved for tonight</value></data>
+<data name="Format.ItemAccessibleName" xml:space="preserve"><value>{0}, {1}, {2}</value></data>
+<data name="Format.MenuSubtitle" xml:space="preserve"><value>{0} · {1} things to discover</value></data>
+</root>

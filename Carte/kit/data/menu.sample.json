@@ -1,0 +1,592 @@
+{
+  "schemaVersion": 1,
+  "id": "le-petit-jardin-demo",
+  "name": "Le Petit Jardin",
+  "locale": "en-US",
+  "currency": "USD",
+  "isIllustrative": true,
+  "source": {
+    "kind": "hand-authored-demo",
+    "pageCount": 3
+  },
+  "categories": [
+    {
+      "id": "plates",
+      "label": "Plates",
+      "glyph": "utensils",
+      "axisSet": {
+        "id": "plates-v1",
+        "revision": 1,
+        "x": {
+          "id": "richness",
+          "low": "Light",
+          "high": "Rich"
+        },
+        "y": {
+          "id": "intensity",
+          "low": "Delicate",
+          "high": "Bold"
+        },
+        "locked": true
+      }
+    },
+    {
+      "id": "wine",
+      "label": "Wine",
+      "glyph": "wine",
+      "axisSet": {
+        "id": "wine-v1",
+        "revision": 1,
+        "x": {
+          "id": "body",
+          "low": "Light",
+          "high": "Full-bodied"
+        },
+        "y": {
+          "id": "acidity",
+          "low": "Round",
+          "high": "Crisp"
+        },
+        "locked": true
+      }
+    },
+    {
+      "id": "cocktails",
+      "label": "Cocktails",
+      "glyph": "martini",
+      "axisSet": {
+        "id": "cocktails-v1",
+        "revision": 1,
+        "x": {
+          "id": "concentration",
+          "low": "Refreshing",
+          "high": "Spirit-forward"
+        },
+        "y": {
+          "id": "bitterness",
+          "low": "Sweet",
+          "high": "Bitter"
+        },
+        "locked": true
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "crudo",
+      "categoryId": "plates",
+      "name": "Sea bass crudo",
+      "shortName": "Crudo",
+      "glyph": "fish",
+      "price": {
+        "amount": 19,
+        "currency": "USD",
+        "unit": "item"
+      },
+      "sensoryTags": [
+        "Zesty",
+        "cool",
+        "a little heat"
+      ],
+      "description": "A bright, light bite with a little chilli at the finish.",
+      "originalMenuText": "Sea bass, lime, green chilli, coriander.",
+      "placement": {
+        "x": 0.24,
+        "y": 0.76,
+        "axisSetId": "plates-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "Lime and chilli suggest bold flavour; raw fish keeps the dish light."
+      },
+      "pairingItemIds": [
+        "albarino"
+      ]
+    },
+    {
+      "id": "steak",
+      "categoryId": "plates",
+      "name": "Steak frites",
+      "shortName": "Steak frites",
+      "glyph": "beef",
+      "price": {
+        "amount": 34,
+        "currency": "USD",
+        "unit": "item"
+      },
+      "sensoryTags": [
+        "Savoury",
+        "buttery",
+        "satisfying"
+      ],
+      "description": "The hearty corner: a seared steak, crisp fries and pepper butter.",
+      "originalMenuText": "Bavette steak, frites, green peppercorn butter.",
+      "placement": {
+        "x": 0.78,
+        "y": 0.78,
+        "axisSetId": "plates-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "Seared beef and peppercorns suggest bold flavour; butter and fries add richness."
+      },
+      "pairingItemIds": [
+        "syrah"
+      ]
+    },
+    {
+      "id": "oysters",
+      "categoryId": "plates",
+      "name": "Oysters",
+      "shortName": "Oysters",
+      "glyph": "shell",
+      "price": {
+        "amount": 18,
+        "currency": "USD",
+        "unit": "item"
+      },
+      "sensoryTags": [
+        "Briny",
+        "clean",
+        "delicate"
+      ],
+      "description": "A cool, delicate start with a clean, saline finish.",
+      "originalMenuText": "Six oysters, cucumber mignonette.",
+      "placement": {
+        "x": 0.25,
+        "y": 0.27,
+        "axisSetId": "plates-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "Oysters and cucumber suggest a light dish. The sauce quantity could shift its intensity."
+      },
+      "pairingItemIds": [
+        "muscadet"
+      ]
+    },
+    {
+      "id": "tomatoes",
+      "categoryId": "plates",
+      "name": "Heritage tomatoes",
+      "shortName": "Tomatoes",
+      "glyph": "salad",
+      "price": {
+        "amount": 15,
+        "currency": "USD",
+        "unit": "item"
+      },
+      "sensoryTags": [
+        "Juicy",
+        "herbal",
+        "tangy"
+      ],
+      "description": "Ripe tomatoes with basil and a lively vinegar dressing.",
+      "originalMenuText": "Heritage tomatoes, basil, shallot, sherry vinegar.",
+      "placement": {
+        "x": 0.47,
+        "y": 0.64,
+        "axisSetId": "plates-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "Fresh tomatoes keep the dish light; vinegar and shallot add a punch of flavour."
+      },
+      "pairingItemIds": [
+        "gamay"
+      ]
+    },
+    {
+      "id": "agnolotti",
+      "categoryId": "plates",
+      "name": "Mushroom agnolotti",
+      "shortName": "Agnolotti",
+      "glyph": "wheat",
+      "price": {
+        "amount": 26,
+        "currency": "USD",
+        "unit": "item"
+      },
+      "sensoryTags": [
+        "Earthy",
+        "silky",
+        "comforting"
+      ],
+      "description": "Soft pasta with an earthy centre and a rounded, buttery finish.",
+      "originalMenuText": "Wild mushroom agnolotti, sage, brown butter.",
+      "placement": {
+        "x": 0.79,
+        "y": 0.3,
+        "axisSetId": "plates-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "Filled pasta and brown butter suggest richness; mushroom and sage suggest a rounded flavour."
+      },
+      "pairingItemIds": [
+        "chardonnay"
+      ]
+    },
+    {
+      "id": "burrata",
+      "categoryId": "plates",
+      "name": "Burrata & peach",
+      "shortName": "Burrata",
+      "glyph": "circle-dot",
+      "price": {
+        "amount": 17,
+        "currency": "USD",
+        "unit": "item"
+      },
+      "sensoryTags": [
+        "Creamy",
+        "mellow",
+        "softly sweet"
+      ],
+      "description": "Creamy burrata and ripe peach, with a gentle herbal lift.",
+      "originalMenuText": "Burrata, peach, basil, olive oil.",
+      "placement": {
+        "x": 0.52,
+        "y": 0.17,
+        "axisSetId": "plates-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "Cream and olive oil suggest richness; peach and basil keep the flavour delicate."
+      },
+      "pairingItemIds": [
+        "albarino"
+      ]
+    },
+    {
+      "id": "albarino",
+      "categoryId": "wine",
+      "name": "Albariño",
+      "shortName": "Albariño",
+      "glyph": "wine",
+      "price": {
+        "amount": 13,
+        "currency": "USD",
+        "unit": "glass"
+      },
+      "sensoryTags": [
+        "Citrus",
+        "saline",
+        "lively"
+      ],
+      "description": "A bright, coastal white with citrus lift and a clean finish.",
+      "originalMenuText": "Albariño · Rías Baixas · citrus, saline · glass.",
+      "placement": {
+        "x": 0.25,
+        "y": 0.78,
+        "axisSetId": "wine-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "The menu’s citrus and saline notes suggest a light body and crisp acidity."
+      },
+      "pairingItemIds": []
+    },
+    {
+      "id": "syrah",
+      "categoryId": "wine",
+      "name": "Syrah",
+      "shortName": "Syrah",
+      "glyph": "grape",
+      "price": {
+        "amount": 15,
+        "currency": "USD",
+        "unit": "glass"
+      },
+      "sensoryTags": [
+        "Dark fruit",
+        "pepper",
+        "generous"
+      ],
+      "description": "A generous red with dark fruit and a peppery edge.",
+      "originalMenuText": "Syrah · Rhône · blackberry, pepper · glass.",
+      "placement": {
+        "x": 0.79,
+        "y": 0.33,
+        "axisSetId": "wine-v1",
+        "axisRevision": 1,
+        "confidence": "low",
+        "rationale": "Dark fruit suggests a fuller body. Acidity is not described, so the vertical position is approximate."
+      },
+      "pairingItemIds": []
+    },
+    {
+      "id": "muscadet",
+      "categoryId": "wine",
+      "name": "Muscadet",
+      "shortName": "Muscadet",
+      "glyph": "shell",
+      "price": {
+        "amount": 11,
+        "currency": "USD",
+        "unit": "glass"
+      },
+      "sensoryTags": [
+        "Lean",
+        "mineral",
+        "mellow"
+      ],
+      "description": "A lean white with a softer finish from time on its lees.",
+      "originalMenuText": "Muscadet sur lie · Loire · lean, mineral, soft finish · glass.",
+      "placement": {
+        "x": 0.23,
+        "y": 0.27,
+        "axisSetId": "wine-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "The menu explicitly describes a lean body and soft finish."
+      },
+      "pairingItemIds": []
+    },
+    {
+      "id": "riesling",
+      "categoryId": "wine",
+      "name": "Dry Riesling",
+      "shortName": "Riesling",
+      "glyph": "citrus",
+      "price": {
+        "amount": 14,
+        "currency": "USD",
+        "unit": "glass"
+      },
+      "sensoryTags": [
+        "Lime",
+        "floral",
+        "taut"
+      ],
+      "description": "A little more presence, with lime and a taut, lively finish.",
+      "originalMenuText": "Dry Riesling · Alsace · medium body, lime, high acidity · glass.",
+      "placement": {
+        "x": 0.58,
+        "y": 0.68,
+        "axisSetId": "wine-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "Medium body puts it near the middle horizontally; high acidity puts it toward crisp."
+      },
+      "pairingItemIds": []
+    },
+    {
+      "id": "chardonnay",
+      "categoryId": "wine",
+      "name": "Chardonnay",
+      "shortName": "Chardonnay",
+      "glyph": "leaf",
+      "price": {
+        "amount": 15,
+        "currency": "USD",
+        "unit": "glass"
+      },
+      "sensoryTags": [
+        "Orchard fruit",
+        "creamy",
+        "round"
+      ],
+      "description": "A fuller white with a creamy texture and a soft finish.",
+      "originalMenuText": "Chardonnay · Burgundy · creamy, round, orchard fruit · glass.",
+      "placement": {
+        "x": 0.78,
+        "y": 0.17,
+        "axisSetId": "wine-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "The menu’s creamy and round descriptors suggest more weight and softer acidity."
+      },
+      "pairingItemIds": []
+    },
+    {
+      "id": "gamay",
+      "categoryId": "wine",
+      "name": "Gamay",
+      "shortName": "Gamay",
+      "glyph": "cherry",
+      "price": {
+        "amount": 12,
+        "currency": "USD",
+        "unit": "glass"
+      },
+      "sensoryTags": [
+        "Red fruit",
+        "supple",
+        "easy"
+      ],
+      "description": "A supple red with juicy fruit and gentle texture.",
+      "originalMenuText": "Gamay · Beaujolais · medium-light, red fruit, supple · glass.",
+      "placement": {
+        "x": 0.51,
+        "y": 0.33,
+        "axisSetId": "wine-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "Medium-light body places it left of centre; supple texture suggests the rounder side."
+      },
+      "pairingItemIds": []
+    },
+    {
+      "id": "spritz",
+      "categoryId": "cocktails",
+      "name": "Bitter orange spritz",
+      "shortName": "Spritz",
+      "glyph": "wine",
+      "price": {
+        "amount": 14,
+        "currency": "USD",
+        "unit": "item"
+      },
+      "sensoryTags": [
+        "Bitter orange",
+        "sparkling",
+        "bright"
+      ],
+      "description": "Long, sparkling and pleasantly bittersweet.",
+      "originalMenuText": "Orange aperitivo, prosecco, soda, orange.",
+      "placement": {
+        "x": 0.24,
+        "y": 0.77,
+        "axisSetId": "cocktails-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "Soda and sparkling wine make it refreshing; the aperitivo brings bitterness."
+      },
+      "pairingItemIds": []
+    },
+    {
+      "id": "negroni",
+      "categoryId": "cocktails",
+      "name": "Negroni",
+      "shortName": "Negroni",
+      "glyph": "glass-water",
+      "price": {
+        "amount": 16,
+        "currency": "USD",
+        "unit": "item"
+      },
+      "sensoryTags": [
+        "Herbal",
+        "bitter",
+        "slow-sipping"
+      ],
+      "description": "A compact, bittersweet drink with a pronounced herbal edge.",
+      "originalMenuText": "Gin, bitter aperitivo, sweet vermouth.",
+      "placement": {
+        "x": 0.78,
+        "y": 0.77,
+        "axisSetId": "cocktails-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "An all-spirit recipe puts it toward spirit-forward; the aperitivo gives a bitter edge."
+      },
+      "pairingItemIds": []
+    },
+    {
+      "id": "paloma",
+      "categoryId": "cocktails",
+      "name": "Paloma",
+      "shortName": "Paloma",
+      "glyph": "citrus",
+      "price": {
+        "amount": 15,
+        "currency": "USD",
+        "unit": "item"
+      },
+      "sensoryTags": [
+        "Grapefruit",
+        "sparkling",
+        "juicy"
+      ],
+      "description": "A tall, juicy drink with grapefruit and a little salt.",
+      "originalMenuText": "Tequila, grapefruit soda, lime, salt.",
+      "placement": {
+        "x": 0.22,
+        "y": 0.3,
+        "axisSetId": "cocktails-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "Soda and citrus make it refreshing; sweetened soda shifts it toward sweet."
+      },
+      "pairingItemIds": []
+    },
+    {
+      "id": "martinez",
+      "categoryId": "cocktails",
+      "name": "Martinez",
+      "shortName": "Martinez",
+      "glyph": "martini",
+      "price": {
+        "amount": 17,
+        "currency": "USD",
+        "unit": "item"
+      },
+      "sensoryTags": [
+        "Silky",
+        "aromatic",
+        "rounded"
+      ],
+      "description": "A rich, softly sweet cocktail for sipping slowly.",
+      "originalMenuText": "Old Tom gin, sweet vermouth, maraschino, bitters.",
+      "placement": {
+        "x": 0.78,
+        "y": 0.21,
+        "axisSetId": "cocktails-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "The spirit base gives weight; vermouth and maraschino bring sweetness."
+      },
+      "pairingItemIds": []
+    },
+    {
+      "id": "americano",
+      "categoryId": "cocktails",
+      "name": "Americano",
+      "shortName": "Americano",
+      "glyph": "cup-soda",
+      "price": {
+        "amount": 13,
+        "currency": "USD",
+        "unit": "item"
+      },
+      "sensoryTags": [
+        "Herbal",
+        "bittersweet",
+        "lifted"
+      ],
+      "description": "A bittersweet aperitif lengthened with a splash of soda.",
+      "originalMenuText": "Bitter aperitivo, sweet vermouth, soda.",
+      "placement": {
+        "x": 0.54,
+        "y": 0.65,
+        "axisSetId": "cocktails-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "Aperitivo adds bitterness; the smaller soda pour makes it less refreshing than the spritz."
+      },
+      "pairingItemIds": []
+    },
+    {
+      "id": "sour",
+      "categoryId": "cocktails",
+      "name": "Amaretto sour",
+      "shortName": "Amaretto sour",
+      "glyph": "cherry",
+      "price": {
+        "amount": 15,
+        "currency": "USD",
+        "unit": "item"
+      },
+      "sensoryTags": [
+        "Almond",
+        "lemon",
+        "plush"
+      ],
+      "description": "A sweet almond note balanced by lemon and a soft foam.",
+      "originalMenuText": "Amaretto, bourbon, lemon, syrup, egg white.",
+      "placement": {
+        "x": 0.48,
+        "y": 0.18,
+        "axisSetId": "cocktails-v1",
+        "axisRevision": 1,
+        "confidence": "estimated",
+        "rationale": "Lemon lightens the drink; amaretto and syrup put it on the sweet side."
+      },
+      "pairingItemIds": []
+    }
+  ]
+}

@@ -1,0 +1,1322 @@
+{
+  "schemaVersion": 2,
+  "coordinateSystem": "48 × 48 SVG user units",
+  "triggers": [
+    "once on menu/category/view appearance, when the illustration enters the viewport",
+    "fine-pointer hover",
+    "pointer activation",
+    "explicit preview play"
+  ],
+  "suppressed": [
+    "keyboard navigation",
+    "reduced motion",
+    "compass dragging"
+  ],
+  "easing": "cubic-bezier(.4,0,.2,1)",
+  "iterations": 1,
+  "fill": "none; all endpoints return to the static artwork",
+  "items": {
+    "steak": {
+      "label": "Steak frites",
+      "action": "Sizzle & rising heat",
+      "asset": "assets/illustrations/steak.svg",
+      "duration": 1700,
+      "tracks": [
+        {
+          "part": "heat-a",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(3px)"
+            },
+            {
+              "offset": 0.18,
+              "opacity": 0.85,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.47,
+              "opacity": 0,
+              "transform": "translateY(-5px)"
+            },
+            {
+              "offset": 0.5,
+              "opacity": 0,
+              "transform": "translateY(3px)"
+            },
+            {
+              "offset": 0.68,
+              "opacity": 0.7,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(-6px)"
+            }
+          ],
+          "duration": 1450,
+          "delay": 0
+        },
+        {
+          "part": "heat-b",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(3px)"
+            },
+            {
+              "offset": 0.18,
+              "opacity": 0.85,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.47,
+              "opacity": 0,
+              "transform": "translateY(-5px)"
+            },
+            {
+              "offset": 0.5,
+              "opacity": 0,
+              "transform": "translateY(3px)"
+            },
+            {
+              "offset": 0.68,
+              "opacity": 0.7,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(-6px)"
+            }
+          ],
+          "duration": 1600,
+          "delay": 100
+        },
+        {
+          "part": "heat-c",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(3px)"
+            },
+            {
+              "offset": 0.18,
+              "opacity": 0.85,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.47,
+              "opacity": 0,
+              "transform": "translateY(-5px)"
+            },
+            {
+              "offset": 0.5,
+              "opacity": 0,
+              "transform": "translateY(3px)"
+            },
+            {
+              "offset": 0.68,
+              "opacity": 0.7,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(-6px)"
+            }
+          ],
+          "duration": 1400,
+          "delay": 230
+        },
+        {
+          "part": "sear",
+          "frames": [
+            {
+              "opacity": 0.6
+            },
+            {
+              "opacity": 1
+            },
+            {
+              "opacity": 0.6
+            }
+          ],
+          "duration": 1600,
+          "delay": 0
+        },
+        {
+          "part": "sizzle-a",
+          "frames": [
+            {
+              "opacity": 0
+            },
+            {
+              "opacity": 0.8
+            },
+            {
+              "opacity": 0
+            },
+            {
+              "opacity": 0.75
+            },
+            {
+              "opacity": 0
+            }
+          ],
+          "duration": 1300,
+          "delay": 0
+        },
+        {
+          "part": "sizzle-b",
+          "frames": [
+            {
+              "opacity": 0
+            },
+            {
+              "opacity": 0.7
+            },
+            {
+              "opacity": 0
+            },
+            {
+              "opacity": 0.8
+            },
+            {
+              "opacity": 0
+            }
+          ],
+          "duration": 1300,
+          "delay": 180
+        }
+      ]
+    },
+    "oysters": {
+      "label": "Oysters",
+      "action": "The shell opens",
+      "asset": "assets/illustrations/oysters.svg",
+      "duration": 1700,
+      "tracks": [
+        {
+          "part": "upper-shell",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "rotate(0deg)"
+            },
+            {
+              "offset": 0.34,
+              "transform": "rotate(-38deg)"
+            },
+            {
+              "offset": 0.72,
+              "transform": "rotate(-38deg)"
+            },
+            {
+              "offset": 1,
+              "transform": "rotate(0deg)"
+            }
+          ],
+          "duration": 1700,
+          "delay": 0,
+          "origin": "8px 30px"
+        }
+      ]
+    },
+    "crudo": {
+      "label": "Sea bass crudo",
+      "action": "A squeeze of citrus",
+      "asset": "assets/illustrations/crudo.svg",
+      "duration": 1480,
+      "tracks": [
+        {
+          "part": "citrus",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "scaleX(1)"
+            },
+            {
+              "offset": 0.28,
+              "transform": "scaleX(.75)"
+            },
+            {
+              "offset": 0.62,
+              "transform": "scaleX(.75)"
+            },
+            {
+              "offset": 1,
+              "transform": "scaleX(1)"
+            }
+          ],
+          "duration": 1400,
+          "delay": 0,
+          "origin": "26px 10px"
+        },
+        {
+          "part": "juice-a",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(0px) scale(.75)"
+            },
+            {
+              "offset": 0.2,
+              "opacity": 1,
+              "transform": "translateY(1px) scale(1)"
+            },
+            {
+              "offset": 0.65,
+              "opacity": 0.9,
+              "transform": "translateY(9px) scale(.8)"
+            },
+            {
+              "offset": 0.8,
+              "opacity": 0,
+              "transform": "translateY(10px) scale(.5)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(10px) scale(.5)"
+            }
+          ],
+          "duration": 1100,
+          "delay": 150
+        },
+        {
+          "part": "juice-b",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(0px) scale(.75)"
+            },
+            {
+              "offset": 0.2,
+              "opacity": 1,
+              "transform": "translateY(1px) scale(1)"
+            },
+            {
+              "offset": 0.65,
+              "opacity": 0.9,
+              "transform": "translateY(10px) scale(.8)"
+            },
+            {
+              "offset": 0.8,
+              "opacity": 0,
+              "transform": "translateY(11px) scale(.5)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(11px) scale(.5)"
+            }
+          ],
+          "duration": 1100,
+          "delay": 380
+        }
+      ]
+    },
+    "tomatoes": {
+      "label": "Heritage tomatoes",
+      "action": "Olive oil finishes the plate",
+      "asset": "assets/illustrations/tomatoes.svg",
+      "duration": 1500,
+      "tracks": [
+        {
+          "part": "oil-a",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(0px) scale(.75)"
+            },
+            {
+              "offset": 0.2,
+              "opacity": 1,
+              "transform": "translateY(1px) scale(1)"
+            },
+            {
+              "offset": 0.65,
+              "opacity": 0.9,
+              "transform": "translateY(15px) scale(.8)"
+            },
+            {
+              "offset": 0.8,
+              "opacity": 0,
+              "transform": "translateY(16px) scale(.5)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(16px) scale(.5)"
+            }
+          ],
+          "duration": 1100,
+          "delay": 0
+        },
+        {
+          "part": "oil-b",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(0px) scale(.75)"
+            },
+            {
+              "offset": 0.2,
+              "opacity": 1,
+              "transform": "translateY(1px) scale(1)"
+            },
+            {
+              "offset": 0.65,
+              "opacity": 0.9,
+              "transform": "translateY(14px) scale(.8)"
+            },
+            {
+              "offset": 0.8,
+              "opacity": 0,
+              "transform": "translateY(15px) scale(.5)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(15px) scale(.5)"
+            }
+          ],
+          "duration": 1100,
+          "delay": 220
+        },
+        {
+          "part": "oil-pool",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "scaleX(.2)"
+            },
+            {
+              "offset": 0.5,
+              "opacity": 0.7,
+              "transform": "scaleX(1)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "scaleX(1.15)"
+            }
+          ],
+          "duration": 1500,
+          "delay": 0,
+          "origin": "29px 34px"
+        }
+      ]
+    },
+    "agnolotti": {
+      "label": "Mushroom agnolotti",
+      "action": "Steam curls from warm pasta",
+      "asset": "assets/illustrations/agnolotti.svg",
+      "duration": 1930,
+      "tracks": [
+        {
+          "part": "steam-a",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(3px)"
+            },
+            {
+              "offset": 0.18,
+              "opacity": 0.85,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.47,
+              "opacity": 0,
+              "transform": "translateY(-5px)"
+            },
+            {
+              "offset": 0.5,
+              "opacity": 0,
+              "transform": "translateY(3px)"
+            },
+            {
+              "offset": 0.68,
+              "opacity": 0.7,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(-6px)"
+            }
+          ],
+          "duration": 1700,
+          "delay": 0
+        },
+        {
+          "part": "steam-b",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(3px)"
+            },
+            {
+              "offset": 0.18,
+              "opacity": 0.85,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.47,
+              "opacity": 0,
+              "transform": "translateY(-5px)"
+            },
+            {
+              "offset": 0.5,
+              "opacity": 0,
+              "transform": "translateY(3px)"
+            },
+            {
+              "offset": 0.68,
+              "opacity": 0.7,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(-6px)"
+            }
+          ],
+          "duration": 1550,
+          "delay": 160
+        },
+        {
+          "part": "steam-c",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(3px)"
+            },
+            {
+              "offset": 0.18,
+              "opacity": 0.85,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.47,
+              "opacity": 0,
+              "transform": "translateY(-5px)"
+            },
+            {
+              "offset": 0.5,
+              "opacity": 0,
+              "transform": "translateY(3px)"
+            },
+            {
+              "offset": 0.68,
+              "opacity": 0.7,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(-6px)"
+            }
+          ],
+          "duration": 1600,
+          "delay": 330
+        }
+      ]
+    },
+    "burrata": {
+      "label": "Burrata & peach",
+      "action": "A soft creamy centre",
+      "asset": "assets/illustrations/burrata.svg",
+      "duration": 1600,
+      "tracks": [
+        {
+          "part": "cheese-left",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateX(0px)"
+            },
+            {
+              "offset": 0.38,
+              "transform": "translateX(-3px)"
+            },
+            {
+              "offset": 0.75,
+              "transform": "translateX(-3px)"
+            },
+            {
+              "offset": 1,
+              "transform": "translateX(0px)"
+            }
+          ],
+          "duration": 1600,
+          "delay": 0
+        },
+        {
+          "part": "cheese-right",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateX(0px)"
+            },
+            {
+              "offset": 0.38,
+              "transform": "translateX(3px)"
+            },
+            {
+              "offset": 0.75,
+              "transform": "translateX(3px)"
+            },
+            {
+              "offset": 1,
+              "transform": "translateX(0px)"
+            }
+          ],
+          "duration": 1600,
+          "delay": 0
+        },
+        {
+          "part": "cream",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0
+            },
+            {
+              "offset": 0.25,
+              "opacity": 1
+            },
+            {
+              "offset": 0.8,
+              "opacity": 1
+            },
+            {
+              "offset": 1,
+              "opacity": 0
+            }
+          ],
+          "duration": 1600,
+          "delay": 0
+        }
+      ]
+    },
+    "albarino": {
+      "label": "Albariño",
+      "action": "Glass fills",
+      "asset": "assets/illustrations/albarino.svg",
+      "duration": 1600,
+      "tracks": [
+        {
+          "part": "liquid",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateY(13px)"
+            },
+            {
+              "offset": 0.57,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.7,
+              "transform": "translateY(.7px)"
+            },
+            {
+              "offset": 0.83,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "transform": "translateY(0px)"
+            }
+          ],
+          "duration": 1600,
+          "delay": 0
+        }
+      ]
+    },
+    "syrah": {
+      "label": "Syrah",
+      "action": "Glass fills",
+      "asset": "assets/illustrations/syrah.svg",
+      "duration": 1950,
+      "tracks": [
+        {
+          "part": "liquid",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateY(13px)"
+            },
+            {
+              "offset": 0.57,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.7,
+              "transform": "translateY(.7px)"
+            },
+            {
+              "offset": 0.83,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "transform": "translateY(0px)"
+            }
+          ],
+          "duration": 1950,
+          "delay": 0
+        }
+      ]
+    },
+    "muscadet": {
+      "label": "Muscadet",
+      "action": "Glass fills",
+      "asset": "assets/illustrations/muscadet.svg",
+      "duration": 1500,
+      "tracks": [
+        {
+          "part": "liquid",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateY(15px)"
+            },
+            {
+              "offset": 0.57,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.7,
+              "transform": "translateY(.7px)"
+            },
+            {
+              "offset": 0.83,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "transform": "translateY(0px)"
+            }
+          ],
+          "duration": 1500,
+          "delay": 0
+        }
+      ]
+    },
+    "riesling": {
+      "label": "Dry Riesling",
+      "action": "Glass fills",
+      "asset": "assets/illustrations/riesling.svg",
+      "duration": 1750,
+      "tracks": [
+        {
+          "part": "liquid",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateY(16px)"
+            },
+            {
+              "offset": 0.57,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.7,
+              "transform": "translateY(.7px)"
+            },
+            {
+              "offset": 0.83,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "transform": "translateY(0px)"
+            }
+          ],
+          "duration": 1750,
+          "delay": 0
+        }
+      ]
+    },
+    "chardonnay": {
+      "label": "Chardonnay",
+      "action": "Glass fills",
+      "asset": "assets/illustrations/chardonnay.svg",
+      "duration": 1850,
+      "tracks": [
+        {
+          "part": "liquid",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateY(16px)"
+            },
+            {
+              "offset": 0.57,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.7,
+              "transform": "translateY(.7px)"
+            },
+            {
+              "offset": 0.83,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "transform": "translateY(0px)"
+            }
+          ],
+          "duration": 1850,
+          "delay": 0
+        }
+      ]
+    },
+    "gamay": {
+      "label": "Gamay",
+      "action": "Glass fills",
+      "asset": "assets/illustrations/gamay.svg",
+      "duration": 1650,
+      "tracks": [
+        {
+          "part": "liquid",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateY(11px)"
+            },
+            {
+              "offset": 0.57,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.7,
+              "transform": "translateY(.7px)"
+            },
+            {
+              "offset": 0.83,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "transform": "translateY(0px)"
+            }
+          ],
+          "duration": 1650,
+          "delay": 0
+        }
+      ]
+    },
+    "spritz": {
+      "label": "Bitter orange spritz",
+      "action": "Glass fills · bubbles rise",
+      "asset": "assets/illustrations/spritz.svg",
+      "duration": 1700,
+      "tracks": [
+        {
+          "part": "liquid",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateY(16px)"
+            },
+            {
+              "offset": 0.57,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.7,
+              "transform": "translateY(.7px)"
+            },
+            {
+              "offset": 0.83,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "transform": "translateY(0px)"
+            }
+          ],
+          "duration": 1700,
+          "delay": 0
+        },
+        {
+          "part": "bubble-a",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.22,
+              "opacity": 0.9,
+              "transform": "translateY(-2px)"
+            },
+            {
+              "offset": 0.8,
+              "opacity": 0.65,
+              "transform": "translateY(-10px)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(-12px)"
+            }
+          ],
+          "duration": 1000,
+          "delay": 450
+        },
+        {
+          "part": "bubble-b",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.22,
+              "opacity": 0.9,
+              "transform": "translateY(-2px)"
+            },
+            {
+              "offset": 0.8,
+              "opacity": 0.65,
+              "transform": "translateY(-12px)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(-14px)"
+            }
+          ],
+          "duration": 1000,
+          "delay": 670
+        }
+      ]
+    },
+    "negroni": {
+      "label": "Negroni",
+      "action": "Glass fills · ice settles",
+      "asset": "assets/illustrations/negroni.svg",
+      "duration": 1800,
+      "tracks": [
+        {
+          "part": "liquid",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateY(17px)"
+            },
+            {
+              "offset": 0.57,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.7,
+              "transform": "translateY(.7px)"
+            },
+            {
+              "offset": 0.83,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "transform": "translateY(0px)"
+            }
+          ],
+          "duration": 1700,
+          "delay": 0
+        },
+        {
+          "part": "ice",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateY(2px) rotate(-5deg)"
+            },
+            {
+              "offset": 0.5,
+              "transform": "translateY(-2px) rotate(4deg)"
+            },
+            {
+              "offset": 0.8,
+              "transform": "translateY(.5px) rotate(-1deg)"
+            },
+            {
+              "offset": 1,
+              "transform": "translateY(0px) rotate(0deg)"
+            }
+          ],
+          "duration": 1800,
+          "delay": 0,
+          "origin": "24px 27px"
+        }
+      ]
+    },
+    "paloma": {
+      "label": "Paloma",
+      "action": "Glass fills · citrus fizzes",
+      "asset": "assets/illustrations/paloma.svg",
+      "duration": 1800,
+      "tracks": [
+        {
+          "part": "liquid",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateY(25px)"
+            },
+            {
+              "offset": 0.57,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.7,
+              "transform": "translateY(.7px)"
+            },
+            {
+              "offset": 0.83,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "transform": "translateY(0px)"
+            }
+          ],
+          "duration": 1700,
+          "delay": 0
+        },
+        {
+          "part": "bubble-a",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.22,
+              "opacity": 0.9,
+              "transform": "translateY(-2px)"
+            },
+            {
+              "offset": 0.8,
+              "opacity": 0.65,
+              "transform": "translateY(-16px)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(-18px)"
+            }
+          ],
+          "duration": 1000,
+          "delay": 500
+        },
+        {
+          "part": "bubble-b",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.22,
+              "opacity": 0.9,
+              "transform": "translateY(-2px)"
+            },
+            {
+              "offset": 0.8,
+              "opacity": 0.65,
+              "transform": "translateY(-10px)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(-12px)"
+            }
+          ],
+          "duration": 1000,
+          "delay": 800
+        }
+      ]
+    },
+    "martinez": {
+      "label": "Martinez",
+      "action": "Glass fills · cherry drops",
+      "asset": "assets/illustrations/martinez.svg",
+      "duration": 1800,
+      "tracks": [
+        {
+          "part": "liquid",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateY(15px)"
+            },
+            {
+              "offset": 0.57,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.7,
+              "transform": "translateY(.7px)"
+            },
+            {
+              "offset": 0.83,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "transform": "translateY(0px)"
+            }
+          ],
+          "duration": 1700,
+          "delay": 0
+        },
+        {
+          "part": "cherry",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateY(-12px)",
+              "opacity": 0
+            },
+            {
+              "offset": 0.3,
+              "transform": "translateY(-12px)",
+              "opacity": 0
+            },
+            {
+              "offset": 0.44,
+              "transform": "translateY(-9px)",
+              "opacity": 1
+            },
+            {
+              "offset": 0.68,
+              "transform": "translateY(1px)",
+              "opacity": 1
+            },
+            {
+              "offset": 0.85,
+              "transform": "translateY(-.6px)",
+              "opacity": 1
+            },
+            {
+              "offset": 1,
+              "transform": "translateY(0px)",
+              "opacity": 1
+            }
+          ],
+          "duration": 1800,
+          "delay": 0
+        }
+      ]
+    },
+    "americano": {
+      "label": "Americano",
+      "action": "Glass fills · soda effervesces",
+      "asset": "assets/illustrations/americano.svg",
+      "duration": 1900,
+      "tracks": [
+        {
+          "part": "liquid",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateY(21px)"
+            },
+            {
+              "offset": 0.57,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.7,
+              "transform": "translateY(.7px)"
+            },
+            {
+              "offset": 0.83,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "transform": "translateY(0px)"
+            }
+          ],
+          "duration": 1700,
+          "delay": 0
+        },
+        {
+          "part": "bubble-a",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.22,
+              "opacity": 0.9,
+              "transform": "translateY(-2px)"
+            },
+            {
+              "offset": 0.8,
+              "opacity": 0.65,
+              "transform": "translateY(-12px)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(-14px)"
+            }
+          ],
+          "duration": 1000,
+          "delay": 450
+        },
+        {
+          "part": "bubble-b",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.22,
+              "opacity": 0.9,
+              "transform": "translateY(-2px)"
+            },
+            {
+              "offset": 0.8,
+              "opacity": 0.65,
+              "transform": "translateY(-14px)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(-16px)"
+            }
+          ],
+          "duration": 1000,
+          "delay": 650
+        },
+        {
+          "part": "bubble-c",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.22,
+              "opacity": 0.9,
+              "transform": "translateY(-2px)"
+            },
+            {
+              "offset": 0.8,
+              "opacity": 0.65,
+              "transform": "translateY(-12px)"
+            },
+            {
+              "offset": 1,
+              "opacity": 0,
+              "transform": "translateY(-14px)"
+            }
+          ],
+          "duration": 1000,
+          "delay": 900
+        }
+      ]
+    },
+    "sour": {
+      "label": "Amaretto sour",
+      "action": "Glass fills · foam settles",
+      "asset": "assets/illustrations/sour.svg",
+      "duration": 1750,
+      "tracks": [
+        {
+          "part": "liquid",
+          "frames": [
+            {
+              "offset": 0,
+              "transform": "translateY(10px)"
+            },
+            {
+              "offset": 0.57,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 0.7,
+              "transform": "translateY(.7px)"
+            },
+            {
+              "offset": 0.83,
+              "transform": "translateY(0px)"
+            },
+            {
+              "offset": 1,
+              "transform": "translateY(0px)"
+            }
+          ],
+          "duration": 1700,
+          "delay": 0
+        },
+        {
+          "part": "foam",
+          "frames": [
+            {
+              "offset": 0,
+              "opacity": 0,
+              "transform": "translateY(7px)"
+            },
+            {
+              "offset": 0.4,
+              "opacity": 0.7,
+              "transform": "translateY(2px)"
+            },
+            {
+              "offset": 0.62,
+              "opacity": 1,
+              "transform": "translateY(-1px)"
+            },
+            {
+              "offset": 1,
+              "opacity": 1,
+              "transform": "translateY(0px)"
+            }
+          ],
+          "duration": 1750,
+          "delay": 0
+        }
+      ]
+    }
+  },
+  "appearance": {
+    "initialDelayMs": 350,
+    "staggerMs": 120,
+    "maximumIndex": 5,
+    "replayOnSelection": false,
+    "offscreen": "defer until first visible"
+  }
+}

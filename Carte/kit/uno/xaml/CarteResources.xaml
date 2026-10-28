@@ -1,0 +1,71 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="CartePaperColor">#F7F1E4</Color>
+    <Color x:Key="CarteInkColor">#203BB6</Color>
+    <SolidColorBrush x:Key="CartePaperBrush" Color="{StaticResource CartePaperColor}" />
+    <SolidColorBrush x:Key="CarteInkBrush" Color="{StaticResource CarteInkColor}" />
+    <SolidColorBrush x:Key="CarteRuleBrush" Color="{StaticResource CarteInkColor}" Opacity="0.23" />
+    <SolidColorBrush x:Key="CarteWashBrush" Color="{StaticResource CarteInkColor}" Opacity="0.055" />
+
+    <FontFamily x:Key="CarteEditorialFont">ms-appx:///Assets/Fonts/InstrumentSerif-Regular.ttf#Instrument Serif</FontFamily>
+    <FontFamily x:Key="CarteEditorialItalicFont">ms-appx:///Assets/Fonts/InstrumentSerif-Italic.ttf#Instrument Serif</FontFamily>
+    <FontFamily x:Key="CarteBodyFont">ms-appx:///Assets/Fonts/CarteSans-Regular.ttf#Carte Sans</FontFamily>
+    <FontFamily x:Key="CarteBodyMediumFont">ms-appx:///Assets/Fonts/CarteSans-Medium.ttf#Carte Sans</FontFamily>
+    <FontFamily x:Key="CarteMonoFont">ms-appx:///Assets/Fonts/DMMono-Regular.ttf#DM Mono</FontFamily>
+
+    <Style x:Key="CarteBodyTextStyle" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource CarteBodyFont}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="LineHeight" Value="24" />
+        <Setter Property="Foreground" Value="{StaticResource CarteInkBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style x:Key="CarteSecondaryTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CarteBodyTextStyle}">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="20" />
+    </Style>
+    <Style x:Key="CarteTitleTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CarteBodyTextStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource CarteEditorialFont}" />
+        <Setter Property="FontSize" Value="36" />
+        <Setter Property="LineHeight" Value="40" />
+    </Style>
+    <Style x:Key="CarteItemTitleTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CarteTitleTextStyle}">
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="LineHeight" Value="32" />
+    </Style>
+    <Style x:Key="CarteLabelTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CarteBodyTextStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource CarteMonoFont}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="LineHeight" Value="16" />
+    </Style>
+    <Style x:Key="CarteAxisTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CarteBodyTextStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource CarteEditorialItalicFont}" />
+        <Setter Property="FontStyle" Value="Italic" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="LineHeight" Value="24" />
+    </Style>
+    <Style x:Key="CartePriceTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CarteSecondaryTextStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource CarteMonoFont}" />
+        <Setter Property="Typography.NumeralAlignment" Value="Tabular" />
+    </Style>
+    <Style x:Key="CartePrimaryButtonStyle" TargetType="Button">
+        <Setter Property="MinWidth" Value="44" />
+        <Setter Property="MinHeight" Value="44" />
+        <Setter Property="Padding" Value="16,10" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="FontFamily" Value="{StaticResource CarteBodyMediumFont}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Background" Value="{StaticResource CarteInkBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource CartePaperBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="UseSystemFocusVisuals" Value="True" />
+    </Style>
+    <Style x:Key="CarteSecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource CartePrimaryButtonStyle}">
+        <Setter Property="Background" Value="{StaticResource CartePaperBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource CarteInkBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource CarteRuleBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+</ResourceDictionary>

@@ -1,0 +1,223 @@
+[
+  {
+    "name": "arrow-left",
+    "source": "Lucide ArrowLeft",
+    "ink": "assets/icons/arrow-left.svg",
+    "paper": "assets/icons/arrow-left-paper.svg",
+    "items": []
+  },
+  {
+    "name": "arrow-right",
+    "source": "Lucide ArrowRight",
+    "ink": "assets/icons/arrow-right.svg",
+    "paper": "assets/icons/arrow-right-paper.svg",
+    "items": []
+  },
+  {
+    "name": "beef",
+    "source": "Lucide Beef",
+    "ink": "assets/icons/beef.svg",
+    "paper": "assets/icons/beef-paper.svg",
+    "items": [
+      "steak"
+    ]
+  },
+  {
+    "name": "bookmark",
+    "source": "Lucide Bookmark",
+    "ink": "assets/icons/bookmark.svg",
+    "paper": "assets/icons/bookmark-paper.svg",
+    "items": []
+  },
+  {
+    "name": "camera",
+    "source": "Lucide Camera",
+    "ink": "assets/icons/camera.svg",
+    "paper": "assets/icons/camera-paper.svg",
+    "items": []
+  },
+  {
+    "name": "check",
+    "source": "Lucide Check",
+    "ink": "assets/icons/check.svg",
+    "paper": "assets/icons/check-paper.svg",
+    "items": []
+  },
+  {
+    "name": "cherry",
+    "source": "Lucide Cherry",
+    "ink": "assets/icons/cherry.svg",
+    "paper": "assets/icons/cherry-paper.svg",
+    "items": [
+      "gamay",
+      "sour"
+    ]
+  },
+  {
+    "name": "chevron-left",
+    "source": "Lucide ChevronLeft",
+    "ink": "assets/icons/chevron-left.svg",
+    "paper": "assets/icons/chevron-left-paper.svg",
+    "items": []
+  },
+  {
+    "name": "chevron-right",
+    "source": "Lucide ChevronRight",
+    "ink": "assets/icons/chevron-right.svg",
+    "paper": "assets/icons/chevron-right-paper.svg",
+    "items": []
+  },
+  {
+    "name": "circle-dot",
+    "source": "Lucide CircleDot",
+    "ink": "assets/icons/circle-dot.svg",
+    "paper": "assets/icons/circle-dot-paper.svg",
+    "items": [
+      "burrata"
+    ]
+  },
+  {
+    "name": "citrus",
+    "source": "Lucide Citrus",
+    "ink": "assets/icons/citrus.svg",
+    "paper": "assets/icons/citrus-paper.svg",
+    "items": [
+      "riesling",
+      "paloma"
+    ]
+  },
+  {
+    "name": "cup-soda",
+    "source": "Lucide CupSoda",
+    "ink": "assets/icons/cup-soda.svg",
+    "paper": "assets/icons/cup-soda-paper.svg",
+    "items": [
+      "americano"
+    ]
+  },
+  {
+    "name": "fish",
+    "source": "Lucide Fish",
+    "ink": "assets/icons/fish.svg",
+    "paper": "assets/icons/fish-paper.svg",
+    "items": [
+      "crudo"
+    ]
+  },
+  {
+    "name": "glass-water",
+    "source": "Lucide GlassWater",
+    "ink": "assets/icons/glass-water.svg",
+    "paper": "assets/icons/glass-water-paper.svg",
+    "items": [
+      "negroni"
+    ]
+  },
+  {
+    "name": "grape",
+    "source": "Lucide Grape",
+    "ink": "assets/icons/grape.svg",
+    "paper": "assets/icons/grape-paper.svg",
+    "items": [
+      "syrah"
+    ]
+  },
+  {
+    "name": "leaf",
+    "source": "Lucide Leaf",
+    "ink": "assets/icons/leaf.svg",
+    "paper": "assets/icons/leaf-paper.svg",
+    "items": [
+      "chardonnay"
+    ]
+  },
+  {
+    "name": "list",
+    "source": "Lucide List",
+    "ink": "assets/icons/list.svg",
+    "paper": "assets/icons/list-paper.svg",
+    "items": []
+  },
+  {
+    "name": "martini",
+    "source": "Lucide Martini",
+    "ink": "assets/icons/martini.svg",
+    "paper": "assets/icons/martini-paper.svg",
+    "items": [
+      "martinez"
+    ]
+  },
+  {
+    "name": "move",
+    "source": "Lucide Move",
+    "ink": "assets/icons/move.svg",
+    "paper": "assets/icons/move-paper.svg",
+    "items": []
+  },
+  {
+    "name": "plus",
+    "source": "Lucide Plus",
+    "ink": "assets/icons/plus.svg",
+    "paper": "assets/icons/plus-paper.svg",
+    "items": []
+  },
+  {
+    "name": "salad",
+    "source": "Lucide Salad",
+    "ink": "assets/icons/salad.svg",
+    "paper": "assets/icons/salad-paper.svg",
+    "items": [
+      "tomatoes"
+    ]
+  },
+  {
+    "name": "scan-line",
+    "source": "Lucide ScanLine",
+    "ink": "assets/icons/scan-line.svg",
+    "paper": "assets/icons/scan-line-paper.svg",
+    "items": []
+  },
+  {
+    "name": "shell",
+    "source": "Lucide Shell",
+    "ink": "assets/icons/shell.svg",
+    "paper": "assets/icons/shell-paper.svg",
+    "items": [
+      "oysters",
+      "muscadet"
+    ]
+  },
+  {
+    "name": "utensils",
+    "source": "Lucide Utensils",
+    "ink": "assets/icons/utensils.svg",
+    "paper": "assets/icons/utensils-paper.svg",
+    "items": []
+  },
+  {
+    "name": "wheat",
+    "source": "Lucide Wheat",
+    "ink": "assets/icons/wheat.svg",
+    "paper": "assets/icons/wheat-paper.svg",
+    "items": [
+      "agnolotti"
+    ]
+  },
+  {
+    "name": "wine",
+    "source": "Lucide Wine",
+    "ink": "assets/icons/wine.svg",
+    "paper": "assets/icons/wine-paper.svg",
+    "items": [
+      "albarino",
+      "spritz"
+    ]
+  },
+  {
+    "name": "x",
+    "source": "Lucide X",
+    "ink": "assets/icons/x.svg",
+    "paper": "assets/icons/x-paper.svg",
+    "items": []
+  }
+]

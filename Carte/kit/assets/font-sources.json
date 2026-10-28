@@ -1,0 +1,72 @@
+[
+  {
+    "file": "assets/fonts/InstrumentSerif-Regular.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/instrumentserif/InstrumentSerif-Regular.ttf",
+    "bytes": 70012
+  },
+  {
+    "file": "assets/fonts/InstrumentSerif-Italic.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/instrumentserif/InstrumentSerif-Italic.ttf",
+    "bytes": 71592
+  },
+  {
+    "file": "assets/licenses/InstrumentSerif-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/instrumentserif/OFL.txt",
+    "bytes": 4405
+  },
+  {
+    "file": "assets/fonts/DMSans-Variable.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/dmsans/DMSans%5Bopsz%2Cwght%5D.ttf",
+    "bytes": 240164
+  },
+  {
+    "file": "assets/licenses/DMSans-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/dmsans/OFL.txt",
+    "bytes": 4482
+  },
+  {
+    "file": "assets/fonts/DMMono-Regular.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/dmmono/DMMono-Regular.ttf",
+    "bytes": 49744
+  },
+  {
+    "file": "assets/fonts/DMMono-Medium.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/dmmono/DMMono-Medium.ttf",
+    "bytes": 50360
+  },
+  {
+    "file": "assets/licenses/DMMono-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/dmmono/OFL.txt",
+    "bytes": 4484
+  },
+  {
+    "file": "assets/fonts/CarteSans-Regular.ttf",
+    "derivedFrom": "DMSans-Variable.ttf",
+    "axes": {
+      "opsz": 14,
+      "wght": 400
+    },
+    "family": "Carte Sans",
+    "license": "SIL OFL 1.1"
+  },
+  {
+    "file": "assets/fonts/CarteSans-Medium.ttf",
+    "derivedFrom": "DMSans-Variable.ttf",
+    "axes": {
+      "opsz": 14,
+      "wght": 500
+    },
+    "family": "Carte Sans",
+    "license": "SIL OFL 1.1"
+  },
+  {
+    "file": "assets/fonts/CarteSans-SemiBold.ttf",
+    "derivedFrom": "DMSans-Variable.ttf",
+    "axes": {
+      "opsz": 14,
+      "wght": 600
+    },
+    "family": "Carte Sans",
+    "license": "SIL OFL 1.1"
+  }
+]

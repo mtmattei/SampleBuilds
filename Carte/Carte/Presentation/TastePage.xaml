@@ -1,0 +1,144 @@
+<Page x:Class="Carte.Presentation.TastePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:Carte.Presentation"
+      xmlns:controls="using:Carte.Controls"
+      Background="{StaticResource CartePaperBrush}">
+  <Grid>
+    <VisualStateManager.VisualStateGroups>
+      <VisualStateGroup x:Name="LayoutStates">
+        <VisualState x:Name="Narrow">
+          <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
+          <VisualState.Setters><Setter Target="ContentRoot.Padding" Value="{StaticResource CarteNarrowPagePadding}" /></VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="Compact">
+          <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="360" /></VisualState.StateTriggers>
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+  <ScrollViewer x:Name="PageScroll" HorizontalScrollMode="Disabled" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel x:Name="ContentRoot" MaxWidth="640" Padding="{StaticResource CartePagePadding}" Spacing="24">
+      <Grid ColumnDefinitions="*,Auto" Style="{StaticResource CartePageHeaderStyle}">
+        <TextBlock Text="carte." Style="{StaticResource CarteWordmarkTextStyle}" VerticalAlignment="Center" AutomationProperties.Name="Carte" />
+        <Button Grid.Column="1" Command="{x:Bind ViewModel.BackCommand, Mode=OneWay}"
+                Style="{StaticResource CarteQuietButtonStyle}" Margin="0,0,-8,0" AutomationProperties.Name="Back to menu">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Image Source="ms-appx:///Assets/Svg/arrow-left.svg" Style="{StaticResource CarteIconStyle}" />
+            <TextBlock Text="Back to menu" Style="{StaticResource CarteQuietActionTextStyle}" />
+          </StackPanel>
+        </Button>
+      </Grid>
+      <StackPanel Spacing="8">
+        <TextBlock Text="A MENU THAT KNOWS YOU" Style="{StaticResource CarteLabelTextStyle}" />
+        <TextBlock Text="For your taste" Style="{StaticResource CarteTitleTextStyle}" AutomationProperties.HeadingLevel="Level1" />
+      </StackPanel>
+
+      <StackPanel Spacing="24" Visibility="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+        <TextBlock Text="Tell us what you enjoy. We’ll find the dishes worth a closer look."
+                   Style="{StaticResource CarteBodyTextStyle}" />
+        <StackPanel Spacing="8">
+          <TextBlock Text="01  HOW DO YOU LIKE A DISH TO FEEL?" Style="{StaticResource CarteLabelTextStyle}" />
+          <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+            <RadioButton Content="Light" GroupName="Weight" IsChecked="{x:Bind ViewModel.Light, Mode=TwoWay}" Style="{StaticResource CarteTasteChoiceStyle}" />
+            <RadioButton Grid.Column="1" Content="Either" GroupName="Weight" IsChecked="{x:Bind ViewModel.EitherWeight, Mode=TwoWay}" Style="{StaticResource CarteTasteChoiceStyle}" />
+            <RadioButton Grid.Column="2" Content="Rich" GroupName="Weight" IsChecked="{x:Bind ViewModel.Rich, Mode=TwoWay}" Style="{StaticResource CarteTasteChoiceStyle}" />
+          </Grid>
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <TextBlock Text="02  HOW MUCH FLAVOUR?" Style="{StaticResource CarteLabelTextStyle}" />
+          <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+            <RadioButton Content="Delicate" GroupName="Intensity" IsChecked="{x:Bind ViewModel.Delicate, Mode=TwoWay}" Style="{StaticResource CarteTasteChoiceStyle}" />
+            <RadioButton Grid.Column="1" Content="Either" GroupName="Intensity" IsChecked="{x:Bind ViewModel.EitherIntensity, Mode=TwoWay}" Style="{StaticResource CarteTasteChoiceStyle}" />
+            <RadioButton Grid.Column="2" Content="Bold" GroupName="Intensity" IsChecked="{x:Bind ViewModel.Bold, Mode=TwoWay}" Style="{StaticResource CarteTasteChoiceStyle}" />
+          </Grid>
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <TextBlock Text="03  A LITTLE CHILLI HEAT?" Style="{StaticResource CarteLabelTextStyle}" />
+          <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+            <RadioButton Content="None" GroupName="Heat" IsChecked="{x:Bind ViewModel.NoHeat, Mode=TwoWay}" Style="{StaticResource CarteTasteChoiceStyle}" />
+            <RadioButton Grid.Column="1" Content="A little" GroupName="Heat" IsChecked="{x:Bind ViewModel.SomeHeat, Mode=TwoWay}" Style="{StaticResource CarteTasteChoiceStyle}" />
+            <RadioButton Grid.Column="2" Content="Any" GroupName="Heat" IsChecked="{x:Bind ViewModel.AnyHeat, Mode=TwoWay}" Style="{StaticResource CarteTasteChoiceStyle}" />
+          </Grid>
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <TextBlock Text="FLAVOURS I COME BACK TO" Style="{StaticResource CarteLabelTextStyle}" />
+          <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="16" RowSpacing="4">
+            <CheckBox IsChecked="{x:Bind ViewModel.LovesZesty, Mode=TwoWay}" MinHeight="44" AutomationProperties.Name="Zesty">
+              <TextBlock Text="Zesty" Style="{StaticResource CarteSecondaryTextStyle}" />
+            </CheckBox>
+            <CheckBox Grid.Column="1" IsChecked="{x:Bind ViewModel.LovesHerbal, Mode=TwoWay}" MinHeight="44" AutomationProperties.Name="Herbal">
+              <TextBlock Text="Herbal" Style="{StaticResource CarteSecondaryTextStyle}" />
+            </CheckBox>
+            <CheckBox Grid.Row="1" IsChecked="{x:Bind ViewModel.LovesEarthy, Mode=TwoWay}" MinHeight="44" AutomationProperties.Name="Earthy">
+              <TextBlock Text="Earthy" Style="{StaticResource CarteSecondaryTextStyle}" />
+            </CheckBox>
+            <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{x:Bind ViewModel.LovesCreamy, Mode=TwoWay}" MinHeight="44" AutomationProperties.Name="Creamy">
+              <TextBlock Text="Creamy" Style="{StaticResource CarteSecondaryTextStyle}" />
+            </CheckBox>
+          </Grid>
+        </StackPanel>
+        <StackPanel Spacing="8">
+        <TextBlock Text="INGREDIENTS I’D RATHER SKIP" Style="{StaticResource CarteLabelTextStyle}" />
+        <TextBox AutomationProperties.Name="Ingredients I’d rather skip" PlaceholderText="e.g. mushrooms, coriander"
+                 Text="{x:Bind ViewModel.AvoidText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 MaxLength="250" MinHeight="48" Padding="12" FontSize="16" CornerRadius="4" Background="{StaticResource CartePaperBrush}"
+                 Foreground="{StaticResource CarteInkBrush}" BorderBrush="{StaticResource CarteRuleBrush}"
+                 FontFamily="{StaticResource CarteBodyFont}" />
+        </StackPanel>
+        <StackPanel Spacing="8">
+          <Button Content="Find my dishes" Command="{x:Bind ViewModel.FindDishesCommand, Mode=OneWay}" IsEnabled="{x:Bind ViewModel.IsReady, Mode=OneWay}"
+                  Style="{StaticResource CartePrimaryButtonStyle}" HorizontalAlignment="Stretch" />
+          <TextBlock Text="Your choices stay on this device. Matches use the menu’s descriptions and taste estimates."
+                     Style="{StaticResource CarteCaptionTextStyle}" />
+        </StackPanel>
+        <Button Content="Reset all preferences" Command="{x:Bind ViewModel.ResetPreferencesCommand, Mode=OneWay}"
+                Style="{StaticResource CarteLinkButtonStyle}" />
+      </StackPanel>
+
+      <StackPanel Spacing="16" Visibility="{x:Bind ViewModel.ShowResults, Mode=OneWay}">
+        <TextBlock Text="{x:Bind ViewModel.ResultsTitle, Mode=OneWay}" Style="{StaticResource CarteItemTitleTextStyle}" />
+        <TextBlock Text="{x:Bind ViewModel.ProfileSummary, Mode=OneWay}" Style="{StaticResource CarteSecondaryTextStyle}" />
+        <Button Content="Adjust my taste" Command="{x:Bind ViewModel.EditCommand, Mode=OneWay}" Style="{StaticResource CarteLinkButtonStyle}" />
+        <TextBlock Text="No suitable dishes with these choices. Try changing a preference or removing an ingredient to skip."
+                   Visibility="{x:Bind ViewModel.ShowEmpty, Mode=OneWay}" Style="{StaticResource CarteBodyTextStyle}" />
+        <ItemsControl ItemsSource="{x:Bind ViewModel.Recommendations, Mode=OneWay}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="local:TasteRecommendationViewModel">
+              <StackPanel Spacing="12" Padding="0,24,0,24" BorderBrush="{StaticResource CarteRuleBrush}" BorderThickness="0,1,0,0">
+                <TextBlock Text="{x:Bind RankLabel}" Style="{StaticResource CarteLabelTextStyle}" controls:TextCase.Upper="True" />
+                <Grid ColumnDefinitions="40,*,Auto" ColumnSpacing="12">
+                  <controls:LivingIllustrationView IllustrationKey="{x:Bind Id}" FallbackSource="{x:Bind Glyph}" VerticalAlignment="Top" Margin="0,2,0,0"
+                         AppearanceId="{x:Bind AppearanceId}" AppearanceDelayMilliseconds="{x:Bind AppearanceDelay}" />
+                  <TextBlock Grid.Column="1" Text="{x:Bind Name}" Style="{StaticResource CarteItemTitleTextStyle}" VerticalAlignment="Top" />
+                  <TextBlock Grid.Column="2" Text="{x:Bind Price}" Style="{StaticResource CartePriceTextStyle}" VerticalAlignment="Top" Margin="0,6,0,0" />
+                </Grid>
+                <TextBlock Text="{x:Bind Reason}" Style="{StaticResource CarteSecondaryTextStyle}" />
+                <TextBlock Text="{x:Bind Note}" Visibility="{x:Bind HasNote}" Style="{StaticResource CarteCaptionTextStyle}" />
+                <StackPanel Spacing="4">
+                  <Button Content="See on map" Command="{x:Bind ShowMapCommand}" Style="{StaticResource CarteLinkButtonStyle}"
+                          AutomationProperties.Name="{x:Bind MapName}" />
+                  <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <Button Content="More like this" Command="{x:Bind MoreCommand}" Style="{StaticResource CarteSecondaryButtonStyle}"
+                            HorizontalAlignment="Stretch" Padding="8,10" AutomationProperties.Name="{x:Bind MoreName}" />
+                    <Button Grid.Column="1" Content="Less like this" Command="{x:Bind LessCommand}" Style="{StaticResource CarteSecondaryButtonStyle}"
+                            HorizontalAlignment="Stretch" Padding="8,10" AutomationProperties.Name="{x:Bind LessName}" />
+                  </Grid>
+                </StackPanel>
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <TextBlock Text="A starting point, based on this menu. Change your choices whenever your mood changes."
+                   Style="{StaticResource CarteCaptionTextStyle}" Margin="0,8,0,0" />
+        <Button Content="Reset dish feedback" Command="{x:Bind ViewModel.ResetFeedbackCommand, Mode=OneWay}"
+                Visibility="{x:Bind ViewModel.HasFeedback, Mode=OneWay}" Style="{StaticResource CarteLinkButtonStyle}" />
+      </StackPanel>
+      <StackPanel Spacing="8">
+        <TextBlock Text="{x:Bind ViewModel.SaveMessage, Mode=OneWay}" Style="{StaticResource CarteSecondaryTextStyle}" />
+        <TextBlock x:Name="StatusText" Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" Style="{StaticResource CarteSecondaryTextStyle}"
+                   AutomationProperties.LiveSetting="Polite" />
+      </StackPanel>
+    </StackPanel>
+  </ScrollViewer>
+  </Grid>
+</Page>

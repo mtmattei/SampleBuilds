@@ -1,0 +1,89 @@
+<Page x:Class="Carte.Presentation.TonightPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:Carte.Presentation"
+      xmlns:controls="using:Carte.Controls"
+      Background="{StaticResource CartePaperBrush}">
+  <Grid>
+    <VisualStateManager.VisualStateGroups>
+      <VisualStateGroup>
+        <VisualState x:Name="Narrow">
+          <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
+          <VisualState.Setters><Setter Target="ContentRoot.Padding" Value="16,8,16,24" /></VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="Compact">
+          <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="360" /></VisualState.StateTriggers>
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+
+    <ScrollViewer HorizontalScrollMode="Disabled" HorizontalScrollBarVisibility="Disabled">
+      <StackPanel x:Name="ContentRoot" MaxWidth="640" Padding="24,8,24,24">
+        <controls:AppHeader ScanCommand="{x:Bind ViewModel.ScanMenuCommand, Mode=OneWay}" />
+
+        <Button Command="{x:Bind ViewModel.KeepExploringCommand, Mode=OneWay}" Style="{StaticResource CarteQuietButtonStyle}"
+                Margin="-8,16,0,0" AutomationProperties.LabeledBy="{x:Bind BackText}">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Image Source="ms-appx:///Assets/Svg/arrow-left.svg" Style="{StaticResource CarteIconStyle}" />
+            <TextBlock x:Name="BackText" x:Uid="CapturePage.BackLabel" Text="Back to your menu" Style="{StaticResource CarteQuietActionTextStyle}" />
+          </StackPanel>
+        </Button>
+
+        <TextBlock Text="{x:Bind ViewModel.MenuName, Mode=OneWay}" Style="{StaticResource CarteLabelTextStyle}"
+                   controls:TextCase.Upper="True" Margin="0,8,0,8" />
+        <TextBlock x:Uid="TonightPage.Title" Text="For tonight." Style="{StaticResource CarteTitleTextStyle}"
+                   AutomationProperties.HeadingLevel="Level1" />
+        <TextBlock x:Uid="TonightPage.Subtitle" Text="A few things that caught your eye." Style="{StaticResource CarteSecondaryTextStyle}"
+                   Margin="0,8,0,24" />
+
+        <!-- ShortlistView -->
+        <ListView ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}" SelectionMode="None" IsItemClickEnabled="True"
+                  ItemClick="{x:Bind ViewModel.OpenItem}" ItemContainerStyle="{StaticResource CarteListItemStyle}"
+                  ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                  Visibility="{x:Bind ViewModel.HasItems, Mode=OneWay}" BorderBrush="{StaticResource CarteRuleBrush}" BorderThickness="0,1,0,0">
+          <ListView.ItemTemplate>
+            <DataTemplate x:DataType="local:MenuItemViewModel">
+              <Grid ColumnDefinitions="40,*,44" ColumnSpacing="12" Padding="0,16" BorderBrush="{StaticResource CarteRuleBrush}" BorderThickness="0,0,0,1">
+                <controls:LivingIllustrationView IllustrationKey="{x:Bind Id}" FallbackSource="{x:Bind GlyphInk}" VerticalAlignment="Top" />
+                <StackPanel Grid.Column="1" Spacing="4">
+                  <TextBlock Text="{x:Bind Name}" Style="{StaticResource CarteItemTitleTextStyle}" />
+                  <TextBlock Text="{x:Bind SummaryLine}" Style="{StaticResource CarteSecondaryTextStyle}" />
+                </StackPanel>
+                <Button Grid.Column="2" Command="{x:Bind ToggleSavedCommand}" Style="{StaticResource CarteQuietButtonStyle}"
+                        Padding="0" VerticalAlignment="Center" AutomationProperties.Name="{x:Bind RemoveName}">
+                  <Image Source="ms-appx:///Assets/Svg/x.svg" Style="{StaticResource CarteIconStyle}" />
+                </Button>
+              </Grid>
+            </DataTemplate>
+          </ListView.ItemTemplate>
+        </ListView>
+
+        <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.HasItems, Mode=OneWay}" Padding="0,20,0,0">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock x:Uid="TonightPage.PriceNote" Text="Menu prices · one of each" Style="{StaticResource CarteSecondaryTextStyle}" />
+            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.SubtotalText, Mode=OneWay}" Style="{StaticResource CartePriceTextStyle}" />
+          </Grid>
+          <TextBlock x:Uid="TonightPage.TotalIncomplete" Style="{StaticResource CarteSecondaryTextStyle}"
+                     Visibility="{x:Bind ViewModel.HasMissingPrices, Mode=OneWay}" />
+          <TextBlock x:Uid="TonightPage.Note" Style="{StaticResource CarteSecondaryTextStyle}" HorizontalAlignment="Center"
+                     TextAlignment="Center" Margin="0,16,0,8" />
+        </StackPanel>
+
+        <TextBlock x:Uid="TonightPage.Empty" Text="Your evening is still unwritten." Style="{StaticResource CarteItemTitleTextStyle}"
+                   Visibility="{x:Bind ViewModel.IsEmpty, Mode=OneWay}" Margin="0,8,0,24" />
+
+        <Button Command="{x:Bind ViewModel.KeepExploringCommand, Mode=OneWay}" Style="{StaticResource CartePrimaryButtonStyle}"
+                HorizontalAlignment="Stretch" Margin="0,8,0,0" AutomationProperties.LabeledBy="{x:Bind ContinueText}">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock x:Name="ContinueText" x:Uid="TonightPage.ContinueLabel" Text="Keep exploring" Style="{StaticResource CarteActionTextStyle}"
+                       Foreground="{StaticResource CartePaperBrush}" />
+            <Image Source="ms-appx:///Assets/Svg/arrow-right-paper.svg" Style="{StaticResource CarteIconStyle}" />
+          </StackPanel>
+        </Button>
+      </StackPanel>
+    </ScrollViewer>
+
+    <TextBlock x:Name="StatusText" Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" AutomationProperties.LiveSetting="Polite"
+               Opacity="0" IsHitTestVisible="False" Width="1" Height="1" HorizontalAlignment="Left" VerticalAlignment="Top" />
+  </Grid>
+</Page>

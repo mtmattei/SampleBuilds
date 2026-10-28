@@ -1,0 +1,251 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+<div id="carte-concept" class="viz-carousel viz-dotted-background" aria-label="Carte interface directions">
+  <section data-variant="Taste atlas" aria-label="Map first interface">
+    <div class="ct-stage"><article class="ct-app" data-design="atlas" aria-label="Carte taste atlas"></article></div>
+  </section>
+  <section data-variant="Menu margins" aria-label="Menu first interface" hidden>
+    <div class="ct-stage"><article class="ct-app ct-margins" data-design="margins" aria-label="Carte menu companion"></article></div>
+  </section>
+</div>
+<style>
+  #carte-concept { padding-top: 20px; }
+  #carte-concept .ct-stage { min-height: 945px; padding: 30px 12px 24px; display: flex; justify-content: center; align-items: flex-start; }
+  #carte-concept .ct-app { --ct-paper:#f7f1e4; --ct-ink:#203bb6; --ct-rule:rgba(32,59,182,.23); --ct-wash:rgba(32,59,182,.055); color-scheme:light; width:100%; max-width:412px; min-height:850px; color:var(--ct-ink); background-color:var(--ct-paper); background-image:radial-gradient(rgba(94,72,38,.075) .45px,transparent .7px); background-size:5px 5px; border-radius:19px; box-shadow:0 1px 3px #192b4420,0 12px 35px #192b4414; padding:0 23px; font:14px/1.5 'DM Sans',sans-serif; position:relative; overflow:hidden; -webkit-font-smoothing:antialiased; }
+  #carte-concept .ct-app * { box-sizing:border-box; }
+  #carte-concept .ct-app button { color:inherit; font:inherit; background:none; border:0; padding:0; border-radius:0; -webkit-tap-highlight-color:transparent; }
+  #carte-concept .ct-app button:active { transform:scale(.96); }
+  #carte-concept .ct-app button { transition:background-color 160ms,color 160ms,transform 160ms; }
+  #carte-concept .ct-app button:focus-visible { outline:2px solid var(--ct-ink); outline-offset:4px; }
+  #carte-concept .ct-app svg { stroke-width:1.45; flex-shrink:0; }
+  #carte-concept .ct-app p,#carte-concept .ct-app h1,#carte-concept .ct-app h2,#carte-concept .ct-app h3 { margin:0; color:inherit; }
+  #carte-concept .ct-app h1,#carte-concept .ct-app h2,#carte-concept .ct-app h3 { text-wrap:balance; font-weight:400; }
+  #carte-concept .ct-mono { font-family:'DM Mono',monospace; font-size:10px; line-height:1.6; letter-spacing:.09em; text-transform:uppercase; }
+  #carte-concept .ct-top { height:78px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--ct-ink); }
+  #carte-concept .ct-wordmark { font:italic 38px/1 'Instrument Serif',Georgia,serif; letter-spacing:-1.5px; }
+  #carte-concept .ct-scan { display:flex; gap:7px; align-items:center; min-height:44px; padding:0 4px!important; font-size:12px!important; }
+  #carte-concept .ct-scan svg { width:18px; height:18px; }
+  #carte-concept .ct-heading { padding:22px 0 20px; }
+  #carte-concept .ct-kicker { display:flex; justify-content:space-between; gap:12px; margin-bottom:6px; }
+  #carte-concept .ct-heading h1 { font:35px/1.12 'Instrument Serif',Georgia,serif; letter-spacing:-.5px; }
+  #carte-concept .ct-subtitle { margin-top:7px!important; font-size:12px; opacity:.82; }
+  #carte-concept .ct-categories { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--ct-rule); border-bottom:1px solid var(--ct-rule); }
+  #carte-concept .ct-categories button { min-height:47px; display:flex; align-items:center; justify-content:center; gap:6px; font-size:13px; position:relative; }
+  #carte-concept .ct-categories button[aria-pressed="true"]::after { content:''; position:absolute; bottom:-1px; height:2px; left:12%; right:12%; background:var(--ct-ink); }
+  #carte-concept .ct-categories svg { width:16px; height:16px; }
+  #carte-concept .ct-viewbar { display:flex; align-items:center; justify-content:space-between; height:49px; gap:12px; }
+  #carte-concept .ct-viewbar button { display:flex; align-items:center; min-height:40px; gap:5px; font-size:11px; }
+  #carte-concept .ct-viewbar svg { height:14px; width:14px; }
+  #carte-concept .ct-map { position:relative; height:331px; margin:0 -4px; }
+  #carte-concept .ct-cross { position:absolute; background:var(--ct-rule); pointer-events:none; }
+  #carte-concept .ct-cross-v { width:1px; top:31px; bottom:31px; left:50%; }
+  #carte-concept .ct-cross-h { height:1px; left:21px; right:21px; top:50%; }
+  #carte-concept .ct-center { position:absolute; width:5px; height:5px; background:var(--ct-ink); left:calc(50% - 2px); top:calc(50% - 2px); border-radius:50%; }
+  #carte-concept .ct-axis { position:absolute; font:italic 17px/1.15 'Instrument Serif',Georgia,serif; z-index:2; background:var(--ct-paper); padding:2px 5px; text-align:center; max-width:100px; }
+  #carte-concept .ct-axis-top { top:1px; left:50%; transform:translateX(-50%); }
+  #carte-concept .ct-axis-bottom { bottom:0; left:50%; transform:translateX(-50%); }
+  #carte-concept .ct-axis-left { left:-2px; top:50%; transform:translateY(-50%); }
+  #carte-concept .ct-axis-right { right:-2px; top:50%; transform:translateY(-50%); }
+  #carte-concept .ct-mark { position:absolute; transform:translate(-50%,-50%); width:86px; height:63px; text-align:center; z-index:3; }
+  #carte-concept .ct-mark:active { transform:translate(-50%,-50%) scale(.96)!important; }
+  #carte-concept .ct-glyph { width:45px; height:43px; margin:auto; display:flex; align-items:center; justify-content:center; border:1px solid transparent; border-radius:50%; transition:background-color 180ms,color 180ms; position:relative; }
+  #carte-concept .ct-glyph svg { width:30px; height:30px; }
+  #carte-concept .ct-mark[aria-pressed="true"] .ct-glyph { background:var(--ct-ink); color:var(--ct-paper); }
+  #carte-concept .ct-mark-label { display:block; margin-top:3px; font-size:11px; line-height:14px; white-space:nowrap; }
+  #carte-concept .ct-uncertain .ct-glyph { border:1px dashed var(--ct-ink); }
+  #carte-concept .ct-mark[aria-pressed="true"] .ct-mark-label { font-weight:600; }
+  #carte-concept .ct-map-note { margin:8px 0 18px!important; font-size:10px; opacity:.8; text-align:center; }
+  #carte-concept .ct-detail { border-top:1px solid var(--ct-ink); padding-top:17px; min-height:191px; }
+  #carte-concept .ct-detail-top { display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
+  #carte-concept .ct-detail h2 { font:29px/1.1 'Instrument Serif',Georgia,serif; }
+  #carte-concept .ct-price { font-family:'DM Mono',monospace; font-size:13px; white-space:nowrap; }
+  #carte-concept .ct-taste { font-size:11px; margin-top:7px!important; }
+  #carte-concept .ct-explanation { font-size:12px; line-height:1.55; margin-top:9px!important; max-width:320px; }
+  #carte-concept .ct-why { font-size:11px!important; text-decoration:underline; text-underline-offset:3px; min-height:36px; }
+  #carte-concept .ct-evidence { font-size:11px; line-height:1.6; border-left:1px solid var(--ct-ink); padding:0 0 0 10px; margin:3px 0 13px; }
+  #carte-concept .ct-actions { display:flex; gap:10px; padding:3px 0 18px; }
+  #carte-concept .ct-primary { background:var(--ct-ink)!important; color:var(--ct-paper)!important; border:1px solid var(--ct-ink)!important; min-height:43px; border-radius:4px!important; padding:10px 14px!important; display:flex; justify-content:center; align-items:center; gap:8px; font-size:12px!important; flex:1; }
+  #carte-concept .ct-secondary { min-height:43px; border:1px solid var(--ct-rule)!important; border-radius:4px!important; padding:10px 14px!important; display:flex; justify-content:center; align-items:center; gap:7px; font-size:12px!important; }
+  #carte-concept .ct-actions svg { width:15px; height:15px; }
+  #carte-concept .ct-footer { border-top:1px solid var(--ct-rule); min-height:62px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  #carte-concept .ct-footer button { min-height:44px; font-size:12px; display:flex; align-items:center; gap:7px; }
+  #carte-concept .ct-footer svg { width:16px; height:16px; }
+  #carte-concept .ct-footer .ct-count { font-family:'DM Mono',monospace; background:var(--ct-wash); border:1px solid var(--ct-rule); border-radius:50%; display:inline-grid; place-items:center; width:21px; height:21px; font-size:10px; font-variant-numeric:tabular-nums; }
+  #carte-concept .ct-rows { margin-bottom:14px; }
+  #carte-concept .ct-row { border-bottom:1px solid var(--ct-rule); }
+  #carte-concept .ct-row-pick { width:100%; display:flex; align-items:center; gap:11px; min-height:79px; text-align:left; }
+  #carte-concept .ct-row-icon { display:flex; align-items:center; justify-content:center; width:38px; flex-shrink:0; }
+  #carte-concept .ct-row-icon svg { width:29px; height:29px; }
+  #carte-concept .ct-row-text { flex:1; min-width:0; }
+  #carte-concept .ct-row-name { font:23px/1.1 'Instrument Serif',Georgia,serif; display:block; }
+  #carte-concept .ct-row-notes { font-size:10px; display:block; margin-top:6px; }
+  #carte-concept .ct-mini { width:41px; height:41px; flex-shrink:0; position:relative; }
+  #carte-concept .ct-mini::before { content:''; position:absolute; top:50%; width:100%; height:1px; background:var(--ct-rule); }
+  #carte-concept .ct-mini::after { content:''; position:absolute; left:50%; height:100%; width:1px; background:var(--ct-rule); }
+  #carte-concept .ct-mini-dot { position:absolute; width:6px; height:6px; background:var(--ct-ink); border-radius:50%; transform:translate(-50%,-50%); }
+  #carte-concept .ct-row .ct-row-more { padding:0 0 15px 49px; }
+  #carte-concept .ct-row .ct-explanation { margin-top:0!important; }
+  #carte-concept .ct-row .ct-actions { padding-bottom:0; margin-top:8px; }
+  #carte-concept .ct-list-axis { font-size:11px; padding:0 0 11px; border-bottom:1px solid var(--ct-rule); }
+  #carte-concept .ct-notice { padding:10px 0; font-size:11px; border-bottom:1px solid var(--ct-rule); }
+  #carte-concept .ct-back { display:flex; gap:7px; align-items:center; min-height:48px; font-size:12px!important; }
+  #carte-concept .ct-back svg { width:16px; height:16px; }
+  #carte-concept .ct-flow-title { font:39px/1.02 'Instrument Serif',Georgia,serif; padding:12px 0; }
+  #carte-concept .ct-flow-sub { font-size:13px; max-width:290px; }
+  #carte-concept .ct-camera { position:relative; margin:28px 0 19px; padding:25px; min-height:337px; background:var(--ct-wash); border-radius:8px; }
+  #carte-concept .ct-crop { position:absolute; width:24px; height:24px; border-color:var(--ct-ink); border-style:solid; }
+  #carte-concept .ct-crop.a { left:12px; top:12px; border-width:1px 0 0 1px; }
+  #carte-concept .ct-crop.b { right:12px; top:12px; border-width:1px 1px 0 0; }
+  #carte-concept .ct-crop.c { left:12px; bottom:12px; border-width:0 0 1px 1px; }
+  #carte-concept .ct-crop.d { right:12px; bottom:12px; border-width:0 1px 1px 0; }
+  #carte-concept .ct-receipt { transform:rotate(-3deg); background:var(--ct-paper); padding:20px; box-shadow:0 4px 18px #172c7b14; border:1px solid var(--ct-rule); }
+  #carte-concept .ct-receipt h3 { font:29px/1 'Instrument Serif',Georgia,serif; text-align:center; }
+  #carte-concept .ct-receipt .ct-mono { text-align:center; margin:10px 0 15px; }
+  #carte-concept .ct-print-row { display:flex; justify-content:space-between; border-top:1px solid var(--ct-rule); padding:9px 0; font:15px/1.3 'Instrument Serif',Georgia,serif; }
+  #carte-concept .ct-flow-actions { margin-top:19px; display:flex; gap:10px; }
+  #carte-concept .ct-flow-fine { font-size:11px; margin:12px 0 25px!important; text-align:center; }
+  #carte-concept .ct-review { margin:24px 0; border-top:1px solid var(--ct-rule); }
+  #carte-concept .ct-review-line { display:flex; align-items:center; justify-content:space-between; padding:16px 0; border-bottom:1px solid var(--ct-rule); font-size:13px; }
+  #carte-concept .ct-review-line span { display:flex; align-items:center; gap:10px; }
+  #carte-concept .ct-review-line svg { width:20px; height:20px; }
+  #carte-concept .ct-review-note { background:var(--ct-wash); padding:14px; font-size:12px; }
+  #carte-concept .ct-empty { min-height:365px; display:flex; align-items:center; justify-content:center; text-align:center; padding:40px; font:29px/1.2 'Instrument Serif',Georgia,serif; }
+  #carte-concept .ct-total { display:flex; justify-content:space-between; padding:20px 0; border-top:1px solid var(--ct-ink); font-size:13px; }
+  #carte-concept .ct-saved-row { display:flex; align-items:center; gap:12px; min-height:85px; border-bottom:1px solid var(--ct-rule); }
+  #carte-concept .ct-saved-row > svg { width:28px; height:28px; }
+  #carte-concept .ct-saved-row button { margin-left:auto; min-width:44px; min-height:44px; }
+  #carte-concept .ct-saved-row button svg { height:16px; width:16px; }
+  #carte-concept .ct-pair-note { font-size:11px; margin:8px 0 0!important; }
+  #carte-concept .ct-margins .ct-heading h1 { font-size:39px; }
+  #carte-concept .ct-margins .ct-heading { padding-top:26px; padding-bottom:24px; }
+  #carte-concept .ct-margins .ct-top { border-bottom:0; }
+  #carte-concept .ct-margins .ct-heading { border-top:3px double var(--ct-ink); }
+  @media (max-width:420px) { #carte-concept .ct-stage { padding:30px 0 16px; } #carte-concept .ct-app { padding:0 17px; } #carte-concept .ct-mark { width:76px; } #carte-concept .ct-mark-label { font-size:10px; } #carte-concept .ct-axis { font-size:16px; max-width:78px; } #carte-concept .ct-actions { gap:7px; } #carte-concept .ct-secondary { padding:10px!important; } #carte-concept .ct-heading h1 { font-size:33px; } }
+  @media (prefers-reduced-motion:reduce) { #carte-concept .ct-app *,#carte-concept .ct-app *::before { transition:none!important; } }
+</style>
+<script>
+(function () {
+  const root = document.getElementById('carte-concept');
+  const icon = function (name) { return '<i data-lucide="' + name + '" aria-hidden="true"></i>'; };
+  const categories = {
+    plates: {label:'Plates', icon:'utensils', axes:['Light','Rich','Bold','Delicate'], items:[
+      {id:'crudo',name:'Sea bass crudo',short:'Crudo',icon:'fish',x:24,y:24,price:19,tags:'Zesty · cool · a little heat',desc:'A bright, light bite with a little chilli at the finish.',menu:'Sea bass, lime, green chilli, coriander.',why:'Lime and chilli suggest bold flavour; raw fish keeps the dish light.',pair:'albarino'},
+      {id:'steak',name:'Steak frites',short:'Steak frites',icon:'beef',x:78,y:22,price:34,tags:'Savoury · buttery · satisfying',desc:'The hearty corner: a seared steak, crisp fries and pepper butter.',menu:'Bavette steak, frites, green peppercorn butter.',why:'Seared beef and peppercorns suggest bold flavour; butter and fries add richness.',pair:'syrah'},
+      {id:'oysters',name:'Oysters',short:'Oysters',icon:'shell',x:25,y:73,price:18,tags:'Briny · clean · delicate',desc:'A cool, delicate start with a clean, saline finish.',menu:'Six oysters, cucumber mignonette.',why:'Oysters and cucumber suggest a light dish. The sauce quantity could shift its intensity.',pair:'muscadet'},
+      {id:'tomatoes',name:'Heritage tomatoes',short:'Tomatoes',icon:'salad',x:47,y:36,price:15,tags:'Juicy · herbal · tangy',desc:'Ripe tomatoes with basil and a lively vinegar dressing.',menu:'Heritage tomatoes, basil, shallot, sherry vinegar.',why:'Fresh tomatoes keep the dish light; vinegar and shallot add a punch of flavour.',pair:'gamay'},
+      {id:'agnolotti',name:'Mushroom agnolotti',short:'Agnolotti',icon:'wheat',x:79,y:70,price:26,tags:'Earthy · silky · comforting',desc:'Soft pasta with an earthy centre and a rounded, buttery finish.',menu:'Wild mushroom agnolotti, sage, brown butter.',why:'Filled pasta and brown butter suggest richness; mushroom and sage suggest a rounded flavour.',pair:'chardonnay'},
+      {id:'burrata',name:'Burrata & peach',short:'Burrata',icon:'circle-dot',x:52,y:83,price:17,tags:'Creamy · mellow · softly sweet',desc:'Creamy burrata and ripe peach, with a gentle herbal lift.',menu:'Burrata, peach, basil, olive oil.',why:'Cream and olive oil suggest richness; peach and basil keep the flavour delicate.',pair:'albarino'}
+    ]},
+    wine: {label:'Wine',icon:'wine',axes:['Light','Full-bodied','Crisp','Round'],items:[
+      {id:'albarino',name:'Albariño',short:'Albariño',icon:'wine',x:25,y:22,price:13,tags:'Citrus · saline · lively',desc:'A bright, coastal white with citrus lift and a clean finish.',menu:'Albariño · Rías Baixas · citrus, saline · glass.',why:'The menu’s citrus and saline notes suggest a light body and crisp acidity.'},
+      {id:'syrah',name:'Syrah',short:'Syrah',icon:'grape',x:79,y:67,price:15,tags:'Dark fruit · pepper · generous',desc:'A generous red with dark fruit and a peppery edge.',menu:'Syrah · Rhône · blackberry, pepper · glass.',why:'Dark fruit suggests a fuller body. Acidity is not described, so the vertical position is approximate.',uncertain:true},
+      {id:'muscadet',name:'Muscadet',short:'Muscadet',icon:'shell',x:23,y:73,price:11,tags:'Lean · mineral · mellow',desc:'A lean white with a softer finish from time on its lees.',menu:'Muscadet sur lie · Loire · lean, mineral, soft finish · glass.',why:'The menu explicitly describes a lean body and soft finish.'},
+      {id:'riesling',name:'Dry Riesling',short:'Riesling',icon:'citrus',x:58,y:32,price:14,tags:'Lime · floral · taut',desc:'A little more presence, with lime and a taut, lively finish.',menu:'Dry Riesling · Alsace · medium body, lime, high acidity · glass.',why:'Medium body puts it near the middle horizontally; high acidity puts it toward crisp.'},
+      {id:'chardonnay',name:'Chardonnay',short:'Chardonnay',icon:'leaf',x:78,y:83,price:15,tags:'Orchard fruit · creamy · round',desc:'A fuller white with a creamy texture and a soft finish.',menu:'Chardonnay · Burgundy · creamy, round, orchard fruit · glass.',why:'The menu’s creamy and round descriptors suggest more weight and softer acidity.'},
+      {id:'gamay',name:'Gamay',short:'Gamay',icon:'cherry',x:51,y:67,price:12,tags:'Red fruit · supple · easy',desc:'A supple red with juicy fruit and gentle texture.',menu:'Gamay · Beaujolais · medium-light, red fruit, supple · glass.',why:'Medium-light body places it left of centre; supple texture suggests the rounder side.'}
+    ]},
+    cocktails: {label:'Cocktails',icon:'martini',axes:['Refreshing','Spirit-forward','Bitter','Sweet'],items:[
+      {id:'spritz',name:'Bitter orange spritz',short:'Spritz',icon:'wine',x:24,y:23,price:14,tags:'Bitter orange · sparkling · bright',desc:'Long, sparkling and pleasantly bittersweet.',menu:'Orange aperitivo, prosecco, soda, orange.',why:'Soda and sparkling wine make it refreshing; the aperitivo brings bitterness.'},
+      {id:'negroni',name:'Negroni',short:'Negroni',icon:'glass-water',x:78,y:23,price:16,tags:'Herbal · bitter · slow-sipping',desc:'A compact, bittersweet drink with a pronounced herbal edge.',menu:'Gin, bitter aperitivo, sweet vermouth.',why:'An all-spirit recipe puts it toward spirit-forward; the aperitivo gives a bitter edge.'},
+      {id:'paloma',name:'Paloma',short:'Paloma',icon:'citrus',x:22,y:70,price:15,tags:'Grapefruit · sparkling · juicy',desc:'A tall, juicy drink with grapefruit and a little salt.',menu:'Tequila, grapefruit soda, lime, salt.',why:'Soda and citrus make it refreshing; sweetened soda shifts it toward sweet.'},
+      {id:'martinez',name:'Martinez',short:'Martinez',icon:'martini',x:78,y:79,price:17,tags:'Silky · aromatic · rounded',desc:'A rich, softly sweet cocktail for sipping slowly.',menu:'Old Tom gin, sweet vermouth, maraschino, bitters.',why:'The spirit base gives weight; vermouth and maraschino bring sweetness.'},
+      {id:'americano',name:'Americano',short:'Americano',icon:'cup-soda',x:54,y:35,price:13,tags:'Herbal · bittersweet · lifted',desc:'A bittersweet aperitif lengthened with a splash of soda.',menu:'Bitter aperitivo, sweet vermouth, soda.',why:'Aperitivo adds bitterness; the smaller soda pour makes it less refreshing than the spritz.'},
+      {id:'sour',name:'Amaretto sour',short:'Amaretto sour',icon:'cherry',x:48,y:82,price:15,tags:'Almond · lemon · plush',desc:'A sweet almond note balanced by lemon and a soft foam.',menu:'Amaretto, bourbon, lemon, syrup, egg white.',why:'Lemon lightens the drink; amaretto and syrup put it on the sweet side.'}
+    ]}
+  };
+  const allItems = Object.values(categories).flatMap(function (c) { return c.items; });
+  const states = {
+    atlas:{category:'plates',selected:'crudo',view:'map',saved:[],screen:'explore',why:false,pairFrom:''},
+    margins:{category:'plates',selected:'crudo',view:'list',saved:[],screen:'explore',why:false,pairFrom:''}
+  };
+  function hydrate(snapshot) {
+    const stored = snapshot && snapshot.privateContent && snapshot.privateContent.carte;
+    if (!stored || typeof stored !== 'object') return;
+    Object.keys(states).forEach(function (key) {
+      const value = stored[key];
+      if (!value || !categories[value.category]) return;
+      const allowed = categories[value.category].items.map(function (i) { return i.id; });
+      states[key].category = value.category;
+      states[key].selected = allowed.includes(value.selected) ? value.selected : allowed[0];
+      states[key].view = value.view === 'list' ? 'list' : 'map';
+      states[key].saved = Array.isArray(value.saved) ? value.saved.filter(function (id) { return allItems.some(function (i) { return i.id === id; }); }) : [];
+    });
+  }
+  hydrate(window.openai && window.openai.widgetState);
+  function save() {
+    if (window.openai && window.openai.setWidgetState) {
+      window.openai.setWidgetState({modelContent:{concept:'Carte',selections:Object.fromEntries(Object.entries(states).map(function (entry) { return [entry[0],{category:entry[1].category,selected:entry[1].selected,shortlist:entry[1].saved}]; }))},privateContent:{carte:states}}).catch(function () {});
+    }
+  }
+  function top() { return '<header class="ct-top"><div class="ct-wordmark">carte<span style="font-style:normal">.</span></div><button class="ct-scan cursor-interaction" data-action="scan">' + icon('scan-line') + 'Scan menu</button></header>'; }
+  function footer(s) { return '<footer class="ct-footer"><span class="ct-mono">A little guide to good taste</span><button data-action="tonight" class="cursor-interaction">' + icon('bookmark') + 'Tonight <span class="ct-count">' + s.saved.length + '</span></button></footer>'; }
+  function actions(s,item) { return '<div class="ct-actions"><button class="ct-primary cursor-interaction" data-action="save" data-id="' + item.id + '">' + icon(s.saved.includes(item.id)?'check':'plus') + (s.saved.includes(item.id)?'Saved for tonight':'Save for tonight') + '</button>' + (item.pair ? '<button class="ct-secondary cursor-interaction" data-action="pair" data-id="' + item.id + '">' + icon('wine') + 'Pair it</button>' : '') + '</div>'; }
+  function evidence(s,item) { return '<button class="ct-why cursor-interaction" data-action="why" aria-expanded="' + s.why + '">' + (s.why?'Hide tasting note':'Why here?') + '</button>' + (s.why?'<div class="ct-evidence"><p>On the menu: “' + item.menu + '”</p><p style="margin-top:6px">' + item.why + '</p></div>':''); }
+  function map(s,c) {
+    return '<div class="ct-map" role="group" aria-label="Taste map. Horizontal: ' + c.axes[0] + ' to ' + c.axes[1] + '. Vertical: ' + c.axes[3] + ' to ' + c.axes[2] + '. Select an item to explore."><div class="ct-cross ct-cross-v"></div><div class="ct-cross ct-cross-h"></div><div class="ct-center"></div><span class="ct-axis ct-axis-top">' + c.axes[2] + '</span><span class="ct-axis ct-axis-bottom">' + c.axes[3] + '</span><span class="ct-axis ct-axis-left">' + c.axes[0] + '</span><span class="ct-axis ct-axis-right">' + c.axes[1] + '</span>' + c.items.map(function (i) { return '<button class="ct-mark cursor-interaction ' + (i.uncertain?'ct-uncertain':'') + '" data-action="select" data-id="' + i.id + '" aria-pressed="' + (s.selected===i.id) + '" aria-label="' + i.name + ', ' + i.tags + (i.uncertain?', estimated placement':'') + '" style="left:' + i.x + '%;top:' + i.y + '%"><span class="ct-glyph">' + icon(i.icon) + '</span><span class="ct-mark-label">' + i.short + '</span></button>'; }).join('') + '</div><p class="ct-map-note">' + (s.category==='wine'?'Dashed ring = a less certain placement':'A relative taste map · estimated from the menu') + '</p>';
+  }
+  function detail(s,item) { return '<section class="ct-detail" aria-label="Selected item"><div class="ct-detail-top"><h2>' + item.name + '</h2><span class="ct-price">$' + item.price + '</span></div><p class="ct-taste">' + item.tags + '</p><p class="ct-explanation">' + item.desc + '</p>' + evidence(s,item) + actions(s,item) + '</section>'; }
+  function list(s,c) {
+    return '<div class="ct-list-axis">' + c.axes[0] + ' ↔ ' + c.axes[1] + ' &nbsp; · &nbsp; ' + c.axes[3] + ' ↔ ' + c.axes[2] + '</div><div class="ct-rows">' + c.items.map(function (i) { return '<section class="ct-row"><button class="ct-row-pick cursor-interaction" data-action="select" data-id="' + i.id + '" aria-expanded="' + (s.selected===i.id) + '"><span class="ct-row-icon">' + icon(i.icon) + '</span><span class="ct-row-text"><span class="ct-row-name">' + i.name + '</span><span class="ct-row-notes">' + i.tags + ' · $' + i.price + '</span></span><span class="ct-mini" aria-hidden="true"><span class="ct-mini-dot" style="left:' + i.x + '%;top:' + i.y + '%"></span></span></button>' + (s.selected===i.id?'<div class="ct-row-more"><p class="ct-explanation">' + i.desc + '</p>' + evidence(s,i) + actions(s,i) + '</div>':'') + '</section>'; }).join('') + '</div>';
+  }
+  function explorer(s) {
+    const c = categories[s.category];
+    const item = c.items.find(function (i) { return i.id===s.selected; }) || c.items[0];
+    return top() + '<div class="ct-heading"><div class="ct-kicker ct-mono"><span>Your evening, mapped</span><span>Sample menu</span></div><h1>Le Petit Jardin</h1><p class="ct-subtitle">A neighbourhood bistro · 18 things to discover</p></div><div class="ct-categories" role="group" aria-label="Menu category">' + Object.keys(categories).map(function (key) { return '<button class="cursor-interaction" data-action="category" data-category="' + key + '" aria-pressed="' + (s.category===key) + '">' + icon(categories[key].icon) + categories[key].label + '</button>'; }).join('') + '</div>' + (s.pairFrom?'<div class="ct-notice">With ' + s.pairFrom + ': try ' + item.name + '.<br>The suggested contrast comes from the menu descriptions.</div>':'') + '<div class="ct-viewbar"><span class="ct-mono">' + (s.view==='map'?'Find your corner':'The menu, with a little context') + '</span><button class="cursor-interaction" data-action="view">' + icon(s.view==='map'?'list':'move') + (s.view==='map'?'Menu view':'Taste map') + '</button></div>' + (s.view==='map'?map(s,c)+detail(s,item):list(s,c)) + footer(s);
+  }
+  function scanner(s) {
+    return top() + '<button class="ct-back cursor-interaction" data-action="back">' + icon('arrow-left') + 'Back to your menu</button><div class="ct-mono">01 / Photograph</div><h1 class="ct-flow-title">Good taste starts<br>with a menu.</h1><p class="ct-flow-sub">Fit the whole page inside the frame.<br>You can add more pages next.</p><div class="ct-camera"><span class="ct-crop a"></span><span class="ct-crop b"></span><span class="ct-crop c"></span><span class="ct-crop d"></span><div class="ct-receipt"><h3>Le Petit Jardin</h3><div class="ct-mono">À la carte</div>' + categories.plates.items.map(function (i) { return '<div class="ct-print-row"><span>' + i.name + '</span><span>' + i.price + '</span></div>'; }).join('') + '</div></div><p class="ct-flow-fine">Scan preview · using an illustrative menu</p><div class="ct-flow-actions"><button class="ct-primary cursor-interaction" data-action="read">' + icon('camera') + 'Read this menu</button></div><p class="ct-flow-fine">A quick review before we draw your map.</p>';
+  }
+  function review(s) {
+    return top() + '<button class="ct-back cursor-interaction" data-action="scan">' + icon('arrow-left') + 'Back to photo</button><div class="ct-mono">02 / Review</div><h1 class="ct-flow-title">A menu full<br>of possibilities.</h1><p class="ct-flow-sub">Le Petit Jardin<br>18 items across three categories.</p><div class="ct-review">' + Object.values(categories).map(function (c) { return '<div class="ct-review-line"><span>' + icon(c.icon) + c.label + '</span><span>6 items ' + icon('check') + '</span></div>'; }).join('') + '</div><div class="ct-review-note">Taste is a useful estimate. Tap “Why here?” on any item to see the menu description behind its position.</div><div class="ct-flow-actions"><button class="ct-primary cursor-interaction" data-action="explore">Draw my taste map ' + icon('arrow-right') + '</button></div><p class="ct-flow-fine">Illustrative scan · no camera or upload used</p>';
+  }
+  function tonight(s) {
+    const saved = s.saved.map(function (id) { return allItems.find(function (i) { return i.id===id; }); }).filter(Boolean);
+    return top() + '<button class="ct-back cursor-interaction" data-action="back">' + icon('arrow-left') + 'Back to your menu</button><div class="ct-mono">Le Petit Jardin</div><h1 class="ct-flow-title">For tonight.</h1><p class="ct-flow-sub">A few things that caught your eye.</p>' + (saved.length?'<div class="ct-rows" style="margin-top:25px">' + saved.map(function (i) { return '<div class="ct-saved-row">' + icon(i.icon) + '<div><span class="ct-row-name">' + i.name + '</span><span class="ct-row-notes">' + i.tags + ' · $' + i.price + '</span></div><button class="cursor-interaction" data-action="save" data-id="' + i.id + '" aria-label="Remove ' + i.name + ' from tonight">' + icon('x') + '</button></div>'; }).join('') + '</div><div class="ct-total"><span>Menu prices · one of each</span><span class="ct-price">$' + saved.reduce(function (a,i) { return a+i.price; },0) + '</span></div><p class="ct-flow-fine">Your shortlist · share your choices with your server</p>':'<div class="ct-empty">Your evening is<br>still unwritten.</div>') + '<div class="ct-flow-actions"><button class="ct-primary cursor-interaction" data-action="back">Keep exploring ' + icon('arrow-right') + '</button></div>';
+  }
+  function refreshIcons() { if (window.lucide) window.lucide.createIcons({attrs:{width:16,height:16}}); }
+  function render(app) {
+    const s = states[app.dataset.design];
+    app.innerHTML = s.screen==='scan'?scanner(s):s.screen==='review'?review(s):s.screen==='tonight'?tonight(s):explorer(s);
+    refreshIcons();
+  }
+  const apps = Array.from(root.querySelectorAll('.ct-app'));
+  apps.forEach(function (app) {
+    app.addEventListener('click',function (event) {
+      const button = event.target.closest('button[data-action]');
+      if (!button || !app.contains(button)) return;
+      const s = states[app.dataset.design];
+      const action = button.dataset.action;
+      const focusAction = action;
+      const focusId = button.dataset.id;
+      const focusCategory = button.dataset.category;
+      if (action==='category') { s.category=button.dataset.category; s.selected=categories[s.category].items[0].id; s.why=false; s.pairFrom=''; }
+      if (action==='select') { s.selected=button.dataset.id; s.why=false; s.pairFrom=''; }
+      if (action==='view') s.view=s.view==='map'?'list':'map';
+      if (action==='why') s.why=!s.why;
+      if (action==='save') { const id=button.dataset.id; s.saved=s.saved.includes(id)?s.saved.filter(function (v) { return v!==id; }):s.saved.concat(id); }
+      if (action==='pair') { const dish=allItems.find(function (i) { return i.id===button.dataset.id; }); s.category='wine'; s.selected=dish.pair; s.pairFrom=dish.name; s.why=false; }
+      if (action==='scan') s.screen='scan';
+      if (action==='read') s.screen='review';
+      if (action==='tonight') s.screen='tonight';
+      if (action==='back' || action==='explore') s.screen='explore';
+      render(app);
+      const next = Array.from(app.querySelectorAll('button[data-action]')).find(function (b) { return b.dataset.action===focusAction && (!focusId || b.dataset.id===focusId) && (!focusCategory || b.dataset.category===focusCategory); });
+      if (next) next.focus({preventScroll:true});
+      const live = document.getElementById('carte-live-region');
+      if (live) live.textContent = action==='category'?categories[s.category].label + ': axes now ' + categories[s.category].axes.join(', '):action==='save'?s.saved.length + ' items saved for tonight':action==='select'?'Selected ' + allItems.find(function (i) { return i.id===s.selected; }).name:action==='read'?'18 sample menu items ready to review':'';
+      save();
+    });
+    render(app);
+    if (globalThis.Tweak) {
+      const style = {paper:'#f7f1e4',ink:'#203bb6',corners:19};
+      const tweak = new Tweak({container:app,onChange:function () { app.style.setProperty('--ct-paper',style.paper);app.style.setProperty('--ct-ink',style.ink);app.style.borderRadius=style.corners+'px'; }});
+      tweak.addColorPicker(style,'paper',{label:'Paper',reference:'--ct-paper'});
+      tweak.addColorPicker(style,'ink',{label:'Ink',reference:'--ct-ink'});
+      tweak.addSlider(style,'corners',{label:'Surface corners',min:0,max:28,unit:'px'});
+    }
+  });
+  const live = document.createElement('div');
+  live.id='carte-live-region';live.className='ct-live';live.setAttribute('aria-live','polite');live.setAttribute('aria-atomic','true');live.style.cssText='position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);';root.insertAdjacentElement('afterend',live);
+  window.addEventListener('openai:set_globals',function (event) { const globals=event.detail && event.detail.globals; if (globals && globals.widgetState) { hydrate(globals.widgetState);apps.forEach(render); } });
+})();
+</script>
